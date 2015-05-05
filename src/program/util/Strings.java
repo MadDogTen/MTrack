@@ -6,6 +6,7 @@ public class Strings {
     public static final String ProgramTitle = "MTrack";
     public static final String DefaultUsername = "Default";
     public static final String SettingsFileName = "Program";
+    public static final String MTrackVersion = "0.6";
     public static String UserName;
 
 
