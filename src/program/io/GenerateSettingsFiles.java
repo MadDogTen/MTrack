@@ -39,15 +39,6 @@ public class GenerateSettingsFiles {
             HashMap<String, String[]> tempPut = new HashMap<>();
             String[] Temp;
 
-            // Directory's
-
-            // Currently Unneeded
-            /*Temp = new String[2];
-            Temp[0] = "F:\\Media\\Shows";
-            Temp[1] = "\\\\MEDIASERVER-1\\Usenet\\Archive\\TV\\";
-            tempPut.put("Directory", Temp);
-            userSettingsFile.put("ProgramSettings", tempPut);*/
-
             tempPut = new HashMap<>();
 
             // Temp[0]- Active

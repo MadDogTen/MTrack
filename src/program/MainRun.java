@@ -24,11 +24,6 @@ public class MainRun {
 
 
     public static void startBackend() {
-        //Variables.Path = new File("F:\\Media\\Shows");
-        //Variables.Extension = ".MyPC";
-
-        //System.out.println(Arrays.toString(ShowInfoController.getShowsList()));
-
         if (FileManager.checkFolderExists(FileManager.getDataFolder())) {
             Strings.setUserName(getUser());
         } else firstRun();
@@ -50,17 +45,11 @@ public class MainRun {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    ArrayList<String> directories = ProgramSettingsController.getDirectories();
-
-                    for (String aDirectory : directories) {
-                        int fileName = directories.indexOf(aDirectory);
-                        File file = new File(aDirectory);
-                        CheckShowFiles.recheckShowFile();
-                    }
+                    CheckShowFiles.recheckShowFile();
                     return null;
                 }
             };
-            //new Thread(task).start();
+            new Thread(task).start();
             timer = Clock.getTimeSeconds();
             forceRun = false;
         }

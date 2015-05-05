@@ -51,8 +51,4 @@ public class FindLocation implements Serializable {
     private static boolean checkIfStringNotNull(String[] checker) {
         return !(checker == null);
     }
-
-    private static boolean checkIfIntegerNotNull(Integer[] checker, String name) {
-        return !(checker == null);
-    }
 }

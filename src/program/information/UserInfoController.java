@@ -296,17 +296,4 @@ public class UserInfoController {
             System.out.println("userSettingsFile has been saved!");
         }
     }
-
-    // Getters
-    public static int getSeason(String aShow) {
-        String[] aShowSettings = showSettings.get(aShow);
-
-        return Integer.parseInt(aShowSettings[3]);
-    }
-
-    public static String getEpisode(String aShow) {
-        String[] aShowSettings = showSettings.get(aShow);
-
-        return aShowSettings[6];
-    }
 }

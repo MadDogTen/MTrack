@@ -88,9 +88,8 @@ public class Controller implements Initializable {
         tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
     }
 
-    @Override // This method is called by the FXMLLoader when initialization is complete
+    @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        // initialize your logic here: all @FXML variables will have been injected
         System.out.println("Controller Running...\n");
         MainRun.startBackend();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
