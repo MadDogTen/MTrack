@@ -1,7 +1,10 @@
 package program;
 
 import javafx.concurrent.Task;
-import program.gui.*;
+import program.gui.ConfirmBox;
+import program.gui.ListSelectBox;
+import program.gui.MessageBox;
+import program.gui.TextBox;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.io.CheckShowFiles;
@@ -26,7 +29,7 @@ public class MainRun {
 
         //System.out.println(Arrays.toString(ShowInfoController.getShowsList()));
 
-        if(FileManager.checkFolderExists(FileManager.getDataFolder())) {
+        if (FileManager.checkFolderExists(FileManager.getDataFolder())) {
             Strings.setUserName(getUser());
         } else firstRun();
 
@@ -116,7 +119,7 @@ public class MainRun {
                 MessageBox messageBox = new MessageBox();
                 messageBox.display("Duplicate", "Directory was a duplicate!");
             }
-            if (!confirmBox.display("Continue","Add another directory?")) {
+            if (!confirmBox.display("Continue", "Add another directory?")) {
                 addAnother = false;
             }
         }

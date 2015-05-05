@@ -1,7 +1,5 @@
 package program.util;
 
-import java.io.File;
-
 public class Variables {
 
     //---------- Main Variables ----------\\

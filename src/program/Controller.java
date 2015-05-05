@@ -14,8 +14,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import program.gui.*;
-import program.information.ShowInfoController;
 import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
 import program.io.CheckShowFiles;
@@ -118,7 +118,7 @@ public class Controller implements Initializable {
 
         tableView.setRowFactory(
                 param -> {
-                    final TableRow<DisplayShows> row = new TableRow<DisplayShows>();
+                    final TableRow<DisplayShows> row = new TableRow<>();
                     final ContextMenu rowMenu = new ContextMenu();
 
                     MenuItem playSeasonEpisode = new MenuItem("Pick Season/Episode");

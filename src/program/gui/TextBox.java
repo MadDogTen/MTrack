@@ -12,7 +12,6 @@ import javafx.stage.StageStyle;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
 import program.io.FileManager;
-import program.util.Variables;
 
 import java.io.File;
 

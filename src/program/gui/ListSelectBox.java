@@ -13,8 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import program.Main;
-import program.MainRun;
 import program.input.MoveWindow;
 import program.util.Strings;
 

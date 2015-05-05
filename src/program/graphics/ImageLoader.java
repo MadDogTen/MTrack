@@ -20,7 +20,7 @@ public class ImageLoader {
         imageIcon = new ImageIcon(bufferedImage);
     }
 
-    public static ImageIcon getIcon(String path){
+    public static ImageIcon getIcon(String path) {
         bufferImageToIcon(path);
         return imageIcon;
     }

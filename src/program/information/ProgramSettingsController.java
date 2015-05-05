@@ -7,7 +7,6 @@ import program.util.Variables;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 public class ProgramSettingsController {
 
@@ -69,7 +68,7 @@ public class ProgramSettingsController {
     }
 
     public static File getDirectory(int index) {
-         return new File(settingsFile.get("Directories").get(index));
+        return new File(settingsFile.get("Directories").get(index));
     }
 
     public static boolean setDirectory(int index, File directory) {

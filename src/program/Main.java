@@ -8,7 +8,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import program.gui.ConfirmBox;
-import program.information.ShowInfoController;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.util.Clock;

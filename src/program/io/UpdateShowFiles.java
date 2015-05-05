@@ -1,6 +1,5 @@
 package program.io;
 
-import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.util.FindLocation;
 
@@ -47,7 +46,7 @@ public class UpdateShowFiles {
 
     public static void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
         Boolean ChangedSeasons = CheckShowFiles.hasEpisodesChanged(aShow, aSeason, folderLocation, showsFile, hashMapIndex);
-        if(ChangedSeasons) {
+        if (ChangedSeasons) {
             HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
             HashMap<String, String> episodeNum = new HashMap<>();
             String[] episodesFullList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
