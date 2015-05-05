@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-
-<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="255.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="program.Controller">
+<TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
+         minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="255.0" tabClosingPolicy="UNAVAILABLE"
+         xmlns="http://javafx.com/javafx/8" fx:controller="program.Controller">
     <tabs>
         <Tab text="Shows">
             <content>
@@ -34,8 +33,11 @@
                   <Button fx:id="deleteEverythingAndClose" layoutX="46.0" layoutY="332.0" mnemonicParsing="false" text="Delete Everything and Close" />
                   <Button fx:id="setDefaultUsername" layoutX="15.0" layoutY="206.0" mnemonicParsing="false" text="Set Default Username" />
                   <Button fx:id="clearDefaultUsername" layoutX="156.0" layoutY="206.0" mnemonicParsing="false" text="Clear Default" />
-                  <Button fx:id="deleteUser" layoutX="33.0" layoutY="253.0" mnemonicParsing="false" text="Delete User" />
+                   <Button fx:id="deleteUser" layoutX="15.0" layoutY="253.0" mnemonicParsing="false"
+                           text="Delete User"/>
                   <Button fx:id="refreshObservableList" layoutX="12.0" layoutY="95.0" mnemonicParsing="false" text="Refresh ObservableList" />
+                   <Button fx:id="changeObservableList" layoutX="103.0" layoutY="253.0" mnemonicParsing="false"
+                           text="Change ObservableList"/>
                </children>
             </AnchorPane>
             </content>

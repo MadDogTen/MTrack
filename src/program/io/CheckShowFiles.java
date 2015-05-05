@@ -6,7 +6,6 @@ import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.util.Clock;
 import program.util.FindLocation;
-import program.util.Strings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ public class CheckShowFiles {
 
     public static void recheckShowFile() {
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
-        ArrayList<String> activeShows = UserInfoController.getActiveShows(Strings.UserName);
+        ArrayList<String> activeShows = UserInfoController.getActiveShows();
         for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
             int timer = Clock.getTimeSeconds();
             System.out.println("Rechecking shows...");

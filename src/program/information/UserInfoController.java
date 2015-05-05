@@ -1,6 +1,7 @@
 package program.information;
 
 import program.io.FileManager;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.io.File;
@@ -9,31 +10,20 @@ import java.util.*;
 
 public class UserInfoController {
     private static HashMap<String, HashMap<String, String[]>> userSettingsFile;
-    private static HashMap<String, String[]> userSettings;
     private static HashMap<String, String[]> showSettings;
 
-    private static void loadUserInfo(String userName) {
+    private static void loadUserInfo() {
         if (userSettingsFile == null) {
-            userSettingsFile = FileManager.loadUserInfo(Variables.settingsFolder, userName, Variables.settingsExtension);
-        }
-        if (userSettingsFile != null && userSettings == null) {
-            userSettings = userSettingsFile.get("ProgramSettings");
+            userSettingsFile = FileManager.loadUserInfo(Variables.settingsFolder, Strings.UserName, Variables.settingsExtension);
         }
         if (userSettingsFile != null && showSettings == null) {
             showSettings = userSettingsFile.get("ShowSettings");
         }
     }
 
-    public static String[] getDirectories(String userName) {
-        if (userSettings == null) {
-            loadUserInfo(userName);
-        }
-        return userSettings.get("Directory");
-    }
-
-    public static String[] getShowSettings(String userName, String show) {
-        if (userSettings == null) {
-            loadUserInfo(userName);
+    public static String[] getShowSettings(String show) {
+        if (showSettings == null) {
+            loadUserInfo();
         }
         return showSettings.get(show);
     }
@@ -67,18 +57,38 @@ public class UserInfoController {
         return 0;
     }
 
-    public static ArrayList<String> getActiveShows(String userName) {
+    public static void setActiveStatus(String aShow, Boolean active) {
+        String[] aShowSettings = showSettings.get(aShow);
+        aShowSettings[0] = String.valueOf(active);
+        showSettings.put(aShow, aShowSettings);
+    }
+
+    public static ArrayList<String> getActiveShows() {
         if (showSettings == null) {
-            loadUserInfo(userName);
+            loadUserInfo();
         }
         ArrayList<String> activeShows = new ArrayList<>();
         for (String aShow : showSettings.keySet()) {
-            Boolean showInfo = Boolean.valueOf(showSettings.get(aShow)[0]);
-            if (showInfo) {
+            Boolean isActive = Boolean.valueOf(showSettings.get(aShow)[0]);
+            if (isActive) {
                 activeShows.add(aShow);
             }
         }
         return activeShows;
+    }
+
+    public static ArrayList<String> getInactiveShows() {
+        if (showSettings == null) {
+            loadUserInfo();
+        }
+        ArrayList<String> inActiveShows = new ArrayList<>();
+        for (String aShow : showSettings.keySet()) {
+            Boolean isActive = Boolean.valueOf(showSettings.get(aShow)[0]);
+            if (!isActive) {
+                inActiveShows.add(aShow);
+            }
+        }
+        return inActiveShows;
     }
 
     public static void playAnyEpisode(String aShow, int season, String episode, Boolean fileExists, int episodeType) {
@@ -290,9 +300,10 @@ public class UserInfoController {
         return remaining;
     }
 
-    public static void saveUserSettingsFile(String userName) {
+    public static void saveUserSettingsFile() {
         if (userSettingsFile != null) {
-            FileManager.save(userSettingsFile, Variables.settingsFolder, userName, Variables.settingsExtension, true);
+            userSettingsFile.replace("ShowSettings", showSettings);
+            FileManager.save(userSettingsFile, Variables.settingsFolder, Strings.UserName, Variables.settingsExtension, true);
             System.out.println("userSettingsFile has been saved!");
         }
     }

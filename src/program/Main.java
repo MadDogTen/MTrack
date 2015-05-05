@@ -11,7 +11,6 @@ import program.gui.ConfirmBox;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.util.Clock;
-import program.util.Strings;
 
 public class Main extends Application implements Runnable {
 
@@ -33,7 +32,7 @@ public class Main extends Application implements Runnable {
         if (answer) {
             if (saveSettings) {
                 ProgramSettingsController.saveSettingsFile();
-                UserInfoController.saveUserSettingsFile(Strings.UserName);
+                UserInfoController.saveUserSettingsFile();
             }
             running = false;
 

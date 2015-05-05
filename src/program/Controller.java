@@ -33,7 +33,8 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    private static ObservableList<DisplayShows> tableViewFields = FXCollections.observableArrayList();
+    private static ObservableList<DisplayShows> tableViewFields;
+    private static String currentList;
 
     @FXML
     private Button exit1;
@@ -65,12 +66,10 @@ public class Controller implements Initializable {
     private Button deleteUser;
     @FXML
     private Button refreshObservableList;
+    @FXML
+    private Button changeObservableList;
 
-    private static ObservableList<DisplayShows> MakeTableViewFields() {
-        System.out.println("getTableViewFields Running...\n");
-
-        ArrayList<String> showList = UserInfoController.getActiveShows(Strings.UserName);
-
+    private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
         for (String aShow : showList) {
             list.add(new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
@@ -78,9 +77,15 @@ public class Controller implements Initializable {
         return list;
     }
 
-    public static void setTableViewFields() {
-        tableViewFields = FXCollections.observableArrayList();
-        tableViewFields = MakeTableViewFields();
+    public static void setTableViewFields(String type) {
+        System.out.println("setTableViewFields Running...\n");
+        if (type.matches("active")) {
+            tableViewFields = MakeTableViewFields(UserInfoController.getActiveShows());
+            currentList = "active";
+        } else if (type.matches("inactive")) {
+            tableViewFields = MakeTableViewFields(UserInfoController.getInactiveShows());
+            currentList = "inactive";
+        }
     }
 
     public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere
@@ -94,7 +99,6 @@ public class Controller implements Initializable {
         MainRun.startBackend();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
-        //tableView.setItems(tableViewFields);
 
         FilteredList<DisplayShows> filteredData = new FilteredList<>(tableViewFields, p -> true);
 
@@ -133,6 +137,11 @@ public class Controller implements Initializable {
                         }
                     });
 
+                    MenuItem setNotActive = new MenuItem("Don't Update");
+                    setNotActive.setOnAction(e -> { //TODO Have this remove the show from the current ObservableList
+                        UserInfoController.setActiveStatus(row.getItem().getShow(), false);
+                    });
+
                     MenuItem resetShow = new MenuItem("Reset");
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
 
@@ -168,7 +177,7 @@ public class Controller implements Initializable {
                         }
                     });
 
-                    rowMenu.getItems().addAll(playSeasonEpisode, resetShow, getRemaining, openDirectory);
+                    rowMenu.getItems().addAll(playSeasonEpisode, setNotActive, resetShow, getRemaining, openDirectory);
 
                     row.contextMenuProperty().bind(
                             Bindings.when(Bindings.isNotNull(row.itemProperty()))
@@ -279,7 +288,21 @@ public class Controller implements Initializable {
             }
         });
         refreshObservableList.setOnAction(e -> {
-            setTableViewFields();
+            setTableViewFields(currentList);
+        });
+        changeObservableList.setOnAction(e -> {
+            ListSelectBox listSelectBox = new ListSelectBox();
+            ArrayList<String> observableListChoices = new ArrayList<>();
+            observableListChoices.add("Active");
+            observableListChoices.add("Inactive");
+
+            String choice = listSelectBox.display("Change TableView", "Select the TableView you want to switch too.", observableListChoices);
+
+            if (choice.matches("Active")) {
+                setTableViewFields("active");
+            } else if (choice.matches("Inactive")) {
+                setTableViewFields("inactive");
+            }
         });
 
         deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));

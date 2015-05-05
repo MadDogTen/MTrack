@@ -33,7 +33,7 @@ public class MainRun {
         }
 
         System.out.println("Username is set: " + Strings.UserName);
-        Controller.setTableViewFields();
+        Controller.setTableViewFields("active");
     }
 
     public static void tick() {

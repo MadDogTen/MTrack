@@ -37,9 +37,6 @@ public class GenerateSettingsFiles {
             System.out.println("Generating settings file for " + userName + "...\n");
             HashMap<String, HashMap<String, String[]>> userSettingsFile = new HashMap<>();
             HashMap<String, String[]> tempPut = new HashMap<>();
-            String[] Temp;
-
-            tempPut = new HashMap<>();
 
             // Temp[0]- Active
             // Temp[1]- hidden
@@ -49,6 +46,7 @@ public class GenerateSettingsFiles {
             // Temp[5]- Total Number of Episodes in Current Season
             // Temp[6]- Current Episode
 
+            String[] Temp;
             Object[] showsList = ShowInfoController.getShowsList();
             for (Object aShow : showsList) {
                 Temp = new String[7];
