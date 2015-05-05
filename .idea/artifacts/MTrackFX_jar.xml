@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="MTrackFX:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/MTrackFX_jar</output-path>
-    <root id="archive" name="MTrackFX.jar">
-      <element id="module-output" name="MTrackFX" />
-    </root>
-  </artifact>
-</component>
