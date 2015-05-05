@@ -131,6 +131,6 @@ public class MainRun {
 
     private static void generateUserSettingsFile(String userName, Boolean override) {
         System.out.println("Attempting to generate settings file for " + userName + ".");
-        GenerateSettingsFiles.generateUserSettingsFile(userName, Variables.settingsFolder, Variables.settingsExtension, override);
+        GenerateSettingsFiles.generateUserSettingsFile(Variables.settingsFolder, Variables.settingsExtension, override);
     }
 }

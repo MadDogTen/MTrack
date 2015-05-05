@@ -50,25 +50,6 @@ public class FileManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static ArrayList<HashMap<String, String>> loadSeasonEpisode(String filename, String extension) {
-        String file = ('\\' + filename + extension);
-        if (checkFileExists("", filename, extension)) {
-            ArrayList<HashMap<String, String>> loadedArrayList = new ArrayList<>();
-            FileInputStream fis;
-            try {
-                fis = new FileInputStream(createDataFolder() + file);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                loadedArrayList = (ArrayList<HashMap<String, String>>) ois.readObject();
-                ois.close();
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
-            }
-            return loadedArrayList;
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
     public static HashMap<String, HashMap<String, String[]>> loadUserInfo(String folder, String filename, String extension) {
         String file = (folder + '\\' + filename + extension);
         if (checkFileExists(folder, filename, extension)) {

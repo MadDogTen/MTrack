@@ -50,7 +50,7 @@ public class UserInfoController {
         return users;
     }
 
-    public static Integer getNumberOfUsers(String settingsFolder, String extension, Boolean overRide) {
+    public static Integer getNumberOfUsers() {
         if (getAllUsers() != null) {
             return getAllUsers().size();
         }
@@ -177,7 +177,7 @@ public class UserInfoController {
 
         aShowSettings[3] = String.valueOf(ShowInfoController.getLowestSeason(aShow, ShowInfoController.getHighestSeason(aShow)));
         Set<String> episodes = ShowInfoController.getEpisodesList(aShow, aShowSettings[3]);
-        aShowSettings[6] = String.valueOf(ShowInfoController.getLowestEpisode(aShow, episodes, Integer.parseInt(aShowSettings[5])));
+        aShowSettings[6] = String.valueOf(ShowInfoController.getLowestEpisode(episodes, Integer.parseInt(aShowSettings[5])));
 
         showSettings.put(aShow, aShowSettings);
         userSettingsFile.put("ShowSettings", showSettings);

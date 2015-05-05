@@ -11,6 +11,7 @@ import program.gui.ConfirmBox;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.util.Clock;
+import program.util.Variables;
 
 public class Main extends Application implements Runnable {
 
@@ -57,8 +58,8 @@ public class Main extends Application implements Runnable {
         window.initStyle(StageStyle.UNDECORATED);
         Parent root = FXMLLoader.load(getClass().getResource("/gui/MainGui.fxml"));
         window.setTitle("MTrack");
-        window.setWidth(255);
-        window.setHeight(400);
+        window.setWidth(Variables.SIZE_WIDTH);
+        window.setHeight(Variables.SIZE_HEIGHT);
 
         Scene scene = new Scene(root);
 

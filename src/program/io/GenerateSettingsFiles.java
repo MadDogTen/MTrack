@@ -32,7 +32,7 @@ public class GenerateSettingsFiles {
         }
     }
 
-    public static void generateUserSettingsFile(String userName, String settingsFolder, String extension, Boolean override) {
+    public static void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
         if (override || !FileManager.checkFileExists(settingsFolder, userName, ".settings")) {
             System.out.println("Generating settings file for " + userName + "...\n");
             HashMap<String, HashMap<String, String[]>> userSettingsFile = new HashMap<>();
@@ -59,8 +59,8 @@ public class GenerateSettingsFiles {
                 Temp[3] = String.valueOf(ShowInfoController.getLowestSeason(aShow, ShowInfoController.getHighestSeason(aShow)));
                 Temp[4] = String.valueOf(ShowInfoController.getHighestSeason(aShow));
                 Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Temp[3]);
-                Temp[5] = String.valueOf(ShowInfoController.getHighestEpisode(aShow, episodes));
-                Temp[6] = String.valueOf(ShowInfoController.getLowestEpisode(aShow, episodes, Integer.parseInt(Temp[5])));
+                Temp[5] = String.valueOf(ShowInfoController.getHighestEpisode(episodes));
+                Temp[6] = String.valueOf(ShowInfoController.getLowestEpisode(episodes, Integer.parseInt(Temp[5])));
                 System.out.println(aShow);
                 System.out.println(aShow + " - " + Arrays.toString(Temp));
                 tempPut.put(String.valueOf(aShow), Temp);

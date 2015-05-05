@@ -200,7 +200,7 @@ public class ShowInfoController {
         return highestSeason;
     }
 
-    public static int getLowestEpisode(Object show, Set<String> episodes, int highestEpisode) {
+    public static int getLowestEpisode(Set<String> episodes, int highestEpisode) {
         int lowestEpisode = highestEpisode;
 
         if (episodes != null) {
@@ -220,7 +220,7 @@ public class ShowInfoController {
         return lowestEpisode;
     }
 
-    public static int getHighestEpisode(Object show, Set<String> episodes) {
+    public static int getHighestEpisode(Set<String> episodes) {
         int highestEpisode = 0;
 
         if (episodes != null) {
@@ -243,10 +243,6 @@ public class ShowInfoController {
     public static void saveShowsHashMapFile(HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap, int hashMapIndex) {
         FileManager.save(hashMap, "", ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
         loadShowsFile();
-    }
-
-    public static HashMap<String, HashMap<Integer, HashMap<String, String>>> getShowsFile() {
-        return showsFile;
     }
 
     public static void printOutAllShowsAndEpisodes() {

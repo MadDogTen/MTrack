@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class UpdateShowFiles {
 
     public static void checkForNewOrRemovedSeasons(File folderLocation, String aShow, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
-        ArrayList<Integer> changedSeasons = CheckShowFiles.hasSeasonsChanged(aShow, folderLocation, showsFile, hashMapIndex);
+        ArrayList<Integer> changedSeasons = CheckShowFiles.hasSeasonsChanged(aShow, folderLocation, showsFile);
         if (!changedSeasons.isEmpty()) {
             HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
             System.out.println(changedSeasons);
@@ -45,7 +45,7 @@ public class UpdateShowFiles {
     }
 
     public static void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
-        Boolean ChangedSeasons = CheckShowFiles.hasEpisodesChanged(aShow, aSeason, folderLocation, showsFile, hashMapIndex);
+        Boolean ChangedSeasons = CheckShowFiles.hasEpisodesChanged(aShow, aSeason, folderLocation, showsFile);
         if (ChangedSeasons) {
             HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
             HashMap<String, String> episodeNum = new HashMap<>();

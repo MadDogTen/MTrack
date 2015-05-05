@@ -99,9 +99,7 @@ public class Controller implements Initializable {
         MainRun.startBackend();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
-
         FilteredList<DisplayShows> filteredData = new FilteredList<>(tableViewFields, p -> true);
-
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(show -> {
                         if (newValue == null || newValue.isEmpty()) {
@@ -112,18 +110,13 @@ public class Controller implements Initializable {
                     }
             );
         });
-
         SortedList<DisplayShows> sortedData = new SortedList<>(filteredData);
-
         sortedData.comparatorProperty().bind(tableView.comparatorProperty());
-
         tableView.setItems(sortedData);
-
         tableView.setRowFactory(
                 param -> {
                     final TableRow<DisplayShows> row = new TableRow<>();
                     final ContextMenu rowMenu = new ContextMenu();
-
                     MenuItem playSeasonEpisode = new MenuItem("Pick Season/Episode");
                     playSeasonEpisode.setOnAction(e -> {
                         DoubleTextBox doubleTextBox = new DoubleTextBox();
@@ -136,20 +129,16 @@ public class Controller implements Initializable {
                             messageBox.display("Pick Season/Episode", "Your selection doesn't exist.");
                         }
                     });
-
                     MenuItem setNotActive = new MenuItem("Don't Update");
                     setNotActive.setOnAction(e -> { //TODO Have this remove the show from the current ObservableList
                         UserInfoController.setActiveStatus(row.getItem().getShow(), false);
                     });
-
                     MenuItem resetShow = new MenuItem("Reset");
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
-
                     MenuItem getRemaining = new MenuItem("Get Remaining");
                     getRemaining.setOnAction(e -> {
                         System.out.println("There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
                     });
-
                     MenuItem openDirectory = new MenuItem("Open File Location");
                     openDirectory.setOnAction(e -> {
                         ArrayList<String> directories = ProgramSettingsController.getDirectories();
@@ -176,14 +165,11 @@ public class Controller implements Initializable {
                             }
                         }
                     });
-
                     rowMenu.getItems().addAll(playSeasonEpisode, setNotActive, resetShow, getRemaining, openDirectory);
-
                     row.contextMenuProperty().bind(
                             Bindings.when(Bindings.isNotNull(row.itemProperty()))
                                     .then(rowMenu)
                                     .otherwise((ContextMenu) null));
-
                     row.setOnMouseClicked(e -> {
                         if (e.getClickCount() == 2 && (!row.isEmpty())) {
                             String aShow = row.getItem().getShow();
@@ -220,7 +206,6 @@ public class Controller implements Initializable {
                     return row;
                 }
         );
-
         // ~~~~ Buttons ~~~~ \\
         // Exit Buttons
         exit1.setOnAction(e -> {
@@ -304,9 +289,7 @@ public class Controller implements Initializable {
                 setTableViewFields("inactive");
             }
         });
-
         deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));
-
         MoveWindow moveWindow = new MoveWindow();
         moveWindow.moveTabPane(tabPane);
     }

@@ -29,12 +29,12 @@ public class CheckShowFiles {
                     File folderLocation = ProgramSettingsController.getDirectory(hashMapIndex);
                     Object[] seasons = aHashMap.get(aShow).keySet().toArray();
                     for (Object aSeason : seasons) {
-                        if (CheckShowFiles.hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap, hashMapIndex)) {
+                        if (CheckShowFiles.hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap)) {
                             hasChanged = true;
                             UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
                         }
                     }
-                    if (!CheckShowFiles.hasSeasonsChanged(aShow, folderLocation, aHashMap, hashMapIndex).isEmpty()) {
+                    if (!CheckShowFiles.hasSeasonsChanged(aShow, folderLocation, aHashMap).isEmpty()) {
                         System.out.println(aShow + " has changed!");
                         hasChanged = true;
                         UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, aHashMap, hashMapIndex);
@@ -55,7 +55,7 @@ public class CheckShowFiles {
         }
     }
 
-    public static boolean hasEpisodesChanged(String aShow, Integer aSeason, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
+    public static boolean hasEpisodesChanged(String aShow, Integer aSeason, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
         Set<String> oldEpisodeList = showsFile.get(aShow).get(aSeason).keySet();
         String[] newEpisodesList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
         ArrayList<String> newEpisodesListFixed = new ArrayList<>(0);
@@ -85,7 +85,7 @@ public class CheckShowFiles {
         return false;
     }
 
-    public static ArrayList<Integer> hasSeasonsChanged(String aShow, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
+    public static ArrayList<Integer> hasSeasonsChanged(String aShow, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
         Set<Integer> oldSeasons = showsFile.get(aShow).keySet();
         ArrayList<Integer> newSeasons = FindLocation.findSeasons(folderLocation, aShow);
         Iterator<Integer> newSeasonsIterator = newSeasons.iterator();
