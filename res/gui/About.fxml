@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="208.0" prefWidth="189.0"
+      xmlns="http://javafx.com/javafx/8" fx:controller="program.FXMLControllers.About">
+    <children>
+        <Label fx:id="programName" layoutX="45.0" layoutY="14.0" prefHeight="33.0" prefWidth="100.0" text="MTrack"
+               textAlignment="CENTER">
+            <font>
+                <Font size="28.0"/>
+            </font>
+        </Label>
+        <Label fx:id="versionNumber" layoutX="75.0" layoutY="46.0" text="Version"/>
+        <Label fx:id="codedBy" layoutX="2.0" layoutY="73.0" prefHeight="17.0" prefWidth="189.0" text="Coded By"/>
+        <Label fx:id="codedUsing" layoutX="1.0" layoutY="110.0" prefHeight="17.0" prefWidth="189.0" text="Coded Using"/>
+        <Label fx:id="codedWith" layoutX="2.0" layoutY="127.0" prefHeight="17.0" prefWidth="189.0" text="Coded With"/>
+        <Button fx:id="close" layoutX="78.0" layoutY="169.0" mnemonicParsing="false" text="Close"/>
+    </children>
+</Pane>

@@ -6,7 +6,7 @@
          minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="255.0" tabClosingPolicy="UNAVAILABLE"
          xmlns="http://javafx.com/javafx/8" fx:controller="program.Controller">
     <tabs>
-        <Tab text="Shows">
+        <Tab fx:id="showsTab" text="Shows">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
@@ -16,13 +16,14 @@
                                 <TableColumn fx:id="remaining" editable="false" minWidth="0.0" prefWidth="40.0" text="Left" />
                             </columns>
                         </TableView>
-                        <Button fx:id="exit1" layoutX="217.0" layoutY="8.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="22.0" text="X" textAlignment="CENTER" textOverrun="CLIP" />
+                        <Button fx:id="exit" layoutX="217.0" layoutY="8.0" mnemonicParsing="false" prefHeight="25.0"
+                                prefWidth="22.0" text="X" textAlignment="CENTER" textOverrun="CLIP"/>
                   <TextField fx:id="textField" layoutX="14.0" layoutY="8.0" />
                     </children>
                 </AnchorPane>
             </content>
         </Tab>
-        <Tab text="Settings">
+        <Tab fx:id="settingsTab" text="Settings">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
@@ -38,6 +39,7 @@
                   <Button fx:id="refreshObservableList" layoutX="12.0" layoutY="95.0" mnemonicParsing="false" text="Refresh ObservableList" />
                    <Button fx:id="changeObservableList" layoutX="103.0" layoutY="253.0" mnemonicParsing="false"
                            text="Change ObservableList"/>
+                   <Button fx:id="about" layoutX="103.0" layoutY="293.0" mnemonicParsing="false" text="About"/>
                </children>
             </AnchorPane>
             </content>

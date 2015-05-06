@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
+         minHeight="-Infinity" minWidth="-Infinity" prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE"
+         xmlns="http://javafx.com/javafx/8" fx:controller="program.FXMLControllers.Settings">
+    <tabs>
+        <Tab closable="false" text="Users">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
+                    <children>
+                        <Button fx:id="setDefaultUsername" layoutX="23.0" layoutY="31.0" mnemonicParsing="false"
+                                text="Set Default user"/>
+                        <Button fx:id="deleteUser" layoutX="23.0" layoutY="83.0" mnemonicParsing="false"
+                                text="Delete Users"/>
+                        <Button fx:id="clearDefaultUsername" layoutX="129.0" layoutY="31.0" mnemonicParsing="false"
+                                text="Reset"/>
+                        <Button fx:id="exit1" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab closable="false" text="Other">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <Button fx:id="about" layoutX="81.0" layoutY="170.0" mnemonicParsing="false" text="About"/>
+                        <Button fx:id="forceRecheck" layoutX="41.0" layoutY="33.0" mnemonicParsing="false"
+                                text="Force Recheck Shows"/>
+                        <Button fx:id="exit2" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+                        <Button fx:id="openProgramFolder" layoutX="42.0" layoutY="108.0" mnemonicParsing="false"
+                                text="Open Settings Folder"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab closable="false" text="Developer">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <Button fx:id="deleteEverythingAndClose" layoutX="60.0" layoutY="176.0" mnemonicParsing="false"
+                                text="Reset Program"/>
+                        <Button fx:id="changeObservableList" layoutX="38.0" layoutY="108.0" mnemonicParsing="false"
+                                text="Change ObservableList"/>
+                        <Button fx:id="refreshObservableList" layoutX="39.0" layoutY="75.0" mnemonicParsing="false"
+                                text="Refresh ObservableList"/>
+                        <Button fx:id="printAllShows" layoutX="59.0" layoutY="22.0" mnemonicParsing="false"
+                                text="Print All Shows"/>
+                        <Button fx:id="exit3" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>

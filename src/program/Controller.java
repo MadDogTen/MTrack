@@ -5,27 +5,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.*;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import program.gui.*;
 import program.information.ProgramSettingsController;
-import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
-import program.io.CheckShowFiles;
 import program.io.FileManager;
-import program.util.Strings;
-import program.util.Variables;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -33,15 +23,16 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
+    public static String currentList;
     private static ObservableList<DisplayShows> tableViewFields;
-    private static String currentList;
-
-    @FXML
-    private Button exit1;
-    @FXML
-    private Button exit2;
     @FXML
     private TabPane tabPane;
+    @FXML
+    private Tab showsTab;
+    @FXML
+    private Tab settingsTab;
+    @FXML
+    private Button exit;
     @FXML
     private TableView<DisplayShows> tableView = new TableView<>();
     @FXML
@@ -49,25 +40,7 @@ public class Controller implements Initializable {
     @FXML
     private TableColumn<DisplayShows, Integer> remaining;
     @FXML
-    private Button forceRecheck;
-    @FXML
-    private Button openProgramFolder;
-    @FXML
-    private Button printAllShows;
-    @FXML
     private TextField textField;
-    @FXML
-    private Button deleteEverythingAndClose;
-    @FXML
-    private Button setDefaultUsername;
-    @FXML
-    private Button clearDefaultUsername;
-    @FXML
-    private Button deleteUser;
-    @FXML
-    private Button refreshObservableList;
-    @FXML
-    private Button changeObservableList;
 
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
@@ -95,7 +68,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        System.out.println("Controller Running...\n");
+        System.out.println("MainController Running...\n");
         MainRun.startBackend();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
@@ -207,90 +180,25 @@ public class Controller implements Initializable {
                 }
         );
         // ~~~~ Buttons ~~~~ \\
-        // Exit Buttons
-        exit1.setOnAction(e -> {
-            Main.stop(Main.window, false, true);
+        exit.setOnAction(e -> {
+            program.Main.stop(program.Main.window, false, true);
         });
-        exit2.setOnAction(e -> {
-            Main.stop(Main.window, false, true);
-        });
-        forceRecheck.setOnAction(e -> {
-            Task<Void> task = new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
-                    CheckShowFiles.recheckShowFile();
-                    return null;
-                }
-            };
-            new Thread(task).start();
-        });
-        openProgramFolder.setOnAction(e -> {
-            File file = new File(FileManager.getDataFolder());
+
+        new MoveWindow().moveTabPane(tabPane);
+
+
+        // || ~~~~ Settings Tab ~~~~ || \\
+
+        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+
+        settingsTab.setOnSelectionChanged(e -> {
+            selectionModel.select(showsTab);
+            SettingsWindow settingsWindow = new SettingsWindow();
             try {
-                Desktop.getDesktop().open(file);
-            } catch (IOException e1) {
+                settingsWindow.display();
+            } catch (Exception e1) {
                 e1.printStackTrace();
             }
         });
-        printAllShows.setOnAction(e -> {
-            ShowInfoController.printOutAllShowsAndEpisodes();
-        });
-        setDefaultUsername.setOnAction(e -> {
-            ListSelectBox listSelectBox = new ListSelectBox();
-            ArrayList<String> Users = UserInfoController.getAllUsers();
-            String defaultUsername = listSelectBox.defaultUser("Default User", "Please choose a default user:", Users);
-            if (defaultUsername != null && !defaultUsername.isEmpty()) {
-                ProgramSettingsController.setDefaultUsername(defaultUsername, 1);
-            }
-        });
-        clearDefaultUsername.setOnAction(e -> {
-            ProgramSettingsController.setDefaultUsername("", 0);
-        });
-        deleteUser.setOnAction(e -> {
-            ArrayList<String> users = UserInfoController.getAllUsers();
-            users.remove(Strings.UserName);
-            if (!users.isEmpty()) {
-                ListSelectBox listSelectBox = new ListSelectBox();
-                String userToDelete = listSelectBox.defaultUser("Delete User", "User to delete:", users);
-                if (userToDelete != null) {
-                    ConfirmBox confirmBox = new ConfirmBox();
-                    Boolean confirm = confirmBox.display("Delete User", ("Are you sure to want to delete " + userToDelete + "?"));
-                    if (confirm && !userToDelete.isEmpty()) {
-                        FileManager.deleteFile(Variables.settingsFolder, userToDelete, Variables.settingsExtension);
-                    }
-                }
-            } else {
-                MessageBox messageBox = new MessageBox();
-                messageBox.display("Delete User", "There are no users to delete.");
-            }
-        });
-        deleteEverythingAndClose.setOnAction(e -> {
-            ConfirmBox confirmBox = new ConfirmBox();
-            if (confirmBox.display("Reset Program", "Are you sure? This will delete EVERYTHING!", tabPane)) {
-                File file = new File(FileManager.getDataFolder());
-                FileManager.deleteFolder(file);
-                Main.stop(Main.window, true, false);
-            }
-        });
-        refreshObservableList.setOnAction(e -> {
-            setTableViewFields(currentList);
-        });
-        changeObservableList.setOnAction(e -> {
-            ListSelectBox listSelectBox = new ListSelectBox();
-            ArrayList<String> observableListChoices = new ArrayList<>();
-            observableListChoices.add("Active");
-            observableListChoices.add("Inactive");
-
-            String choice = listSelectBox.display("Change TableView", "Select the TableView you want to switch too.", observableListChoices);
-
-            if (choice.matches("Active")) {
-                setTableViewFields("active");
-            } else if (choice.matches("Inactive")) {
-                setTableViewFields("inactive");
-            }
-        });
-        deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));
-        MoveWindow moveWindow = new MoveWindow();
-        moveWindow.moveTabPane(tabPane);
     }
 }
