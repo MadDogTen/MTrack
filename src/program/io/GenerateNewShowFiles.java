@@ -10,12 +10,12 @@ import java.util.HashMap;
 
 public class GenerateNewShowFiles {
     public static void generateShowsFile(int fileName, File folderLocation, Boolean forceGen) {
-        if (forceGen || !FileManager.checkFileExists("", "Shows", Variables.ShowsExtension)) {
+        if (forceGen || !FileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(fileName)), Variables.ShowsExtension)) {
             // String = Show Name -- HashMap == Seasons in show from seasonEpisode
             HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);
             String[] shows = FindLocation.findShows(folderLocation);
             for (String aShow : shows) {
-                System.out.println("Currently Processing: " + aShow);
+                System.out.println("GenerateNewShowFiles- Currently Processing: " + aShow);
                 // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
                 HashMap<Integer, HashMap<String, String>> seasonEpisode = new HashMap<>(0);
                 ArrayList<Integer> seasons = FindLocation.findSeasons(folderLocation, aShow);
@@ -49,7 +49,7 @@ public class GenerateNewShowFiles {
                     showSeasons.put(aShow, seasonEpisode);
                 }
             }
-            FileManager.save(showSeasons, "", ("Directory-" + String.valueOf(fileName)), Variables.ShowsExtension, forceGen);
+            FileManager.save(showSeasons, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(fileName)), Variables.ShowsExtension, forceGen);
         }
     }
 }

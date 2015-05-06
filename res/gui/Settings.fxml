@@ -3,7 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
-         minHeight="-Infinity" minWidth="-Infinity" prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE"
+         minHeight="-Infinity"
+         minWidth="-Infinity" prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE"
          xmlns="http://javafx.com/javafx/8" fx:controller="program.FXMLControllers.Settings">
     <tabs>
         <Tab closable="false" text="Users">
@@ -26,11 +27,15 @@
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
                         <Button fx:id="about" layoutX="81.0" layoutY="170.0" mnemonicParsing="false" text="About"/>
-                        <Button fx:id="forceRecheck" layoutX="41.0" layoutY="33.0" mnemonicParsing="false"
+                        <Button fx:id="forceRecheck" layoutX="41.0" layoutY="108.0" mnemonicParsing="false"
                                 text="Force Recheck Shows"/>
                         <Button fx:id="exit2" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
-                        <Button fx:id="openProgramFolder" layoutX="42.0" layoutY="108.0" mnemonicParsing="false"
+                        <Button fx:id="openProgramFolder" layoutX="42.0" layoutY="135.0" mnemonicParsing="false"
                                 text="Open Settings Folder"/>
+                        <Button fx:id="changeUpdateSpeed" layoutX="42.0" layoutY="15.0" mnemonicParsing="false"
+                                text="Change Update Time"/>
+                        <Button fx:id="addDirectory" layoutX="61.0" layoutY="51.0" mnemonicParsing="false"
+                                text="Add Directory"/>
                     </children>
                 </AnchorPane>
             </content>

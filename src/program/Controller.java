@@ -14,6 +14,7 @@ import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
 import program.io.FileManager;
+import program.util.Variables;
 
 import java.io.File;
 import java.net.URL;
@@ -51,7 +52,7 @@ public class Controller implements Initializable {
     }
 
     public static void setTableViewFields(String type) {
-        System.out.println("setTableViewFields Running...\n");
+        System.out.println("Controller - setTableViewFields Running...\n");
         if (type.matches("active")) {
             tableViewFields = MakeTableViewFields(UserInfoController.getActiveShows());
             currentList = "active";
@@ -68,7 +69,9 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        System.out.println("MainController Running...\n");
+        System.out.println("Controller - MainController Running...\n");
+        tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
+        tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
         MainRun.startBackend();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
@@ -110,7 +113,7 @@ public class Controller implements Initializable {
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
                     MenuItem getRemaining = new MenuItem("Get Remaining");
                     getRemaining.setOnAction(e -> {
-                        System.out.println("There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
+                        System.out.println("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
                     });
                     MenuItem openDirectory = new MenuItem("Open File Location");
                     openDirectory.setOnAction(e -> {
@@ -151,7 +154,7 @@ public class Controller implements Initializable {
                                 int fileExists = UserInfoController.doesEpisodeExists(aShow);
                                 if (fileExists == 1 || fileExists == 2) {
                                     tableView.getSelectionModel().clearAndSelect(row.getIndex());
-                                    UserInfoController.playAnyEpisode(aShow, -1, "", true, fileExists);
+                                    UserInfoController.playAnyEpisode(aShow, -1, Variables.EmptyString, true, fileExists);
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
                                     int userChoice = showConfirmBox.display("Playing Show", "Have the watched the show?", tabPane);
                                     if (userChoice == 1) {

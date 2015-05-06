@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import program.input.MoveWindow;
 import program.util.Strings;
+import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public class ListSelectBox {
 
     public String defaultUser(String title, String message, ArrayList<String> users) {
         final String[] userName = new String[1];
-        userName[0] = "";
+        userName[0] = Variables.EmptyString;
 
         Stage window = new Stage();
         window.initStyle(StageStyle.UNDECORATED);
@@ -133,7 +134,7 @@ public class ListSelectBox {
 
     public File directories(String title, String message, ArrayList<File> files) {
         final File[] file = new File[1];
-        file[0] = new File("");
+        file[0] = new File(Variables.EmptyString);
 
         Stage window = new Stage();
         window.initStyle(StageStyle.UNDECORATED);

@@ -4,7 +4,6 @@ import program.information.ShowInfoController;
 import program.util.Variables;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -12,16 +11,23 @@ public class GenerateSettingsFiles {
 
     public static void generateProgramSettingsFile(String settingsFileName, String settingsFolder, String extension, Boolean override) {
         if (override || !FileManager.checkFileExists(settingsFolder, settingsFileName, extension)) {
-            System.out.println("Generating program settings file...\n");
+            System.out.println("GenerateSettingsFiles- Generating program settings file...\n");
             HashMap<String, ArrayList<String>> settingsFile = new HashMap<>();
 
             ArrayList<String> temp = new ArrayList<>();
 
+            // --General Settings-- \\
+            temp = new ArrayList<>();
+            // Index 0 : Update Speed
+            temp.add(0, "120");
+            settingsFile.put("General", temp);
+
             // --Default User-- \\
+            temp = new ArrayList<>();
             // Index 0 : Using default user
             // Index 1 : If using default user, What is the username.
             temp.add(0, "false");
-            temp.add(1, "");
+            temp.add(1, Variables.EmptyString);
             settingsFile.put("DefaultUser", temp);
 
             // --Directories-- \\
@@ -34,7 +40,7 @@ public class GenerateSettingsFiles {
 
     public static void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
         if (override || !FileManager.checkFileExists(settingsFolder, userName, ".settings")) {
-            System.out.println("Generating settings file for " + userName + "...\n");
+            System.out.println("GenerateSettingsFiles- Generating settings file for " + userName + "...\n");
             HashMap<String, HashMap<String, String[]>> userSettingsFile = new HashMap<>();
             HashMap<String, String[]> tempPut = new HashMap<>();
 
@@ -61,12 +67,10 @@ public class GenerateSettingsFiles {
                 Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Temp[3]);
                 Temp[5] = String.valueOf(ShowInfoController.getHighestEpisode(episodes));
                 Temp[6] = String.valueOf(ShowInfoController.getLowestEpisode(episodes, Integer.parseInt(Temp[5])));
-                System.out.println(aShow);
-                System.out.println(aShow + " - " + Arrays.toString(Temp));
                 tempPut.put(String.valueOf(aShow), Temp);
             }
             userSettingsFile.put("ShowSettings", tempPut);
-            FileManager.save(userSettingsFile, Variables.settingsFolder, userName, Variables.settingsExtension, false);
+            FileManager.save(userSettingsFile, Variables.UsersFolder, userName, Variables.UsersExtension, false);
         }
     }
 }

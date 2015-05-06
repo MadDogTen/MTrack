@@ -64,7 +64,7 @@ public class TextBox {
         if (message.isEmpty()) {
             ConfirmBox confirmBox = new ConfirmBox();
             return confirmBox.display(title, messageIfBlank, oldStage);
-        } else if (message.contentEquals("Add New Username") || message.contentEquals("Program") || !message.matches("^[a-zA-Z0-9]+$")) {
+        } else if (message.contentEquals("Add New Username") || !message.matches("^[a-zA-Z0-9]+$")) {
             MessageBox messageBox = new MessageBox();
             messageBox.display("Try Again", "Username isn't valid.");
             return false;
@@ -92,7 +92,7 @@ public class TextBox {
         label.setText(message);
 
         TextField textField = new TextField();
-        textField.setPromptText("Test123");
+        textField.setPromptText("\\PathToDirectory\\Shows");
 
         Button submit = new Button("Submit");
         submit.setOnAction(event -> {
@@ -128,6 +128,56 @@ public class TextBox {
             messageBox.display(title, messageIfBlank, oldStage);
             return false;
         }
+    }
 
+    public int updateSpeed(String title, String message, String messageFieldIsBlank, int defaultValue) {
+        Stage window = new Stage();
+        final int[] userName = new int[1];
+
+        window.initStyle(StageStyle.UNDECORATED);
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle(title);
+        window.setMinWidth(250);
+
+        Label label = new Label();
+        label.setText(message);
+
+        TextField textField = new TextField();
+
+        Button submit = new Button("Submit");
+        submit.setOnAction(event -> {
+            if (isUpdateSpeedValid(title, messageFieldIsBlank, textField.getText())) {
+                if (textField.getText().isEmpty()) {
+                    userName[0] = defaultValue;
+                } else userName[0] = Integer.parseInt(textField.getText());
+                window.close();
+            } else {
+                textField.clear();
+            }
+        });
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, textField, submit);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+
+        moveWindow.moveWindow(window, scene);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        return userName[0];
+    }
+
+    private boolean isUpdateSpeedValid(String title, String messageIfBlank, String textFieldValue) {
+        if (textFieldValue.isEmpty()) {
+            ConfirmBox confirmBox = new ConfirmBox();
+            return confirmBox.display(title, messageIfBlank);
+        } else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) < 10) {
+            MessageBox messageBox = new MessageBox();
+            messageBox.display("Try Again", "Must be a number greater than or equal to 10");
+            return false;
+        } else return true;
     }
 }

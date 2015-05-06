@@ -8,10 +8,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 import program.Controller;
-import program.gui.AboutBox;
-import program.gui.ConfirmBox;
-import program.gui.ListSelectBox;
-import program.gui.MessageBox;
+import program.gui.*;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
@@ -58,9 +55,14 @@ public class Settings implements Initializable {
     private Button changeObservableList;
     @FXML
     private Button about;
+    @FXML
+    private Button changeUpdateSpeed;
+    @FXML
+    private Button addDirectory;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         // ~~~~ Buttons ~~~~ \\
         exit1.setOnAction(e -> {
             Stage stage = (Stage) tabPane.getScene().getWindow();
@@ -104,7 +106,7 @@ public class Settings implements Initializable {
             }
         });
         clearDefaultUsername.setOnAction(e -> {
-            ProgramSettingsController.setDefaultUsername("", 0);
+            ProgramSettingsController.setDefaultUsername(Variables.EmptyString, 0);
         });
         deleteUser.setOnAction(e -> {
             ArrayList<String> users = UserInfoController.getAllUsers();
@@ -116,7 +118,7 @@ public class Settings implements Initializable {
                     ConfirmBox confirmBox = new ConfirmBox();
                     Boolean confirm = confirmBox.display("Delete User", ("Are you sure to want to delete " + userToDelete + "?"));
                     if (confirm && !userToDelete.isEmpty()) {
-                        FileManager.deleteFile(Variables.settingsFolder, userToDelete, Variables.settingsExtension);
+                        FileManager.deleteFile(Variables.UsersFolder, userToDelete, Variables.UsersExtension);
                     }
                 }
             } else {
@@ -127,8 +129,9 @@ public class Settings implements Initializable {
         deleteEverythingAndClose.setOnAction(e -> {
             ConfirmBox confirmBox = new ConfirmBox();
             if (confirmBox.display("Reset Program", "Are you sure? This will delete EVERYTHING!", tabPane)) {
-                File file = new File(FileManager.getDataFolder());
-                FileManager.deleteFolder(file);
+                Stage stage = (Stage) tabPane.getScene().getWindow();
+                stage.close();
+                FileManager.deleteFolder(new File(FileManager.getDataFolder()));
                 program.Main.stop(program.Main.window, true, false);
             }
         });
@@ -158,6 +161,16 @@ public class Settings implements Initializable {
             }
 
         });
+        changeUpdateSpeed.setOnAction(e -> {
+            ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Update Speed", "Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120));
+        });
+        addDirectory.setOnAction(e -> { //TODO Make it generate the file and do everything else necessary
+            /*Boolean wasAdded = ProgramSettingsController.addDirectory(-2, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", "You need to enter a directory.", "Directory is invalid."));
+            if (wasAdded) {
+                System.out.println("Settings- Directory was added.");
+            } else System.out.println("Settings- Directory wasn't added.");*/
+        });
+
         deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));
 
         new MoveWindow().moveTabPane(tabPane);

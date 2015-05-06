@@ -60,7 +60,7 @@ public class ShowInfoController {
             }
             showsFile.put(aShow, seasonEpisode);
         }
-        System.out.println("It took " + Clock.timeTakenNano(timer) + " nanoseconds to combine all files");
+        System.out.println("ShowInfoController- It took " + Clock.timeTakenNano(timer) + " nanoseconds to combine all files");
     }
 
     @SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class ShowInfoController {
         if (episodeNumEpisode != null) {
             return episodeNumEpisode.get(episode);
         } else {
-            System.out.println("ShowInfoController - Error 1");
+            System.out.println("ShowInfoController- Error 1");
             return null;
         }
     }
@@ -142,7 +142,7 @@ public class ShowInfoController {
             } else {
                 info = MainM.group();
             }
-            String splitResult = info.toLowerCase().replaceFirst("s", "");
+            String splitResult = info.toLowerCase().replaceFirst("s", Variables.EmptyString);
             splitResult = splitResult.toLowerCase().replaceFirst("e", " ");
 
             if (isDouble) {
@@ -241,7 +241,7 @@ public class ShowInfoController {
     }
 
     public static void saveShowsHashMapFile(HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap, int hashMapIndex) {
-        FileManager.save(hashMap, "", ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
+        FileManager.save(hashMap, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
         loadShowsFile();
     }
 
@@ -252,21 +252,21 @@ public class ShowInfoController {
 
         Set<String> Show = showsFile.keySet();
 
-        System.out.println("\n\n\n\n\n\n");
+        System.out.println("ShowInfoController- \n\n\n\n\n\n");
         for (String aShow : Show) {
-            System.out.println("\n\n" + aShow);
+            System.out.println("\n\n ShowInfoController- " + aShow);
             HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
 
             Set<Integer> season = seasons.keySet();
 
             for (int aSeason : season) {
-                System.out.println("\n" + "Season: " + aSeason);
+                System.out.println("\n ShowInfoController- " + "Season: " + aSeason);
                 HashMap<String, String> episodes = seasons.get(aSeason);
 
                 Set<String> episode = episodes.keySet();
 
                 for (String aEpisode : episode) {
-                    System.out.println(episodes.get(aEpisode));
+                    System.out.println("ShowInfoController- " + episodes.get(aEpisode));
                 }
             }
         }

@@ -24,21 +24,29 @@ public class MainRun {
 
 
     public static void startBackend() {
+
+        // If true, It will Delete ALL Files each time the program is ran.
+        if (Variables.startFresh && FileManager.checkFolderExists(FileManager.getDataFolder())) {
+            System.out.println("MainRun- WARNING- Stating Fresh...");
+            FileManager.deleteFolder(new File(FileManager.getDataFolder()));
+        }
+
         if (FileManager.checkFolderExists(FileManager.getDataFolder())) {
-            Strings.setUserName(getUser());
+            Strings.UserName = getUser();
         } else firstRun();
 
         if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
             generateUserSettingsFile(Strings.UserName, false);
         }
 
-        System.out.println("Username is set: " + Strings.UserName);
+        System.out.println("MainRun- Username is set: " + Strings.UserName);
+        Variables.setUpdateSpeed();
         Controller.setTableViewFields("active");
     }
 
     public static void tick() {
         if (!hasRan) {
-            System.out.println("MainRun Running ...\n");
+            System.out.println("MainRun - MainRun Running ...\n");
             hasRan = true;
         }
         if (forceRun || Clock.timeTakenSeconds(timer) > Variables.updateSpeed) {
@@ -56,10 +64,10 @@ public class MainRun {
     }
 
     private static String getUser() {
-        System.out.println("getUser Running...\n");
-
+        System.out.println("MainRun- getUser Running...\n");
         ArrayList<String> Users = UserInfoController.getAllUsers();
         if (ProgramSettingsController.isDefaultUsername()) {
+            System.out.println("MainRun- Using default user.");
             return ProgramSettingsController.getDefaultUsername();
         } else {
             ListSelectBox listSelectBox = new ListSelectBox();
@@ -68,6 +76,8 @@ public class MainRun {
     }
 
     private static void firstRun() {
+        System.out.println("MainRun- First Run, Generating Files...");
+        FileManager.createBaseFolder();
         generateProgramSettingsFile();
         chooseDirectories();
 
@@ -83,7 +93,7 @@ public class MainRun {
         new Thread(task).start();
 
         TextBox textBox = new TextBox();
-        Strings.setUserName(textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault"));
+        Strings.UserName = textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault");
 
         while (taskRunning[0]) {
             try {
@@ -102,7 +112,7 @@ public class MainRun {
         int directoryNumber = 0;
         while (addAnother) {
             File directory = textBox.addDirectoriesDisplay("Directories", "Please enter show directory", "You need to enter a directory.", "Directory is invalid.");
-            Boolean matched = ProgramSettingsController.setDirectory(directoryNumber, directory);
+            Boolean matched = ProgramSettingsController.addDirectory(directoryNumber, directory);
             directoryNumber++;
             if (matched) {
                 MessageBox messageBox = new MessageBox();
@@ -116,7 +126,7 @@ public class MainRun {
 
     // File Generators
     private static void generateProgramSettingsFile() {
-        GenerateSettingsFiles.generateProgramSettingsFile(Strings.SettingsFileName, Variables.settingsFolder, Variables.settingsExtension, false);
+        GenerateSettingsFiles.generateProgramSettingsFile(Strings.SettingsFileName, Variables.EmptyString, Variables.SettingsExtension, false);
     }
 
     private static void generateShowFiles() {
@@ -130,7 +140,7 @@ public class MainRun {
     }
 
     private static void generateUserSettingsFile(String userName, Boolean override) {
-        System.out.println("Attempting to generate settings file for " + userName + ".");
-        GenerateSettingsFiles.generateUserSettingsFile(Variables.settingsFolder, Variables.settingsExtension, override);
+        System.out.println("MainRun- Attempting to generate settings file for " + userName + ".");
+        GenerateSettingsFiles.generateUserSettingsFile(Strings.UserName, Variables.SettingsExtension, override);
     }
 }

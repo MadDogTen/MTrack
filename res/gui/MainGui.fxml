@@ -3,45 +3,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
-         minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="255.0" tabClosingPolicy="UNAVAILABLE"
+         minHeight="-Infinity" minWidth="-Infinity" prefHeight="454.0" prefWidth="282.0" tabClosingPolicy="UNAVAILABLE"
          xmlns="http://javafx.com/javafx/8" fx:controller="program.Controller">
     <tabs>
         <Tab fx:id="showsTab" text="Shows">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <TableView fx:id="tableView" layoutY="40.0" prefHeight="333.0" prefWidth="255.0">
+                        <TableView fx:id="tableView" layoutY="40.0" prefHeight="385.0" prefWidth="281.0">
                             <columns>
                                 <TableColumn fx:id="shows" editable="false" prefWidth="214.0" text="Shows" />
-                                <TableColumn fx:id="remaining" editable="false" minWidth="0.0" prefWidth="40.0" text="Left" />
+                                <TableColumn fx:id="remaining" editable="false" minWidth="0.0" prefWidth="52.0"
+                                             text="Left"/>
                             </columns>
                         </TableView>
-                        <Button fx:id="exit" layoutX="217.0" layoutY="8.0" mnemonicParsing="false" prefHeight="25.0"
+                        <Button fx:id="exit" layoutX="252.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0"
                                 prefWidth="22.0" text="X" textAlignment="CENTER" textOverrun="CLIP"/>
-                  <TextField fx:id="textField" layoutX="14.0" layoutY="8.0" />
+                        <TextField fx:id="textField" layoutX="8.0" layoutY="6.0"/>
                     </children>
                 </AnchorPane>
             </content>
         </Tab>
         <Tab fx:id="settingsTab" text="Settings">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-               <children>
-                  <Button fx:id="forceRecheck" layoutX="16.0" layoutY="21.0" mnemonicParsing="false" text="Force Recheck Shows" />
-                  <Button fx:id="openProgramFolder" layoutX="15.0" layoutY="133.0" mnemonicParsing="false" text="Open Program Folder" />
-                  <Button fx:id="printAllShows" layoutX="33.0" layoutY="58.0" mnemonicParsing="false" text="Print All Shows" />
-                  <Button fx:id="exit2" layoutX="217.0" layoutY="8.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="22.0" text="X" textAlignment="CENTER" textOverrun="CLIP" />
-                  <Button fx:id="deleteEverythingAndClose" layoutX="46.0" layoutY="332.0" mnemonicParsing="false" text="Delete Everything and Close" />
-                  <Button fx:id="setDefaultUsername" layoutX="15.0" layoutY="206.0" mnemonicParsing="false" text="Set Default Username" />
-                  <Button fx:id="clearDefaultUsername" layoutX="156.0" layoutY="206.0" mnemonicParsing="false" text="Clear Default" />
-                   <Button fx:id="deleteUser" layoutX="15.0" layoutY="253.0" mnemonicParsing="false"
-                           text="Delete User"/>
-                  <Button fx:id="refreshObservableList" layoutX="12.0" layoutY="95.0" mnemonicParsing="false" text="Refresh ObservableList" />
-                   <Button fx:id="changeObservableList" layoutX="103.0" layoutY="253.0" mnemonicParsing="false"
-                           text="Change ObservableList"/>
-                   <Button fx:id="about" layoutX="103.0" layoutY="293.0" mnemonicParsing="false" text="About"/>
-               </children>
-            </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
             </content>
         </Tab>
     </tabs>

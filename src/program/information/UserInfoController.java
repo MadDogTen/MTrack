@@ -14,7 +14,7 @@ public class UserInfoController {
 
     private static void loadUserInfo() {
         if (userSettingsFile == null) {
-            userSettingsFile = FileManager.loadUserInfo(Variables.settingsFolder, Strings.UserName, Variables.settingsExtension);
+            userSettingsFile = FileManager.loadUserInfo(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
         }
         if (userSettingsFile != null && showSettings == null) {
             showSettings = userSettingsFile.get("ShowSettings");
@@ -29,17 +29,17 @@ public class UserInfoController {
     }
 
     public static ArrayList<String> getAllUsers() {
-        File folder = new File(FileManager.getDataFolder() + Variables.settingsFolder);
+        File folder = new File(FileManager.getDataFolder() + Variables.UsersFolder);
         String[] userFile = folder.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return (name.toLowerCase().endsWith(Variables.settingsExtension));
+                return (name.toLowerCase().endsWith(Variables.UsersExtension));
             }
         });
         ArrayList<String> users = new ArrayList<>();
         if (userFile != null) {
             for (String aUser : userFile) {
-                String user = aUser.replace(Variables.settingsExtension, "");
+                String user = aUser.replace(Variables.UsersExtension, Variables.EmptyString);
                 users.add(user);
 
             }
@@ -47,6 +47,8 @@ public class UserInfoController {
         if (!users.isEmpty()) {
             users.remove("Program");
         }
+        System.out.println(users);
+
         return users;
     }
 
@@ -113,9 +115,9 @@ public class UserInfoController {
                 if (file.exists()) {
                     FileManager.open(file);
                 } else {
-                    System.out.println("File does not exists!");
+                    System.out.println("UserInfoController- File does not exists!");
                 }
-            } else System.out.println("File does not exists!");
+            } else System.out.println("UserInfoController- File does not exists!");
         }
     }
 
@@ -129,14 +131,14 @@ public class UserInfoController {
             if (isAnotherEpisode(aShow, Integer.parseInt(aShowSettings[3]), currentEpisode)) {
                 currentEpisode++;
                 aShowSettings[6] = String.valueOf(currentEpisode);
-                System.out.println(aShow + " is now on episode " + aShowSettings[6]);
+                System.out.println("UserInfoController- " + aShow + " is now on episode " + aShowSettings[6]);
             } else if (isAnotherSeason(aShow, Integer.parseInt(aShowSettings[3]))) {
                 int newSeason = Integer.parseInt(aShowSettings[3]);
                 newSeason += 1;
                 aShowSettings[3] = String.valueOf(newSeason);
                 if (isAnotherEpisode(aShow, Integer.parseInt(aShowSettings[3]), 0)) {
                     aShowSettings[6] = String.valueOf(1);
-                    System.out.println(aShow + " is now on episode " + aShowSettings[6]);
+                    System.out.println("UserInfoController- " + aShow + " is now on episode " + aShowSettings[6]);
                 } else {
                     aShowSettings[6] = String.valueOf(0);
                 }
@@ -145,7 +147,7 @@ public class UserInfoController {
                 aShowSettings[6] = String.valueOf(currentEpisode);
             }
         } else if (!fileExists && episode == -2) {
-            System.out.println("No further files!");
+            System.out.println("UserInfoController- No further files!");
         } else {
             if (doesEpisodeExist(aShow, Integer.parseInt(aShowSettings[3]), episode)) {
                 aShowSettings[6] = String.valueOf(episode);
@@ -181,7 +183,7 @@ public class UserInfoController {
 
         showSettings.put(aShow, aShowSettings);
         userSettingsFile.put("ShowSettings", showSettings);
-        System.out.println(aShow + " is reset to Season " + aShowSettings[3] + " episode " + aShowSettings[6]);
+        System.out.println("UserInfoController- " + aShow + " is reset to Season " + aShowSettings[3] + " episode " + aShowSettings[6]);
     }
 
     public static boolean doesEpisodeExist(String aShow, int season, int episode) {
@@ -303,8 +305,8 @@ public class UserInfoController {
     public static void saveUserSettingsFile() {
         if (userSettingsFile != null) {
             userSettingsFile.replace("ShowSettings", showSettings);
-            FileManager.save(userSettingsFile, Variables.settingsFolder, Strings.UserName, Variables.settingsExtension, true);
-            System.out.println("userSettingsFile has been saved!");
+            FileManager.save(userSettingsFile, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
+            System.out.println("UserInfoController- userSettingsFile has been saved!");
         }
     }
 }

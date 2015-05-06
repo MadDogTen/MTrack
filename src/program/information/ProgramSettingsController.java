@@ -14,8 +14,23 @@ public class ProgramSettingsController {
 
     private static void loadProgramSettingsFile() {
         if (settingsFile == null) {
-            settingsFile = FileManager.loadProgramSettings(Variables.settingsFolder, Strings.SettingsFileName, Variables.settingsExtension);
+            settingsFile = FileManager.loadProgramSettings(Strings.SettingsFileName, Variables.SettingsExtension);
         }
+    }
+
+    public static int getUpdateSpeed() {
+        if (settingsFile == null) {
+            loadProgramSettingsFile();
+        }
+        return Integer.parseInt(settingsFile.get("General").get(0));
+    }
+
+    public static void setUpdateSpeed(int updateSpeed) {
+        if (settingsFile == null) {
+            loadProgramSettingsFile();
+        }
+        settingsFile.get("General").set(0, String.valueOf(updateSpeed));
+        Variables.setUpdateSpeed();
     }
 
     public static boolean isDefaultUsername() {
@@ -35,11 +50,11 @@ public class ProgramSettingsController {
     }
 
     public static void setDefaultUsername(String userName, int option) {
-        System.out.println("DefaultUsername is being set...");
+        System.out.println("ProgramSettingsController- DefaultUsername is being set...");
         ArrayList<String> defaultUsername = settingsFile.get("DefaultUser");
         if (option == 0) {
             defaultUsername.set(0, "false");
-            defaultUsername.set(1, "");
+            defaultUsername.set(1, Variables.EmptyString);
         } else if (option == 1) {
             defaultUsername.set(0, "true");
             defaultUsername.set(1, userName);
@@ -71,7 +86,7 @@ public class ProgramSettingsController {
         return new File(settingsFile.get("Directories").get(index));
     }
 
-    public static boolean setDirectory(int index, File directory) {
+    public static boolean addDirectory(int index, File directory) {
         if (settingsFile == null) {
             loadProgramSettingsFile();
         }
@@ -82,18 +97,25 @@ public class ProgramSettingsController {
             matched = true;
         }
         if (!matched) {
-            directories.add(index, String.valueOf(directory));
-            settingsFile.replace("Directories", directories);
-            return false;
-        } else return true;
+            if (index == -2) {
+                directories.add(String.valueOf(directory));
+                settingsFile.replace("Directories", directories);
+            } else {
+                System.out.println("ProgramSettingsController- Added Directory");
+                directories.add(index, String.valueOf(directory));
+                settingsFile.replace("Directories", directories);
+                return false;
+            }
+        }
+        return true;
     }
 
 
     // Save the file
     public static void saveSettingsFile() {
         if (settingsFile != null) {
-            FileManager.save(settingsFile, Variables.settingsFolder, Strings.SettingsFileName, Variables.settingsExtension, true);
-            System.out.println("settingsFile has been saved!");
+            FileManager.save(settingsFile, Variables.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
+            System.out.println("ProgramSettingsController- settingsFile has been saved!");
         }
     }
 }

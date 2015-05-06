@@ -10,14 +10,12 @@ import java.util.HashMap;
 public class FileManager {
     // Serialise
     public static void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
-        FileOutputStream fos = null;
-        String file = (folder + '\\' + filename + extension);
         if (!folder.isEmpty()) {
-            createSubFolder(folder);
+            createFolder(folder);
         }
         if (overWrite || !checkFileExists(folder, filename, extension)) {
             try {
-                fos = new FileOutputStream(createDataFolder() + file);
+                FileOutputStream fos = new FileOutputStream(getDataFolder() + folder + '\\' + filename + extension);
 
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(objectToSerialise);
@@ -26,18 +24,16 @@ public class FileManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else System.out.println(filename + " save already exists.");
+        } else System.out.println("FileManager- " + filename + " save already exists.");
     }
 
     // Deserialize
     @SuppressWarnings("unchecked")
     public static HashMap loadShows(String theFile) {
-        String file = ('\\' + theFile);
-        if (checkFileExists("", theFile, "")) {
+        if (checkFileExists(Variables.DirectoriesFolder, theFile, Variables.EmptyString)) {
             HashMap<String, HashMap<Integer, HashMap<String, String>>> loadedHashMap = new HashMap<String, HashMap<Integer, HashMap<String, String>>>(0);
-            FileInputStream fis;
             try {
-                fis = new FileInputStream(createDataFolder() + file);
+                FileInputStream fis = new FileInputStream(new File(getDataFolder() + Variables.DirectoriesFolder + '\\' + theFile));
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedHashMap = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) ois.readObject();
                 ois.close();
@@ -46,17 +42,17 @@ public class FileManager {
             }
             return loadedHashMap;
         }
+        System.out.println("FileManager- File doesn't exist");
         return null;
     }
 
     @SuppressWarnings("unchecked")
     public static HashMap<String, HashMap<String, String[]>> loadUserInfo(String folder, String filename, String extension) {
-        String file = (folder + '\\' + filename + extension);
         if (checkFileExists(folder, filename, extension)) {
             HashMap<String, HashMap<String, String[]>> loadedHashMap = new HashMap<>();
             FileInputStream fis;
             try {
-                fis = new FileInputStream(getDataFolder() + file);
+                fis = new FileInputStream(getDataFolder() + folder + '\\' + filename + extension);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedHashMap = (HashMap<String, HashMap<String, String[]>>) ois.readObject();
                 ois.close();
@@ -69,13 +65,12 @@ public class FileManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, ArrayList<String>> loadProgramSettings(String folder, String filename, String extension) {
-        String file = (folder + '\\' + filename + extension);
-        if (checkFileExists(folder, filename, extension)) {
+    public static HashMap<String, ArrayList<String>> loadProgramSettings(String filename, String extension) {
+        if (checkFileExists(Variables.EmptyString, filename, extension)) {
             HashMap<String, ArrayList<String>> loadedHashMap = new HashMap<>();
             FileInputStream fis;
             try {
-                fis = new FileInputStream(getDataFolder() + file);
+                fis = new FileInputStream(getDataFolder() + '\\' + filename + extension);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedHashMap = (HashMap<String, ArrayList<String>>) ois.readObject();
                 ois.close();
@@ -88,8 +83,7 @@ public class FileManager {
     }
 
     public static boolean checkFileExists(String folder, String filename, String extension) {
-        String file = (folder + '\\' + filename + extension);
-        return new File(createDataFolder() + file).isFile();
+        return new File(getDataFolder() + folder + '\\' + filename + extension).isFile();
     }
 
     public static boolean checkFolderExists(String aFolder) {
@@ -116,35 +110,14 @@ public class FileManager {
         } else return "unknown";
     }
 
-    private static String createDataFolder() {
-        String home = System.getProperty("user.home");
-        String os = System.getProperty("os.name").toLowerCase();
-
-        if (os.contains("windows")) {
-            home = System.getenv("appdata");
-        } else if (os.contains("mac")) {
-            home += "~/Library/Application Support";
-        } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-            home += "~/.";
-        }
-
-        File dir = new File(home, Variables.programRootFolder);
-
-        if (!dir.exists()) {
-            dir.mkdir();
-            System.out.println("Created Data Folder!");
-        }
-
-        return dir.getAbsolutePath();
+    private static void createFolder(String folder) {
+        System.out.println("FileManager- " + getDataFolder() + folder);
+        new File(getDataFolder() + folder).mkdir();
+        System.out.println("FileManager- Created Data Folder!");
     }
 
-    private static void createSubFolder(String folder) {
-        File dir = new File(createDataFolder() + folder);
-
-        if (!dir.exists()) {
-            dir.mkdir();
-            System.out.println("Created Settings Folder!");
-        }
+    public static void createBaseFolder() {
+        createFolder(Variables.EmptyString);
     }
 
     public static String getDataFolder() {
@@ -159,7 +132,7 @@ public class FileManager {
             home += "~/.";
         }
 
-        File dir = new File(home, Variables.programRootFolder);
+        File dir = new File(home, Variables.ProgramRootFolder);
 
         return dir.getAbsolutePath();
     }
@@ -167,18 +140,18 @@ public class FileManager {
     public static void deleteFile(String folder, String filename, String extension) {
         String file = (folder + '\\' + filename + extension);
         if (!checkFileExists(folder, filename, extension)) {
-            System.err.println("File " + createDataFolder() + file + " does not exist!");
+            System.err.println("FileManager- File " + getDataFolder() + file + " does not exist!");
         }
-        File toDelete = new File(createDataFolder() + file);
+        File toDelete = new File(getDataFolder() + file);
 
         if (toDelete.canWrite()) {
             toDelete.delete();
-        } else System.err.println("File " + createDataFolder() + file + " is write protected!");
+        } else System.err.println("FileManager- File " + getDataFolder() + file + " is write protected!");
     }
 
     public static void deleteFolder(File toDeleteFolder) {
         if (!checkFolderExists(String.valueOf(toDeleteFolder))) {
-            System.err.println(toDeleteFolder + " does not exist!");
+            System.err.println("FileManager- " + toDeleteFolder + " does not exist!");
         }
 
         System.out.println(toDeleteFolder);
@@ -197,7 +170,7 @@ public class FileManager {
                     toDeleteFolder.delete();
                 }
             }
-        } else System.err.println(toDeleteFolder + " is write protected!");
+        } else System.err.println("FileManager- " + toDeleteFolder + " is write protected!");
     }
 
     public static void open(File file) {
@@ -221,7 +194,7 @@ public class FileManager {
                 if (Desktop.isDesktopSupported()) {
                     Desktop.getDesktop().open(file);
                 }
-                System.out.println("Your OS is Unknown, Attempting to open file, But it may fail.");
+                System.out.println("FileManager- Your OS is Unknown, Attempting to open file, But it may fail.");
             }
         } catch (IOException e) {
             e.printStackTrace();
