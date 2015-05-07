@@ -1,0 +1,41 @@
+Changes:
+
+0.6.4 - 
+Implemented Java Logger. Unfinished + Needs fine tuning. Probably done horribly wrong.
+
+
+0.6.3 (0.6.3.1) -
+Changed Default Program Size.
+General Cleanup.
+Restructured program directory.
+Added Button to Change Directory Search Speed.
+Added Button to Add Directory. Currently Disabled.
+
+Note- Incompatible with previous versions.
+
+
+0.6.3 (Labeled 0.6.2) -
+Added About Box.
+Moved settings to settings window.
+
+
+0.6.2 -
+General Code Cleanup
+Changed userName requirements to use Strings.UserName instead.
+Made it where you can right click and set a show as not active. (Not currently possible to set back to active without reseting everything).
+
+
+0.6.1 -
+General code cleanup. 
+Removed a lot of unnecessary stuff.
+Fixed the show rechecking.
+
+
+0.6.1 -
+General code cleanup. 
+Removed a lot of unnecessary stuff.
+Fixed the show rechecking.
+
+
+Before 0.6 -
+No record. Base version I put up.
