@@ -4,6 +4,7 @@ Changes:
 Temporarily added "R" button to Refresh + Switch the TableView between "Active" and "Inactive" shows.
 Made only double left click play the show.
 Added option to Allow Updating in context menu.
+Made setting Show Active/Inactive remove it from the current TableView.
 
 0.6.4 - 
 Implemented Java Logger. Unfinished + Needs fine tuning. Probably done horribly wrong.
