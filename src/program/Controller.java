@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import program.gui.*;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
@@ -44,8 +45,10 @@ public class Controller implements Initializable {
     private TableColumn<DisplayShows, Integer> remaining;
     @FXML
     private TextField textField;
+    @FXML
+    private Button refreshTableView;
 
-    private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
+    public static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
         for (String aShow : showList) {
             list.add(new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
@@ -67,6 +70,10 @@ public class Controller implements Initializable {
     public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere
         tableViewFields.remove(index);
         tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
+    }
+
+    public static void removeShowField(int index) {
+        tableViewFields.remove(index);
     }
 
     @Override
@@ -91,10 +98,36 @@ public class Controller implements Initializable {
         SortedList<DisplayShows> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(sortedData);
+
+        refreshTableView.setOnAction(event -> {
+            if (currentList.matches("active")) {
+                setTableViewFields("inactive");
+            } else if (currentList.matches("inactive")) {
+                setTableViewFields("active");
+            }
+            FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
+            textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                newFilteredData.setPredicate(show -> {
+                            if (newValue == null || newValue.isEmpty()) {
+                                return true;
+                            }
+                            String lowerCaseFilter = newValue.toLowerCase();
+                            return show.getShow().toLowerCase().contains(lowerCaseFilter);
+                        }
+                );
+            });
+            SortedList<DisplayShows> newSortedData = new SortedList<>(newFilteredData);
+            newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
+            tableView.setItems(newSortedData);
+        });
+
         tableView.setRowFactory(
                 param -> {
                     final TableRow<DisplayShows> row = new TableRow<>();
-                    final ContextMenu rowMenu = new ContextMenu();
+                    final ContextMenu rowMenuActive = new ContextMenu();
+
+                    // MenuItems
+
                     MenuItem playSeasonEpisode = new MenuItem("Pick Season/Episode");
                     playSeasonEpisode.setOnAction(e -> {
                         DoubleTextBox doubleTextBox = new DoubleTextBox();
@@ -107,9 +140,17 @@ public class Controller implements Initializable {
                             messageBox.display("Pick Season/Episode", "Your selection doesn't exist.");
                         }
                     });
-                    MenuItem setNotActive = new MenuItem("Don't Update");
-                    setNotActive.setOnAction(e -> { //TODO Have this remove the show from the current ObservableList
+                    MenuItem setNotActive = new MenuItem("Stop Updating");
+                    setNotActive.setOnAction(e -> {
                         UserInfoController.setActiveStatus(row.getItem().getShow(), false);
+                        removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                        tableView.getSelectionModel().clearSelection();
+                    });
+                    MenuItem setActive = new MenuItem("Allow Updating");
+                    setActive.setOnAction(e -> {
+                        UserInfoController.setActiveStatus(row.getItem().getShow(), true);
+                        removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                        tableView.getSelectionModel().clearSelection();
                     });
                     MenuItem resetShow = new MenuItem("Reset");
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
@@ -143,13 +184,16 @@ public class Controller implements Initializable {
                             }
                         }
                     });
-                    rowMenu.getItems().addAll(playSeasonEpisode, setNotActive, resetShow, getRemaining, openDirectory);
+
+                    rowMenuActive.getItems().addAll(playSeasonEpisode, setNotActive, setActive, resetShow, getRemaining, openDirectory);
+
                     row.contextMenuProperty().bind(
                             Bindings.when(Bindings.isNotNull(row.itemProperty()))
-                                    .then(rowMenu)
+                                    .then(rowMenuActive)
                                     .otherwise((ContextMenu) null));
+
                     row.setOnMouseClicked(e -> {
-                        if (e.getClickCount() == 2 && (!row.isEmpty())) {
+                        if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2 && (!row.isEmpty())) {
                             String aShow = row.getItem().getShow();
                             Boolean keepPlaying = true;
                             while (keepPlaying) {
