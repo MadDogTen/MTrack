@@ -1,11 +1,15 @@
 Changes:
 
-0.6.5 - 
+0.6.5.1 -
+Made add directory button check if directory exists. Still Disabled.
+Made it so either no Active or Inactive shows wouldn't cause a null pointer exception if empty and you try to switch lists.
+
+0.6.5 -
 Temporarily added "R" button to Refresh + Switch the TableView between "Active" and "Inactive" shows.
 Made only double left click play the show.
 Added option to Allow Updating in context menu.
 
-0.6.4 - 
+0.6.4 -
 Implemented Java Logger. Unfinished + Needs fine tuning. Probably done horribly wrong.
 
 
@@ -31,13 +35,13 @@ Made it where you can right click and set a show as not active. (Not currently p
 
 
 0.6.1 -
-General code cleanup. 
+General code cleanup.
 Removed a lot of unnecessary stuff.
 Fixed the show rechecking.
 
 
 0.6.1 -
-General code cleanup. 
+General code cleanup.
 Removed a lot of unnecessary stuff.
 Fixed the show rechecking.
 

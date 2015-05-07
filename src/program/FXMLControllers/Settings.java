@@ -166,10 +166,18 @@ public class Settings implements Initializable {
         changeUpdateSpeed.setOnAction(e -> {
             ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Update Speed", "Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120));
         });
-        addDirectory.setOnAction(e -> { //TODO Make it generate the file and do everything else necessary -- Currently Broken
-            /*Boolean wasAdded = ProgramSettingsController.addDirectory(-2, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", "You need to enter a directory.", "Directory is invalid."));
-            if (wasAdded) {
+        addDirectory.setOnAction(e -> {
+            /*ArrayList<String> directories = ProgramSettingsController.getDirectories();
+            int index = -1;
+            for (String aDirectory : directories) {
+                index++;
+            }
+            Boolean wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid."));
+            if (!wasAdded) {
                 log.info("Directory was added.");
+                directories = ProgramSettingsController.getDirectories();
+                GenerateNewShowFiles.generateShowsFile(index, new File(directories.get(index)), false);
+                ShowInfoController.loadShowsFile();
             } else log.info("Directory wasn't added.");*/
         });
 

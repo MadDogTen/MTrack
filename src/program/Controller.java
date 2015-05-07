@@ -50,8 +50,10 @@ public class Controller implements Initializable {
 
     public static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
-        for (String aShow : showList) {
-            list.add(new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
+        if (showList != null) {
+            for (String aShow : showList) {
+                list.add(new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
+            }
         }
         return list;
     }

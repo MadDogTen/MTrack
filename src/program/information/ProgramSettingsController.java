@@ -100,10 +100,12 @@ public class ProgramSettingsController {
         }
         if (!matched) {
             if (index == -2) {
+                log.info("Added Directory");
                 directories.add(String.valueOf(directory));
                 settingsFile.replace("Directories", directories);
+                return false;
             } else {
-                log.info("ProgramSettingsController- Added Directory");
+                log.info("Added Directory");
                 directories.add(index, String.valueOf(directory));
                 settingsFile.replace("Directories", directories);
                 return false;

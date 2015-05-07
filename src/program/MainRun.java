@@ -113,7 +113,7 @@ public class MainRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int directoryNumber = 0;
         while (addAnother) {
-            File directory = textBox.addDirectoriesDisplay("Directories", "Please enter show directory", "You need to enter a directory.", "Directory is invalid.");
+            File directory = textBox.addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.");
             Boolean matched = ProgramSettingsController.addDirectory(directoryNumber, directory);
             directoryNumber++;
             if (matched) {

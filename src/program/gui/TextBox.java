@@ -14,6 +14,7 @@ import program.input.MoveWindow;
 import program.io.FileManager;
 
 import java.io.File;
+import java.util.ArrayList;
 
 
 public class TextBox {
@@ -79,7 +80,7 @@ public class TextBox {
         } else return true;
     }
 
-    public File addDirectoriesDisplay(String title, String message, String messageIfFieldIsBlank, String messageIfNotDirectory) {
+    public File addDirectoriesDisplay(String title, String message, ArrayList<String> currentDirectories, String messageIfFieldIsBlank, String messageIfNotDirectory) {
         Stage window = new Stage();
         final File[] directories = new File[1];
 
@@ -96,7 +97,7 @@ public class TextBox {
 
         Button submit = new Button("Submit");
         submit.setOnAction(event -> {
-            if (isDirectoryValid(title, messageIfFieldIsBlank, messageIfNotDirectory, textField.getText(), window)) {
+            if (isDirectoryValid(title, currentDirectories, messageIfFieldIsBlank, messageIfNotDirectory, textField.getText(), window)) {
                 directories[0] = new File(textField.getText());
                 window.close();
             } else textField.clear();
@@ -116,8 +117,11 @@ public class TextBox {
         return directories[0];
     }
 
-    private boolean isDirectoryValid(String title, String messageIfBlank, String messageIfNotDirectory, String message, Stage oldStage) {
-        if (FileManager.checkFolderExists(message)) {
+    private boolean isDirectoryValid(String title, ArrayList<String> currentDirectories, String messageIfBlank, String messageIfNotDirectory, String message, Stage oldStage) {
+        if (currentDirectories.contains(message)) {
+            new MessageBox().display(title, "Directory is already added.", oldStage);
+            return false;
+        } else if (FileManager.checkFolderExists(message)) {
             return true;
         } else if (!message.isEmpty()) {
             MessageBox messageBox = new MessageBox();
