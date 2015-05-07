@@ -6,14 +6,15 @@ import program.util.FindLocation;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class UpdateShowFiles {
+    private static final Logger log = Logger.getLogger(UpdateShowFiles.class.getName());
 
     public static void checkForNewOrRemovedSeasons(File folderLocation, String aShow, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
         ArrayList<Integer> changedSeasons = CheckShowFiles.hasSeasonsChanged(aShow, folderLocation, showsFile);
         if (!changedSeasons.isEmpty()) {
             HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
-            System.out.println(changedSeasons);
             for (Integer aSeason : changedSeasons) {
                 HashMap<String, String> episodeNum = new HashMap<>(0);
                 String[] episodesFullList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
@@ -28,7 +29,7 @@ public class UpdateShowFiles {
                                 String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
                                 episodeNum.put(episodeNumber, aEpisode);
                             } else {
-                                System.out.println("UpdateShowFiles - Error 1 if at this point!" + " + " + episode);
+                                log.warning("Error 1 if at this point!" + " + " + episode);
                             }
                         }
                     }
@@ -61,7 +62,7 @@ public class UpdateShowFiles {
                             String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
                             episodeNum.put(episodeNumber, aEpisode);
                         } else {
-                            System.out.println("UpdateShowFiles - Error 2 if at this point!" + " + " + episode);
+                            log.warning("Error 2 if at this point!" + " + " + episode);
                         }
                     }
                 }

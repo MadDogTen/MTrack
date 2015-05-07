@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class Settings implements Initializable {
+    private static final Logger log = Logger.getLogger(Settings.class.getName());
 
     @FXML
     private TabPane tabPane;
@@ -91,7 +93,7 @@ public class Settings implements Initializable {
             try {
                 Desktop.getDesktop().open(file);
             } catch (IOException e1) {
-                e1.printStackTrace();
+                log.severe(e1.toString());
             }
         });
         printAllShows.setOnAction(e -> {
@@ -157,18 +159,18 @@ public class Settings implements Initializable {
             try {
                 aboutBox.display();
             } catch (Exception e1) {
-                e1.printStackTrace();
+                log.severe(e1.toString());
             }
 
         });
         changeUpdateSpeed.setOnAction(e -> {
             ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Update Speed", "Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120));
         });
-        addDirectory.setOnAction(e -> { //TODO Make it generate the file and do everything else necessary
+        addDirectory.setOnAction(e -> { //TODO Make it generate the file and do everything else necessary -- Currently Broken
             /*Boolean wasAdded = ProgramSettingsController.addDirectory(-2, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", "You need to enter a directory.", "Directory is invalid."));
             if (wasAdded) {
-                System.out.println("Settings- Directory was added.");
-            } else System.out.println("Settings- Directory wasn't added.");*/
+                log.info("Directory was added.");
+            } else log.info("Directory wasn't added.");*/
         });
 
         deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));

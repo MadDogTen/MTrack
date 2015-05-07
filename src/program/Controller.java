@@ -20,9 +20,11 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 
 public class Controller implements Initializable {
+    private static final Logger log = Logger.getLogger(Controller.class.getName());
 
     public static String currentList;
     private static ObservableList<DisplayShows> tableViewFields;
@@ -52,7 +54,7 @@ public class Controller implements Initializable {
     }
 
     public static void setTableViewFields(String type) {
-        System.out.println("Controller - setTableViewFields Running...\n");
+        log.info("setTableViewFields Running...");
         if (type.matches("active")) {
             tableViewFields = MakeTableViewFields(UserInfoController.getActiveShows());
             currentList = "active";
@@ -69,7 +71,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        System.out.println("Controller - MainController Running...\n");
+        log.info("Controller - MainController Running...\n");
         tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
         MainRun.startBackend();
@@ -113,7 +115,7 @@ public class Controller implements Initializable {
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
                     MenuItem getRemaining = new MenuItem("Get Remaining");
                     getRemaining.setOnAction(e -> {
-                        System.out.println("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
+                        log.fine("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
                     });
                     MenuItem openDirectory = new MenuItem("Open File Location");
                     openDirectory.setOnAction(e -> {
@@ -200,7 +202,7 @@ public class Controller implements Initializable {
             try {
                 settingsWindow.display();
             } catch (Exception e1) {
-                e1.printStackTrace();
+                log.severe(e1.toString());
             }
         });
     }

@@ -11,10 +11,6 @@ import java.util.regex.Pattern;
 public class FindLocation implements Serializable {
     private static final long serialVersionUID = -8763884002300922616L;
 
-    public FindLocation() {
-        System.out.println();
-    }
-
     public static String[] findShows(File dir) {
         return dir.list();
     }

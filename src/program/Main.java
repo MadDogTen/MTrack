@@ -13,7 +13,10 @@ import program.information.UserInfoController;
 import program.util.Clock;
 import program.util.Variables;
 
+import java.util.logging.Logger;
+
 public class Main extends Application implements Runnable {
+    private static final Logger log = Logger.getLogger(Main.class.getName());
 
     public static boolean running = false;
     public static Stage window;
@@ -39,15 +42,15 @@ public class Main extends Application implements Runnable {
 
             int timeRan = Clock.timeTakenSeconds(timer);
             if (timeRan > 60) {
-                System.out.println("\nMain - The program has been running for " + (timeRan / 60) + " Minute(s).\n");
-            } else System.out.println("\nMain - The program has been running for " + timeRan + " Seconds.\n");
-            System.out.println("Main - Program is exiting");
+                log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
+            } else log.info("The program has been running for " + timeRan + " Seconds.");
+            log.warning("Program is exiting");
 
             window.close();
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
             }
         }
     }
@@ -92,7 +95,7 @@ public class Main extends Application implements Runnable {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
             }
         }
     }

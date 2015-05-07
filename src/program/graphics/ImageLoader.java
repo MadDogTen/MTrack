@@ -5,8 +5,11 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class ImageLoader {
+    private static final Logger log = Logger.getLogger(ImageLoader.class.getName());
+
     private static ImageIcon imageIcon;
     private static BufferedImage bufferedImage;
 
@@ -14,8 +17,8 @@ public class ImageLoader {
         File file = new File(path);
         try {
             bufferedImage = ImageIO.read(file);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            log.severe(e.toString());
         }
         imageIcon = new ImageIcon(bufferedImage);
     }

@@ -7,8 +7,10 @@ import program.util.Variables;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class ProgramSettingsController {
+    private static final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
 
     private static HashMap<String, ArrayList<String>> settingsFile;
 
@@ -50,7 +52,7 @@ public class ProgramSettingsController {
     }
 
     public static void setDefaultUsername(String userName, int option) {
-        System.out.println("ProgramSettingsController- DefaultUsername is being set...");
+        log.info("ProgramSettingsController- DefaultUsername is being set...");
         ArrayList<String> defaultUsername = settingsFile.get("DefaultUser");
         if (option == 0) {
             defaultUsername.set(0, "false");
@@ -101,7 +103,7 @@ public class ProgramSettingsController {
                 directories.add(String.valueOf(directory));
                 settingsFile.replace("Directories", directories);
             } else {
-                System.out.println("ProgramSettingsController- Added Directory");
+                log.info("ProgramSettingsController- Added Directory");
                 directories.add(index, String.valueOf(directory));
                 settingsFile.replace("Directories", directories);
                 return false;
@@ -115,7 +117,7 @@ public class ProgramSettingsController {
     public static void saveSettingsFile() {
         if (settingsFile != null) {
             FileManager.save(settingsFile, Variables.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
-            System.out.println("ProgramSettingsController- settingsFile has been saved!");
+            log.info("ProgramSettingsController- settingsFile has been saved!");
         }
     }
 }

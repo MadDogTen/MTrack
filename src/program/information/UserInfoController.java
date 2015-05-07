@@ -7,8 +7,10 @@ import program.util.Variables;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class UserInfoController {
+    private static final Logger log = Logger.getLogger(UserInfoController.class.getName());
     private static HashMap<String, HashMap<String, String[]>> userSettingsFile;
     private static HashMap<String, String[]> showSettings;
 
@@ -47,8 +49,6 @@ public class UserInfoController {
         if (!users.isEmpty()) {
             users.remove("Program");
         }
-        System.out.println(users);
-
         return users;
     }
 
@@ -115,9 +115,9 @@ public class UserInfoController {
                 if (file.exists()) {
                     FileManager.open(file);
                 } else {
-                    System.out.println("UserInfoController- File does not exists!");
+                    log.warning("UserInfoController- File does not exists!");
                 }
-            } else System.out.println("UserInfoController- File does not exists!");
+            } else log.warning("UserInfoController- File does not exists!");
         }
     }
 
@@ -131,14 +131,14 @@ public class UserInfoController {
             if (isAnotherEpisode(aShow, Integer.parseInt(aShowSettings[3]), currentEpisode)) {
                 currentEpisode++;
                 aShowSettings[6] = String.valueOf(currentEpisode);
-                System.out.println("UserInfoController- " + aShow + " is now on episode " + aShowSettings[6]);
+                log.info("UserInfoController- " + aShow + " is now on episode " + aShowSettings[6]);
             } else if (isAnotherSeason(aShow, Integer.parseInt(aShowSettings[3]))) {
                 int newSeason = Integer.parseInt(aShowSettings[3]);
                 newSeason += 1;
                 aShowSettings[3] = String.valueOf(newSeason);
                 if (isAnotherEpisode(aShow, Integer.parseInt(aShowSettings[3]), 0)) {
                     aShowSettings[6] = String.valueOf(1);
-                    System.out.println("UserInfoController- " + aShow + " is now on episode " + aShowSettings[6]);
+                    log.info("UserInfoController- " + aShow + " is now on episode " + aShowSettings[6]);
                 } else {
                     aShowSettings[6] = String.valueOf(0);
                 }
@@ -147,7 +147,7 @@ public class UserInfoController {
                 aShowSettings[6] = String.valueOf(currentEpisode);
             }
         } else if (!fileExists && episode == -2) {
-            System.out.println("UserInfoController- No further files!");
+            log.info("UserInfoController- No further files!");
         } else {
             if (doesEpisodeExist(aShow, Integer.parseInt(aShowSettings[3]), episode)) {
                 aShowSettings[6] = String.valueOf(episode);
@@ -183,7 +183,7 @@ public class UserInfoController {
 
         showSettings.put(aShow, aShowSettings);
         userSettingsFile.put("ShowSettings", showSettings);
-        System.out.println("UserInfoController- " + aShow + " is reset to Season " + aShowSettings[3] + " episode " + aShowSettings[6]);
+        log.info("UserInfoController- " + aShow + " is reset to Season " + aShowSettings[3] + " episode " + aShowSettings[6]);
     }
 
     public static boolean doesEpisodeExist(String aShow, int season, int episode) {
@@ -306,7 +306,7 @@ public class UserInfoController {
         if (userSettingsFile != null) {
             userSettingsFile.replace("ShowSettings", showSettings);
             FileManager.save(userSettingsFile, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
-            System.out.println("UserInfoController- userSettingsFile has been saved!");
+            log.info("UserInfoController- userSettingsFile has been saved!");
         }
     }
 }

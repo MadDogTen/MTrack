@@ -17,8 +17,10 @@ import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class MainRun {
+    private static final Logger log = Logger.getLogger(MainRun.class.getName());
     public static boolean hasRan = false, forceRun = true;
     public static int timer = Clock.getTimeSeconds();
 
@@ -27,7 +29,7 @@ public class MainRun {
 
         // If true, It will Delete ALL Files each time the program is ran.
         if (Variables.startFresh && FileManager.checkFolderExists(FileManager.getDataFolder())) {
-            System.out.println("MainRun- WARNING- Stating Fresh...");
+            log.warning("Starting Fresh...");
             FileManager.deleteFolder(new File(FileManager.getDataFolder()));
         }
 
@@ -39,14 +41,14 @@ public class MainRun {
             generateUserSettingsFile(Strings.UserName, false);
         }
 
-        System.out.println("MainRun- Username is set: " + Strings.UserName);
+        log.info("Username is set: " + Strings.UserName);
         Variables.setUpdateSpeed();
         Controller.setTableViewFields("active");
     }
 
     public static void tick() {
         if (!hasRan) {
-            System.out.println("MainRun - MainRun Running ...\n");
+            log.info("MainRun Running...");
             hasRan = true;
         }
         if (forceRun || Clock.timeTakenSeconds(timer) > Variables.updateSpeed) {
@@ -64,10 +66,10 @@ public class MainRun {
     }
 
     private static String getUser() {
-        System.out.println("MainRun- getUser Running...\n");
+        log.info("getUser Running...\n");
         ArrayList<String> Users = UserInfoController.getAllUsers();
         if (ProgramSettingsController.isDefaultUsername()) {
-            System.out.println("MainRun- Using default user.");
+            log.info("MainRun- Using default user.");
             return ProgramSettingsController.getDefaultUsername();
         } else {
             ListSelectBox listSelectBox = new ListSelectBox();
@@ -76,7 +78,7 @@ public class MainRun {
     }
 
     private static void firstRun() {
-        System.out.println("MainRun- First Run, Generating Files...");
+        log.info("MainRun- First Run, Generating Files...");
         FileManager.createBaseFolder();
         generateProgramSettingsFile();
         chooseDirectories();
@@ -99,7 +101,7 @@ public class MainRun {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
             }
         }
         generateUserSettingsFile(Strings.UserName, false);
@@ -140,7 +142,7 @@ public class MainRun {
     }
 
     private static void generateUserSettingsFile(String userName, Boolean override) {
-        System.out.println("MainRun- Attempting to generate settings file for " + userName + ".");
+        log.info("Attempting to generate settings file for " + userName + ".");
         GenerateSettingsFiles.generateUserSettingsFile(Strings.UserName, Variables.SettingsExtension, override);
     }
 }

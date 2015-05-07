@@ -6,8 +6,11 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class FileManager {
+    private static final Logger log = Logger.getLogger(FileManager.class.getName());
+
     // Serialise
     public static void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
         if (!folder.isEmpty()) {
@@ -22,9 +25,9 @@ public class FileManager {
                 oos.flush();
                 oos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
             }
-        } else System.out.println("FileManager- " + filename + " save already exists.");
+        } else log.info(filename + " save already exists.");
     }
 
     // Deserialize
@@ -38,11 +41,11 @@ public class FileManager {
                 loadedHashMap = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
             }
             return loadedHashMap;
         }
-        System.out.println("FileManager- File doesn't exist");
+        log.info("File doesn't exist");
         return null;
     }
 
@@ -57,7 +60,7 @@ public class FileManager {
                 loadedHashMap = (HashMap<String, HashMap<String, String[]>>) ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
             }
             return loadedHashMap;
         }
@@ -75,7 +78,7 @@ public class FileManager {
                 loadedHashMap = (HashMap<String, ArrayList<String>>) ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
+                log.severe(e.toString());
             }
             return loadedHashMap;
         }
@@ -111,9 +114,8 @@ public class FileManager {
     }
 
     private static void createFolder(String folder) {
-        System.out.println("FileManager- " + getDataFolder() + folder);
         new File(getDataFolder() + folder).mkdir();
-        System.out.println("FileManager- Created Data Folder!");
+        log.info("Created Data Folder!");
     }
 
     public static void createBaseFolder() {
@@ -140,21 +142,19 @@ public class FileManager {
     public static void deleteFile(String folder, String filename, String extension) {
         String file = (folder + '\\' + filename + extension);
         if (!checkFileExists(folder, filename, extension)) {
-            System.err.println("FileManager- File " + getDataFolder() + file + " does not exist!");
+            log.warning("File " + getDataFolder() + file + " does not exist!");
         }
         File toDelete = new File(getDataFolder() + file);
 
         if (toDelete.canWrite()) {
             toDelete.delete();
-        } else System.err.println("FileManager- File " + getDataFolder() + file + " is write protected!");
+        } else log.warning("File " + getDataFolder() + file + " is write protected!");
     }
 
     public static void deleteFolder(File toDeleteFolder) {
         if (!checkFolderExists(String.valueOf(toDeleteFolder))) {
-            System.err.println("FileManager- " + toDeleteFolder + " does not exist!");
+            log.warning(toDeleteFolder + " does not exist!");
         }
-
-        System.out.println(toDeleteFolder);
         if (toDeleteFolder.canWrite()) {
             if (toDeleteFolder.list().length == 0) {
                 toDeleteFolder.delete();
@@ -170,17 +170,17 @@ public class FileManager {
                     toDeleteFolder.delete();
                 }
             }
-        } else System.err.println("FileManager- " + toDeleteFolder + " is write protected!");
+        } else log.warning(toDeleteFolder + " is write protected!");
     }
 
     public static void open(File file) {
         String os = FileManager.getOS();
         try {
             if (os.contains("windows")) {
-                Runtime.getRuntime().exec(new String[]{
+                /*Runtime.getRuntime().exec(new String[]{
                         "rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()
-                });
-                //System.out.println("File Played!"); // --------------------------------------------------------- Temp
+                });*/
+                log.info("File Played!"); // --------------------------------------------------------- Temp
             } else if (os.contains("mac")) {
                 Runtime.getRuntime().exec(new String[]{
                         "/usr/bin/open", file.getAbsolutePath()
@@ -194,10 +194,10 @@ public class FileManager {
                 if (Desktop.isDesktopSupported()) {
                     Desktop.getDesktop().open(file);
                 }
-                System.out.println("FileManager- Your OS is Unknown, Attempting to open file, But it may fail.");
+                log.warning("FileManager- Your OS is Unknown, Attempting to open file, But it may fail.");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.severe(e.toString());
         }
     }
 }

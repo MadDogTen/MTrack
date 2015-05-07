@@ -7,10 +7,12 @@ import program.util.Variables;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ShowInfoController {
+    private static final Logger log = Logger.getLogger(ShowInfoController.class.getName());
     // String = Show Name -- HashMap == Seasons in show from seasonEpisode
     private static HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile;
 
@@ -60,7 +62,7 @@ public class ShowInfoController {
             }
             showsFile.put(aShow, seasonEpisode);
         }
-        System.out.println("ShowInfoController- It took " + Clock.timeTakenNano(timer) + " nanoseconds to combine all files");
+        log.fine("ShowInfoController- It took " + Clock.timeTakenNano(timer) + " nanoseconds to combine all files");
     }
 
     @SuppressWarnings("unchecked")
@@ -122,7 +124,7 @@ public class ShowInfoController {
         if (episodeNumEpisode != null) {
             return episodeNumEpisode.get(episode);
         } else {
-            System.out.println("ShowInfoController- Error 1");
+            log.warning("Error 1");
             return null;
         }
     }
@@ -252,21 +254,21 @@ public class ShowInfoController {
 
         Set<String> Show = showsFile.keySet();
 
-        System.out.println("ShowInfoController- \n\n\n\n\n\n");
+        log.finest("Printing out all Shows and Episodes");
         for (String aShow : Show) {
-            System.out.println("\n\n ShowInfoController- " + aShow);
+            log.finest("\n\n ShowInfoController- " + aShow);
             HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
 
             Set<Integer> season = seasons.keySet();
 
             for (int aSeason : season) {
-                System.out.println("\n ShowInfoController- " + "Season: " + aSeason);
+                log.finest("\n ShowInfoController- " + "Season: " + aSeason);
                 HashMap<String, String> episodes = seasons.get(aSeason);
 
                 Set<String> episode = episodes.keySet();
 
                 for (String aEpisode : episode) {
-                    System.out.println("ShowInfoController- " + episodes.get(aEpisode));
+                    log.finest("ShowInfoController- " + episodes.get(aEpisode));
                 }
             }
         }

@@ -12,19 +12,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class CheckShowFiles {
+    private static final Logger log = Logger.getLogger(CheckShowFiles.class.getName());
 
     public static void recheckShowFile() {
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
         ArrayList<String> activeShows = UserInfoController.getActiveShows();
         for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
             int timer = Clock.getTimeSeconds();
-            System.out.println("Rechecking shows...");
+            log.finest("Rechecking shows...");
             int hashMapIndex = showsFileArray.indexOf(aHashMap);
             Boolean hasChanged = false;
             for (String aShow : activeShows) {
-                System.out.println("Currently rechecking " + aShow);
+                log.finest("Currently rechecking " + aShow);
                 if (aHashMap.containsKey(aShow)) {
                     File folderLocation = ProgramSettingsController.getDirectory(hashMapIndex);
                     Object[] seasons = aHashMap.get(aShow).keySet().toArray();
@@ -35,7 +37,7 @@ public class CheckShowFiles {
                         }
                     }
                     if (!CheckShowFiles.hasSeasonsChanged(aShow, folderLocation, aHashMap).isEmpty()) {
-                        System.out.println(aShow + " has changed!");
+                        log.finest(aShow + " has changed!");
                         hasChanged = true;
                         UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, aHashMap, hashMapIndex);
                     }
@@ -45,12 +47,12 @@ public class CheckShowFiles {
                 }
             }
             if (hasChanged && Main.running) {
-                System.out.println("Some shows have been updated.");
+                log.finest("Some shows have been updated.");
                 //ShowInfoController.saveShowsFile();
-                System.out.println("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
+                log.finest("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
             } else if (Main.running) {
-                System.out.println("All shows were the same.");
-                System.out.println("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
+                log.finest("All shows were the same.");
+                log.finest("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
             }
         }
     }

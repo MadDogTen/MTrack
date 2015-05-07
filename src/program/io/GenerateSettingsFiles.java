@@ -6,12 +6,14 @@ import program.util.Variables;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class GenerateSettingsFiles {
+    private static final Logger log = Logger.getLogger(GenerateSettingsFiles.class.getName());
 
     public static void generateProgramSettingsFile(String settingsFileName, String settingsFolder, String extension, Boolean override) {
         if (override || !FileManager.checkFileExists(settingsFolder, settingsFileName, extension)) {
-            System.out.println("GenerateSettingsFiles- Generating program settings file...\n");
+            log.info("GenerateSettingsFiles- Generating program settings file...\n");
             HashMap<String, ArrayList<String>> settingsFile = new HashMap<>();
 
             ArrayList<String> temp = new ArrayList<>();
@@ -40,7 +42,7 @@ public class GenerateSettingsFiles {
 
     public static void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
         if (override || !FileManager.checkFileExists(settingsFolder, userName, ".settings")) {
-            System.out.println("GenerateSettingsFiles- Generating settings file for " + userName + "...\n");
+            log.info("GenerateSettingsFiles- Generating settings file for " + userName + "...\n");
             HashMap<String, HashMap<String, String[]>> userSettingsFile = new HashMap<>();
             HashMap<String, String[]> tempPut = new HashMap<>();
 

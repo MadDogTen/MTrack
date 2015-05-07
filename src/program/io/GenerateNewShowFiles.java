@@ -7,26 +7,29 @@ import program.util.Variables;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class GenerateNewShowFiles {
+    private static final Logger log = Logger.getLogger(GenerateNewShowFiles.class.getName());
+
     public static void generateShowsFile(int fileName, File folderLocation, Boolean forceGen) {
         if (forceGen || !FileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(fileName)), Variables.ShowsExtension)) {
             // String = Show Name -- HashMap == Seasons in show from seasonEpisode
             HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);
             String[] shows = FindLocation.findShows(folderLocation);
             for (String aShow : shows) {
-                System.out.println("GenerateNewShowFiles- Currently Processing: " + aShow);
+                log.finest("GenerateNewShowFiles- Currently Processing: " + aShow);
                 // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
                 HashMap<Integer, HashMap<String, String>> seasonEpisode = new HashMap<>(0);
                 ArrayList<Integer> seasons = FindLocation.findSeasons(folderLocation, aShow);
                 for (Integer aSeason : seasons) {
-                    System.out.println("Season: " + aSeason);
+                    log.finest("Season: " + aSeason);
                     // First String = Episode Number -- Second String = Episode Location
                     HashMap<String, String> episodeNumEpisode = new HashMap<>(0);
                     String[] episodesFull = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
                     if (episodesFull != null) {
                         for (String aEpisode : episodesFull) {
-                            System.out.println("Episode: " + aEpisode);
+                            log.finest("Episode: " + aEpisode);
                             ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
                             if (episode != null) {
                                 if (episode.size() == 2) {
@@ -36,7 +39,7 @@ public class GenerateNewShowFiles {
                                     String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
                                     episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + "\\" + "Season " + aSeason + "\\" + aEpisode));
                                 } else {
-                                    System.out.println("GenerateNewShowFile - Error 1 if at this point!" + " + " + episode);
+                                    log.warning("Error 1 if at this point!" + " + " + episode);
                                 }
                             }
                         }
