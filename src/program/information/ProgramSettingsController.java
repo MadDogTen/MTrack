@@ -21,32 +21,24 @@ public class ProgramSettingsController {
     }
 
     public static int getUpdateSpeed() {
-        if (settingsFile == null) {
-            loadProgramSettingsFile();
-        }
+        loadProgramSettingsFile();
         return Integer.parseInt(settingsFile.get("General").get(0));
     }
 
     public static void setUpdateSpeed(int updateSpeed) {
-        if (settingsFile == null) {
-            loadProgramSettingsFile();
-        }
+        loadProgramSettingsFile();
         settingsFile.get("General").set(0, String.valueOf(updateSpeed));
         Variables.setUpdateSpeed();
     }
 
     public static boolean isDefaultUsername() {
-        if (settingsFile == null) {
-            loadProgramSettingsFile();
-        }
+        loadProgramSettingsFile();
         ArrayList<String> defaultUser = settingsFile.get("DefaultUser");
         return Boolean.parseBoolean(defaultUser.get(0));
     }
 
     public static String getDefaultUsername() {
-        if (settingsFile == null) {
-            loadProgramSettingsFile();
-        }
+        loadProgramSettingsFile();
         ArrayList<String> defaultUser = settingsFile.get("DefaultUser");
         return defaultUser.get(1);
     }
@@ -65,16 +57,24 @@ public class ProgramSettingsController {
     }
 
     public static ArrayList<String> getDirectories() {
-        if (settingsFile == null) {
-            loadProgramSettingsFile();
-        }
+        loadProgramSettingsFile();
         return settingsFile.get("Directories");
     }
 
-    public static ArrayList<String> getDirectoriesNames() {
-        if (settingsFile == null) {
-            loadProgramSettingsFile();
+    public static int getNumberOfDirectories() {
+        loadProgramSettingsFile();
+        return settingsFile.get("Directories").size();
+    }
+
+    public static void printAllDirectories() {
+        loadProgramSettingsFile();
+        for (String aDirectory : settingsFile.get("Directories")) {
+            log.info(aDirectory);
         }
+    }
+
+    public static ArrayList<String> getDirectoriesNames() {
+        loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
         ArrayList<String> directoriesNames = new ArrayList<>();
         for (String aDirectory : directories) {
@@ -85,31 +85,19 @@ public class ProgramSettingsController {
     }
 
     public static File getDirectory(int index) {
+        loadProgramSettingsFile();
         return new File(settingsFile.get("Directories").get(index));
     }
 
     public static boolean addDirectory(int index, File directory) {
-        if (settingsFile == null) {
-            loadProgramSettingsFile();
-        }
+        loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
-
-        Boolean matched = false;
-        if (directories.contains(String.valueOf(directory))) {
-            matched = true;
-        }
-        if (!matched) {
-            if (index == -2) {
-                log.info("Added Directory");
-                directories.add(String.valueOf(directory));
-                settingsFile.replace("Directories", directories);
-                return false;
-            } else {
-                log.info("Added Directory");
-                directories.add(index, String.valueOf(directory));
-                settingsFile.replace("Directories", directories);
-                return false;
-            }
+        System.out.println("PSC: " + index);
+        if (!directories.contains(String.valueOf(directory))) {
+            log.info("Added Directory");
+            directories.add(index, String.valueOf(directory));
+            settingsFile.replace("Directories", directories);
+            return false;
         }
         return true;
     }

@@ -24,26 +24,33 @@ public class CheckShowFiles {
             int timer = Clock.getTimeSeconds();
             log.finest("Rechecking shows...");
             int hashMapIndex = showsFileArray.indexOf(aHashMap);
+            File folderLocation = ProgramSettingsController.getDirectory(hashMapIndex);
             Boolean hasChanged = false;
             for (String aShow : activeShows) {
                 log.finest("Currently rechecking " + aShow);
                 if (aHashMap.containsKey(aShow)) {
-                    File folderLocation = ProgramSettingsController.getDirectory(hashMapIndex);
                     Object[] seasons = aHashMap.get(aShow).keySet().toArray();
                     for (Object aSeason : seasons) {
-                        if (CheckShowFiles.hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap)) {
+                        ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
+                        if (!changedEpisodes.isEmpty()) {
                             hasChanged = true;
                             UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
                         }
                     }
-                    if (!CheckShowFiles.hasSeasonsChanged(aShow, folderLocation, aHashMap).isEmpty()) {
+                    ArrayList<Integer> changedSeasons = hasSeasonsChanged(aShow, folderLocation, aHashMap);
+                    if (!changedSeasons.isEmpty()) {
                         log.finest(aShow + " has changed!");
                         hasChanged = true;
-                        UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, aHashMap, hashMapIndex);
+                        UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, aHashMap, hashMapIndex);
                     }
                     if (!Main.running) {
                         break;
                     }
+                }
+                ArrayList<String> changedShows = hasShowsChanged(folderLocation, aHashMap);
+                if (!changedShows.isEmpty()) {
+                    log.finest("Current Shows have changed.");
+                    hasChanged = true;
                 }
             }
             if (hasChanged && Main.running) {
@@ -57,12 +64,14 @@ public class CheckShowFiles {
         }
     }
 
-    public static boolean hasEpisodesChanged(String aShow, Integer aSeason, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
+    @SuppressWarnings("unchecked")
+    private static ArrayList<String> hasEpisodesChanged(String aShow, Integer aSeason, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
         Set<String> oldEpisodeList = showsFile.get(aShow).get(aSeason).keySet();
         String[] newEpisodesList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
         ArrayList<String> newEpisodesListFixed = new ArrayList<>(0);
+        ArrayList<String> changedEpisodes = new ArrayList<>();
         if ((oldEpisodeList.isEmpty()) && newEpisodesList == null) {
-            return false;
+            return changedEpisodes;
         }
         if (newEpisodesList != null) {
             for (String aNewEpisode : newEpisodesList) {
@@ -78,16 +87,20 @@ public class CheckShowFiles {
                 }
             }
             for (String aOldEpisode : oldEpisodeList) {
-                if (!newEpisodesListFixed.contains(aOldEpisode)) return true;
+                if (!newEpisodesListFixed.contains(aOldEpisode)) {
+                    changedEpisodes.add(aOldEpisode);
+                }
             }
             for (String newEpisode : newEpisodesListFixed) {
-                if (!oldEpisodeList.contains(newEpisode)) return true;
+                if (!oldEpisodeList.contains(newEpisode)) {
+                    changedEpisodes.add(newEpisode);
+                }
             }
-        } else return true;
-        return false;
+        } else return (ArrayList<String>) oldEpisodeList;
+        return changedEpisodes;
     }
 
-    public static ArrayList<Integer> hasSeasonsChanged(String aShow, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
+    private static ArrayList<Integer> hasSeasonsChanged(String aShow, File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
         Set<Integer> oldSeasons = showsFile.get(aShow).keySet();
         ArrayList<Integer> newSeasons = FindLocation.findSeasons(folderLocation, aShow);
         Iterator<Integer> newSeasonsIterator = newSeasons.iterator();
@@ -108,6 +121,27 @@ public class CheckShowFiles {
             }
         }
         return ChangedSeasons;
+    }
+
+    private static ArrayList<String> hasShowsChanged(File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
+        Set<String> oldShows = showsFile.keySet();
+        String[] newShows = FindLocation.findShows(folderLocation);
+        ArrayList<String> newShowsFixed = new ArrayList<>();
+        for (String aShow : newShows) {
+            newShowsFixed.add(aShow);
+        }
+        ArrayList<String> changedShows = new ArrayList<>();
+        for (String aShow : oldShows) {
+            if (!newShowsFixed.contains(aShow)) {
+                changedShows.add(aShow);
+            }
+        }
+        for (String aShow : newShowsFixed) {
+            if (!oldShows.contains(aShow)) {
+                changedShows.add(aShow);
+            }
+        }
+        return changedShows;
     }
 
     private static Boolean isSeasonEmpty(String aShow, Integer aSeason, File folderLocation) {

@@ -1,5 +1,11 @@
 Changes:
 
+0.6.5.2 -
+Finished Add directory button. Should work now. Shows list currently doesn't update to reflect that more shows may have been added.
+Preparing for other changes.
+
+Been no updates for a few days because my Sweet Childhood Cat Flower had died, hit me out of nowhere, Still recovering from it. Updates may be slow for a while.
+
 0.6.5.1 -
 Made add directory button check if directory exists. Still Disabled.
 Made it so either no Active or Inactive shows wouldn't cause a null pointer exception if empty and you try to switch lists.

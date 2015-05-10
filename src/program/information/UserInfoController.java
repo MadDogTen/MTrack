@@ -23,6 +23,7 @@ public class UserInfoController {
         }
     }
 
+
     public static String[] getShowSettings(String show) {
         if (showSettings == null) {
             loadUserInfo();

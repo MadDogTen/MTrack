@@ -73,6 +73,7 @@ public class ShowInfoController {
         for (String aString : files) {
             int place = files.indexOf(aString);
             showsFileArray.add(place, FileManager.loadShows(aString));
+            log.info(aString);
         }
         return showsFileArray;
     }

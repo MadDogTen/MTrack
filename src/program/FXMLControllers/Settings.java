@@ -15,6 +15,7 @@ import program.information.UserInfoController;
 import program.input.MoveWindow;
 import program.io.CheckShowFiles;
 import program.io.FileManager;
+import program.io.GenerateNewShowFiles;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -61,6 +62,8 @@ public class Settings implements Initializable {
     private Button changeUpdateSpeed;
     @FXML
     private Button addDirectory;
+    @FXML
+    private Button printAllDirectories;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -128,6 +131,7 @@ public class Settings implements Initializable {
                 messageBox.display("Delete User", "There are no users to delete.");
             }
         });
+        deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));
         deleteEverythingAndClose.setOnAction(e -> {
             ConfirmBox confirmBox = new ConfirmBox();
             if (confirmBox.display("Reset Program", "Are you sure? This will delete EVERYTHING!", tabPane)) {
@@ -166,22 +170,20 @@ public class Settings implements Initializable {
         changeUpdateSpeed.setOnAction(e -> {
             ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Update Speed", "Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120));
         });
+        printAllDirectories.setOnAction(e -> {
+            ProgramSettingsController.printAllDirectories();
+        });
         addDirectory.setOnAction(e -> {
-            /*ArrayList<String> directories = ProgramSettingsController.getDirectories();
-            int index = -1;
-            for (String aDirectory : directories) {
-                index++;
-            }
+            int index = ProgramSettingsController.getNumberOfDirectories();
             Boolean wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid."));
             if (!wasAdded) {
                 log.info("Directory was added.");
+                ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 directories = ProgramSettingsController.getDirectories();
                 GenerateNewShowFiles.generateShowsFile(index, new File(directories.get(index)), false);
                 ShowInfoController.loadShowsFile();
-            } else log.info("Directory wasn't added.");*/
+            } else log.info("Directory wasn't added.");
         });
-
-        deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));
 
         new MoveWindow().moveTabPane(tabPane);
     }
