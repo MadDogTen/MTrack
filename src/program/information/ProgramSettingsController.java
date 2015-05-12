@@ -73,6 +73,10 @@ public class ProgramSettingsController {
         }
     }
 
+    public static int getDirectoryIndex(String directory) {
+        return settingsFile.get("Directories").indexOf(directory);
+    }
+
     public static ArrayList<String> getDirectoriesNames() {
         loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
@@ -101,7 +105,6 @@ public class ProgramSettingsController {
         }
         return true;
     }
-
 
     // Save the file
     public static void saveSettingsFile() {

@@ -68,12 +68,12 @@ public class Controller implements Initializable {
         }
     }
 
-    public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere
+    public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere -- Having difficulty doing this.
         tableViewFields.remove(index);
         tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
     }
 
-    public static void removeShowField(int index) {
+    private static void removeShowField(int index) {
         tableViewFields.remove(index);
     }
 
@@ -127,7 +127,7 @@ public class Controller implements Initializable {
                     final TableRow<DisplayShows> row = new TableRow<>();
                     final ContextMenu rowMenuActive = new ContextMenu();
 
-                    // MenuItems
+                    // MenuItems - TODO Have the menu switch depending on the current list showing
 
                     MenuItem playSeasonEpisode = new MenuItem("Pick Season/Episode");
                     playSeasonEpisode.setOnAction(e -> {

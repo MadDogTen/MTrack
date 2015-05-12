@@ -51,11 +51,11 @@ public class MainRun {
             log.info("MainRun Running...");
             hasRan = true;
         }
-        if (forceRun || Clock.timeTakenSeconds(timer) > Variables.updateSpeed) {
+        if (forceRun && Clock.timeTakenSeconds(timer) > 2 || Clock.timeTakenSeconds(timer) > Variables.updateSpeed) {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    CheckShowFiles.recheckShowFile();
+                    CheckShowFiles.recheckShowFile(false);
                     return null;
                 }
             };

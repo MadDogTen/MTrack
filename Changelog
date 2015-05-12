@@ -1,5 +1,10 @@
 Changes:
 
+0.7.1 -
+Made it saves empty show folders so it won't keep searching them. Resets when program is restarted, if you force recheck, or every 5 checks (10 Minutes).
+"Print Empty Shows" button is finished and now works. Uses the list the above change generates, meaning it has to check for new shows at least once before this works (Which should happen right away).
+Made it so if it's currently recheck shows, it won't start another check (If you spam the button, or a normal recheck is in progress).
+
 0.7.0 -
 Changed user show settings to use HashMap<String, String> instead of String[]. Will make future changes easier.
 Removed a few unused settings that were previously saved to user settings file.
@@ -9,7 +14,7 @@ Made all shows inactive by default.
 Show list will correctly update when you add new Directory.
 Fixed it so it will check if new shows are added when recheck directories and reflect that change.
 Started work on a dev tool to print all show folders that are empty (Personally wanted, and could be useful for future features). Currently unfinished & disabled.
-Make it so you can only set active shows as inactive and visa versa (Wouldn't have changed anything before, but it removed it from the list until you refreshed it) when on the appropriate list.
+Make it so you can only set active shows as inactive and visa versa (It previously removed it from the list until you refreshed it) when on the appropriate list.
 
 Note- Incompatible with previous versions. Bumped up the version from 0.6 to 0.7 as this is a personal milestone.
 

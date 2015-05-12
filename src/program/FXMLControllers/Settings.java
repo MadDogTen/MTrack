@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class Settings implements Initializable {
@@ -88,7 +89,7 @@ public class Settings implements Initializable {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    CheckShowFiles.recheckShowFile();
+                    CheckShowFiles.recheckShowFile(true);
                     return null;
                 }
             };
@@ -209,24 +210,22 @@ public class Settings implements Initializable {
             } else log.info("Directory wasn't added.");
         });
         printEmptyShowFolders.setOnAction(e -> {
-            /*ArrayList<String> directories = ProgramSettingsController.getDirectories();
-            ArrayList<File> folders = new ArrayList<>();
-            for (String aDirectory : directories) {
-                folders.add(new File(aDirectory));
-            }
-            if (folders.size() == 1) {
-                FileManager.open(folders.get(0));
-            } else {
-                ConfirmBox confirmBox = new ConfirmBox();
-                Boolean openAll = confirmBox.display("Open Folder", "Do you want to open ALL associated folders?");
-                if (openAll) {
-                    for (File aFolder : folders) {
+            ArrayList<String> emptyShows = CheckShowFiles.getEmptyShows();
+            if (!emptyShows.isEmpty()) {
+                System.out.println(emptyShows);
+                ArrayList<String> directories = ProgramSettingsController.getDirectories();
+                for (String aDirectory : directories) {
+                    Set<String> shows = ShowInfoController.getShowsFile(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
+                    ArrayList<String> emptyShowsDir = new ArrayList<>();
+                    for (String aShow : emptyShows) {
+                        String fileString = (aDirectory + '\\' + aShow);
+                        if (FileManager.checkFolderExists(fileString) && !shows.contains(aShow)) {
+                            emptyShowsDir.add(aShow);
+                        }
                     }
-                } else {
-                    ListSelectBox listSelectBox = new ListSelectBox();
-                    File file = listSelectBox.directories("Open Folder", "Pick the Folder you want to open", folders);
+                    log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
                 }
-            }*/
+            }
         });
 
         new MoveWindow().moveTabPane(tabPane);
