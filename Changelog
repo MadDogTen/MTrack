@@ -2,6 +2,7 @@ Changes:
 
 0.7.0 -
 Changed user show settings to use HashMap<String, String> instead of String[]. Will make future changes easier.
+Removed a few unused settings that were previously saved to user settings file.
 General Fixes/Changes.
 Made settings window popup wherever the main window is. Soon I will fix this (numbers hardcoded) and do this for more windows.
 Made all shows inactive by default.
