@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -64,6 +65,8 @@ public class Settings implements Initializable {
     private Button addDirectory;
     @FXML
     private Button printAllDirectories;
+    @FXML
+    private Button printEmptyShowFolders;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -180,9 +183,50 @@ public class Settings implements Initializable {
                 log.info("Directory was added.");
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 directories = ProgramSettingsController.getDirectories();
-                GenerateNewShowFiles.generateShowsFile(index, new File(directories.get(index)), false);
+                final ArrayList<String> finalDirectories = directories;
+                final Boolean[] taskRunning = {true};
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        GenerateNewShowFiles.generateShowsFile(index, new File(finalDirectories.get(index)), false);
+                        taskRunning[0] = false;
+                        return null;
+                    }
+                };
+                new Thread(task).start();
+                while (taskRunning[0]) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e1) {
+                        log.severe(e1.toString());
+                    }
+                }
                 ShowInfoController.loadShowsFile();
+                HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getShowsFile(index);
+                for (String aShow : showsFile.keySet()) {
+                    UserInfoController.addNewShow(aShow);
+                }
             } else log.info("Directory wasn't added.");
+        });
+        printEmptyShowFolders.setOnAction(e -> {
+            /*ArrayList<String> directories = ProgramSettingsController.getDirectories();
+            ArrayList<File> folders = new ArrayList<>();
+            for (String aDirectory : directories) {
+                folders.add(new File(aDirectory));
+            }
+            if (folders.size() == 1) {
+                FileManager.open(folders.get(0));
+            } else {
+                ConfirmBox confirmBox = new ConfirmBox();
+                Boolean openAll = confirmBox.display("Open Folder", "Do you want to open ALL associated folders?");
+                if (openAll) {
+                    for (File aFolder : folders) {
+                    }
+                } else {
+                    ListSelectBox listSelectBox = new ListSelectBox();
+                    File file = listSelectBox.directories("Open Folder", "Pick the Folder you want to open", folders);
+                }
+            }*/
         });
 
         new MoveWindow().moveTabPane(tabPane);

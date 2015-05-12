@@ -1,5 +1,17 @@
 Changes:
 
+0.7.0 -
+Changed user show settings to use HashMap<String, String> instead of String[]. Will make future changes easier.
+General Fixes/Changes.
+Made settings window popup wherever the main window is. Soon I will fix this (numbers hardcoded) and do this for more windows.
+Made all shows inactive by default.
+Show list will correctly update when you add new Directory.
+Fixed it so it will check if new shows are added when recheck directories and reflect that change.
+Started work on a dev tool to print all show folders that are empty (Personally wanted, and could be useful for future features). Currently unfinished & disabled.
+Make it so you can only set active shows as inactive and visa versa (Wouldn't have changed anything before, but it removed it from the list until you refreshed it) when on the appropriate list.
+
+Note- Incompatible with previous versions. Bumped up the version from 0.6 to 0.7 as this is a personal milestone.
+
 0.6.5.2 -
 Finished Add directory button. Should work now. Shows list currently doesn't update to reflect that more shows may have been added.
 Preparing for other changes.
@@ -38,7 +50,7 @@ Moved settings to settings window.
 0.6.2 -
 General Code Cleanup
 Changed userName requirements to use Strings.UserName instead.
-Made it where you can right click and set a show as not active. (Not currently possible to set back to active without reseting everything).
+Made it where you can right click and set a show as not active. (Not currently possible to set back to active without resetting everything).
 
 
 0.6.1 -

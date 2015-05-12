@@ -34,7 +34,7 @@ public class FileManager {
     @SuppressWarnings("unchecked")
     public static HashMap loadShows(String theFile) {
         if (checkFileExists(Variables.DirectoriesFolder, theFile, Variables.EmptyString)) {
-            HashMap<String, HashMap<Integer, HashMap<String, String>>> loadedHashMap = new HashMap<String, HashMap<Integer, HashMap<String, String>>>(0);
+            HashMap<String, HashMap<Integer, HashMap<String, String>>> loadedHashMap = new HashMap<>(0);
             try {
                 FileInputStream fis = new FileInputStream(new File(getDataFolder() + Variables.DirectoriesFolder + '\\' + theFile));
                 ObjectInputStream ois = new ObjectInputStream(fis);
@@ -50,14 +50,14 @@ public class FileManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, HashMap<String, String[]>> loadUserInfo(String folder, String filename, String extension) {
+    public static HashMap<String, HashMap<String, HashMap<String, String>>> loadUserInfo(String folder, String filename, String extension) {
         if (checkFileExists(folder, filename, extension)) {
-            HashMap<String, HashMap<String, String[]>> loadedHashMap = new HashMap<>();
+            HashMap<String, HashMap<String, HashMap<String, String>>> loadedHashMap = new HashMap<>();
             FileInputStream fis;
             try {
                 fis = new FileInputStream(getDataFolder() + folder + '\\' + filename + extension);
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                loadedHashMap = (HashMap<String, HashMap<String, String[]>>) ois.readObject();
+                loadedHashMap = (HashMap<String, HashMap<String, HashMap<String, String>>>) ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
                 log.severe(e.toString());
@@ -93,10 +93,6 @@ public class FileManager {
         return new File(aFolder).isDirectory();
     }
 
-    public static boolean checkFileExists(File aFile) {
-        return aFile.isFile();
-    }
-
     public static String getOS() {
         String os = System.getProperty("os.name").toLowerCase();
 
@@ -114,7 +110,9 @@ public class FileManager {
     }
 
     private static void createFolder(String folder) {
-        new File(getDataFolder() + folder).mkdir();
+        if (!new File(getDataFolder() + folder).mkdir()) {
+            log.warning("Cannot make: " + getDataFolder() + folder);
+        }
         log.info("Created Data Folder!");
     }
 
@@ -147,7 +145,9 @@ public class FileManager {
         File toDelete = new File(getDataFolder() + file);
 
         if (toDelete.canWrite()) {
-            toDelete.delete();
+            if (!toDelete.delete()) {
+                log.warning("Cannot delete: " + toDelete);
+            }
         } else log.warning("File " + getDataFolder() + file + " is write protected!");
     }
 
@@ -157,17 +157,25 @@ public class FileManager {
         }
         if (toDeleteFolder.canWrite()) {
             if (toDeleteFolder.list().length == 0) {
-                toDeleteFolder.delete();
+                if (!toDeleteFolder.delete()) {
+                    log.warning("Cannot delete: " + toDeleteFolder);
+                }
             } else {
                 File[] files = toDeleteFolder.listFiles();
-                for (File aFile : files) {
-                    if (aFile.isFile()) {
-                        aFile.delete();
+                if (files != null) {
+                    for (File aFile : files) {
+                        if (aFile.isFile()) {
+                            if (!aFile.delete()) {
+                                log.warning("Cannot delete: " + aFile);
+                            }
+                        }
+                        if (aFile.isDirectory()) {
+                            deleteFolder(aFile);
+                        }
+                        if (!toDeleteFolder.delete()) {
+                            log.warning("Cannot delete: " + toDeleteFolder);
+                        }
                     }
-                    if (aFile.isDirectory()) {
-                        deleteFolder(aFile);
-                    }
-                    toDeleteFolder.delete();
                 }
             }
         } else log.warning(toDeleteFolder + " is write protected!");
@@ -177,10 +185,10 @@ public class FileManager {
         String os = FileManager.getOS();
         try {
             if (os.contains("windows")) {
-                /*Runtime.getRuntime().exec(new String[]{
+                Runtime.getRuntime().exec(new String[]{
                         "rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()
-                });*/
-                log.info("File Played!"); // --------------------------------------------------------- Temp
+                });
+                //log.info("File Played!"); // --------------------------------------------------------- Temp
             } else if (os.contains("mac")) {
                 Runtime.getRuntime().exec(new String[]{
                         "/usr/bin/open", file.getAbsolutePath()

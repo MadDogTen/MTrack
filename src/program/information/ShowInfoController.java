@@ -62,7 +62,7 @@ public class ShowInfoController {
             }
             showsFile.put(aShow, seasonEpisode);
         }
-        log.fine("ShowInfoController- It took " + Clock.timeTakenNano(timer) + " nanoseconds to combine all files");
+        log.info("ShowInfoController- It took " + Clock.timeTakenNano(timer) + " nanoseconds to combine all files");
     }
 
     @SuppressWarnings("unchecked")
@@ -78,6 +78,18 @@ public class ShowInfoController {
         return showsFileArray;
     }
 
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, HashMap<Integer, HashMap<String, String>>> getShowsFile(int index) {
+        HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = new HashMap<>();
+        ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
+        for (String afile : files) {
+            if (afile.contains(String.valueOf(index))) {
+                showsFile = FileManager.loadShows(afile);
+                break;
+            }
+        }
+        return showsFile;
+    }
 
     public static Object[] getShowsList() {
         if (showsFile == null) {
@@ -86,7 +98,7 @@ public class ShowInfoController {
         return showsFile.keySet().toArray();
     }
 
-    public static Object[] getSeasonsListObject(Object show) {
+    public static Object[] getSeasonsListObject(String show) {
         if (showsFile == null) {
             loadShowsFile();
         }
@@ -96,14 +108,14 @@ public class ShowInfoController {
         } else return null;
     }
 
-    public static Set<Integer> getSeasonsListSet(Object show) {
+    public static Set<Integer> getSeasonsListSet(String show) {
         if (showsFile == null) {
             loadShowsFile();
         }
         return showsFile.get(show).keySet();
     }
 
-    public static Set<String> getEpisodesList(Object show, Object season) {
+    public static Set<String> getEpisodesList(String show, String season) {
         if (showsFile == null) {
             loadShowsFile();
         }
@@ -115,7 +127,7 @@ public class ShowInfoController {
         } else return null;
     }
 
-    public static String getEpisode(Object show, Object season, Object episode) {
+    public static String getEpisode(String show, String season, String episode) {
         if (showsFile == null) {
             loadShowsFile();
         }
@@ -178,7 +190,7 @@ public class ShowInfoController {
         return null;
     }
 
-    public static int getLowestSeason(Object aShow, int highestSeason) {
+    public static int getLowestSeason(String aShow, int highestSeason) {
         int lowestSeason = highestSeason;
 
         Set<Integer> seasons = ShowInfoController.getSeasonsListSet(aShow);
@@ -190,7 +202,7 @@ public class ShowInfoController {
         return lowestSeason;
     }
 
-    public static int getHighestSeason(Object aShow) {
+    public static int getHighestSeason(String aShow) {
         int highestSeason = 0;
 
         Set<Integer> seasons = ShowInfoController.getSeasonsListSet(aShow);
@@ -255,21 +267,21 @@ public class ShowInfoController {
 
         Set<String> Show = showsFile.keySet();
 
-        log.finest("Printing out all Shows and Episodes");
+        log.info("Printing out all Shows and Episodes");
         for (String aShow : Show) {
-            log.finest("\n\n ShowInfoController- " + aShow);
+            log.info("\n\n ShowInfoController- " + aShow);
             HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
 
             Set<Integer> season = seasons.keySet();
 
             for (int aSeason : season) {
-                log.finest("\n ShowInfoController- " + "Season: " + aSeason);
+                log.info("\n ShowInfoController- " + "Season: " + aSeason);
                 HashMap<String, String> episodes = seasons.get(aSeason);
 
                 Set<String> episode = episodes.keySet();
 
                 for (String aEpisode : episode) {
-                    log.finest("ShowInfoController- " + episodes.get(aEpisode));
+                    log.info("ShowInfoController- " + episodes.get(aEpisode));
                 }
             }
         }

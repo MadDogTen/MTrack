@@ -19,18 +19,18 @@ public class GenerateNewShowFiles {
             HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);
             String[] shows = FindLocation.findShows(folderLocation);
             for (String aShow : shows) {
-                log.finest("GenerateNewShowFiles- Currently Processing: " + aShow);
+                log.info("Currently Processing: " + aShow);
                 // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
                 HashMap<Integer, HashMap<String, String>> seasonEpisode = new HashMap<>(0);
                 ArrayList<Integer> seasons = FindLocation.findSeasons(folderLocation, aShow);
                 for (Integer aSeason : seasons) {
-                    log.finest("Season: " + aSeason);
+                    log.info("Season: " + aSeason);
                     // First String = Episode Number -- Second String = Episode Location
                     HashMap<String, String> episodeNumEpisode = new HashMap<>(0);
                     String[] episodesFull = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
                     if (episodesFull != null) {
                         for (String aEpisode : episodesFull) {
-                            log.finest("Episode: " + aEpisode);
+                            log.info("Episode: " + aEpisode);
                             ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
                             if (episode != null) {
                                 if (episode.size() == 2) {

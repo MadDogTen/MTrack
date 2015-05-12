@@ -59,7 +59,6 @@ public class Controller implements Initializable {
     }
 
     public static void setTableViewFields(String type) {
-        log.info("setTableViewFields Running...");
         if (type.matches("active")) {
             tableViewFields = MakeTableViewFields(UserInfoController.getActiveShows());
             currentList = "active";
@@ -144,21 +143,25 @@ public class Controller implements Initializable {
                     });
                     MenuItem setNotActive = new MenuItem("Stop Updating");
                     setNotActive.setOnAction(e -> {
-                        UserInfoController.setActiveStatus(row.getItem().getShow(), false);
-                        removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
-                        tableView.getSelectionModel().clearSelection();
+                        if (currentList.matches("active")) {
+                            UserInfoController.setActiveStatus(row.getItem().getShow(), false);
+                            removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                            tableView.getSelectionModel().clearSelection();
+                        }
                     });
                     MenuItem setActive = new MenuItem("Allow Updating");
                     setActive.setOnAction(e -> {
-                        UserInfoController.setActiveStatus(row.getItem().getShow(), true);
-                        removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
-                        tableView.getSelectionModel().clearSelection();
+                        if (currentList.matches("inactive")) {
+                            UserInfoController.setActiveStatus(row.getItem().getShow(), true);
+                            removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                            tableView.getSelectionModel().clearSelection();
+                        }
                     });
                     MenuItem resetShow = new MenuItem("Reset");
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
                     MenuItem getRemaining = new MenuItem("Get Remaining");
                     getRemaining.setOnAction(e -> {
-                        log.fine("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
+                        log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
                     });
                     MenuItem openDirectory = new MenuItem("Open File Location");
                     openDirectory.setOnAction(e -> {

@@ -7,10 +7,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import program.Main;
 
 public class SettingsWindow {
     public void display() throws Exception {
-
         Stage window = new Stage();
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
@@ -25,6 +25,8 @@ public class SettingsWindow {
 
         window.setResizable(false);
         window.setScene(scene);
+        window.setX(Main.window.getX() + (Main.window.getWidth() / 2) - (213 / 2));
+        window.setY(Main.window.getY() + (Main.window.getHeight() / 2) - (244 / 2));
         window.showAndWait();
     }
 }
