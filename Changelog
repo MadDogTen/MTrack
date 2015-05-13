@@ -1,5 +1,11 @@
 Changes:
 
+0.7.2 -
+Fixed the show "Reset" button.
+General Cleanup.
+AutoRecheck waits to start the timer until it is finished running.
+Changed it so that if it can't currently find a directory, it will skip over it when rechecking so it won't hang.
+
 0.7.1 -
 Made it saves empty show folders so it won't keep searching them. Resets when program is restarted, if you force recheck, or every 5 checks (10 Minutes).
 "Print Empty Shows" button is finished and now works. Uses the list the above change generates, meaning it has to check for new shows at least once before this works (Which should happen right away).

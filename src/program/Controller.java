@@ -77,17 +77,10 @@ public class Controller implements Initializable {
         tableViewFields.remove(index);
     }
 
-    @Override
-    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        log.info("Controller - MainController Running...\n");
-        tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
-        tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
-        MainRun.startBackend();
-        shows.setCellValueFactory(new PropertyValueFactory<>("show"));
-        remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
-        FilteredList<DisplayShows> filteredData = new FilteredList<>(tableViewFields, p -> true);
+    private void setTableView() {
+        FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(show -> {
+            newFilteredData.setPredicate(show -> {
                         if (newValue == null || newValue.isEmpty()) {
                             return true;
                         }
@@ -96,31 +89,20 @@ public class Controller implements Initializable {
                     }
             );
         });
-        SortedList<DisplayShows> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tableView.comparatorProperty());
-        tableView.setItems(sortedData);
+        SortedList<DisplayShows> newSortedData = new SortedList<>(newFilteredData);
+        newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
+        tableView.setItems(newSortedData);
+    }
 
-        refreshTableView.setOnAction(event -> {
-            if (currentList.matches("active")) {
-                setTableViewFields("inactive");
-            } else if (currentList.matches("inactive")) {
-                setTableViewFields("active");
-            }
-            FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
-            textField.textProperty().addListener((observable, oldValue, newValue) -> {
-                newFilteredData.setPredicate(show -> {
-                            if (newValue == null || newValue.isEmpty()) {
-                                return true;
-                            }
-                            String lowerCaseFilter = newValue.toLowerCase();
-                            return show.getShow().toLowerCase().contains(lowerCaseFilter);
-                        }
-                );
-            });
-            SortedList<DisplayShows> newSortedData = new SortedList<>(newFilteredData);
-            newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
-            tableView.setItems(newSortedData);
-        });
+    @Override
+    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
+        log.info("Controller - MainController Running...\n");
+        tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
+        tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
+        MainRun.startBackend();
+        shows.setCellValueFactory(new PropertyValueFactory<>("show"));
+        remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
+        setTableView();
 
         tableView.setRowFactory(
                 param -> {
@@ -237,6 +219,14 @@ public class Controller implements Initializable {
         exit.setOnAction(e -> {
             program.Main.stop(program.Main.window, false, true);
         });
+        refreshTableView.setOnAction(event -> {
+            if (currentList.matches("active")) {
+                setTableViewFields("inactive");
+            } else if (currentList.matches("inactive")) {
+                setTableViewFields("active");
+            }
+            setTableView();
+        });
 
         new MoveWindow().moveTabPane(tabPane);
 
@@ -244,7 +234,6 @@ public class Controller implements Initializable {
         // || ~~~~ Settings Tab ~~~~ || \\
 
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-
         settingsTab.setOnSelectionChanged(e -> {
             selectionModel.select(showsTab);
             SettingsWindow settingsWindow = new SettingsWindow();

@@ -179,7 +179,7 @@ public class UserInfoController {
 
         aShowSettings.replace("CurrentSeason", String.valueOf(ShowInfoController.getLowestSeason(aShow, ShowInfoController.getHighestSeason(aShow))));
         Set<String> episodes = ShowInfoController.getEpisodesList(aShow, aShowSettings.get("CurrentSeason"));
-        aShowSettings.replace("CurrentEpisode", String.valueOf(ShowInfoController.getLowestEpisode(episodes, Integer.parseInt(aShowSettings.get("TotalEpisodesCurrentSeason")))));
+        aShowSettings.replace("CurrentEpisode", String.valueOf(ShowInfoController.getLowestEpisode(episodes, ShowInfoController.getHighestEpisode(ShowInfoController.getEpisodesList(aShow, aShowSettings.get("CurrentSeason"))))));
 
         showSettings.put(aShow, aShowSettings);
         userSettingsFile.put("ShowSettings", showSettings);

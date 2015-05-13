@@ -14,13 +14,14 @@ import java.util.logging.Logger;
 public class CheckShowFiles {
     private static final Logger log = Logger.getLogger(CheckShowFiles.class.getName());
 
-    private static boolean recheckShowFileRunning = false;
+    private static boolean recheckShowFileRunning = false, keepRunning = false;
     private static ArrayList<String> emptyShows = new ArrayList<>();
     private static int runNumber = 0;
 
     public static void recheckShowFile(Boolean forceRun) {
-        if (!recheckShowFileRunning) {
+        if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             recheckShowFileRunning = true;
+            keepRunning = !forceRun;
             ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
             ArrayList<String> activeShows = UserInfoController.getActiveShows();
             for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
@@ -29,47 +30,49 @@ public class CheckShowFiles {
                 int hashMapIndex = showsFileArray.indexOf(aHashMap);
                 File folderLocation = ProgramSettingsController.getDirectory(hashMapIndex);
                 Boolean hasChanged = false;
-                for (String aShow : activeShows) {
-                    log.info("Currently rechecking " + aShow);
-                    if (aHashMap.containsKey(aShow)) {
-                        Object[] seasons = aHashMap.get(aShow).keySet().toArray();
-                        for (Object aSeason : seasons) {
-                            ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
-                            if (!changedEpisodes.isEmpty()) {
+                if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
+                    for (String aShow : activeShows) {
+                        log.info("Currently rechecking " + aShow);
+                        if (aHashMap.containsKey(aShow)) {
+                            Object[] seasons = aHashMap.get(aShow).keySet().toArray();
+                            for (Object aSeason : seasons) {
+                                ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
+                                if (!changedEpisodes.isEmpty()) {
+                                    hasChanged = true;
+                                    UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
+                                }
+                            }
+                            ArrayList<Integer> changedSeasons = hasSeasonsChanged(aShow, folderLocation, aHashMap);
+                            if (!changedSeasons.isEmpty()) {
+                                log.info(aShow + " has changed!");
                                 hasChanged = true;
-                                UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
+                                UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, aHashMap, hashMapIndex);
+                            }
+                            if (!Main.running || (!forceRun && !keepRunning)) {
+                                break;
                             }
                         }
-                        ArrayList<Integer> changedSeasons = hasSeasonsChanged(aShow, folderLocation, aHashMap);
-                        if (!changedSeasons.isEmpty()) {
-                            log.info(aShow + " has changed!");
-                            hasChanged = true;
-                            UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, aHashMap, hashMapIndex);
+                    }
+                    HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, aHashMap, forceRun);
+                    if (!changedShows.isEmpty()) {
+                        log.info("Current Shows have changed.");
+                        hasChanged = true;
+                        for (String aNewShow : changedShows.keySet()) {
+                            aHashMap.put(aNewShow, changedShows.get(aNewShow));
                         }
-                        if (!Main.running) {
-                            break;
+                        ShowInfoController.saveShowsHashMapFile(aHashMap, hashMapIndex);
+                        for (String aNewShow : changedShows.keySet()) {
+                            UserInfoController.addNewShow(aNewShow);
                         }
                     }
-                }
-                HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, aHashMap, forceRun);
-                if (!changedShows.isEmpty()) {
-                    log.info("Current Shows have changed.");
-                    hasChanged = true;
-                    for (String aNewShow : changedShows.keySet()) {
-                        aHashMap.put(aNewShow, changedShows.get(aNewShow));
+                    if (hasChanged && Main.running) {
+                        log.info("Some shows have been updated.");
+                        //ShowInfoController.saveShowsFile();
+                        log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
+                    } else if (Main.running) {
+                        log.info("All shows were the same.");
+                        log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
                     }
-                    ShowInfoController.saveShowsHashMapFile(aHashMap, hashMapIndex);
-                    for (String aNewShow : changedShows.keySet()) {
-                        UserInfoController.addNewShow(aNewShow);
-                    }
-                }
-                if (hasChanged && Main.running) {
-                    log.info("Some shows have been updated.");
-                    //ShowInfoController.saveShowsFile();
-                    log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
-                } else if (Main.running) {
-                    log.info("All shows were the same.");
-                    log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
                 }
             }
             recheckShowFileRunning = false;

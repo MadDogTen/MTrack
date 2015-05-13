@@ -52,14 +52,23 @@ public class MainRun {
             hasRan = true;
         }
         if (forceRun && Clock.timeTakenSeconds(timer) > 2 || Clock.timeTakenSeconds(timer) > Variables.updateSpeed) {
+            final Boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
                     CheckShowFiles.recheckShowFile(false);
+                    taskRunning[0] = false;
                     return null;
                 }
             };
             new Thread(task).start();
+            while (taskRunning[0]) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    log.severe(e.toString());
+                }
+            }
             timer = Clock.getTimeSeconds();
             forceRun = false;
         }
