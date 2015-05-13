@@ -95,7 +95,6 @@ public class FileManager {
 
     public static String getOS() {
         String os = System.getProperty("os.name").toLowerCase();
-
         if (os.contains("windows")) {
             return "windows";
         } else if (os.contains("mac")) {
@@ -123,7 +122,6 @@ public class FileManager {
     public static String getDataFolder() {
         String home = System.getProperty("user.home");
         String os = System.getProperty("os.name").toLowerCase();
-
         if (os.contains("windows")) {
             home = System.getenv("appdata");
         } else if (os.contains("mac")) {
@@ -131,9 +129,7 @@ public class FileManager {
         } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
             home += "~/.";
         }
-
         File dir = new File(home, Variables.ProgramRootFolder);
-
         return dir.getAbsolutePath();
     }
 
@@ -143,7 +139,6 @@ public class FileManager {
             log.warning("File " + getDataFolder() + file + " does not exist!");
         }
         File toDelete = new File(getDataFolder() + file);
-
         if (toDelete.canWrite()) {
             if (!toDelete.delete()) {
                 log.warning("Cannot delete: " + toDelete);
@@ -188,7 +183,6 @@ public class FileManager {
                 Runtime.getRuntime().exec(new String[]{
                         "rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()
                 });
-                //log.info("File Played!"); // --------------------------------------------------------- Temp
             } else if (os.contains("mac")) {
                 Runtime.getRuntime().exec(new String[]{
                         "/usr/bin/open", file.getAbsolutePath()
@@ -202,7 +196,7 @@ public class FileManager {
                 if (Desktop.isDesktopSupported()) {
                     Desktop.getDesktop().open(file);
                 }
-                log.warning("FileManager- Your OS is Unknown, Attempting to open file, But it may fail.");
+                log.warning("FileManager- Your OS is Unknown, Attempting to open file anyways, But it may fail.");
             }
         } catch (IOException e) {
             log.severe(e.toString());

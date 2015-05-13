@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import program.gui.*;
+import program.information.DisplayShows;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
@@ -114,13 +115,13 @@ public class Controller implements Initializable {
                     MenuItem playSeasonEpisode = new MenuItem("Pick Season/Episode");
                     playSeasonEpisode.setOnAction(e -> {
                         DoubleTextBox doubleTextBox = new DoubleTextBox();
-                        int[] seasonEpisode = doubleTextBox.displaySeasonEpisode("Open Episode", "Season", "Episode");
+                        int[] seasonEpisode = doubleTextBox.displaySeasonEpisode("Open Episode", "Season", "Episode", tabPane.getScene().getWindow());
                         int fileExists = UserInfoController.doesSeasonEpisodeExists(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]));
                         if (fileExists == 1 || fileExists == 2) {
                             UserInfoController.playAnyEpisode(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]), true, -1);
                         } else {
                             MessageBox messageBox = new MessageBox();
-                            messageBox.display("Pick Season/Episode", "Your selection doesn't exist.");
+                            messageBox.display("Pick Season/Episode", "Your selection doesn't exist.", tabPane.getScene().getWindow());
                         }
                     });
                     MenuItem setNotActive = new MenuItem("Stop Updating");
@@ -159,14 +160,14 @@ public class Controller implements Initializable {
                             FileManager.open(folders.get(0));
                         } else {
                             ConfirmBox confirmBox = new ConfirmBox();
-                            Boolean openAll = confirmBox.display("Open Folder", "Do you want to open ALL associated folders?");
+                            Boolean openAll = confirmBox.display("Open Folder", "Do you want to open ALL associated folders?", tabPane.getScene().getWindow());
                             if (openAll) {
                                 for (File aFolder : folders) {
                                     FileManager.open(aFolder);
                                 }
                             } else {
                                 ListSelectBox listSelectBox = new ListSelectBox();
-                                File file = listSelectBox.directories("Open Folder", "Pick the Folder you want to open", folders);
+                                File file = listSelectBox.directories("Open Folder", "Pick the Folder you want to open", folders, tabPane.getScene().getWindow());
                                 FileManager.open(file);
                             }
                         }
@@ -189,7 +190,7 @@ public class Controller implements Initializable {
                                     tableView.getSelectionModel().clearAndSelect(row.getIndex());
                                     UserInfoController.playAnyEpisode(aShow, -1, Variables.EmptyString, true, fileExists);
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
-                                    int userChoice = showConfirmBox.display("Playing Show", "Have the watched the show?", tabPane);
+                                    int userChoice = showConfirmBox.display("Playing Show", "Have the watched the show?", tabPane.getScene().getWindow());
                                     if (userChoice == 1) {
                                         UserInfoController.changeEpisode(aShow, -2, true, fileExists);
                                         updateShowField(aShow, tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
@@ -208,13 +209,14 @@ public class Controller implements Initializable {
                             if (keepPlaying) {
                                 UserInfoController.changeEpisode(aShow, -2, false, 0);
                                 MessageBox messageBox = new MessageBox();
-                                messageBox.display("Error", "You have reached the end!", tabPane);
+                                messageBox.display("Error", "You have reached the end!", tabPane.getScene().getWindow());
                             }
                         }
                     });
                     return row;
                 }
         );
+
         // ~~~~ Buttons ~~~~ \\
         exit.setOnAction(e -> {
             program.Main.stop(program.Main.window, false, true);
@@ -228,11 +230,7 @@ public class Controller implements Initializable {
             setTableView();
         });
 
-        new MoveWindow().moveTabPane(tabPane);
-
-
         // || ~~~~ Settings Tab ~~~~ || \\
-
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
         settingsTab.setOnSelectionChanged(e -> {
             selectionModel.select(showsTab);
@@ -243,5 +241,9 @@ public class Controller implements Initializable {
                 log.severe(e1.toString());
             }
         });
+
+
+        // Allow the undecorated window to be moved.
+        new MoveWindow().moveWindow(tabPane);
     }
 }

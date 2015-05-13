@@ -31,7 +31,7 @@ public class Main extends Application implements Runnable {
         ConfirmBox confirmBox = new ConfirmBox();
         Boolean answer = true;
         if (!forceStop) {
-            answer = confirmBox.display("Closing....", "Are you sure?", stage);
+            answer = confirmBox.display("Closing....", "Are you sure?", stage.getScene().getWindow());
         }
         if (answer) {
             if (saveSettings) {

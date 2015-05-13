@@ -1,5 +1,6 @@
 package program.gui;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,12 +12,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import program.input.MoveWindow;
 
 public class DoubleTextBox {
-    MoveWindow moveWindow = new MoveWindow();
 
-    public int[] displaySeasonEpisode(String title, String firstMessage, String secondMessage) {
+    public int[] displaySeasonEpisode(String title, String firstMessage, String secondMessage, Window oldWindow) {
         Stage window = new Stage();
         final int[] seasonEpisode = new int[2];
 
@@ -43,7 +44,7 @@ public class DoubleTextBox {
 
         Button submit = new Button("Submit");
         submit.setOnAction(event -> {
-            if (isValid(title, textField.getText(), textField1.getText())) {
+            if (isValid(title, textField.getText(), textField1.getText(), window)) {
                 seasonEpisode[0] = Integer.parseInt(textField.getText());
                 seasonEpisode[1] = Integer.parseInt(textField1.getText());
                 window.close();
@@ -73,22 +74,25 @@ public class DoubleTextBox {
 
         Scene scene = new Scene(mainLayout);
 
-        moveWindow.moveWindow(window, scene);
-
         window.setScene(scene);
+        Platform.runLater(() -> {
+            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            new MoveWindow().moveWindow(window);
+        });
         window.showAndWait();
 
         return seasonEpisode;
     }
 
-    private boolean isValid(String title, String messageOne, String messageTwo) {
+    private boolean isValid(String title, String messageOne, String messageTwo, Window oldWindow) {
         if (messageOne.isEmpty() || messageTwo.isEmpty()) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display(title, "Fields cannot be empty.");
+            messageBox.display(title, "Fields cannot be empty.", oldWindow);
             return false;
         } else if (!messageOne.matches("^[0-9]+$") || (!messageTwo.matches("^[0-9]+$"))) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display("Try Again", "Both fields need to be numbers");
+            messageBox.display("Try Again", "Both fields need to be numbers", oldWindow);
             return false;
         } else return true;
     }

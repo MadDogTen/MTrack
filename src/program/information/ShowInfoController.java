@@ -24,7 +24,7 @@ public class ShowInfoController {
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getShowsFileArray();
 
         // This crazy thing is to combine all found Shows/Seasons/Episodes from all directory's into one HashMap.
-        long timer = Clock.getTimeNano();
+        long timer = Clock.getTimeMilliSeconds();
         showsFile = new HashMap<>();
         ArrayList<String> allShows = new ArrayList<>();
         for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
@@ -62,7 +62,7 @@ public class ShowInfoController {
             }
             showsFile.put(aShow, seasonEpisode);
         }
-        log.info("ShowInfoController- It took " + Clock.timeTakenNano(timer) + " nanoseconds to combine all files");
+        log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
     }
 
     @SuppressWarnings("unchecked")
@@ -96,16 +96,6 @@ public class ShowInfoController {
             loadShowsFile();
         }
         return showsFile.keySet().toArray();
-    }
-
-    public static Object[] getSeasonsListObject(String show) {
-        if (showsFile == null) {
-            loadShowsFile();
-        }
-        HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(show);
-        if (seasonEpisode != null) {
-            return seasonEpisode.keySet().toArray();
-        } else return null;
     }
 
     public static Set<Integer> getSeasonsListSet(String show) {
@@ -209,7 +199,6 @@ public class ShowInfoController {
         for (int aSeason : seasons) {
             if (aSeason > highestSeason) {
                 highestSeason = aSeason;
-
             }
         }
         return highestSeason;
@@ -217,7 +206,6 @@ public class ShowInfoController {
 
     public static int getLowestEpisode(Set<String> episodes, int highestEpisode) {
         int lowestEpisode = highestEpisode;
-
         if (episodes != null) {
             for (String aEpisode : episodes) {
                 if (aEpisode.contains("+")) {
@@ -237,7 +225,6 @@ public class ShowInfoController {
 
     public static int getHighestEpisode(Set<String> episodes) {
         int highestEpisode = 0;
-
         if (episodes != null) {
             for (String aEpisode : episodes) {
                 if (aEpisode.contains("+")) {
@@ -264,22 +251,16 @@ public class ShowInfoController {
         if (showsFile == null) {
             loadShowsFile();
         }
-
         Set<String> Show = showsFile.keySet();
-
         log.info("Printing out all Shows and Episodes");
         for (String aShow : Show) {
             log.info("\n\n ShowInfoController- " + aShow);
             HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
-
             Set<Integer> season = seasons.keySet();
-
             for (int aSeason : season) {
                 log.info("\n ShowInfoController- " + "Season: " + aSeason);
                 HashMap<String, String> episodes = seasons.get(aSeason);
-
                 Set<String> episode = episodes.keySet();
-
                 for (String aEpisode : episode) {
                     log.info("ShowInfoController- " + episodes.get(aEpisode));
                 }

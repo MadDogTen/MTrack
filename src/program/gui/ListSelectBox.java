@@ -1,5 +1,6 @@
 package program.gui;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import program.input.MoveWindow;
 import program.util.Strings;
 import program.util.Variables;
@@ -22,9 +24,7 @@ import java.util.ArrayList;
 
 public class ListSelectBox {
 
-    private MoveWindow moveWindow = new MoveWindow();
-
-    public String display(String title, String message, ArrayList<String> users) {
+    public String display(String title, String message, ArrayList<String> users, Window oldWindow) {
         final String[] userName = new String[1];
         userName[0] = Strings.DefaultUsername;
 
@@ -48,7 +48,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue().contentEquals("Add New Username")) {
                 TextBox textBox = new TextBox();
-                userName[0] = textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault");
+                userName[0] = textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault", window);
                 window.close();
             } else if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 userName[0] = comboBox.getValue();
@@ -67,15 +67,18 @@ public class ListSelectBox {
 
         Scene scene = new Scene(layout);
 
-        moveWindow.moveWindow(window, scene);
-
         window.setScene(scene);
+        Platform.runLater(() -> {
+            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            new MoveWindow().moveWindow(window);
+        });
         window.showAndWait();
 
         return userName[0];
     }
 
-    public String defaultUser(String title, String message, ArrayList<String> users) {
+    public String defaultUser(String title, String message, ArrayList<String> users, Window oldWindow) {
         final String[] userName = new String[1];
         userName[0] = Variables.EmptyString;
 
@@ -98,7 +101,7 @@ public class ListSelectBox {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display("Default User", "Default user not set.");
+                    messageBox.display("Default User", "Default user not set.", window);
                     window.close();
                 } else {
                     userName[0] = comboBox.getValue();
@@ -124,15 +127,18 @@ public class ListSelectBox {
 
         Scene scene = new Scene(layout);
 
-        moveWindow.moveWindow(window, scene);
-
         window.setScene(scene);
+        Platform.runLater(() -> {
+            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            new MoveWindow().moveWindow(window);
+        });
         window.showAndWait();
 
         return userName[0];
     }
 
-    public File directories(String title, String message, ArrayList<File> files) {
+    public File directories(String title, String message, ArrayList<File> files, Window oldWindow) {
         final File[] file = new File[1];
         file[0] = new File(Variables.EmptyString);
 
@@ -155,7 +161,7 @@ public class ListSelectBox {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display("Open Folder", "Please choose a folder.");
+                    messageBox.display("Open Folder", "Please choose a folder.", window);
                 } else {
                     file[0] = comboBox.getValue();
                     window.close();
@@ -180,9 +186,12 @@ public class ListSelectBox {
 
         Scene scene = new Scene(layout);
 
-        moveWindow.moveWindow(window, scene);
-
         window.setScene(scene);
+        Platform.runLater(() -> {
+            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            new MoveWindow().moveWindow(window);
+        });
         window.showAndWait();
 
         return file[0];

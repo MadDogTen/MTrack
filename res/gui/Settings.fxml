@@ -3,8 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
-         minHeight="-Infinity"
-         minWidth="-Infinity" prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE"
+         minHeight="-Infinity" minWidth="-Infinity" prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE"
          xmlns="http://javafx.com/javafx/8" fx:controller="program.FXMLControllers.Settings">
     <tabs>
         <Tab closable="false" text="Users">
@@ -46,16 +45,12 @@
                     <children>
                         <Button fx:id="deleteEverythingAndClose" layoutX="117.0" layoutY="189.0" mnemonicParsing="false"
                                 text="Reset Program"/>
-                        <Button fx:id="changeObservableList" layoutX="2.0" layoutY="162.0" mnemonicParsing="false"
-                                text="Change ObservableList"/>
-                        <Button fx:id="refreshObservableList" layoutX="2.0" layoutY="136.0" mnemonicParsing="false"
-                                text="Refresh ObservableList"/>
                         <Button fx:id="printAllShows" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
                                 text="Print All Shows"/>
                         <Button fx:id="exit3" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
                         <Button fx:id="printAllDirectories" layoutX="2.0" layoutY="28.0" mnemonicParsing="false"
                                 text="Print All Directories"/>
-                        <Button fx:id="printEmptyShowFolders" layoutX="2.0" layoutY="58.0" mnemonicParsing="false"
+                        <Button fx:id="printEmptyShowFolders" layoutX="4.0" layoutY="69.0" mnemonicParsing="false"
                                 text="Print Empty Shows"/>
                     </children>
                 </AnchorPane>

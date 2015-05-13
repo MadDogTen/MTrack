@@ -24,23 +24,19 @@ public class MainRun {
     public static boolean hasRan = false, forceRun = true;
     public static int timer = Clock.getTimeSeconds();
 
-
     public static void startBackend() {
-
         // If true, It will Delete ALL Files each time the program is ran.
-        if (Variables.startFresh && FileManager.checkFolderExists(FileManager.getDataFolder())) {
+        if (Variables.StartFresh && FileManager.checkFolderExists(FileManager.getDataFolder())) {
             log.warning("Starting Fresh...");
             FileManager.deleteFolder(new File(FileManager.getDataFolder()));
         }
-
+        // Check
         if (FileManager.checkFolderExists(FileManager.getDataFolder())) {
             Strings.UserName = getUser();
         } else firstRun();
-
         if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
             generateUserSettingsFile(Strings.UserName, false);
         }
-
         log.info("Username is set: " + Strings.UserName);
         Variables.setUpdateSpeed();
         Controller.setTableViewFields("active");
@@ -82,7 +78,7 @@ public class MainRun {
             return ProgramSettingsController.getDefaultUsername();
         } else {
             ListSelectBox listSelectBox = new ListSelectBox();
-            return listSelectBox.display("Select User", "Choose your Username:", Users);
+            return listSelectBox.display("Select User", "Choose your Username:", Users, Main.window);
         }
     }
 
@@ -102,10 +98,8 @@ public class MainRun {
             }
         };
         new Thread(task).start();
-
         TextBox textBox = new TextBox();
-        Strings.UserName = textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault");
-
+        Strings.UserName = textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault", Main.window);
         while (taskRunning[0]) {
             try {
                 Thread.sleep(500);
@@ -122,14 +116,14 @@ public class MainRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int directoryNumber = 0;
         while (addAnother) {
-            File directory = textBox.addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.");
+            File directory = textBox.addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window);
             Boolean matched = ProgramSettingsController.addDirectory(directoryNumber, directory);
             directoryNumber++;
             if (matched) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display("Duplicate", "Directory was a duplicate!");
+                messageBox.display("Duplicate", "Directory was a duplicate!", Main.window);
             }
-            if (!confirmBox.display("Continue", "Add another directory?")) {
+            if (!confirmBox.display("Continue", "Add another directory?", Main.window)) {
                 addAnother = false;
             }
         }
@@ -142,7 +136,6 @@ public class MainRun {
 
     private static void generateShowFiles() {
         ArrayList<String> directories = ProgramSettingsController.getDirectories();
-
         for (String aDirectory : directories) {
             int fileName = directories.indexOf(aDirectory);
             File file = new File(aDirectory);

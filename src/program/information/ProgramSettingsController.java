@@ -61,16 +61,6 @@ public class ProgramSettingsController {
         return settingsFile.get("Directories");
     }
 
-    public static ArrayList<String> getCurrentlyActiveDirectories() {
-        ArrayList<String> activeDirectories = new ArrayList<>();
-        for (String aDirectory : getDirectories()) {
-            if (new File(aDirectory).isDirectory()) {
-                activeDirectories.add(aDirectory);
-            }
-        }
-        return activeDirectories;
-    }
-
     public static boolean isDirectoryCurrentlyActive(File directory) {
         return directory.isDirectory();
     }

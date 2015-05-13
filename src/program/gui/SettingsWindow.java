@@ -1,5 +1,6 @@
 package program.gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
@@ -25,8 +26,10 @@ public class SettingsWindow {
 
         window.setResizable(false);
         window.setScene(scene);
-        window.setX(Main.window.getX() + (Main.window.getWidth() / 2) - (213 / 2));
-        window.setY(Main.window.getY() + (Main.window.getHeight() / 2) - (244 / 2));
+        Platform.runLater(() -> {
+            window.setX(Main.window.getX() + (Main.window.getWidth() / 2) - (window.getWidth() / 2));
+            window.setY(Main.window.getY() + (Main.window.getHeight() / 2) - (window.getHeight() / 2));
+        });
         window.showAndWait();
     }
 }

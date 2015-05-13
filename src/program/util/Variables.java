@@ -17,7 +17,7 @@ public class Variables {
     public static final String SettingsExtension = ".settings";
     // Other
     public static final String EmptyString = "";
-    public static final Boolean startFresh = false;
+    public static final Boolean StartFresh = false;
     public static Integer updateSpeed;
 
 

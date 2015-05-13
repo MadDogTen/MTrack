@@ -1,4 +1,4 @@
-package program.gui;
+package program.information;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;

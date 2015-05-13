@@ -53,7 +53,7 @@ public class About implements Initializable {
             stage.close();
         });
 
+        // Allow the undecorated window to be moved.
         new MoveWindow().moveWindow(pane);
-
     }
 }
