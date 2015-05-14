@@ -16,17 +16,12 @@ import program.input.MoveWindow;
 
 public class ConfirmBox {
 
-    private final int Width = 85, Height = 60;
-    boolean answer;
-
     public boolean display(String title, String message, Window oldWindow) {
         Stage window = new Stage();
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);
-        window.setMinWidth(Width);
-        window.setMinHeight(Height);
 
         Label label = new Label();
         label.setText(message);
@@ -37,14 +32,14 @@ public class ConfirmBox {
         noButton.setMinHeight(20);
         noButton.setMinWidth(30);
 
-
+        final boolean[] answer = new boolean[1];
         yesButton.setOnAction(e -> {
-            answer = true;
+            answer[0] = true;
             window.close();
         });
 
         noButton.setOnAction(e -> {
-            answer = false;
+            answer[0] = false;
             window.close();
         });
 
@@ -70,6 +65,6 @@ public class ConfirmBox {
         });
         window.showAndWait();
 
-        return answer;
+        return answer[0];
     }
 }

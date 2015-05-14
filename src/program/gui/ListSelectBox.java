@@ -69,8 +69,10 @@ public class ListSelectBox {
 
         window.setScene(scene);
         Platform.runLater(() -> {
-            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            if (oldWindow != null) {
+                window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+                window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            }
             new MoveWindow().moveWindow(window);
         });
         window.showAndWait();
@@ -161,7 +163,7 @@ public class ListSelectBox {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display("Open Folder", "Please choose a folder.", window);
+                    messageBox.display("Folder", "Please choose a folder.", window);
                 } else {
                     file[0] = comboBox.getValue();
                     window.close();

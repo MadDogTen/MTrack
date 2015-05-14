@@ -11,6 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
 import program.io.FileManager;
@@ -154,6 +155,7 @@ public class TextBox {
         label.setText(message);
 
         TextField textField = new TextField();
+        textField.setText(String.valueOf(ProgramSettingsController.getUpdateSpeed()));
 
         Button submit = new Button("Submit");
         submit.setOnAction(event -> {

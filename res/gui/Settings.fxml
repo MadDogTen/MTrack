@@ -25,16 +25,18 @@
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <Button fx:id="about" layoutX="81.0" layoutY="170.0" mnemonicParsing="false" text="About"/>
-                        <Button fx:id="forceRecheck" layoutX="41.0" layoutY="108.0" mnemonicParsing="false"
+                        <Button fx:id="about" layoutX="81.0" layoutY="188.0" mnemonicParsing="false" text="About"/>
+                        <Button fx:id="forceRecheck" layoutX="2.0" layoutY="119.0" mnemonicParsing="false"
                                 text="Force Recheck Shows"/>
                         <Button fx:id="exit2" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
-                        <Button fx:id="openProgramFolder" layoutX="42.0" layoutY="135.0" mnemonicParsing="false"
+                        <Button fx:id="openProgramFolder" layoutX="2.0" layoutY="152.0" mnemonicParsing="false"
                                 text="Open Settings Folder"/>
-                        <Button fx:id="changeUpdateSpeed" layoutX="42.0" layoutY="15.0" mnemonicParsing="false"
+                        <Button fx:id="changeUpdateSpeed" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
                                 text="Change Update Time"/>
-                        <Button fx:id="addDirectory" layoutX="61.0" layoutY="51.0" mnemonicParsing="false"
+                        <Button fx:id="addDirectory" layoutX="2.0" layoutY="40.0" mnemonicParsing="false"
                                 text="Add Directory"/>
+                        <Button fx:id="removeDirectory" layoutX="2.0" layoutY="67.0" mnemonicParsing="false"
+                                text="Remove Directory"/>
                     </children>
                 </AnchorPane>
             </content>
@@ -46,11 +48,11 @@
                         <Button fx:id="deleteEverythingAndClose" layoutX="117.0" layoutY="189.0" mnemonicParsing="false"
                                 text="Reset Program"/>
                         <Button fx:id="printAllShows" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
-                                text="Print All Shows"/>
+                                text="Print All Show Info"/>
                         <Button fx:id="exit3" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
                         <Button fx:id="printAllDirectories" layoutX="2.0" layoutY="28.0" mnemonicParsing="false"
                                 text="Print All Directories"/>
-                        <Button fx:id="printEmptyShowFolders" layoutX="4.0" layoutY="69.0" mnemonicParsing="false"
+                        <Button fx:id="printEmptyShowFolders" layoutX="2.0" layoutY="58.0" mnemonicParsing="false"
                                 text="Print Empty Shows"/>
                     </children>
                 </AnchorPane>

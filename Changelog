@@ -1,11 +1,17 @@
 Changes:
 
+0.7.4 -
+General Code Cleanup.
+Fixed the "Choose your username" stage at startup from having the dropdown list appear in the top left of the screen until you move the stage.
+Made the Change Update Time have the current update time text by default.
+Added "Remove Directory" button.
+
 0.7.3 -
 Code Cleanup / Restructuring.
 Made new Windows Spawn in the center of the window that created them.
 Changed Methods to use Window instead of other types (tabPane, Pane, etc) which cuts down on needed code and makes it easier in the long run (MainGui, Settings, and About aren't yet converted).
 Added Milliseconds to the clock class.
-Small Memory Improvement (Barely Noticeable).
+Small Memory Improvement (Hardly Noticeable).
 
 0.7.2 -
 Fixed the show "Reset" button.

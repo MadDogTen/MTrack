@@ -78,7 +78,7 @@ public class MainRun {
             return ProgramSettingsController.getDefaultUsername();
         } else {
             ListSelectBox listSelectBox = new ListSelectBox();
-            return listSelectBox.display("Select User", "Choose your Username:", Users, Main.window);
+            return listSelectBox.display("Select User", "Choose your Username:", Users, null);
         }
     }
 

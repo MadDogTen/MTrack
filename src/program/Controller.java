@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 public class Controller implements Initializable {
     private static final Logger log = Logger.getLogger(Controller.class.getName());
 
-    public static String currentList;
+    public static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
     @FXML
     private TabPane tabPane;
@@ -62,11 +62,20 @@ public class Controller implements Initializable {
     public static void setTableViewFields(String type) {
         if (type.matches("active")) {
             tableViewFields = MakeTableViewFields(UserInfoController.getActiveShows());
-            currentList = "active";
+            if (!currentList.matches("active")) {
+                currentList = "active";
+            }
         } else if (type.matches("inactive")) {
             tableViewFields = MakeTableViewFields(UserInfoController.getInactiveShows());
-            currentList = "inactive";
+            if (!currentList.matches("inactive")) {
+                currentList = "inactive";
+            }
         }
+    }
+
+    public static void temp() {
+        tableViewFields.removeAll();
+        setTableViewFields(currentList);
     }
 
     public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere -- Having difficulty doing this.
@@ -104,6 +113,7 @@ public class Controller implements Initializable {
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
         setTableView();
+        tableView.getItems();
 
         tableView.setRowFactory(
                 param -> {
@@ -241,7 +251,6 @@ public class Controller implements Initializable {
                 log.severe(e1.toString());
             }
         });
-
 
         // Allow the undecorated window to be moved.
         new MoveWindow().moveWindow(tabPane);

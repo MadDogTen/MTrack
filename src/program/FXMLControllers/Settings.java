@@ -60,6 +60,8 @@ public class Settings implements Initializable {
     @FXML
     private Button addDirectory;
     @FXML
+    private Button removeDirectory;
+    @FXML
     private Button printAllDirectories;
     @FXML
     private Button printEmptyShowFolders;
@@ -145,6 +147,26 @@ public class Settings implements Initializable {
                 }
             } else log.info("Directory wasn't added.");
         });
+        removeDirectory.setOnAction(e -> {
+            ArrayList<File> directories = new ArrayList<>();
+            for (String aDirectory : ProgramSettingsController.getDirectories()) {
+                directories.add(new File(aDirectory));
+            }
+            if (!directories.isEmpty()) {
+                ListSelectBox listSelectBox = new ListSelectBox();
+                String directoryToDelete = String.valueOf(listSelectBox.directories("Delete Directory", "Directory to delete:", directories, tabPane.getScene().getWindow()));
+                if (directoryToDelete != null) {
+                    ConfirmBox confirmBox = new ConfirmBox();
+                    Boolean confirm = confirmBox.display("Delete Directory", ("Are you sure to want to delete " + directoryToDelete + "?"), tabPane.getScene().getWindow());
+                    if (confirm && !directoryToDelete.isEmpty()) {
+                        ProgramSettingsController.removeDirectory(directoryToDelete);
+                    }
+                }
+            } else {
+                MessageBox messageBox = new MessageBox();
+                messageBox.display("Delete User", "There are no users to delete.", tabPane.getScene().getWindow());
+            }
+        });
         forceRecheck.setOnAction(e -> {
             Task<Void> task = new Task<Void>() {
                 @Override
@@ -186,7 +208,6 @@ public class Settings implements Initializable {
         printEmptyShowFolders.setOnAction(e -> {
             ArrayList<String> emptyShows = CheckShowFiles.getEmptyShows();
             if (!emptyShows.isEmpty()) {
-                System.out.println(emptyShows);
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 for (String aDirectory : directories) {
                     Set<String> shows = ShowInfoController.getShowsFile(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();

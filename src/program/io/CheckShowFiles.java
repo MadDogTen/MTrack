@@ -1,5 +1,6 @@
 package program.io;
 
+import program.Controller;
 import program.Main;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
@@ -19,17 +20,17 @@ public class CheckShowFiles {
     private static int runNumber = 0;
 
     public static void recheckShowFile(Boolean forceRun) {
+        Boolean hasChanged = false;
+        int timer = Clock.getTimeSeconds();
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
             ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
             ArrayList<String> activeShows = UserInfoController.getActiveShows();
             for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
-                int timer = Clock.getTimeSeconds();
                 log.info("Rechecking shows...");
                 int hashMapIndex = showsFileArray.indexOf(aHashMap);
                 File folderLocation = ProgramSettingsController.getDirectory(hashMapIndex);
-                Boolean hasChanged = false;
                 if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
                     for (String aShow : activeShows) {
                         log.info("Currently rechecking " + aShow);
@@ -65,18 +66,18 @@ public class CheckShowFiles {
                             UserInfoController.addNewShow(aNewShow);
                         }
                     }
-                    if (hasChanged && Main.running) {
-                        log.info("Some shows have been updated.");
-                        //ShowInfoController.saveShowsFile();
-                        log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
-                    } else if (Main.running) {
-                        log.info("All shows were the same.");
-                        log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
-                    }
                 }
             }
-            recheckShowFileRunning = false;
         }
+        if (hasChanged && Main.running) {
+            log.info("Some shows have been updated.");
+            Controller.temp();
+            log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
+        } else if (Main.running) {
+            log.info("All shows were the same.");
+            log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
+        }
+        recheckShowFileRunning = false;
     }
 
     @SuppressWarnings("unchecked")

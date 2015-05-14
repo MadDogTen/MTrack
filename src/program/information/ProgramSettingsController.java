@@ -70,6 +70,11 @@ public class ProgramSettingsController {
         return settingsFile.get("Directories").size();
     }
 
+    public static void removeDirectory(String directory) {
+        loadProgramSettingsFile();
+        settingsFile.get("Directories").remove(directory);
+    }
+
     public static void printAllDirectories() {
         loadProgramSettingsFile();
         for (String aDirectory : settingsFile.get("Directories")) {
