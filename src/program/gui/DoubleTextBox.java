@@ -13,12 +13,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 
 public class DoubleTextBox {
 
     public int[] displaySeasonEpisode(String title, String firstMessage, String secondMessage, Window oldWindow) {
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         final int[] seasonEpisode = new int[2];
 
         window.initStyle(StageStyle.UNDECORATED);

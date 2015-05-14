@@ -9,11 +9,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 
 public class AboutBox {
     public void display(Window oldWindow) throws Exception {
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
         Pane root = FXMLLoader.load(getClass().getResource("/gui/About.fxml"));

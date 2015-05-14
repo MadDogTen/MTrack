@@ -1,6 +1,5 @@
 package program.io;
 
-import program.Controller;
 import program.Main;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
@@ -71,7 +70,6 @@ public class CheckShowFiles {
         }
         if (hasChanged && Main.running) {
             log.info("Some shows have been updated.");
-            Controller.temp();
             log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
         } else if (Main.running) {
             log.info("All shows were the same.");

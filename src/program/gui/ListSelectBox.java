@@ -15,6 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 import program.util.Strings;
 import program.util.Variables;
@@ -29,6 +30,7 @@ public class ListSelectBox {
         userName[0] = Strings.DefaultUsername;
 
         Stage window = new Stage();
+        window.getIcons().add(ImageLoader.getImage("/image/LogoChoice.png"));
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
@@ -85,6 +87,7 @@ public class ListSelectBox {
         userName[0] = Variables.EmptyString;
 
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
@@ -145,6 +148,7 @@ public class ListSelectBox {
         file[0] = new File(Variables.EmptyString);
 
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);

@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import program.graphics.ImageLoader;
 import program.gui.ConfirmBox;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
@@ -58,6 +59,7 @@ public class Main extends Application implements Runnable {
     @Override
     public void start(Stage primaryStage) throws Exception {
         window = primaryStage;
+        ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         Parent root = FXMLLoader.load(getClass().getResource("/gui/MainGui.fxml"));
         window.setTitle("MTrack");

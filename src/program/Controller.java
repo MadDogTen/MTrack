@@ -73,11 +73,6 @@ public class Controller implements Initializable {
         }
     }
 
-    public static void temp() {
-        tableViewFields.removeAll();
-        setTableViewFields(currentList);
-    }
-
     public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere -- Having difficulty doing this.
         tableViewFields.remove(index);
         tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));

@@ -11,6 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import program.graphics.ImageLoader;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
@@ -24,6 +25,7 @@ public class TextBox {
 
     public String display(String title, String message, String messageIfNameFieldIsBlank, String defaultValue, Window oldWindow) {
         Stage window = new Stage();
+        window.getIcons().add(ImageLoader.getImage("/image/LogoChoice.png"));
         final String[] userName = new String[1];
 
         window.initStyle(StageStyle.UNDECORATED);
@@ -86,6 +88,7 @@ public class TextBox {
 
     public File addDirectoriesDisplay(String title, String message, ArrayList<String> currentDirectories, String messageIfFieldIsBlank, String messageIfNotDirectory, Window oldWindow) {
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         final File[] directories = new File[1];
 
         window.initStyle(StageStyle.UNDECORATED);
@@ -144,6 +147,7 @@ public class TextBox {
 
     public int updateSpeed(String title, String message, String messageFieldIsBlank, int defaultValue, Window oldWindow) {
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         final int[] userName = new int[1];
 
         window.initStyle(StageStyle.UNDECORATED);

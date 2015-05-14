@@ -12,6 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 
 public class ShowConfirmBox {
@@ -20,6 +21,7 @@ public class ShowConfirmBox {
 
     public int display(String title, String message, Window oldWindow) {
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);

@@ -9,10 +9,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import program.Main;
+import program.graphics.ImageLoader;
 
 public class SettingsWindow {
     public void display() throws Exception {
         Stage window = new Stage();
+        ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
         TabPane root = FXMLLoader.load(getClass().getResource("/gui/Settings.fxml"));
