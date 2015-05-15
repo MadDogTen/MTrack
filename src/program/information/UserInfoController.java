@@ -19,11 +19,6 @@ public class UserInfoController {
         }
     }
 
-    public static HashMap<String, String> getShowSettings(String show) {
-        loadUserInfo();
-        return userSettingsFile.get("ShowSettings").get(show);
-    }
-
     public static ArrayList<String> getAllUsers() {
         File folder = new File(FileManager.getDataFolder() + Variables.UsersFolder);
         String[] userFile = folder.list(new FilenameFilter() {
@@ -44,13 +39,6 @@ public class UserInfoController {
             users.remove("Program");
         }
         return users;
-    }
-
-    public static Integer getNumberOfUsers() {
-        if (getAllUsers() != null) {
-            return getAllUsers().size();
-        }
-        return 0;
     }
 
     public static void setActiveStatus(String aShow, Boolean active) {
@@ -228,6 +216,10 @@ public class UserInfoController {
             }
         } else return null;
         return episodes;
+    }
+
+    public static int getCurrentSeason(String aShow) {
+        return Integer.parseInt(userSettingsFile.get("ShowSettings").get(aShow).get("CurrentSeason"));
     }
 
     public static int getRemainingNumberOfEpisodes(String aShow) {

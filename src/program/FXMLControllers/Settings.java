@@ -65,6 +65,10 @@ public class Settings implements Initializable {
     private Button printAllDirectories;
     @FXML
     private Button printEmptyShowFolders;
+    @FXML
+    private Button setAllActive;
+    @FXML
+    private Button setAllInactive;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -220,6 +224,18 @@ public class Settings implements Initializable {
                     }
                     log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
                 }
+            }
+        });
+        setAllActive.setOnAction(e -> {
+            Object[] showsList = ShowInfoController.getShowsList();
+            for (Object aShow : showsList) {
+                UserInfoController.setActiveStatus(String.valueOf(aShow), true);
+            }
+        });
+        setAllInactive.setOnAction(e -> {
+            Object[] showsList = ShowInfoController.getShowsList();
+            for (Object aShow : showsList) {
+                UserInfoController.setActiveStatus(String.valueOf(aShow), false);
             }
         });
         deleteEverythingAndClose.setOnAction(e -> {

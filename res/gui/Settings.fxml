@@ -54,6 +54,10 @@
                                 text="Print All Directories"/>
                         <Button fx:id="printEmptyShowFolders" layoutX="2.0" layoutY="58.0" mnemonicParsing="false"
                                 text="Print Empty Shows"/>
+                        <Button fx:id="setAllActive" layoutX="2.0" layoutY="95.0" mnemonicParsing="false"
+                                text="Set All Active"/>
+                        <Button fx:id="setAllInactive" layoutX="2.0" layoutY="122.0" mnemonicParsing="false"
+                                text="Set All Inactive"/>
                     </children>
                 </AnchorPane>
             </content>

@@ -1,5 +1,12 @@
 Changes:
 
+0.7.6 -
+Added Buttons to Set ALL Shows Active/Inactive.
+Added Tracking to see what has changed with the shows file during an update (if anything).
+Made it stop trying to create a new folder when it already exists.
+Rechecking Shows only searches for new season past the current one and only checks for new episodes for the current season or further (Cuts down on searching time if you are far into a show).
+General Cleanup.
+
 0.7.5 -
 General Code Cleanup.
 Corrected some changelog wording.

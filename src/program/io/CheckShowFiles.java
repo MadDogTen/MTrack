@@ -1,6 +1,7 @@
 package program.io;
 
 import program.Main;
+import program.information.ChangeReporter;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
@@ -21,6 +22,7 @@ public class CheckShowFiles {
     public static void recheckShowFile(Boolean forceRun) {
         Boolean hasChanged = false;
         int timer = Clock.getTimeSeconds();
+        ChangeReporter changeReporter = new ChangeReporter();
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
@@ -33,17 +35,34 @@ public class CheckShowFiles {
                 if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
                     for (String aShow : activeShows) {
                         log.info("Currently rechecking " + aShow);
+                        int currentSeason = UserInfoController.getCurrentSeason(aShow);
                         if (aHashMap.containsKey(aShow)) {
-                            Object[] seasons = aHashMap.get(aShow).keySet().toArray();
+                            Set<Integer> seasons = aHashMap.get(aShow).keySet();
+                            Iterator<Integer> seasonsIterator = seasons.iterator();
+                            while (seasonsIterator.hasNext()) {
+                                int aSeason = seasonsIterator.next();
+                                if (aSeason < currentSeason) {
+                                    seasonsIterator.remove();
+                                }
+                            }
                             for (Object aSeason : seasons) {
                                 ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
                                 if (!changedEpisodes.isEmpty()) {
+                                    changeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
                                     hasChanged = true;
                                     UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
                                 }
                             }
                             ArrayList<Integer> changedSeasons = hasSeasonsChanged(aShow, folderLocation, aHashMap);
+                            Iterator<Integer> changedSeasonIterator = changedSeasons.iterator();
+                            while (changedSeasonIterator.hasNext()) {
+                                int aSeason = changedSeasonIterator.next();
+                                if (aSeason < currentSeason) {
+                                    changedSeasonIterator.remove();
+                                }
+                            }
                             if (!changedSeasons.isEmpty()) {
+                                changeReporter.addChange(aShow + "- Season(s): " + changedSeasons + " has changed");
                                 log.info(aShow + " has changed!");
                                 hasChanged = true;
                                 UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, aHashMap, hashMapIndex);
@@ -55,6 +74,7 @@ public class CheckShowFiles {
                     }
                     HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, aHashMap, forceRun);
                     if (!changedShows.isEmpty()) {
+                        changeReporter.addChange(changedShows + " has changed");
                         log.info("Current Shows have changed.");
                         hasChanged = true;
                         for (String aNewShow : changedShows.keySet()) {
@@ -70,10 +90,19 @@ public class CheckShowFiles {
         }
         if (hasChanged && Main.running) {
             log.info("Some shows have been updated.");
-            log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
+
+            // Change Writer
+            log.info("\n\n\n\nStarting to list changes:");
+            String[] changedInfo = changeReporter.changes;
+            for (String changedObject : changedInfo) {
+                log.info(changedObject);
+            }
+            log.info("Finished listing changes.\n\n\n\n");
+
+            log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
         } else if (Main.running) {
             log.info("All shows were the same.");
-            log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds to finish.");
+            log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
         }
         recheckShowFileRunning = false;
     }

@@ -13,7 +13,7 @@ public class FileManager {
 
     // Serialise
     public static void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
-        if (!folder.isEmpty()) {
+        if (!new File(folder).exists()) {
             createFolder(folder);
         }
         if (overWrite || !checkFileExists(folder, filename, extension)) {
