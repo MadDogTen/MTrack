@@ -22,7 +22,6 @@ public class CheckShowFiles {
     public static void recheckShowFile(Boolean forceRun) {
         Boolean hasChanged = false;
         int timer = Clock.getTimeSeconds();
-        ChangeReporter changeReporter = new ChangeReporter();
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
@@ -46,9 +45,10 @@ public class CheckShowFiles {
                                 }
                             }
                             for (Object aSeason : seasons) {
+                                log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
                                 ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
                                 if (!changedEpisodes.isEmpty()) {
-                                    changeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
+                                    ChangeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
                                     hasChanged = true;
                                     UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
                                 }
@@ -62,8 +62,7 @@ public class CheckShowFiles {
                                 }
                             }
                             if (!changedSeasons.isEmpty()) {
-                                changeReporter.addChange(aShow + "- Season(s): " + changedSeasons + " has changed");
-                                log.info(aShow + " has changed!");
+                                ChangeReporter.addChange(aShow + "- Season(s): " + changedSeasons + " has changed");
                                 hasChanged = true;
                                 UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, aHashMap, hashMapIndex);
                             }
@@ -74,10 +73,14 @@ public class CheckShowFiles {
                     }
                     HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, aHashMap, forceRun);
                     if (!changedShows.isEmpty()) {
-                        changeReporter.addChange(changedShows + " has changed");
+                        ChangeReporter.addChange(changedShows + " has changed");
                         log.info("Current Shows have changed.");
                         hasChanged = true;
+                        ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
                         for (String aNewShow : changedShows.keySet()) {
+                            if (ignoredShows.contains(aNewShow)) {
+                                UserInfoController.setIgnoredStatus(aNewShow, false);
+                            }
                             aHashMap.put(aNewShow, changedShows.get(aNewShow));
                         }
                         ShowInfoController.saveShowsHashMapFile(aHashMap, hashMapIndex);
@@ -92,12 +95,7 @@ public class CheckShowFiles {
             log.info("Some shows have been updated.");
 
             // Change Writer
-            log.info("\n\n\n\nStarting to list changes:");
-            String[] changedInfo = changeReporter.changes;
-            for (String changedObject : changedInfo) {
-                log.info(changedObject);
-            }
-            log.info("Finished listing changes.\n\n\n\n");
+            ChangeReporter.printChanges();
 
             log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
         } else if (Main.running) {

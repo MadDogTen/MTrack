@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import program.gui.*;
+import program.information.ChangeReporter;
 import program.information.DisplayShows;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
@@ -48,6 +49,8 @@ public class Controller implements Initializable {
     private TextField textField;
     @FXML
     private Button refreshTableView;
+    @FXML
+    private Button viewChanges;
 
     public static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
@@ -233,6 +236,9 @@ public class Controller implements Initializable {
                 setTableViewFields("active");
             }
             setTableView();
+        });
+        viewChanges.setOnAction(e -> {
+            new ChangesBox().display("Changes", ChangeReporter.changes, tabPane.getScene().getWindow());
         });
 
         // || ~~~~ Settings Tab ~~~~ || \\

@@ -41,7 +41,27 @@ public class UserInfoController {
         return users;
     }
 
+    public static void setIgnoredStatus(String aShow, Boolean ignored) {
+        loadUserInfo();
+        HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
+        aShowSettings.replace("isIgnored", String.valueOf(ignored));
+        userSettingsFile.get("ShowSettings").put(aShow, aShowSettings);
+    }
+
+    public static ArrayList<String> getIgnoredShows() {
+        loadUserInfo();
+        ArrayList<String> ignoredShows = new ArrayList<>();
+        for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+            Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
+            if (isActive) {
+                ignoredShows.add(aShow);
+            }
+        }
+        return ignoredShows;
+    }
+
     public static void setActiveStatus(String aShow, Boolean active) {
+        loadUserInfo();
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
         aShowSettings.replace("isActive", String.valueOf(active));
         userSettingsFile.get("ShowSettings").put(aShow, aShowSettings);
@@ -52,7 +72,8 @@ public class UserInfoController {
         ArrayList<String> activeShows = new ArrayList<>();
         for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
             Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
-            if (isActive) {
+            Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
+            if (isActive && !isIgnored) {
                 activeShows.add(aShow);
             }
         }
@@ -64,7 +85,8 @@ public class UserInfoController {
         ArrayList<String> inActiveShows = new ArrayList<>();
         for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
             Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
-            if (!isActive) {
+            Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
+            if (!isActive && !isIgnored) {
                 inActiveShows.add(aShow);
             }
         }

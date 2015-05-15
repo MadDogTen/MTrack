@@ -70,8 +70,23 @@ public class ProgramSettingsController {
         return settingsFile.get("Directories").size();
     }
 
-    public static void removeDirectory(String directory) {
+    public static void removeDirectory(String directory) { // TODO Update other users when directory is deleted.
         loadProgramSettingsFile();
+        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
+        int index = settingsFile.get("Directories").indexOf(directory);
+        HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = showsFileArray.get(index);
+        showsFileArray.remove(index);
+        for (String aShow : showsFile.keySet()) {
+            Boolean showExistsElsewhere = false;
+            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashmap : showsFileArray) {
+                if (aHashmap.containsKey(aShow)) {
+                    showExistsElsewhere = true;
+                }
+            }
+            if (!showExistsElsewhere) {
+                UserInfoController.setIgnoredStatus(aShow, true);
+            }
+        }
         settingsFile.get("Directories").remove(directory);
     }
 

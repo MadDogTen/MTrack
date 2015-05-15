@@ -39,6 +39,7 @@ public class GenerateSettingsFiles {
         }
     }
 
+    //TODO Add choice to have directories per user or global.
     public static void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
         if (override || !FileManager.checkFileExists(settingsFolder, userName, ".settings")) {
             log.info("GenerateSettingsFiles- Generating settings file for " + userName + "...\n");
@@ -46,7 +47,7 @@ public class GenerateSettingsFiles {
             HashMap<String, HashMap<String, String>> tempPut = new HashMap<>();
 
             // isActive - "isActive"
-            // isHidden - "isHidden
+            // isIgnored - "isIgnored
             // Current Season - "CurrentSeason"
             // Current Episode - "CurrentEpisode"
 
@@ -55,7 +56,7 @@ public class GenerateSettingsFiles {
             for (Object aShow : showsList) {
                 temp = new HashMap<>();
                 temp.put("isActive", "false");
-                temp.put("isHidden", "false");
+                temp.put("isIgnored", "false");
                 temp.put("CurrentSeason", String.valueOf(ShowInfoController.getLowestSeason(String.valueOf(aShow), ShowInfoController.getHighestSeason(String.valueOf(aShow)))));
                 Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), temp.get("CurrentSeason"));
                 temp.put("CurrentEpisode", String.valueOf(ShowInfoController.getLowestEpisode(episodes, ShowInfoController.getHighestEpisode(episodes))));

@@ -168,7 +168,7 @@ public class Settings implements Initializable {
                 }
             } else {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display("Delete User", "There are no users to delete.", tabPane.getScene().getWindow());
+                messageBox.display("Delete Directory", "There are no directories to delete.", tabPane.getScene().getWindow());
             }
         });
         forceRecheck.setOnAction(e -> {

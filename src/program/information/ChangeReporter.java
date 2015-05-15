@@ -1,16 +1,36 @@
 package program.information;
 
-public class ChangeReporter {
-    public String[] changes = new String[0];
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
-    public void addChange(String newInfo) {
-        String[] newList = new String[changes.length + 1];
-        newList[0] = newInfo;
+public class ChangeReporter {
+    private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
+
+    public static String[] changes = new String[0];
+
+    public static void addChange(String newInfo) {
+        ArrayList<String> newList = new ArrayList<>();
+        newList.add(0, newInfo);
         int currentPlace = 1;
         for (String aString : changes) {
-            newList[currentPlace] = aString;
+            newList.add(currentPlace, aString);
             currentPlace++;
         }
-        changes = newList;
+        changes = new String[newList.size()];
+        for (int i = 0; i < currentPlace; i++) {
+            changes[i] = newList.get(i);
+        }
+    }
+
+    public static void resetChanges() {
+        changes = new String[0];
+    }
+
+    public static void printChanges() { //TODO Temp, Removed when unneeded.
+        log.info("\n\n\n\nStarting to list changes:");
+        for (String changed : changes) {
+            System.out.println(changed);
+        }
+        log.info("Finished listing changes.\n\n\n\n");
     }
 }
