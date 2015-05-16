@@ -1,6 +1,6 @@
 Changes:
 
-Pre-Alpha 0.7.8 -
+Pre-Alpha 0.7.9 -
 Added "Clear Directory" button which clears the file and sets the show to ignored. Should help with testing.
 Recheck now checks if a new show is currently ignored, and if it is, sets it to false.
 New Shows are now properly reported to the ChangeReporter.
