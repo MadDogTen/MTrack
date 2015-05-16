@@ -108,7 +108,7 @@ public class FileManager {
         } else return "unknown";
     }
 
-    public static void createFolder(String folder) {
+    private static void createFolder(String folder) {
         if (!new File(getDataFolder() + folder).mkdir()) {
             log.warning("Cannot make: " + getDataFolder() + folder);
         }
