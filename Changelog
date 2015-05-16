@@ -1,11 +1,17 @@
 Changes:
 
+0.7.8 -
+"C" button to show changes now works.
+Fixed searching for new shows run counter not resetting on the 5th run.
+Removing a Directory now deletes the appropriate file as well.
+Fixed it setting the isIgnored field to false if you re-add/add a directory that contains a ignored show.
+
 0.7.7 -
 General Code Cleanup / Fixes.
 Made ChangeReporter static.
-Added button to see what shows have been changed (Added basic tracking in 0.7.6). (Currently not working & Disabled)
+Added (Temporary Placement) button to see what shows have been changed (Added basic tracking in 0.7.6). (Currently not working & Disabled)
 Fixed the "Remove Directory" button. Previously if you removed a directory, it would still think the show existed, I fixed it by adding a "isIgnored" field to user settings, Which is set to true when a Directory is removed and the show doesn't exist elsewhere.
-If you re-add a directory that once again contains the show, the isIgnored field will be set back to false.
+If you re-add/add a directory that contains a ignored show, the isIgnored field will be set to false. Currently Broken.
 
 Note- Incompatible with previous versions. Currently still broken if a different user attempts to login after a directory is deleted.
 

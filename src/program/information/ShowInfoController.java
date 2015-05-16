@@ -68,7 +68,6 @@ public class ShowInfoController {
             } else {
                 for (String aString : ProgramSettingsController.getDirectoriesNames()) {
                     showsFile = FileManager.loadShows(aString);
-                    System.out.println(showsFile);
                 }
             }
         }
@@ -250,6 +249,7 @@ public class ShowInfoController {
         loadShowsFile();
         Set<String> Show = showsFile.keySet();
         log.info("Printing out all Shows and Episodes");
+        int numberOfShows = 0;
         for (String aShow : Show) {
             log.info("\n\n ShowInfoController- " + aShow);
             HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
@@ -262,6 +262,8 @@ public class ShowInfoController {
                     log.info("ShowInfoController- " + episodes.get(aEpisode));
                 }
             }
+            numberOfShows++;
         }
+        log.info("Total Number of Shows: " + numberOfShows);
     }
 }

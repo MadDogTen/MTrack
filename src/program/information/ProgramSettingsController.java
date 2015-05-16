@@ -88,6 +88,7 @@ public class ProgramSettingsController {
             }
         }
         settingsFile.get("Directories").remove(directory);
+        FileManager.deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
     }
 
     public static void printAllDirectories() {

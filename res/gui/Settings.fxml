@@ -12,7 +12,7 @@
                     <children>
                         <Button fx:id="setDefaultUsername" layoutX="23.0" layoutY="31.0" mnemonicParsing="false"
                                 text="Set Default user"/>
-                        <Button fx:id="deleteUser" layoutX="23.0" layoutY="83.0" mnemonicParsing="false"
+                        <Button fx:id="deleteUser" layoutX="23.0" layoutY="62.0" mnemonicParsing="false"
                                 text="Delete Users"/>
                         <Button fx:id="clearDefaultUsername" layoutX="129.0" layoutY="31.0" mnemonicParsing="false"
                                 text="Reset"/>
@@ -45,19 +45,21 @@
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <Button fx:id="deleteEverythingAndClose" layoutX="117.0" layoutY="189.0" mnemonicParsing="false"
+                        <Button fx:id="deleteEverythingAndClose" layoutX="117.0" layoutY="188.0" mnemonicParsing="false"
                                 text="Reset Program"/>
                         <Button fx:id="printAllShows" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
                                 text="Print All Show Info"/>
                         <Button fx:id="exit3" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
                         <Button fx:id="printAllDirectories" layoutX="2.0" layoutY="28.0" mnemonicParsing="false"
                                 text="Print All Directories"/>
-                        <Button fx:id="printEmptyShowFolders" layoutX="2.0" layoutY="58.0" mnemonicParsing="false"
+                        <Button fx:id="printEmptyShowFolders" layoutX="2.0" layoutY="57.0" mnemonicParsing="false"
                                 text="Print Empty Shows"/>
-                        <Button fx:id="setAllActive" layoutX="2.0" layoutY="95.0" mnemonicParsing="false"
+                        <Button fx:id="setAllActive" layoutX="2.0" layoutY="136.0" mnemonicParsing="false"
                                 text="Set All Active"/>
-                        <Button fx:id="setAllInactive" layoutX="2.0" layoutY="122.0" mnemonicParsing="false"
+                        <Button fx:id="setAllInactive" layoutX="2.0" layoutY="163.0" mnemonicParsing="false"
                                 text="Set All Inactive"/>
+                        <Button fx:id="printIgnoredShows" layoutX="2.0" layoutY="86.0" mnemonicParsing="false"
+                                text="Print  Ignored Shows"/>
                     </children>
                 </AnchorPane>
             </content>

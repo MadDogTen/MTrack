@@ -27,10 +27,10 @@ public class ChangeReporter {
     }
 
     public static void printChanges() { //TODO Temp, Removed when unneeded.
-        log.info("\n\n\n\nStarting to list changes:");
+        log.info("Starting to list changes:");
         for (String changed : changes) {
-            System.out.println(changed);
+            log.info(changed);
         }
-        log.info("Finished listing changes.\n\n\n\n");
+        log.info("Finished listing changes.");
     }
 }

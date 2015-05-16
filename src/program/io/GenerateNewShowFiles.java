@@ -1,6 +1,7 @@
 package program.io;
 
 import program.information.ShowInfoController;
+import program.information.UserInfoController;
 import program.util.FindLocation;
 import program.util.Variables;
 
@@ -18,6 +19,7 @@ public class GenerateNewShowFiles {
             // String = Show Name -- HashMap == Seasons in show from seasonEpisode
             HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);
             String[] shows = FindLocation.findShows(folderLocation);
+            ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
             for (String aShow : shows) {
                 log.info("Currently Processing: " + aShow);
                 // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
@@ -51,6 +53,9 @@ public class GenerateNewShowFiles {
                 }
                 if (!seasonEpisode.keySet().isEmpty()) {
                     showSeasons.put(aShow, seasonEpisode);
+                    if (ignoredShows.contains(aShow)) {
+                        UserInfoController.setIgnoredStatus(aShow, false);
+                    }
                 }
             }
             FileManager.save(showSeasons, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension, forceGen);

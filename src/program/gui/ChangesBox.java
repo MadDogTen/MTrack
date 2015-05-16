@@ -30,6 +30,7 @@ public class ChangesBox {
         for (String aMessage : messages) {
             Label label = new Label();
             label.setText(aMessage);
+            label.setPadding(new Insets(0, 6, 2, 6));
             vBox[0].getChildren().add(label);
         }
 
@@ -38,7 +39,7 @@ public class ChangesBox {
 
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();
-            vBox[0] = new VBox();
+            vBox[0].getChildren().clear();
         });
 
         close.setOnAction(e -> {
@@ -48,12 +49,11 @@ public class ChangesBox {
         HBox hBox = new HBox();
         hBox.getChildren().addAll(clear, close);
         hBox.setAlignment(Pos.CENTER);
+        hBox.setPadding(new Insets(6, 6, 6, 6));
 
         VBox layout = new VBox();
         layout.getChildren().addAll(hBox, vBox[0]);
         layout.setAlignment(Pos.CENTER);
-
-        layout.setPadding(new Insets(6, 0, 0, 0));
 
         Scene scene = new Scene(layout);
 

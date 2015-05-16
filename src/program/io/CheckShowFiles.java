@@ -45,12 +45,14 @@ public class CheckShowFiles {
                                 }
                             }
                             for (Object aSeason : seasons) {
-                                log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
-                                ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
-                                if (!changedEpisodes.isEmpty()) {
-                                    ChangeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
-                                    hasChanged = true;
-                                    UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
+                                if (FileManager.checkFolderExists(FileManager.getDataFolder() + '\\' + aShow + "\\Season " + aSeason + '\\')) {
+                                    log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
+                                    ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
+                                    if (!changedEpisodes.isEmpty()) {
+                                        ChangeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
+                                        hasChanged = true;
+                                        UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, (Integer) aSeason, aHashMap, hashMapIndex);
+                                    }
                                 }
                             }
                             ArrayList<Integer> changedSeasons = hasSeasonsChanged(aShow, folderLocation, aHashMap);
@@ -76,11 +78,7 @@ public class CheckShowFiles {
                         ChangeReporter.addChange(changedShows + " has changed");
                         log.info("Current Shows have changed.");
                         hasChanged = true;
-                        ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
                         for (String aNewShow : changedShows.keySet()) {
-                            if (ignoredShows.contains(aNewShow)) {
-                                UserInfoController.setIgnoredStatus(aNewShow, false);
-                            }
                             aHashMap.put(aNewShow, changedShows.get(aNewShow));
                         }
                         ShowInfoController.saveShowsHashMapFile(aHashMap, hashMapIndex);
@@ -165,14 +163,15 @@ public class CheckShowFiles {
     }
 
     private static HashMap<String, HashMap<Integer, HashMap<String, String>>> hasShowsChanged(File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, Boolean forceRun) {
-        HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);
+        HashMap<String, HashMap<Integer, HashMap<String, String>>> newShows = new HashMap<>(0);
         Set<String> oldShows = showsFile.keySet();
-        String[] newShows = FindLocation.findShows(folderLocation);
+        String[] currentShows = FindLocation.findShows(folderLocation);
         ArrayList<String> newShowsFixed = new ArrayList<>();
-        Collections.addAll(newShowsFixed, newShows);
+        Collections.addAll(newShowsFixed, currentShows);
         for (String aShow : newShowsFixed) {
             if (forceRun || runNumber == 5) {
                 emptyShows = new ArrayList<>();
+                runNumber = 0;
             }
             if (Main.running && !oldShows.contains(aShow) && !emptyShows.contains(aShow)) {
                 log.info("Currently checking if new & valid: " + aShow);
@@ -204,12 +203,12 @@ public class CheckShowFiles {
                     }
                 }
                 if (!seasonEpisode.keySet().isEmpty()) {
-                    showSeasons.put(aShow, seasonEpisode);
+                    newShows.put(aShow, seasonEpisode);
                 } else emptyShows.add(aShow);
             }
         }
         runNumber++;
-        return showSeasons;
+        return newShows;
     }
 
     public static ArrayList<String> getEmptyShows() {

@@ -237,7 +237,7 @@ public class Controller implements Initializable {
             }
             setTableView();
         });
-        viewChanges.setOnAction(e -> {
+        viewChanges.setOnAction(e -> { //TODO - Finish this.
             new ChangesBox().display("Changes", ChangeReporter.changes, tabPane.getScene().getWindow());
         });
 

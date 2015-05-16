@@ -69,6 +69,8 @@ public class Settings implements Initializable {
     private Button setAllActive;
     @FXML
     private Button setAllInactive;
+    @FXML
+    private Button printIgnoredShows;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -225,6 +227,16 @@ public class Settings implements Initializable {
                     log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
                 }
             }
+        });
+        printIgnoredShows.setOnAction(e -> {
+            ArrayList<String> ignoredShow = UserInfoController.getIgnoredShows();
+            log.info("Printing Ignored Shows:");
+            if (!ignoredShow.isEmpty()) {
+                for (String aIgnoredShow : ignoredShow) {
+                    log.info(aIgnoredShow);
+                }
+            } else log.info("No ignored shows.");
+            log.info("Finished printing ignored shows.");
         });
         setAllActive.setOnAction(e -> {
             Object[] showsList = ShowInfoController.getShowsList();
