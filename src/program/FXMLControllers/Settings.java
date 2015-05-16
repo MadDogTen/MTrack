@@ -71,6 +71,8 @@ public class Settings implements Initializable {
     private Button setAllInactive;
     @FXML
     private Button printIgnoredShows;
+    @FXML
+    private Button clearFile;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -248,6 +250,35 @@ public class Settings implements Initializable {
             Object[] showsList = ShowInfoController.getShowsList();
             for (Object aShow : showsList) {
                 UserInfoController.setActiveStatus(String.valueOf(aShow), false);
+            }
+        });
+        clearFile.setOnAction(e -> {
+            ArrayList<File> directories = new ArrayList<>();
+            for (String aDirectory : ProgramSettingsController.getDirectories()) {
+                directories.add(new File(aDirectory));
+            }
+            if (!directories.isEmpty()) {
+                ListSelectBox listSelectBox = new ListSelectBox();
+                String directoryToClear = String.valueOf(listSelectBox.directories("Clear Directory", "Directory to Clear:", directories, tabPane.getScene().getWindow()));
+                if (directoryToClear != null) {
+                    ConfirmBox confirmBox = new ConfirmBox();
+                    Boolean confirm = confirmBox.display("Clear Directory", ("Are you sure to want to clear " + directoryToClear + "?"), tabPane.getScene().getWindow());
+                    if (confirm && !directoryToClear.isEmpty()) {
+                        int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
+                        Set<String> hashMapShows = ShowInfoController.getShowsFile(index).keySet();
+                        for (String aShow : hashMapShows) {
+                            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, index);
+                            if (!showExistsElsewhere) {
+                                UserInfoController.setIgnoredStatus(aShow, true);
+                            }
+                        }
+                        HashMap<String, HashMap<Integer, HashMap<String, String>>> blankHashMap = new HashMap<>();
+                        ShowInfoController.saveShowsHashMapFile(blankHashMap, index);
+                    }
+                }
+            } else {
+                MessageBox messageBox = new MessageBox();
+                messageBox.display("Clear Directory", "There are no directories to clear.", tabPane.getScene().getWindow());
             }
         });
         deleteEverythingAndClose.setOnAction(e -> {

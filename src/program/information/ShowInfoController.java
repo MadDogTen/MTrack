@@ -6,6 +6,7 @@ import program.util.Variables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -106,7 +107,13 @@ public class ShowInfoController {
 
     public static Set<Integer> getSeasonsListSet(String show) {
         loadShowsFile();
-        return showsFile.get(show).keySet();
+        if (!showsFile.isEmpty()) {
+            return showsFile.get(show).keySet();
+        } else { //TODO Remove, Temporary
+            Set<Integer> empty = new HashSet<>();
+            empty.add(0);
+            return empty;
+        }
     }
 
     public static Set<String> getEpisodesList(String show, String season) {
@@ -130,6 +137,18 @@ public class ShowInfoController {
             log.warning("Error 1");
             return null;
         }
+    }
+
+    public static boolean doesShowExistElsewhere(String aShow, int index) {
+        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getShowsFileArray();
+        showsFileArray.remove(index);
+        Boolean showExistsElsewhere = false;
+        for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashmap : showsFileArray) {
+            if (aHashmap.containsKey(aShow)) {
+                showExistsElsewhere = true;
+            }
+        }
+        return showExistsElsewhere;
     }
 
     // To get the Season and Episode Number

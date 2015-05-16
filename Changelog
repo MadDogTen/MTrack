@@ -1,5 +1,13 @@
 Changes:
 
+Pre-Alpha 0.7.8 -
+Added "Clear Directory" button which clears the file and sets the show to ignored. Should help with testing.
+Recheck now checks if a new show is currently ignored, and if it is, sets it to false.
+New Shows are now properly reported to the ChangeReporter.
+ChangeBox no longer requires a copy of changes, as it will pull it itself.
+MainGui is now usable while ChangeBox is open.
+If clearing/Refreshing ChangeBox, it will popup at the same place.
+
 Pre-Alpha 0.7.8.1 -
 Program is considered Pre-Alpha and versioning has been changed to reflect that.
 Added changes that I forgot to document to 0.7.8 changelog.

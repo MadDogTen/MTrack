@@ -10,8 +10,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
+import javafx.stage.Stage;
 import program.gui.*;
-import program.information.ChangeReporter;
 import program.information.DisplayShows;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
@@ -237,8 +237,14 @@ public class Controller implements Initializable {
             }
             setTableView();
         });
-        viewChanges.setOnAction(e -> { //TODO - Finish this.
-            new ChangesBox().display("Changes", ChangeReporter.changes, tabPane.getScene().getWindow());
+        viewChanges.setOnAction(e -> {
+            Object[] answer = new ChangesBox().display("Changes", tabPane.getScene().getWindow());
+            Boolean keepOpen = (Boolean) answer[0];
+            Stage otherWindow = (Stage) answer[1];
+            while (keepOpen) {
+                answer = new ChangesBox().display("Changes", otherWindow);
+                keepOpen = (Boolean) answer[0];
+            }
         });
 
         // || ~~~~ Settings Tab ~~~~ || \\

@@ -72,17 +72,10 @@ public class ProgramSettingsController {
 
     public static void removeDirectory(String directory) { // TODO Update other users when directory is deleted.
         loadProgramSettingsFile();
-        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
         int index = settingsFile.get("Directories").indexOf(directory);
-        HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = showsFileArray.get(index);
-        showsFileArray.remove(index);
+        HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getShowsFileArray().get(index);
         for (String aShow : showsFile.keySet()) {
-            Boolean showExistsElsewhere = false;
-            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashmap : showsFileArray) {
-                if (aHashmap.containsKey(aShow)) {
-                    showExistsElsewhere = true;
-                }
-            }
+            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, index);
             if (!showExistsElsewhere) {
                 UserInfoController.setIgnoredStatus(aShow, true);
             }
@@ -121,7 +114,6 @@ public class ProgramSettingsController {
     public static boolean addDirectory(int index, File directory) {
         loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
-        System.out.println("PSC: " + index);
         if (!directories.contains(String.valueOf(directory))) {
             log.info("Added Directory");
             directories.add(index, String.valueOf(directory));

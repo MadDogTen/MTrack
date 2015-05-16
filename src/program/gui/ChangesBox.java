@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -16,18 +15,20 @@ import program.graphics.ImageLoader;
 import program.information.ChangeReporter;
 import program.input.MoveWindow;
 
-public class ChangesBox {
+import java.util.logging.Logger;
 
-    public void display(String title, String[] messages, Window oldWindow) {
+public class ChangesBox {
+    private static final Logger log = Logger.getLogger(ChangesBox.class.getName());
+
+    public Object[] display(String title, Window oldWindow) {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
 
-        window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);
 
         final VBox[] vBox = {new VBox()};
-        for (String aMessage : messages) {
+        for (String aMessage : ChangeReporter.changes) {
             Label label = new Label();
             label.setText(aMessage);
             label.setPadding(new Insets(0, 6, 2, 6));
@@ -35,21 +36,34 @@ public class ChangesBox {
         }
 
         Button clear = new Button("Clear");
+        Button refresh = new Button("Refresh");
         Button close = new Button("Close");
 
+        final Boolean[] answerBoolean = {false};
+        final Stage[] thisWindow = new Stage[1];
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();
             vBox[0].getChildren().clear();
+            answerBoolean[0] = true;
+            thisWindow[0] = window;
+            window.close();
+        });
+
+        refresh.setOnAction(e -> {
+            answerBoolean[0] = true;
+            thisWindow[0] = window;
+            window.close();
         });
 
         close.setOnAction(e -> {
+            answerBoolean[0] = false;
             window.close();
         });
 
         HBox hBox = new HBox();
-        hBox.getChildren().addAll(clear, close);
+        hBox.getChildren().addAll(clear, refresh, close);
         hBox.setAlignment(Pos.CENTER);
-        hBox.setPadding(new Insets(6, 6, 6, 6));
+        hBox.setPadding(new Insets(12, 12, 12, 12));
 
         VBox layout = new VBox();
         layout.getChildren().addAll(hBox, vBox[0]);
@@ -62,8 +76,13 @@ public class ChangesBox {
             window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
             window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
             new MoveWindow().moveWindow(window);
+            log.info(window.getX() + " - " + window.getY());
         });
         window.showAndWait();
-    }
 
+        Object[] answer = new Object[2];
+        answer[0] = answerBoolean[0];
+        answer[1] = thisWindow[0];
+        return answer;
+    }
 }

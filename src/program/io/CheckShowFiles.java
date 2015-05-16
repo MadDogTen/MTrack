@@ -42,6 +42,7 @@ public class CheckShowFiles {
                                 int aSeason = seasonsIterator.next();
                                 if (aSeason < currentSeason) {
                                     seasonsIterator.remove();
+                                    log.finest(aSeason + " was skipped in checking.");
                                 }
                             }
                             for (Object aSeason : seasons) {
@@ -75,11 +76,15 @@ public class CheckShowFiles {
                     }
                     HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, aHashMap, forceRun);
                     if (!changedShows.isEmpty()) {
-                        ChangeReporter.addChange(changedShows + " has changed");
                         log.info("Current Shows have changed.");
                         hasChanged = true;
+                        ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
                         for (String aNewShow : changedShows.keySet()) {
+                            ChangeReporter.addChange(aNewShow + " has been added!");
                             aHashMap.put(aNewShow, changedShows.get(aNewShow));
+                            if (ignoredShows.contains(aNewShow)) {
+                                UserInfoController.setIgnoredStatus(aNewShow, false);
+                            }
                         }
                         ShowInfoController.saveShowsHashMapFile(aHashMap, hashMapIndex);
                         for (String aNewShow : changedShows.keySet()) {
