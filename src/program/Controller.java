@@ -238,13 +238,16 @@ public class Controller implements Initializable {
             setTableView();
         });
         viewChanges.setOnAction(e -> {
-            Object[] answer = new ChangesBox().display("Changes", tabPane.getScene().getWindow());
-            Boolean keepOpen = (Boolean) answer[0];
-            Stage otherWindow = (Stage) answer[1];
-            while (keepOpen) {
-                answer = new ChangesBox().display("Changes", otherWindow);
+            Boolean keepOpen = false;
+            Object[] answer = null;
+            do {
+                Stage neededWindow = (Stage) tabPane.getScene().getWindow();
+                if (answer != null && answer[1] != null) {
+                    neededWindow = (Stage) answer[1];
+                }
+                answer = new ChangesBox().display("Changes", neededWindow);
                 keepOpen = (Boolean) answer[0];
-            }
+            } while (keepOpen);
         });
 
         // || ~~~~ Settings Tab ~~~~ || \\

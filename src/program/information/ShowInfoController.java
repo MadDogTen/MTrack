@@ -6,7 +6,6 @@ import program.util.Variables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -107,13 +106,7 @@ public class ShowInfoController {
 
     public static Set<Integer> getSeasonsListSet(String show) {
         loadShowsFile();
-        if (!showsFile.isEmpty()) {
-            return showsFile.get(show).keySet();
-        } else { //TODO Remove, Temporary
-            Set<Integer> empty = new HashSet<>();
-            empty.add(0);
-            return empty;
-        }
+        return showsFile.get(show).keySet();
     }
 
     public static Set<String> getEpisodesList(String show, String season) {

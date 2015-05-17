@@ -1,5 +1,10 @@
 Changes:
 
+Pre-Alpha 0.8.10 -
+General Code Changes.
+Made it where only one ChangesBox stage can be open at a time.
+Fixed the Remove Directory Stage asking to delete null if you close it.
+
 Pre-Alpha 0.7.9 -
 Added "Clear Directory" button which clears the file and sets the show to ignored. Should help with testing.
 Recheck now checks if a new show is currently ignored, and if it is, sets it to false.
@@ -10,9 +15,6 @@ If clearing/Refreshing ChangeBox, it will popup at the same place.
 
 Pre-Alpha 0.7.8.1 -
 Program is considered Pre-Alpha and versioning has been changed to reflect that.
-Added changes that I forgot to document to 0.7.8 changelog.
-
-Note- Putting up a new build based on this version.
 
 Pre-Alpha 0.7.8 -
 "C" button to show changes now works.
@@ -40,7 +42,6 @@ General Cleanup.
 
 Pre-Alpha 0.7.5 -
 General Code Cleanup.
-Corrected some changelog wording.
 Added (Proof of Concept) icon.
 
 Pre-Alpha 0.7.4 -

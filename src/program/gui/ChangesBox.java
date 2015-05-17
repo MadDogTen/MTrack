@@ -20,7 +20,16 @@ import java.util.logging.Logger;
 public class ChangesBox {
     private static final Logger log = Logger.getLogger(ChangesBox.class.getName());
 
+    private static Boolean currentlyOpen = false;
+
     public Object[] display(String title, Window oldWindow) {
+        if (currentlyOpen) {
+            Object[] object = new Object[1];
+            object[0] = false;
+            return object;
+        } else {
+            currentlyOpen = true;
+        }
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
@@ -76,13 +85,13 @@ public class ChangesBox {
             window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
             window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
             new MoveWindow().moveWindow(window);
-            log.info(window.getX() + " - " + window.getY());
         });
         window.showAndWait();
 
         Object[] answer = new Object[2];
         answer[0] = answerBoolean[0];
         answer[1] = thisWindow[0];
+        currentlyOpen = false;
         return answer;
     }
 }

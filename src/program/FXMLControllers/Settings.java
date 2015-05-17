@@ -143,9 +143,9 @@ public class Settings implements Initializable {
                 new Thread(task).start();
                 while (taskRunning[0]) {
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(10);
                     } catch (InterruptedException e1) {
-                        log.severe(e1.toString());
+                        e1.printStackTrace();
                     }
                 }
                 ShowInfoController.loadShowsFile();
@@ -163,7 +163,7 @@ public class Settings implements Initializable {
             if (!directories.isEmpty()) {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToDelete = String.valueOf(listSelectBox.directories("Delete Directory", "Directory to delete:", directories, tabPane.getScene().getWindow()));
-                if (directoryToDelete != null) {
+                if (directoryToDelete != null && !directoryToDelete.isEmpty()) {
                     ConfirmBox confirmBox = new ConfirmBox();
                     Boolean confirm = confirmBox.display("Delete Directory", ("Are you sure to want to delete " + directoryToDelete + "?"), tabPane.getScene().getWindow());
                     if (confirm && !directoryToDelete.isEmpty()) {

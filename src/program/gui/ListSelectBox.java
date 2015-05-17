@@ -177,7 +177,6 @@ public class ListSelectBox {
 
         Button exit = new Button("X");
         exit.setOnAction(e -> {
-            file[0] = null;
             window.close();
         });
 
