@@ -72,23 +72,34 @@ public class ProgramSettingsController {
 
     public static void removeDirectory(String directory) { // TODO Update other users when directory is deleted.
         loadProgramSettingsFile();
+        log.info("Currently processing removal of: " + directory);
         int index = settingsFile.get("Directories").indexOf(directory);
-        HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getShowsFileArray().get(index);
+        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
+        HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = showsFileArray.get(index);
+        showsFileArray.remove(index);
         for (String aShow : showsFile.keySet()) {
-            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, index);
+            log.info("Currently checking: " + aShow);
+            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
             if (!showExistsElsewhere) {
                 UserInfoController.setIgnoredStatus(aShow, true);
             }
         }
         settingsFile.get("Directories").remove(directory);
         FileManager.deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
+        log.info("Finished processing removal. ");
     }
 
     public static void printAllDirectories() {
         loadProgramSettingsFile();
-        for (String aDirectory : settingsFile.get("Directories")) {
-            log.info(aDirectory);
+        log.info("Printing out all directories:");
+        if (settingsFile.containsKey("Directories") && !settingsFile.get("Directories").isEmpty()) {
+            for (String aDirectory : settingsFile.get("Directories")) {
+                log.info(aDirectory);
+            }
+        } else {
+            log.info("No directories.");
         }
+        log.info("Finished printing out all directories:");
     }
 
     public static int getDirectoryIndex(String directory) {
@@ -111,16 +122,19 @@ public class ProgramSettingsController {
         return new File(settingsFile.get("Directories").get(index));
     }
 
-    public static boolean addDirectory(int index, File directory) {
+    public static Boolean[] addDirectory(int index, File directory) {
         loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
-        if (!directories.contains(String.valueOf(directory))) {
+        Boolean[] answer = {false, false};
+        if (!directory.toString().isEmpty() && !directories.contains(String.valueOf(directory))) {
             log.info("Added Directory");
             directories.add(index, String.valueOf(directory));
             settingsFile.replace("Directories", directories);
-            return false;
+            answer[0] = true;
+        } else if (directory.toString().isEmpty()) {
+            answer[1] = true;
         }
-        return true;
+        return answer;
     }
 
     // Save the file

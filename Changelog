@@ -1,5 +1,14 @@
 Changes:
 
+Pre-Alpha 0.8.11 -
+General Code Changes.
+Add Directory stage can now be closed without adding anything.
+Made it so you don't have to add a directory on first run.
+Actually fixed it trying to create a new folder when it already exists.
+Fixed adding a new directory still generating "isHidden" field instead of "isIgnored" field in user settings file which resulted it issues when remove the directory. Spent a couple hours trying to figure this issue out...
+
+Note- This version requires a user settings file reset (Create a new user and delete the old one).
+
 Pre-Alpha 0.8.10 -
 General Code Changes.
 Made it where only one ChangesBox stage can be open at a time.

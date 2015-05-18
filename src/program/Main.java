@@ -14,8 +14,6 @@ import program.information.UserInfoController;
 import program.util.Clock;
 import program.util.Variables;
 
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Main extends Application implements Runnable {
@@ -28,7 +26,6 @@ public class Main extends Application implements Runnable {
 
     public static void main(String args[]) {
         launch(args);
-        LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME).setLevel(Level.ALL);
     }
 
     public synchronized static void stop(Stage stage, Boolean forceStop, Boolean saveSettings) {

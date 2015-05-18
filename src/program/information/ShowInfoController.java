@@ -81,7 +81,6 @@ public class ShowInfoController {
         for (String aString : files) {
             int place = files.indexOf(aString);
             showsFileArray.add(place, FileManager.loadShows(aString));
-            log.info(aString);
         }
         return showsFileArray;
     }
@@ -101,7 +100,9 @@ public class ShowInfoController {
 
     public static Object[] getShowsList() {
         loadShowsFile();
-        return showsFile.keySet().toArray();
+        if (showsFile != null) {
+            return showsFile.keySet().toArray();
+        } else return null;
     }
 
     public static Set<Integer> getSeasonsListSet(String show) {
@@ -132,14 +133,19 @@ public class ShowInfoController {
         }
     }
 
-    public static boolean doesShowExistElsewhere(String aShow, int index) {
-        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getShowsFileArray();
-        showsFileArray.remove(index);
+    public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {
         Boolean showExistsElsewhere = false;
-        for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashmap : showsFileArray) {
-            if (aHashmap.containsKey(aShow)) {
-                showExistsElsewhere = true;
+        if (!showsFileArray.isEmpty()) {
+            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashmap : showsFileArray) {
+                if (aHashmap.containsKey(aShow)) {
+                    showExistsElsewhere = true;
+                }
             }
+        }
+        if (showExistsElsewhere) {
+            log.info(aShow + " exists elsewhere.");
+        } else {
+            log.info(aShow + " doesn't exists elsewhere.");
         }
         return showExistsElsewhere;
     }
@@ -259,23 +265,28 @@ public class ShowInfoController {
 
     public static void printOutAllShowsAndEpisodes() {
         loadShowsFile();
-        Set<String> Show = showsFile.keySet();
-        log.info("Printing out all Shows and Episodes");
-        int numberOfShows = 0;
-        for (String aShow : Show) {
-            log.info("\n\n ShowInfoController- " + aShow);
-            HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
-            Set<Integer> season = seasons.keySet();
-            for (int aSeason : season) {
-                log.info("\n ShowInfoController- " + "Season: " + aSeason);
-                HashMap<String, String> episodes = seasons.get(aSeason);
-                Set<String> episode = episodes.keySet();
-                for (String aEpisode : episode) {
-                    log.info("ShowInfoController- " + episodes.get(aEpisode));
+        log.info("Printing out all Shows and Episodes:");
+        if (showsFile != null) {
+            Set<String> Show = showsFile.keySet();
+            int numberOfShows = 0;
+            for (String aShow : Show) {
+                log.info("\n\n ShowInfoController- " + aShow);
+                HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
+                Set<Integer> season = seasons.keySet();
+                for (int aSeason : season) {
+                    log.info("\n ShowInfoController- " + "Season: " + aSeason);
+                    HashMap<String, String> episodes = seasons.get(aSeason);
+                    Set<String> episode = episodes.keySet();
+                    for (String aEpisode : episode) {
+                        log.info("ShowInfoController- " + episodes.get(aEpisode));
+                    }
                 }
+                numberOfShows++;
             }
-            numberOfShows++;
+            log.info("Total Number of Shows: " + numberOfShows);
+        } else {
+            log.info("No shows.");
         }
-        log.info("Total Number of Shows: " + numberOfShows);
+        log.info("Finished printing out all Shows and Episodes.");
     }
 }

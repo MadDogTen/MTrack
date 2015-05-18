@@ -125,8 +125,8 @@ public class Settings implements Initializable {
         });
         addDirectory.setOnAction(e -> {
             int index = ProgramSettingsController.getNumberOfDirectories();
-            Boolean wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", tabPane.getScene().getWindow()));
-            if (!wasAdded) {
+            Boolean[] wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", tabPane.getScene().getWindow()));
+            if (wasAdded[0]) {
                 log.info("Directory was added.");
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 directories = ProgramSettingsController.getDirectories();
@@ -143,7 +143,7 @@ public class Settings implements Initializable {
                 new Thread(task).start();
                 while (taskRunning[0]) {
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(500);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
                     }
@@ -156,6 +156,7 @@ public class Settings implements Initializable {
             } else log.info("Directory wasn't added.");
         });
         removeDirectory.setOnAction(e -> {
+            log.info("Remove Directory Started:");
             ArrayList<File> directories = new ArrayList<>();
             for (String aDirectory : ProgramSettingsController.getDirectories()) {
                 directories.add(new File(aDirectory));
@@ -164,16 +165,20 @@ public class Settings implements Initializable {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToDelete = String.valueOf(listSelectBox.directories("Delete Directory", "Directory to delete:", directories, tabPane.getScene().getWindow()));
                 if (directoryToDelete != null && !directoryToDelete.isEmpty()) {
+                    log.info("Directory selected for deletion: " + directoryToDelete);
                     ConfirmBox confirmBox = new ConfirmBox();
                     Boolean confirm = confirmBox.display("Delete Directory", ("Are you sure to want to delete " + directoryToDelete + "?"), tabPane.getScene().getWindow());
                     if (confirm && !directoryToDelete.isEmpty()) {
                         ProgramSettingsController.removeDirectory(directoryToDelete);
+                        log.info("Directory has been deleted!");
                     }
                 }
             } else {
+                log.info("No directories to delete.");
                 MessageBox messageBox = new MessageBox();
                 messageBox.display("Delete Directory", "There are no directories to delete.", tabPane.getScene().getWindow());
             }
+            log.info("Remove Directory Finished!");
         });
         forceRecheck.setOnAction(e -> {
             Task<Void> task = new Task<Void>() {
@@ -215,6 +220,7 @@ public class Settings implements Initializable {
         });
         printEmptyShowFolders.setOnAction(e -> {
             ArrayList<String> emptyShows = CheckShowFiles.getEmptyShows();
+            log.info("Printing empty shows:");
             if (!emptyShows.isEmpty()) {
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 for (String aDirectory : directories) {
@@ -228,7 +234,10 @@ public class Settings implements Initializable {
                     }
                     log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
                 }
+            } else {
+                log.info("No empty shows");
             }
+            log.info("Finished printing empty shows.");
         });
         printIgnoredShows.setOnAction(e -> {
             ArrayList<String> ignoredShow = UserInfoController.getIgnoredShows();
@@ -242,14 +251,24 @@ public class Settings implements Initializable {
         });
         setAllActive.setOnAction(e -> {
             Object[] showsList = ShowInfoController.getShowsList();
-            for (Object aShow : showsList) {
-                UserInfoController.setActiveStatus(String.valueOf(aShow), true);
+            if (showsList != null) {
+                for (Object aShow : showsList) {
+                    UserInfoController.setActiveStatus(String.valueOf(aShow), true);
+                }
+                log.info("Set all shows active.");
+            } else {
+                log.info("No shows to change.");
             }
         });
         setAllInactive.setOnAction(e -> {
             Object[] showsList = ShowInfoController.getShowsList();
-            for (Object aShow : showsList) {
-                UserInfoController.setActiveStatus(String.valueOf(aShow), false);
+            if (showsList != null) {
+                for (Object aShow : showsList) {
+                    UserInfoController.setActiveStatus(String.valueOf(aShow), false);
+                }
+                log.info("Set all shows inactive.");
+            } else {
+                log.info("No shows to change.");
             }
         });
         clearFile.setOnAction(e -> {
@@ -265,9 +284,11 @@ public class Settings implements Initializable {
                     Boolean confirm = confirmBox.display("Clear Directory", ("Are you sure to want to clear " + directoryToClear + "?"), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
-                        Set<String> hashMapShows = ShowInfoController.getShowsFile(index).keySet();
+                        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
+                        Set<String> hashMapShows = showsFileArray.get(index).keySet();
+                        showsFileArray.remove(index);
                         for (String aShow : hashMapShows) {
-                            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, index);
+                            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                             if (!showExistsElsewhere) {
                                 UserInfoController.setIgnoredStatus(aShow, true);
                             }

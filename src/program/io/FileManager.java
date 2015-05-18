@@ -13,7 +13,7 @@ public class FileManager {
 
     // Serialise
     public static void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
-        if (!new File(folder).exists()) {
+        if (!new File(getDataFolder() + folder).isDirectory()) {
             createFolder(folder);
         }
         if (overWrite || !checkFileExists(folder, filename, extension)) {
@@ -108,15 +108,11 @@ public class FileManager {
         } else return "unknown";
     }
 
-    private static void createFolder(String folder) {
+    public static void createFolder(String folder) {
         if (!new File(getDataFolder() + folder).mkdir()) {
             log.warning("Cannot make: " + getDataFolder() + folder);
         }
-        log.info("Created Data Folder!");
-    }
-
-    public static void createBaseFolder() {
-        createFolder(Variables.EmptyString);
+        log.info("Created folder: " + folder);
     }
 
     public static String getDataFolder() {

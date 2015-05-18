@@ -53,16 +53,18 @@ public class GenerateSettingsFiles {
 
             HashMap<String, String> temp;
             Object[] showsList = ShowInfoController.getShowsList();
-            for (Object aShow : showsList) {
-                temp = new HashMap<>();
-                temp.put("isActive", "false");
-                temp.put("isIgnored", "false");
-                temp.put("CurrentSeason", String.valueOf(ShowInfoController.getLowestSeason(String.valueOf(aShow), ShowInfoController.getHighestSeason(String.valueOf(aShow)))));
-                Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), temp.get("CurrentSeason"));
-                temp.put("CurrentEpisode", String.valueOf(ShowInfoController.getLowestEpisode(episodes, ShowInfoController.getHighestEpisode(episodes))));
-                tempPut.put(String.valueOf(aShow), temp);
+            if (showsList != null) {
+                for (Object aShow : showsList) {
+                    temp = new HashMap<>();
+                    temp.put("isActive", "false");
+                    temp.put("isIgnored", "false");
+                    temp.put("CurrentSeason", String.valueOf(ShowInfoController.getLowestSeason(String.valueOf(aShow), ShowInfoController.getHighestSeason(String.valueOf(aShow)))));
+                    Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), temp.get("CurrentSeason"));
+                    temp.put("CurrentEpisode", String.valueOf(ShowInfoController.getLowestEpisode(episodes, ShowInfoController.getHighestEpisode(episodes))));
+                    tempPut.put(String.valueOf(aShow), temp);
+                }
+                userSettingsFile.put("ShowSettings", tempPut);
             }
-            userSettingsFile.put("ShowSettings", tempPut);
             FileManager.save(userSettingsFile, Variables.UsersFolder, userName, Variables.UsersExtension, false);
         }
     }

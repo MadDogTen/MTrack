@@ -59,7 +59,7 @@
                         <Button fx:id="setAllInactive" layoutX="2.0" layoutY="163.0" mnemonicParsing="false"
                                 text="Set All Inactive"/>
                         <Button fx:id="printIgnoredShows" layoutX="2.0" layoutY="86.0" mnemonicParsing="false"
-                                text="Print  Ignored Shows"/>
+                                text="Print Ignored Shows"/>
                         <Button fx:id="clearFile" layoutX="146.0" layoutY="136.0" mnemonicParsing="false"
                                 text="Clear File"/>
                     </children>

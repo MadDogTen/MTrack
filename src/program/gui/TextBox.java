@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -16,6 +17,7 @@ import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
 import program.io.FileManager;
+import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -103,15 +105,25 @@ public class TextBox {
         textField.setPromptText("\\PathToDirectory\\Shows");
 
         Button submit = new Button("Submit");
-        submit.setOnAction(event -> {
+        submit.setOnAction(e -> {
             if (isDirectoryValid(title, currentDirectories, messageIfFieldIsBlank, messageIfNotDirectory, textField.getText(), window)) {
                 directories[0] = new File(textField.getText());
                 window.close();
             } else textField.clear();
         });
 
+        Button exit = new Button("X");
+        exit.setOnAction(e -> {
+            directories[0] = new File(Variables.EmptyString);
+            window.close();
+        });
+
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(submit, exit);
+        hBox.setAlignment(Pos.CENTER);
+
         VBox layout = new VBox();
-        layout.getChildren().addAll(label, textField, submit);
+        layout.getChildren().addAll(label, textField, hBox);
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout);

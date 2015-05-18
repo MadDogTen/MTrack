@@ -84,7 +84,7 @@ public class MainRun {
 
     private static void firstRun() {
         log.info("MainRun- First Run, Generating Files...");
-        FileManager.createBaseFolder();
+        FileManager.createFolder(Variables.EmptyString);
         generateProgramSettingsFile();
         chooseDirectories();
 
@@ -116,12 +116,13 @@ public class MainRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int directoryNumber = 0;
         while (addAnother) {
-            File directory = textBox.addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window);
-            Boolean matched = ProgramSettingsController.addDirectory(directoryNumber, directory);
+            Boolean[] matched = ProgramSettingsController.addDirectory(directoryNumber, textBox.addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
             directoryNumber++;
-            if (matched) {
+            if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
                 messageBox.display("Duplicate", "Directory was a duplicate!", Main.window);
+            } else if (matched[1]) {
+                break;
             }
             if (!confirmBox.display("Continue", "Add another directory?", Main.window)) {
                 addAnother = false;
