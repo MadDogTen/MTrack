@@ -1,6 +1,14 @@
 Changes:
 
-Pre-Alpha 0.8.11 -
+Pre-Alpha 0.7.12 -
+General Code Changes.
+Added inner program versioning. (This will be VERY useful in the near future)
+Added update converter so this point on there shouldn't (Not a guarantee, there still could be) be a settings file reset. Added buttons to check the current versions (Print PSFV (Program Settings File Version) & Print USFV (User Settings File Version).
+Added 2nd Developer Settings Tab and reorganised them a bit.
+GenerateSettingsFiles & FileManager are no longer static.
+The data folder is now saved/pulled from program settings after first run.
+
+Pre-Alpha 0.7.11 -
 General Code Changes.
 Add Directory stage can now be closed without adding anything.
 Made it so you don't have to add a directory on first run.
@@ -9,7 +17,7 @@ Fixed adding a new directory still generating "isHidden" field instead of "isIgn
 
 Note- This version requires a user settings file reset (Create a new user and delete the old one).
 
-Pre-Alpha 0.8.10 -
+Pre-Alpha 0.7.10 -
 General Code Changes.
 Made it where only one ChangesBox stage can be open at a time.
 Fixed the Remove Directory Stage asking to delete null if you close it.

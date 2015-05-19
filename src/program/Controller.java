@@ -151,32 +151,31 @@ public class Controller implements Initializable {
                     MenuItem resetShow = new MenuItem("Reset");
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
                     MenuItem getRemaining = new MenuItem("Get Remaining");
-                    getRemaining.setOnAction(e -> {
-                        log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining.");
-                    });
+                    getRemaining.setOnAction(e -> log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining."));
                     MenuItem openDirectory = new MenuItem("Open File Location");
                     openDirectory.setOnAction(e -> {
                         ArrayList<String> directories = ProgramSettingsController.getDirectories();
                         ArrayList<File> folders = new ArrayList<>();
+                        FileManager fileManager = new FileManager();
                         for (String aDirectory : directories) {
                             String fileString = (aDirectory + '\\' + row.getItem().getShow());
-                            if (FileManager.checkFolderExists(fileString)) {
+                            if (fileManager.checkFolderExists(fileString)) {
                                 folders.add(new File(fileString));
                             }
                         }
                         if (folders.size() == 1) {
-                            FileManager.open(folders.get(0));
+                            fileManager.open(folders.get(0));
                         } else {
                             ConfirmBox confirmBox = new ConfirmBox();
                             Boolean openAll = confirmBox.display("Open Folder", "Do you want to open ALL associated folders?", tabPane.getScene().getWindow());
                             if (openAll) {
                                 for (File aFolder : folders) {
-                                    FileManager.open(aFolder);
+                                    fileManager.open(aFolder);
                                 }
                             } else {
                                 ListSelectBox listSelectBox = new ListSelectBox();
                                 File file = listSelectBox.directories("Open Folder", "Pick the Folder you want to open", folders, tabPane.getScene().getWindow());
-                                FileManager.open(file);
+                                fileManager.open(file);
                             }
                         }
                     });
@@ -226,14 +225,14 @@ public class Controller implements Initializable {
         );
 
         // ~~~~ Buttons ~~~~ \\
-        exit.setOnAction(e -> {
-            program.Main.stop(program.Main.window, false, true);
-        });
+        exit.setOnAction(e -> Main.stop(Main.window, false, true));
         refreshTableView.setOnAction(event -> {
             if (currentList.matches("active")) {
                 setTableViewFields("inactive");
+                log.info("TableViewFields set to inactive.");
             } else if (currentList.matches("inactive")) {
                 setTableViewFields("active");
+                log.info("TableViewFields set to active.");
             }
             setTableView();
         });

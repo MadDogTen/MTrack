@@ -31,9 +31,7 @@ public class MessageBox {
         close.setMinHeight(20);
         close.setMinWidth(30);
 
-        close.setOnAction(e -> {
-            window.close();
-        });
+        close.setOnAction(e -> window.close());
 
         VBox layout = new VBox();
         layout.getChildren().addAll(label, close);

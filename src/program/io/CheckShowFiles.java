@@ -27,6 +27,7 @@ public class CheckShowFiles {
             keepRunning = !forceRun;
             ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
             ArrayList<String> activeShows = UserInfoController.getActiveShows();
+            FileManager fileManager = new FileManager();
             for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
                 log.info("Rechecking shows...");
                 int hashMapIndex = showsFileArray.indexOf(aHashMap);
@@ -46,7 +47,7 @@ public class CheckShowFiles {
                                 }
                             }
                             for (Object aSeason : seasons) {
-                                if (FileManager.checkFolderExists(FileManager.getDataFolder() + '\\' + aShow + "\\Season " + aSeason + '\\')) {
+                                if (fileManager.checkFolderExists(ProgramSettingsController.getDataFolder() + '\\' + aShow + "\\Season " + aSeason + '\\')) {
                                     log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
                                     ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
                                     if (!changedEpisodes.isEmpty()) {
@@ -87,9 +88,7 @@ public class CheckShowFiles {
                             }
                         }
                         ShowInfoController.saveShowsHashMapFile(aHashMap, hashMapIndex);
-                        for (String aNewShow : changedShows.keySet()) {
-                            UserInfoController.addNewShow(aNewShow);
-                        }
+                        changedShows.keySet().forEach(UserInfoController::addNewShow);
                     }
                 }
             }

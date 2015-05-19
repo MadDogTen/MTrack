@@ -9,18 +9,25 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 public class GenerateSettingsFiles {
-    private static final Logger log = Logger.getLogger(GenerateSettingsFiles.class.getName());
+    private final Logger log = Logger.getLogger(GenerateSettingsFiles.class.getName());
 
-    public static void generateProgramSettingsFile(String settingsFileName, String settingsFolder, String extension, Boolean override) {
-        if (override || !FileManager.checkFileExists(settingsFolder, settingsFileName, extension)) {
+    public void generateProgramSettingsFile(String settingsFileName, String settingsFolder, String extension, Boolean override) {
+        FileManager fileManager = new FileManager();
+        if (override || !fileManager.checkFileExists(settingsFolder, settingsFileName, extension)) {
             log.info("GenerateSettingsFiles- Generating program settings file...\n");
             HashMap<String, ArrayList<String>> settingsFile = new HashMap<>();
             ArrayList<String> temp;
+
+            // --Current Program Versions-- \\
+            temp = new ArrayList<>();
+            temp.add(0, String.valueOf(Variables.ProgramSettingsFileVersion));
+            settingsFile.put("ProgramVersions", temp);
 
             // --General Settings-- \\
             temp = new ArrayList<>();
             // Index 0 : Update Speed
             temp.add(0, "120");
+            temp.add(1, fileManager.getDataFolder());
             settingsFile.put("General", temp);
 
             // --Default User-- \\
@@ -35,23 +42,34 @@ public class GenerateSettingsFiles {
             temp = new ArrayList<>();
             settingsFile.put("Directories", temp);
 
-            FileManager.save(settingsFile, settingsFolder, settingsFileName, extension, true);
+            fileManager.save(settingsFile, settingsFolder, settingsFileName, extension, true);
         }
     }
 
     //TODO Add choice to have directories per user or global.
-    public static void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
-        if (override || !FileManager.checkFileExists(settingsFolder, userName, ".settings")) {
+    public void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
+        FileManager fileManager = new FileManager();
+        if (override || !fileManager.checkFileExists(settingsFolder, userName, ".settings")) {
             log.info("GenerateSettingsFiles- Generating settings file for " + userName + "...\n");
             HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile = new HashMap<>();
-            HashMap<String, HashMap<String, String>> tempPut = new HashMap<>();
+            HashMap<String, HashMap<String, String>> tempPut;
+            HashMap<String, String> temp;
+
+            // ~~User Settings~~ \\
+            tempPut = new HashMap<>();
+            // --Current User Versions-- \\
+            temp = new HashMap<>();
+            temp.put("0", String.valueOf(Variables.UserSettingsFileVersion));
+            tempPut.put("UserVersions", temp);
+
+            userSettingsFile.put("UserSettings", tempPut);
 
             // isActive - "isActive"
             // isIgnored - "isIgnored
             // Current Season - "CurrentSeason"
             // Current Episode - "CurrentEpisode"
 
-            HashMap<String, String> temp;
+            tempPut = new HashMap<>();
             Object[] showsList = ShowInfoController.getShowsList();
             if (showsList != null) {
                 for (Object aShow : showsList) {
@@ -65,7 +83,7 @@ public class GenerateSettingsFiles {
                 }
                 userSettingsFile.put("ShowSettings", tempPut);
             }
-            FileManager.save(userSettingsFile, Variables.UsersFolder, userName, Variables.UsersExtension, false);
+            fileManager.save(userSettingsFile, Variables.UsersFolder, userName, Variables.UsersExtension, false);
         }
     }
 }

@@ -15,12 +15,12 @@ public class UserInfoController {
 
     private static void loadUserInfo() {
         if (userSettingsFile == null) {
-            userSettingsFile = FileManager.loadUserInfo(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+            userSettingsFile = new FileManager().loadUserInfo(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
         }
     }
 
     public static ArrayList<String> getAllUsers() {
-        File folder = new File(FileManager.getDataFolder() + Variables.UsersFolder);
+        File folder = new File(ProgramSettingsController.getDataFolder() + Variables.UsersFolder);
         String[] userFile = folder.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -102,6 +102,13 @@ public class UserInfoController {
         return inActiveShows;
     }
 
+    public static int getUserSettingsVersion() { //TODO Remove -2 return when program is at Version 0.9
+        loadUserInfo();
+        if (userSettingsFile.containsKey("UserSettings") && userSettingsFile.get("UserSettings").containsKey("UserVersions")) {
+            return Integer.parseInt(userSettingsFile.get("UserSettings").get("UserVersions").get("0"));
+        } else return -2;
+    }
+
     public static void playAnyEpisode(String aShow, int season, String episode, Boolean fileExists, int episodeType) {
         loadUserInfo();
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
@@ -123,7 +130,7 @@ public class UserInfoController {
             if (showLocation != null) {
                 File file = new File(showLocation);
                 if (file.exists()) {
-                    FileManager.open(file);
+                    new FileManager().open(file);
                 } else log.warning("File doesn't exists!");
             } else log.warning("File doesn't exists!");
         } else log.warning("File doesn't exists!");
@@ -314,8 +321,7 @@ public class UserInfoController {
 
     public static void addNewShow(String aShow) {
         if (!userSettingsFile.containsKey("ShowSettings")) {
-            HashMap<String, HashMap<String, String>> temp = new HashMap<>();
-            userSettingsFile.put("ShowSettings", temp);
+            userSettingsFile.put("ShowSettings", new HashMap<>());
         }
         if (!userSettingsFile.get("ShowSettings").containsKey(aShow)) {
             HashMap<String, String> temp = new HashMap<>();
@@ -328,9 +334,17 @@ public class UserInfoController {
         }
     }
 
+    public static HashMap<String, HashMap<String, HashMap<String, String>>> getUserSettingsFile() {
+        return userSettingsFile;
+    }
+
+    public static void setUserSettingsFile(HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile) {
+        UserInfoController.userSettingsFile = userSettingsFile;
+    }
+
     public static void saveUserSettingsFile() {
         if (userSettingsFile != null) {
-            FileManager.save(userSettingsFile, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
+            new FileManager().save(userSettingsFile, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
             log.info("UserInfoController- userSettingsFile has been saved!");
         }
     }

@@ -30,10 +30,12 @@ public class ShowInfoController {
                 showsFile = new HashMap<>();
                 ArrayList<String> allShows = new ArrayList<>();
                 for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
-                    Set<String> showsSet = aHashMap.keySet();
-                    for (String aShow : showsSet) {
-                        if (!allShows.contains(aShow)) {
-                            allShows.add(aShow);
+                    if (aHashMap != null) {
+                        Set<String> showsSet = aHashMap.keySet();
+                        for (String aShow : showsSet) {
+                            if (!allShows.contains(aShow)) {
+                                allShows.add(aShow);
+                            }
                         }
                     }
                 }
@@ -66,8 +68,9 @@ public class ShowInfoController {
                 }
                 log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
             } else {
+                FileManager fileManager = new FileManager();
                 for (String aString : ProgramSettingsController.getDirectoriesNames()) {
-                    showsFile = FileManager.loadShows(aString);
+                    showsFile = fileManager.loadShows(aString);
                 }
             }
         }
@@ -78,9 +81,10 @@ public class ShowInfoController {
         // ArrayList = Shows list from all added Directories
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
+        FileManager fileManager = new FileManager();
         for (String aString : files) {
             int place = files.indexOf(aString);
-            showsFileArray.add(place, FileManager.loadShows(aString));
+            showsFileArray.add(place, fileManager.loadShows(aString));
         }
         return showsFileArray;
     }
@@ -89,9 +93,10 @@ public class ShowInfoController {
     public static HashMap<String, HashMap<Integer, HashMap<String, String>>> getShowsFile(int index) {
         HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = new HashMap<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
-        for (String afile : files) {
-            if (afile.contains(String.valueOf(index))) {
-                showsFile = FileManager.loadShows(afile);
+        FileManager fileManager = new FileManager();
+        for (String aFile : files) {
+            if (aFile.contains(String.valueOf(index))) {
+                showsFile = fileManager.loadShows(aFile);
                 break;
             }
         }
@@ -136,8 +141,8 @@ public class ShowInfoController {
     public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {
         Boolean showExistsElsewhere = false;
         if (!showsFileArray.isEmpty()) {
-            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashmap : showsFileArray) {
-                if (aHashmap.containsKey(aShow)) {
+            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
+                if (aHashMap.containsKey(aShow)) {
                     showExistsElsewhere = true;
                 }
             }
@@ -259,7 +264,7 @@ public class ShowInfoController {
     }
 
     public static void saveShowsHashMapFile(HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap, int hashMapIndex) {
-        FileManager.save(hashMap, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
+        new FileManager().save(hashMap, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
         loadShowsFile();
     }
 

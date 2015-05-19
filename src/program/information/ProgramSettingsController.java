@@ -16,7 +16,7 @@ public class ProgramSettingsController {
 
     private static void loadProgramSettingsFile() {
         if (settingsFile == null) {
-            settingsFile = FileManager.loadProgramSettings(Strings.SettingsFileName, Variables.SettingsExtension);
+            settingsFile = new FileManager().loadProgramSettings(Strings.SettingsFileName, Variables.SettingsExtension);
         }
     }
 
@@ -61,6 +61,21 @@ public class ProgramSettingsController {
         return settingsFile.get("Directories");
     }
 
+    public static String getDataFolder() {
+        loadProgramSettingsFile();
+        if (settingsFile.get("General").size() == 1) { //TODO remove return new FileManage().getDataFolder(); at Version 0.9
+            return new FileManager().getDataFolder();
+        }
+        return settingsFile.get("General").get(1);
+    }
+
+    public static int getProgramSettingsVersion() { //TODO Remove -2 return when program is at Version 0.9
+        loadProgramSettingsFile();
+        if (settingsFile.containsKey("ProgramVersions")) {
+            return Integer.parseInt(settingsFile.get("ProgramVersions").get(0));
+        } else return -2;
+    }
+
     public static boolean isDirectoryCurrentlyActive(File directory) {
         return directory.isDirectory();
     }
@@ -85,7 +100,7 @@ public class ProgramSettingsController {
             }
         }
         settingsFile.get("Directories").remove(directory);
-        FileManager.deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
+        new FileManager().deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
         log.info("Finished processing removal. ");
     }
 
@@ -137,10 +152,18 @@ public class ProgramSettingsController {
         return answer;
     }
 
+    public static HashMap<String, ArrayList<String>> getSettingsFile() {
+        return settingsFile;
+    }
+
+    public static void setSettingsFile(HashMap<String, ArrayList<String>> settingsFile) {
+        ProgramSettingsController.settingsFile = settingsFile;
+    }
+
     // Save the file
     public static void saveSettingsFile() {
         if (settingsFile != null) {
-            FileManager.save(settingsFile, Variables.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
+            new FileManager().save(settingsFile, Variables.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
             log.info("ProgramSettingsController- settingsFile has been saved!");
         }
     }

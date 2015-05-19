@@ -40,6 +40,8 @@ public class Settings implements Initializable {
     @FXML
     private Button exit3;
     @FXML
+    private Button exit4;
+    @FXML
     private Button forceRecheck;
     @FXML
     private Button openProgramFolder;
@@ -73,6 +75,10 @@ public class Settings implements Initializable {
     private Button printIgnoredShows;
     @FXML
     private Button clearFile;
+    @FXML
+    private Button printProgramSettingsFileVersion;
+    @FXML
+    private Button printUserSettingsFileVersion;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -92,9 +98,7 @@ public class Settings implements Initializable {
                 ProgramSettingsController.setDefaultUsername(defaultUsername, 1);
             }
         });
-        clearDefaultUsername.setOnAction(e -> {
-            ProgramSettingsController.setDefaultUsername(Variables.EmptyString, 0);
-        });
+        clearDefaultUsername.setOnAction(e -> ProgramSettingsController.setDefaultUsername(Variables.EmptyString, 0));
         deleteUser.setOnAction(e -> {
             ArrayList<String> users = UserInfoController.getAllUsers();
             users.remove(Strings.UserName);
@@ -105,7 +109,7 @@ public class Settings implements Initializable {
                     ConfirmBox confirmBox = new ConfirmBox();
                     Boolean confirm = confirmBox.display("Delete User", ("Are you sure to want to delete " + userToDelete + "?"), tabPane.getScene().getWindow());
                     if (confirm && !userToDelete.isEmpty()) {
-                        FileManager.deleteFile(Variables.UsersFolder, userToDelete, Variables.UsersExtension);
+                        new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UsersExtension);
                     }
                 }
             } else {
@@ -120,9 +124,7 @@ public class Settings implements Initializable {
             Stage stage = (Stage) tabPane.getScene().getWindow();
             stage.close();
         });
-        changeUpdateSpeed.setOnAction(e -> {
-            ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Update Speed", "Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120, tabPane.getScene().getWindow()));
-        });
+        changeUpdateSpeed.setOnAction(e -> ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Update Speed", "Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120, tabPane.getScene().getWindow())));
         addDirectory.setOnAction(e -> {
             int index = ProgramSettingsController.getNumberOfDirectories();
             Boolean[] wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", tabPane.getScene().getWindow()));
@@ -191,7 +193,7 @@ public class Settings implements Initializable {
             new Thread(task).start();
         });
         openProgramFolder.setOnAction(e -> {
-            File file = new File(FileManager.getDataFolder());
+            File file = new File(ProgramSettingsController.getDataFolder());
             try {
                 Desktop.getDesktop().open(file);
             } catch (IOException e1) {
@@ -212,12 +214,8 @@ public class Settings implements Initializable {
             Stage stage = (Stage) tabPane.getScene().getWindow();
             stage.close();
         });
-        printAllShows.setOnAction(e -> {
-            ShowInfoController.printOutAllShowsAndEpisodes();
-        });
-        printAllDirectories.setOnAction(e -> {
-            ProgramSettingsController.printAllDirectories();
-        });
+        printAllShows.setOnAction(e -> ShowInfoController.printOutAllShowsAndEpisodes());
+        printAllDirectories.setOnAction(e -> ProgramSettingsController.printAllDirectories());
         printEmptyShowFolders.setOnAction(e -> {
             ArrayList<String> emptyShows = CheckShowFiles.getEmptyShows();
             log.info("Printing empty shows:");
@@ -228,7 +226,7 @@ public class Settings implements Initializable {
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     for (String aShow : emptyShows) {
                         String fileString = (aDirectory + '\\' + aShow);
-                        if (FileManager.checkFolderExists(fileString) && !shows.contains(aShow)) {
+                        if (new FileManager().checkFolderExists(fileString) && !shows.contains(aShow)) {
                             emptyShowsDir.add(aShow);
                         }
                     }
@@ -271,6 +269,14 @@ public class Settings implements Initializable {
                 log.info("No shows to change.");
             }
         });
+
+        // Dev 2
+        exit4.setOnAction(e -> {
+            Stage stage = (Stage) tabPane.getScene().getWindow();
+            stage.close();
+        });
+        printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(ProgramSettingsController.getProgramSettingsVersion())));
+        printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(UserInfoController.getUserSettingsVersion())));
         clearFile.setOnAction(e -> {
             ArrayList<File> directories = new ArrayList<>();
             for (String aDirectory : ProgramSettingsController.getDirectories()) {
@@ -307,7 +313,7 @@ public class Settings implements Initializable {
             if (confirmBox.display("Reset Program", "Are you sure? This will delete EVERYTHING!", tabPane.getScene().getWindow())) {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
-                FileManager.deleteFolder(new File(FileManager.getDataFolder()));
+                new FileManager().deleteFolder(new File(ProgramSettingsController.getDataFolder()));
                 program.Main.stop(program.Main.window, true, false);
             }
         });

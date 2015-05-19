@@ -13,6 +13,7 @@ import program.io.GenerateNewShowFiles;
 import program.io.GenerateSettingsFiles;
 import program.util.Clock;
 import program.util.Strings;
+import program.util.UpdateManager;
 import program.util.Variables;
 
 import java.io.File;
@@ -25,19 +26,29 @@ public class MainRun {
     public static int timer = Clock.getTimeSeconds();
 
     public static void startBackend() {
+        FileManager fileManager = new FileManager();
         // If true, It will Delete ALL Files each time the program is ran.
-        if (Variables.StartFresh && FileManager.checkFolderExists(FileManager.getDataFolder())) {
+        if (Variables.StartFresh && fileManager.checkFolderExists(fileManager.getDataFolder())) {
             log.warning("Starting Fresh...");
-            FileManager.deleteFolder(new File(FileManager.getDataFolder()));
+            fileManager.deleteFolder(new File(fileManager.getDataFolder()));
         }
         // Check
-        if (FileManager.checkFolderExists(FileManager.getDataFolder())) {
+        if (!fileManager.checkFolderExists(fileManager.getDataFolder())) {
+            firstRun();
+        } else if (!fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingsExtension)) {
+            generateProgramSettingsFile();
             Strings.UserName = getUser();
-        } else firstRun();
+            log.info("Username is set: " + Strings.UserName);
+        } else {
+            Strings.UserName = getUser();
+            log.info("Username is set: " + Strings.UserName);
+        }
+
         if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
             generateUserSettingsFile(Strings.UserName, false);
         }
         log.info("Username is set: " + Strings.UserName);
+        new UpdateManager().updateFiles();
         Variables.setUpdateSpeed();
         Controller.setTableViewFields("active");
     }
@@ -84,7 +95,7 @@ public class MainRun {
 
     private static void firstRun() {
         log.info("MainRun- First Run, Generating Files...");
-        FileManager.createFolder(Variables.EmptyString);
+        new FileManager().createFolder(Variables.EmptyString);
         generateProgramSettingsFile();
         chooseDirectories();
 
@@ -132,7 +143,7 @@ public class MainRun {
 
     // File Generators
     private static void generateProgramSettingsFile() {
-        GenerateSettingsFiles.generateProgramSettingsFile(Strings.SettingsFileName, Variables.EmptyString, Variables.SettingsExtension, false);
+        new GenerateSettingsFiles().generateProgramSettingsFile(Strings.SettingsFileName, Variables.EmptyString, Variables.SettingsExtension, false);
     }
 
     private static void generateShowFiles() {
@@ -146,6 +157,6 @@ public class MainRun {
 
     private static void generateUserSettingsFile(String userName, Boolean override) {
         log.info("Attempting to generate settings file for " + userName + ".");
-        GenerateSettingsFiles.generateUserSettingsFile(Strings.UserName, Variables.SettingsExtension, override);
+        new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName, Variables.SettingsExtension, override);
     }
 }

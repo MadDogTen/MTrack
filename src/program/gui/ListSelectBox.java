@@ -176,9 +176,7 @@ public class ListSelectBox {
         });
 
         Button exit = new Button("X");
-        exit.setOnAction(e -> {
-            window.close();
-        });
+        exit.setOnAction(e -> window.close());
 
         HBox buttonLayout = new HBox();
         buttonLayout.getChildren().addAll(submit, exit);

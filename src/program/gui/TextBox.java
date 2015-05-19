@@ -144,7 +144,7 @@ public class TextBox {
         if (currentDirectories.contains(message)) {
             new MessageBox().display(title, "Directory is already added.", oldWindow);
             return false;
-        } else if (FileManager.checkFolderExists(message)) {
+        } else if (new FileManager().checkFolderExists(message)) {
             return true;
         } else if (!message.isEmpty()) {
             MessageBox messageBox = new MessageBox();

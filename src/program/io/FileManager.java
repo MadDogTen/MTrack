@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class FileManager {
-    private static final Logger log = Logger.getLogger(FileManager.class.getName());
+    private final Logger log = Logger.getLogger(FileManager.class.getName());
 
     // Serialise
-    public static void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
+    public void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
         if (!new File(getDataFolder() + folder).isDirectory()) {
             createFolder(folder);
         }
@@ -32,7 +32,7 @@ public class FileManager {
 
     // Deserialize
     @SuppressWarnings("unchecked")
-    public static HashMap loadShows(String theFile) {
+    public HashMap loadShows(String theFile) {
         if (checkFileExists(Variables.DirectoriesFolder, theFile, Variables.EmptyString)) {
             HashMap<String, HashMap<Integer, HashMap<String, String>>> loadedHashMap = new HashMap<>(0);
             try {
@@ -50,7 +50,7 @@ public class FileManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, HashMap<String, HashMap<String, String>>> loadUserInfo(String folder, String filename, String extension) {
+    public HashMap<String, HashMap<String, HashMap<String, String>>> loadUserInfo(String folder, String filename, String extension) {
         if (checkFileExists(folder, filename, extension)) {
             HashMap<String, HashMap<String, HashMap<String, String>>> loadedHashMap = new HashMap<>();
             FileInputStream fis;
@@ -68,7 +68,7 @@ public class FileManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, ArrayList<String>> loadProgramSettings(String filename, String extension) {
+    public HashMap<String, ArrayList<String>> loadProgramSettings(String filename, String extension) {
         if (checkFileExists(Variables.EmptyString, filename, extension)) {
             HashMap<String, ArrayList<String>> loadedHashMap = new HashMap<>();
             FileInputStream fis;
@@ -85,15 +85,15 @@ public class FileManager {
         return null;
     }
 
-    public static boolean checkFileExists(String folder, String filename, String extension) {
+    public boolean checkFileExists(String folder, String filename, String extension) {
         return new File(getDataFolder() + folder + '\\' + filename + extension).isFile();
     }
 
-    public static boolean checkFolderExists(String aFolder) {
+    public boolean checkFolderExists(String aFolder) {
         return new File(aFolder).isDirectory();
     }
 
-    public static String getOS() {
+    public String getOS() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) {
             return "windows";
@@ -108,14 +108,14 @@ public class FileManager {
         } else return "unknown";
     }
 
-    public static void createFolder(String folder) {
+    public void createFolder(String folder) {
         if (!new File(getDataFolder() + folder).mkdir()) {
             log.warning("Cannot make: " + getDataFolder() + folder);
         }
         log.info("Created folder: " + folder);
     }
 
-    public static String getDataFolder() {
+    public String getDataFolder() {
         String home = System.getProperty("user.home");
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) {
@@ -129,7 +129,7 @@ public class FileManager {
         return dir.getAbsolutePath();
     }
 
-    public static void deleteFile(String folder, String filename, String extension) {
+    public void deleteFile(String folder, String filename, String extension) {
         String file = (folder + '\\' + filename + extension);
         if (!checkFileExists(folder, filename, extension)) {
             log.warning("File " + getDataFolder() + file + " does not exist!");
@@ -142,7 +142,7 @@ public class FileManager {
         } else log.warning("File " + getDataFolder() + file + " is write protected!");
     }
 
-    public static void deleteFolder(File toDeleteFolder) {
+    public void deleteFolder(File toDeleteFolder) {
         if (!checkFolderExists(String.valueOf(toDeleteFolder))) {
             log.warning(toDeleteFolder + " does not exist!");
         }
@@ -172,8 +172,8 @@ public class FileManager {
         } else log.warning(toDeleteFolder + " is write protected!");
     }
 
-    public static void open(File file) {
-        String os = FileManager.getOS();
+    public void open(File file) {
+        String os = getOS();
         try {
             if (os.contains("windows")) {
                 Runtime.getRuntime().exec(new String[]{

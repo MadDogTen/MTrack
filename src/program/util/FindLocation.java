@@ -36,7 +36,7 @@ public class FindLocation implements Serializable {
     public static String[] findEpisodes(File dir, String ShowName, Integer Season) {
         String[] episodes;
         File folder = new File(dir + "\\" + ShowName + "\\Season" + " " + Season);
-        if (FileManager.checkFolderExists(String.valueOf(folder)) && new File(String.valueOf(folder)).list().length > 0) {
+        if (new FileManager().checkFolderExists(String.valueOf(folder)) && new File(String.valueOf(folder)).list().length > 0) {
             episodes = folder.list((dir1, name) -> (name.toLowerCase().endsWith(".mkv") || name.toLowerCase().endsWith(".avi") || name.toLowerCase().endsWith(".mp4")));
             return episodes;
         }
