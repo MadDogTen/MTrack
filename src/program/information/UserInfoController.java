@@ -75,7 +75,7 @@ public class UserInfoController {
     public static ArrayList<String> getActiveShows() {
         loadUserInfo();
         ArrayList<String> activeShows = new ArrayList<>();
-        if (!userSettingsFile.isEmpty()) {
+        if (!userSettingsFile.isEmpty() && userSettingsFile.containsKey("ShowSettings")) {
             for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
                 Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
                 Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));

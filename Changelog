@@ -1,5 +1,8 @@
 Changes:
 
+Pre-Alpha 0.7.12.1 -
+Fixed nullPointerException on first run.
+
 Pre-Alpha 0.7.12 -
 General Code Changes.
 Added inner program versioning. (This will be VERY useful in the near future)
