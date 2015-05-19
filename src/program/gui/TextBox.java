@@ -27,7 +27,7 @@ public class TextBox {
 
     public String display(String title, String message, String messageIfNameFieldIsBlank, String defaultValue, Window oldWindow) {
         Stage window = new Stage();
-        window.getIcons().add(ImageLoader.getImage("/image/LogoChoice.png"));
+        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
         final String[] userName = new String[1];
 
         window.initStyle(StageStyle.UNDECORATED);

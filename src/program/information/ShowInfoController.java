@@ -20,8 +20,8 @@ public class ShowInfoController {
     // To pull Show Information
 
     @SuppressWarnings("unchecked")
-    public static void loadShowsFile() {
-        if (showsFile == null) {
+    public static void loadShowsFile(Boolean forceRegen) {
+        if (forceRegen || showsFile == null) {
             if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
                 ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getShowsFileArray();
 
@@ -104,19 +104,19 @@ public class ShowInfoController {
     }
 
     public static Object[] getShowsList() {
-        loadShowsFile();
+        loadShowsFile(false);
         if (showsFile != null) {
             return showsFile.keySet().toArray();
         } else return null;
     }
 
     public static Set<Integer> getSeasonsListSet(String show) {
-        loadShowsFile();
+        loadShowsFile(false);
         return showsFile.get(show).keySet();
     }
 
     public static Set<String> getEpisodesList(String show, String season) {
-        loadShowsFile();
+        loadShowsFile(false);
         int aSeason = Integer.parseInt(String.valueOf(season));
         HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(show);
         HashMap<String, String> episodeNumEpisode = seasonEpisode.get(aSeason);
@@ -126,7 +126,7 @@ public class ShowInfoController {
     }
 
     public static String getEpisode(String show, String season, String episode) {
-        loadShowsFile();
+        loadShowsFile(false);
         HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(show);
         int aSeason = Integer.parseInt(String.valueOf(season));
         HashMap<String, String> episodeNumEpisode = seasonEpisode.get(aSeason);
@@ -265,11 +265,11 @@ public class ShowInfoController {
 
     public static void saveShowsHashMapFile(HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap, int hashMapIndex) {
         new FileManager().save(hashMap, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
-        loadShowsFile();
+        loadShowsFile(true);
     }
 
     public static void printOutAllShowsAndEpisodes() {
-        loadShowsFile();
+        loadShowsFile(false);
         log.info("Printing out all Shows and Episodes:");
         if (showsFile != null) {
             Set<String> Show = showsFile.keySet();

@@ -16,12 +16,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
+import program.information.ShowInfoController;
 import program.input.MoveWindow;
 import program.util.Strings;
 import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class ListSelectBox {
 
@@ -30,7 +32,7 @@ public class ListSelectBox {
         userName[0] = Strings.DefaultUsername;
 
         Stage window = new Stage();
-        window.getIcons().add(ImageLoader.getImage("/image/LogoChoice.png"));
+        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
@@ -198,5 +200,128 @@ public class ListSelectBox {
         window.showAndWait();
 
         return file[0];
+    }
+
+    public String[] pickSeasonEpisode(String title, String message, String aShow, Set<Integer> seasons, Window oldWindow) {
+        final String[] choice = new String[2];
+
+        Stage window = new Stage();
+        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
+        window.initStyle(StageStyle.UNDECORATED);
+
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle(title);
+        window.setMinWidth(250);
+
+        Label label = new Label();
+        label.setText(message);
+
+        ArrayList<String> seasonsString = new ArrayList<>();
+        for (Integer aSeason : seasons) {
+            seasonsString.add(String.valueOf(aSeason));
+        }
+
+        ObservableList<String> seasonsList = FXCollections.observableArrayList(seasonsString);
+        seasonsList.sorted();
+        ComboBox<String> comboBox = new ComboBox<>(seasonsList);
+
+
+        Button submit = new Button("Submit");
+        submit.setOnAction(e -> {
+            choice[0] = comboBox.getValue();
+            choice[1] = pickEpisode(title, "Pick the Episode", ShowInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
+            window.close();
+        });
+
+        Button exit = new Button("X");
+        exit.setOnAction(e -> {
+            choice[0] = "-1";
+            choice[1] = "-1";
+            window.close();
+        });
+
+        HBox buttonLayout = new HBox();
+        buttonLayout.getChildren().addAll(submit, exit);
+        buttonLayout.setAlignment(Pos.CENTER);
+        buttonLayout.setPadding(new Insets(5, 5, 5, 5));
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, comboBox, buttonLayout);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+
+        window.setScene(scene);
+        Platform.runLater(() -> {
+            if (oldWindow != null) {
+                window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+                window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            }
+            new MoveWindow().moveWindow(window);
+        });
+        window.showAndWait();
+
+        return choice;
+    }
+
+    public String pickEpisode(String title, String message, Set<String> episodes, Double width, Double height, Window oldWindow) {
+        final String[] choice = new String[1];
+
+        Stage window = new Stage();
+        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
+        window.initStyle(StageStyle.UNDECORATED);
+
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle(title);
+        window.setWidth(width);
+        window.setHeight(height);
+
+        Label label = new Label();
+        label.setText(message);
+
+        ArrayList<String> episodeString = new ArrayList<>();
+        for (String aEpisode : episodes) {
+            episodeString.add(String.valueOf(aEpisode));
+        }
+
+        ObservableList<String> seasonsList = FXCollections.observableArrayList(episodeString);
+        seasonsList.sorted();
+        ComboBox<String> comboBox = new ComboBox<>(seasonsList);
+
+
+        Button submit = new Button("Submit");
+        submit.setOnAction(e -> {
+            choice[0] = comboBox.getValue();
+            window.close();
+        });
+
+        Button exit = new Button("X");
+        exit.setOnAction(e -> {
+            choice[0] = "-1";
+            window.close();
+        });
+
+        HBox buttonLayout = new HBox();
+        buttonLayout.getChildren().addAll(submit, exit);
+        buttonLayout.setAlignment(Pos.CENTER);
+        buttonLayout.setPadding(new Insets(5, 5, 5, 5));
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, comboBox, buttonLayout);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+
+        window.setScene(scene);
+        Platform.runLater(() -> {
+            if (oldWindow != null) {
+                window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+                window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            }
+            new MoveWindow().moveWindow(window);
+        });
+        window.showAndWait();
+
+        return choice[0];
     }
 }

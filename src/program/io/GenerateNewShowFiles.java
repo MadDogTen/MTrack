@@ -15,7 +15,7 @@ public class GenerateNewShowFiles {
 
     public static void generateShowsFile(int index, File folderLocation, Boolean forceGen) {
         FileManager fileManager = new FileManager();
-        if (forceGen || fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
+        if (forceGen || !fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
             log.info("Generating ShowsFile for: " + folderLocation);
             // String = Show Name -- HashMap == Seasons in show from seasonEpisode
             HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);

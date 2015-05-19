@@ -150,7 +150,7 @@ public class Settings implements Initializable {
                         e1.printStackTrace();
                     }
                 }
-                ShowInfoController.loadShowsFile();
+                ShowInfoController.loadShowsFile(true);
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getShowsFile(index);
                 for (String aShow : showsFile.keySet()) {
                     UserInfoController.addNewShow(aShow);

@@ -120,8 +120,21 @@ public class Controller implements Initializable {
 
                     // MenuItems - TODO Have the menu switch depending on the current list showing
 
-                    MenuItem playSeasonEpisode = new MenuItem("Pick Season/Episode");
+                    MenuItem setSeasonEpisode = new MenuItem("Set Season + Episode");
+                    setSeasonEpisode.setOnAction(e -> {
+                        /*String show = row.getItem().getShow();
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Set Season + Episode", "Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
+                        if (!seasonEpisode[0].contains("-1") || !seasonEpisode[1].contains("-1")) {
+                            UserInfoController.setSeasonEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
+                        }*/
+                    });
+                    MenuItem playSeasonEpisode = new MenuItem("Play Season + Episode");
                     playSeasonEpisode.setOnAction(e -> {
+                        /*String show = row.getItem().getShow();
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Set Season + Episode", "Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
+                        if (!seasonEpisode[0].contains("-1") || !seasonEpisode[1].contains("-1")) {
+                            UserInfoController.playAnyEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1], true, -1);
+                        }*/
                         DoubleTextBox doubleTextBox = new DoubleTextBox();
                         int[] seasonEpisode = doubleTextBox.displaySeasonEpisode("Open Episode", "Season", "Episode", tabPane.getScene().getWindow());
                         int fileExists = UserInfoController.doesSeasonEpisodeExists(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]));
@@ -180,7 +193,7 @@ public class Controller implements Initializable {
                         }
                     });
 
-                    rowMenuActive.getItems().addAll(playSeasonEpisode, setNotActive, setActive, resetShow, getRemaining, openDirectory);
+                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, setNotActive, setActive, resetShow, getRemaining, openDirectory);
 
                     row.contextMenuProperty().bind(
                             Bindings.when(Bindings.isNotNull(row.itemProperty()))

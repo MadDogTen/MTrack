@@ -1,5 +1,15 @@
 Changes:
 
+Pre-Alpha 0.7.13 -
+General Code Changes.
+Renamed Logo from LogoChoice to MTrackLogo and increased logo resolution (143 x 155 -> 1001 x 1036).
+Fixed issue with generateShowFile not running as checkFileExists was swapped (Needs to return true when file doesn't exist).
+Fixed UserInfoController getInactiveShows potentially throwing a NullPointerExemption.
+Fixed UserInfoController getIgnoredShows potentially hanging the program.
+Added forceRegen option to loadShowsFile, which fixes a NullPointerException.
+Added button to set the season and episode (by right clicking a show and choosing "Set Season + Episode"). Currently not working + disabled.
+Converting "Play Season + Episode" to the system used by the above change, but unfinished and still is as it was.
+
 Pre-Alpha 0.7.12.1 -
 Fixed nullPointerException on first run.
 

@@ -13,7 +13,7 @@ public class UpdateManager {
     InnerVersionChecker checker = new InnerVersionChecker();
 
     public void updateFiles() {
-        log.info("Checking if Inner Versions are matched...");
+        log.info("Checking if inner versions are matched...");
         int version = checker.checkProgramSettingsFileVersion();
         if (version != -1) {
             log.info("Program settings file versions didn't match, Updating...");
@@ -25,7 +25,7 @@ public class UpdateManager {
             convertUserSettingsFile(version, Variables.UserSettingsFileVersion);
         }
         log.info("Program settings file versions matched.");
-        log.info("Finished if Inner Versions are matched...");
+        log.info("Finished checking if inner versions are matched.");
     }
 
     private void convertProgramSettingsFile(int oldVersion, int newVersion) {

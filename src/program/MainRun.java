@@ -147,12 +147,15 @@ public class MainRun {
     }
 
     private static void generateShowFiles() {
+        log.info("Generating show files for first run...");
         ArrayList<String> directories = ProgramSettingsController.getDirectories();
         for (String aDirectory : directories) {
+            log.info("Currently generating show files for: " + aDirectory);
             int fileName = directories.indexOf(aDirectory);
             File file = new File(aDirectory);
             GenerateNewShowFiles.generateShowsFile(fileName, file, false);
         }
+        log.info("Finished generating show files.");
     }
 
     private static void generateUserSettingsFile(String userName, Boolean override) {
