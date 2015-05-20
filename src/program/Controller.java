@@ -122,27 +122,45 @@ public class Controller implements Initializable {
 
                     MenuItem setSeasonEpisode = new MenuItem("Set Season + Episode");
                     setSeasonEpisode.setOnAction(e -> {
-                        /*String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Set Season + Episode", "Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
-                        if (!seasonEpisode[0].contains("-1") || !seasonEpisode[1].contains("-1")) {
+                        /*log.info("\"Set Season + Episode\" is now running...");
+                        String show = row.getItem().getShow();
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
+                        if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
+                            log.info("Season & Episode were valid.");
                             UserInfoController.setSeasonEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
-                        }*/
+                        } else {
+                            log.info("Season & Episode weren't valid.");
+                        }
+                        log.info("\"Set Season + Episode\" is finished running.");*/
                     });
                     MenuItem playSeasonEpisode = new MenuItem("Play Season + Episode");
                     playSeasonEpisode.setOnAction(e -> {
-                        /*String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Set Season + Episode", "Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
-                        if (!seasonEpisode[0].contains("-1") || !seasonEpisode[1].contains("-1")) {
+                        /*log.info("\"Play Season + Episode\" is now running...");
+                        String show = row.getItem().getShow();
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
+                        if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
+                            log.info("Season & Episode were valid.");
                             UserInfoController.playAnyEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1], true, -1);
-                        }*/
+                        } else {
+                            log.info("Season & Episode weren't valid.");
+                        }
+                        log.info("\"Play Season + Episode\" is finished running.");*/
                         DoubleTextBox doubleTextBox = new DoubleTextBox();
-                        int[] seasonEpisode = doubleTextBox.displaySeasonEpisode("Open Episode", "Season", "Episode", tabPane.getScene().getWindow());
+                        int[] seasonEpisode = doubleTextBox.displaySeasonEpisode("Season", "Episode", tabPane.getScene().getWindow());
                         int fileExists = UserInfoController.doesSeasonEpisodeExists(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]));
                         if (fileExists == 1 || fileExists == 2) {
                             UserInfoController.playAnyEpisode(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]), true, -1);
                         } else {
                             MessageBox messageBox = new MessageBox();
-                            messageBox.display("Pick Season/Episode", "Your selection doesn't exist.", tabPane.getScene().getWindow());
+                            messageBox.display("Your selection doesn't exist.", tabPane.getScene().getWindow());
+                        }
+                    });
+                    MenuItem setActive = new MenuItem("Allow Updating");
+                    setActive.setOnAction(e -> {
+                        if (currentList.matches("inactive")) {
+                            UserInfoController.setActiveStatus(row.getItem().getShow(), true);
+                            removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                            tableView.getSelectionModel().clearSelection();
                         }
                     });
                     MenuItem setNotActive = new MenuItem("Stop Updating");
@@ -153,13 +171,11 @@ public class Controller implements Initializable {
                             tableView.getSelectionModel().clearSelection();
                         }
                     });
-                    MenuItem setActive = new MenuItem("Allow Updating");
-                    setActive.setOnAction(e -> {
-                        if (currentList.matches("inactive")) {
-                            UserInfoController.setActiveStatus(row.getItem().getShow(), true);
-                            removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
-                            tableView.getSelectionModel().clearSelection();
-                        }
+                    MenuItem setHidden = new MenuItem("Hide Show");
+                    setHidden.setOnAction(e -> {
+                        UserInfoController.setHiddenStatus(row.getItem().getShow(), true);
+                        removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                        tableView.getSelectionModel().clearSelection();
                     });
                     MenuItem resetShow = new MenuItem("Reset");
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
@@ -180,20 +196,20 @@ public class Controller implements Initializable {
                             fileManager.open(folders.get(0));
                         } else {
                             ConfirmBox confirmBox = new ConfirmBox();
-                            Boolean openAll = confirmBox.display("Open Folder", "Do you want to open ALL associated folders?", tabPane.getScene().getWindow());
+                            Boolean openAll = confirmBox.display("Do you want to open ALL associated folders?", tabPane.getScene().getWindow());
                             if (openAll) {
                                 for (File aFolder : folders) {
                                     fileManager.open(aFolder);
                                 }
                             } else {
                                 ListSelectBox listSelectBox = new ListSelectBox();
-                                File file = listSelectBox.directories("Open Folder", "Pick the Folder you want to open", folders, tabPane.getScene().getWindow());
+                                File file = listSelectBox.directories("Pick the Folder you want to open", folders, tabPane.getScene().getWindow());
                                 fileManager.open(file);
                             }
                         }
                     });
 
-                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, setNotActive, setActive, resetShow, getRemaining, openDirectory);
+                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, setActive, setNotActive, setHidden, resetShow, getRemaining, openDirectory);
 
                     row.contextMenuProperty().bind(
                             Bindings.when(Bindings.isNotNull(row.itemProperty()))
@@ -210,7 +226,7 @@ public class Controller implements Initializable {
                                     tableView.getSelectionModel().clearAndSelect(row.getIndex());
                                     UserInfoController.playAnyEpisode(aShow, -1, Variables.EmptyString, true, fileExists);
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
-                                    int userChoice = showConfirmBox.display("Playing Show", "Have the watched the show?", tabPane.getScene().getWindow());
+                                    int userChoice = showConfirmBox.display("Have the watched the show?", tabPane.getScene().getWindow());
                                     if (userChoice == 1) {
                                         UserInfoController.changeEpisode(aShow, -2, true, fileExists);
                                         updateShowField(aShow, tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
@@ -229,7 +245,7 @@ public class Controller implements Initializable {
                             if (keepPlaying) {
                                 UserInfoController.changeEpisode(aShow, -2, false, 0);
                                 MessageBox messageBox = new MessageBox();
-                                messageBox.display("Error", "You have reached the end!", tabPane.getScene().getWindow());
+                                messageBox.display("You have reached the end!", tabPane.getScene().getWindow());
                             }
                         }
                     });
@@ -257,7 +273,7 @@ public class Controller implements Initializable {
                 if (answer != null && answer[1] != null) {
                     neededWindow = (Stage) answer[1];
                 }
-                answer = new ChangesBox().display("Changes", neededWindow);
+                answer = new ChangesBox().display(neededWindow);
                 keepOpen = (Boolean) answer[0];
             } while (keepOpen);
         });

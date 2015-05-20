@@ -1,5 +1,12 @@
 Changes:
 
+Pre-Alpha 0.7.14 -
+General Code Changes.
+Removed debug code.
+Removed getHighestSeason & getHighestEpisode.
+Removed all "Title" requirements as they are unneeded.
+Progress made on "Set season + episode" and "Play Season + Episode" buttons, but still not finished.
+
 Pre-Alpha 0.7.13 -
 General Code Changes.
 Renamed Logo from LogoChoice to MTrackLogo and increased logo resolution (143 x 155 -> 1001 x 1036).

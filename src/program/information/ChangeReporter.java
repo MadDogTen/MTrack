@@ -26,7 +26,7 @@ public class ChangeReporter {
         changes = new String[0];
     }
 
-    public static void printChanges() { //TODO Temp, Removed when unneeded.
+    public static void printChanges() {
         log.info("Starting to list changes:");
         for (String changed : changes) {
             log.info(changed);

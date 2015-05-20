@@ -203,64 +203,40 @@ public class ShowInfoController {
         return null;
     }
 
-    public static int getLowestSeason(String aShow, int highestSeason) {
-        int lowestSeason = highestSeason;
+    public static int getLowestSeason(String aShow) {
+        int lowestSeason = -1;
         Set<Integer> seasons = ShowInfoController.getSeasonsListSet(aShow);
         for (int aSeason : seasons) {
-            if (aSeason < lowestSeason) {
+            if (lowestSeason == -1) {
+                lowestSeason = aSeason;
+            } else if (aSeason < lowestSeason) {
                 lowestSeason = aSeason;
             }
         }
         return lowestSeason;
     }
 
-    public static int getHighestSeason(String aShow) {
-        int highestSeason = 0;
-        Set<Integer> seasons = ShowInfoController.getSeasonsListSet(aShow);
-        for (int aSeason : seasons) {
-            if (aSeason > highestSeason) {
-                highestSeason = aSeason;
-            }
-        }
-        return highestSeason;
-    }
-
-    public static int getLowestEpisode(Set<String> episodes, int highestEpisode) {
-        int lowestEpisode = highestEpisode;
+    public static int getLowestEpisode(Set<String> episodes) {
+        int lowestEpisode = -1;
         if (episodes != null) {
             for (String aEpisode : episodes) {
                 if (aEpisode.contains("+")) {
                     String[] temp = aEpisode.split("[+]");
                     int temp1 = Integer.parseInt(temp[0]),
                             temp2 = Integer.parseInt(temp[1]);
-                    if (temp2 < lowestEpisode) {
+                    if (lowestEpisode == -1) {
+                        lowestEpisode = temp1;
+                    } else if (temp2 < lowestEpisode) {
                         lowestEpisode = temp1;
                     }
+                } else if (lowestEpisode == -1) {
+                    lowestEpisode = Integer.parseInt(aEpisode);
                 } else if (Integer.parseInt(aEpisode) < lowestEpisode) {
                     lowestEpisode = Integer.parseInt(aEpisode);
                 }
             }
-        } else return -1;
+        }
         return lowestEpisode;
-    }
-
-    public static int getHighestEpisode(Set<String> episodes) {
-        int highestEpisode = 0;
-        if (episodes != null) {
-            for (String aEpisode : episodes) {
-                if (aEpisode.contains("+")) {
-                    String[] temp = aEpisode.split("[+]");
-                    int temp1 = Integer.parseInt(temp[0]),
-                            temp2 = Integer.parseInt(temp[1]);
-                    if (temp1 > highestEpisode) {
-                        highestEpisode = temp2;
-                    }
-                } else if (Integer.parseInt(aEpisode) > highestEpisode) {
-                    highestEpisode = Integer.parseInt(aEpisode);
-                }
-            }
-        } else return -1;
-        return highestEpisode;
     }
 
     public static void saveShowsHashMapFile(HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap, int hashMapIndex) {
@@ -275,15 +251,15 @@ public class ShowInfoController {
             Set<String> Show = showsFile.keySet();
             int numberOfShows = 0;
             for (String aShow : Show) {
-                log.info("\n\n ShowInfoController- " + aShow);
+                log.info(aShow);
                 HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
                 Set<Integer> season = seasons.keySet();
                 for (int aSeason : season) {
-                    log.info("\n ShowInfoController- " + "Season: " + aSeason);
+                    log.info("Season: " + aSeason);
                     HashMap<String, String> episodes = seasons.get(aSeason);
                     Set<String> episode = episodes.keySet();
                     for (String aEpisode : episode) {
-                        log.info("ShowInfoController- " + episodes.get(aEpisode));
+                        log.info(episodes.get(aEpisode));
                     }
                 }
                 numberOfShows++;

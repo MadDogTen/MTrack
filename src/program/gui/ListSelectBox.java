@@ -23,11 +23,12 @@ import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 
 public class ListSelectBox {
 
-    public String display(String title, String message, ArrayList<String> users, Window oldWindow) {
+    public String display(String message, ArrayList<String> users, Window oldWindow) {
         final String[] userName = new String[1];
         userName[0] = Strings.DefaultUsername;
 
@@ -36,7 +37,6 @@ public class ListSelectBox {
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
         window.setMinWidth(250);
 
         Label label = new Label();
@@ -52,7 +52,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue().contentEquals("Add New Username")) {
                 TextBox textBox = new TextBox();
-                userName[0] = textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault", window);
+                userName[0] = textBox.display("Please enter your username: ", "Use default username?", "PublicDefault", window);
                 window.close();
             } else if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 userName[0] = comboBox.getValue();
@@ -84,7 +84,7 @@ public class ListSelectBox {
         return userName[0];
     }
 
-    public String defaultUser(String title, String message, ArrayList<String> users, Window oldWindow) {
+    public String defaultUser(String message, ArrayList<String> users, Window oldWindow) {
         final String[] userName = new String[1];
         userName[0] = Variables.EmptyString;
 
@@ -93,7 +93,6 @@ public class ListSelectBox {
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
         window.setMinWidth(250);
 
         Label label = new Label();
@@ -108,7 +107,7 @@ public class ListSelectBox {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display("Default User", "Default user not set.", window);
+                    messageBox.display("Default user not set.", window);
                     window.close();
                 } else {
                     userName[0] = comboBox.getValue();
@@ -145,7 +144,7 @@ public class ListSelectBox {
         return userName[0];
     }
 
-    public File directories(String title, String message, ArrayList<File> files, Window oldWindow) {
+    public File directories(String message, ArrayList<File> files, Window oldWindow) {
         final File[] file = new File[1];
         file[0] = new File(Variables.EmptyString);
 
@@ -154,7 +153,6 @@ public class ListSelectBox {
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
         window.setMinWidth(250);
 
         Label label = new Label();
@@ -169,7 +167,7 @@ public class ListSelectBox {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display("Folder", "Please choose a folder.", window);
+                    messageBox.display("Please choose a folder.", window);
                 } else {
                     file[0] = comboBox.getValue();
                     window.close();
@@ -202,7 +200,7 @@ public class ListSelectBox {
         return file[0];
     }
 
-    public String[] pickSeasonEpisode(String title, String message, String aShow, Set<Integer> seasons, Window oldWindow) {
+    public String[] pickSeasonEpisode(String message, String aShow, Set<Integer> seasons, Window oldWindow) {
         final String[] choice = new String[2];
 
         Stage window = new Stage();
@@ -210,7 +208,6 @@ public class ListSelectBox {
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
         window.setMinWidth(250);
 
         Label label = new Label();
@@ -228,9 +225,11 @@ public class ListSelectBox {
 
         Button submit = new Button("Submit");
         submit.setOnAction(e -> {
-            choice[0] = comboBox.getValue();
-            choice[1] = pickEpisode(title, "Pick the Episode", ShowInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
-            window.close();
+            if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
+                choice[0] = comboBox.getValue();
+                choice[1] = pickEpisode("Pick the Episode", ShowInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
+                window.close();
+            } else new MessageBox().display("You have to pick a season!", window);
         });
 
         Button exit = new Button("X");
@@ -264,7 +263,7 @@ public class ListSelectBox {
         return choice;
     }
 
-    public String pickEpisode(String title, String message, Set<String> episodes, Double width, Double height, Window oldWindow) {
+    public String pickEpisode(String message, Set<String> episodes, Double width, Double height, Window oldWindow) {
         final String[] choice = new String[1];
 
         Stage window = new Stage();
@@ -272,27 +271,45 @@ public class ListSelectBox {
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
         window.setWidth(width);
         window.setHeight(height);
 
         Label label = new Label();
         label.setText(message);
 
-        ArrayList<String> episodeString = new ArrayList<>();
-        for (String aEpisode : episodes) {
-            episodeString.add(String.valueOf(aEpisode));
+        ArrayList<String> episodesSorted = new ArrayList<>();
+        while (!episodes.isEmpty()) {
+            Iterator<String> stringIterator = episodes.iterator();
+            int lowestEpisodeInt = -1;
+            String lowestEpisodeString = null;
+            while (stringIterator.hasNext()) {
+                String episode = stringIterator.next();
+                int episodeInt;
+                if (episode.contains("+")) {
+                    String[] splitEpisode = episode.split("[+]");
+                    episodeInt = Integer.parseInt(splitEpisode[0]);
+                } else episodeInt = Integer.parseInt(episode);
+                if (lowestEpisodeInt == -1) {
+                    lowestEpisodeInt = Integer.parseInt(episode);
+                    lowestEpisodeString = episode;
+                } else if (episodeInt < lowestEpisodeInt) {
+                    lowestEpisodeInt = Integer.parseInt(episode);
+                    lowestEpisodeString = episode;
+                }
+            }
+            episodesSorted.add(lowestEpisodeString);
+            episodes.remove(lowestEpisodeString);
         }
 
-        ObservableList<String> seasonsList = FXCollections.observableArrayList(episodeString);
-        seasonsList.sorted();
+        ObservableList<String> seasonsList = FXCollections.observableArrayList(episodesSorted);
         ComboBox<String> comboBox = new ComboBox<>(seasonsList);
-
 
         Button submit = new Button("Submit");
         submit.setOnAction(e -> {
-            choice[0] = comboBox.getValue();
-            window.close();
+            if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
+                choice[0] = comboBox.getValue();
+                window.close();
+            } else new MessageBox().display("You have to pick a episode!", window);
         });
 
         Button exit = new Button("X");

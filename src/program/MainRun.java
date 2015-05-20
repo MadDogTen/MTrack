@@ -89,7 +89,7 @@ public class MainRun {
             return ProgramSettingsController.getDefaultUsername();
         } else {
             ListSelectBox listSelectBox = new ListSelectBox();
-            return listSelectBox.display("Select User", "Choose your Username:", Users, null);
+            return listSelectBox.display("Choose your Username:", Users, null);
         }
     }
 
@@ -110,7 +110,7 @@ public class MainRun {
         };
         new Thread(task).start();
         TextBox textBox = new TextBox();
-        Strings.UserName = textBox.display("Enter Username", "Please enter your username: ", "Use default username?", "PublicDefault", Main.window);
+        Strings.UserName = textBox.display("Please enter your username: ", "Use default username?", "PublicDefault", Main.window);
         while (taskRunning[0]) {
             try {
                 Thread.sleep(500);
@@ -127,15 +127,15 @@ public class MainRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int directoryNumber = 0;
         while (addAnother) {
-            Boolean[] matched = ProgramSettingsController.addDirectory(directoryNumber, textBox.addDirectoriesDisplay("Directories", "Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
+            Boolean[] matched = ProgramSettingsController.addDirectory(directoryNumber, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
             directoryNumber++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display("Duplicate", "Directory was a duplicate!", Main.window);
+                messageBox.display("Directory was a duplicate!", Main.window);
             } else if (matched[1]) {
                 break;
             }
-            if (!confirmBox.display("Continue", "Add another directory?", Main.window)) {
+            if (!confirmBox.display("Add another directory?", Main.window)) {
                 addAnother = false;
             }
         }
@@ -159,7 +159,7 @@ public class MainRun {
     }
 
     private static void generateUserSettingsFile(String userName, Boolean override) {
-        log.info("Attempting to generate settings file for " + userName + ".");
+        log.info("Attempting to generate settings file for " + userName + '.' );
         new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName, Variables.SettingsExtension, override);
     }
 }

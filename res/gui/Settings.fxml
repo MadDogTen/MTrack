@@ -5,61 +5,83 @@
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
          minHeight="-Infinity" minWidth="-Infinity" prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE"
          xmlns="http://javafx.com/javafx/8" fx:controller="program.FXMLControllers.Settings">
-    <Tab closable="false" text="Users">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
-            <Button fx:id="setDefaultUsername" layoutX="23.0" layoutY="31.0" mnemonicParsing="false"
-                    text="Set Default user"/>
-            <Button fx:id="deleteUser" layoutX="23.0" layoutY="62.0" mnemonicParsing="false"
-                    text="Delete Users"/>
-            <Button fx:id="clearDefaultUsername" layoutX="129.0" layoutY="31.0" mnemonicParsing="false"
-                    text="Reset"/>
-            <Button fx:id="exit1" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
-        </AnchorPane>
-    </Tab>
-    <Tab closable="false" text="Other">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-            <Button fx:id="about" layoutX="81.0" layoutY="188.0" mnemonicParsing="false" text="About"/>
-            <Button fx:id="forceRecheck" layoutX="2.0" layoutY="119.0" mnemonicParsing="false"
-                    text="Force Recheck Shows"/>
-            <Button fx:id="exit2" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
-            <Button fx:id="openProgramFolder" layoutX="2.0" layoutY="152.0" mnemonicParsing="false"
-                    text="Open Settings Folder"/>
-            <Button fx:id="changeUpdateSpeed" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
-                    text="Change Update Time"/>
-            <Button fx:id="addDirectory" layoutX="2.0" layoutY="40.0" mnemonicParsing="false"
-                    text="Add Directory"/>
-            <Button fx:id="removeDirectory" layoutX="2.0" layoutY="67.0" mnemonicParsing="false"
-                    text="Remove Directory"/>
-        </AnchorPane>
-    </Tab>
-    <Tab closable="false" text="Developer">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-            <Button fx:id="printAllShows" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
-                    text="Print All Show Info"/>
-            <Button fx:id="exit3" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
-            <Button fx:id="printAllDirectories" layoutX="2.0" layoutY="28.0" mnemonicParsing="false"
-                    text="Print All Directories"/>
-            <Button fx:id="printEmptyShowFolders" layoutX="2.0" layoutY="57.0" mnemonicParsing="false"
-                    text="Print Empty Shows"/>
-            <Button fx:id="setAllActive" layoutX="2.0" layoutY="136.0" mnemonicParsing="false"
-                    text="Set All Active"/>
-            <Button fx:id="setAllInactive" layoutX="2.0" layoutY="163.0" mnemonicParsing="false"
-                    text="Set All Inactive"/>
-            <Button fx:id="printIgnoredShows" layoutX="2.0" layoutY="86.0" mnemonicParsing="false"
-                    text="Print Ignored Shows"/>
-        </AnchorPane>
-    </Tab>
-    <Tab text="Dev 2">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-            <Button fx:id="exit4" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
-            <Button fx:id="printProgramSettingsFileVersion" layoutX="2.0" layoutY="2.0"
-                    mnemonicParsing="false" text="Print PSFV"/>
-            <Button fx:id="printUserSettingsFileVersion" layoutX="2.0" layoutY="29.0"
-                    mnemonicParsing="false" text="Print USFV"/>
-            <Button fx:id="clearFile" layoutX="146.0" layoutY="136.0" mnemonicParsing="false"
-                    text="Clear File"/>
-            <Button fx:id="deleteEverythingAndClose" layoutX="117.0" layoutY="188.0" mnemonicParsing="false"
-                    text="Reset Program"/>
-        </AnchorPane>
-    </Tab>
+    <tabs>
+        <Tab closable="false" text="Users">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
+                    <children>
+                        <Button fx:id="setDefaultUsername" layoutX="23.0" layoutY="31.0" mnemonicParsing="false"
+                                text="Set Default user"/>
+                        <Button fx:id="deleteUser" layoutX="23.0" layoutY="62.0" mnemonicParsing="false"
+                                text="Delete Users"/>
+                        <Button fx:id="clearDefaultUsername" layoutX="129.0" layoutY="31.0" mnemonicParsing="false"
+                                text="Reset"/>
+                        <Button fx:id="exit1" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab closable="false" text="Other">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <Button fx:id="about" layoutX="81.0" layoutY="188.0" mnemonicParsing="false" text="About"/>
+                        <Button fx:id="forceRecheck" layoutX="2.0" layoutY="119.0" mnemonicParsing="false"
+                                text="Force Recheck Shows"/>
+                        <Button fx:id="exit2" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+                        <Button fx:id="openProgramFolder" layoutX="2.0" layoutY="152.0" mnemonicParsing="false"
+                                text="Open Settings Folder"/>
+                        <Button fx:id="changeUpdateSpeed" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
+                                text="Change Update Time"/>
+                        <Button fx:id="addDirectory" layoutX="2.0" layoutY="40.0" mnemonicParsing="false"
+                                text="Add Directory"/>
+                        <Button fx:id="removeDirectory" layoutX="2.0" layoutY="67.0" mnemonicParsing="false"
+                                text="Remove Directory"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab closable="false" text="Developer">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <Button fx:id="printAllShows" layoutX="2.0" layoutY="2.0" mnemonicParsing="false"
+                                text="Print All Show Info"/>
+                        <Button fx:id="exit3" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+                        <Button fx:id="printAllDirectories" layoutX="2.0" layoutY="29.0" mnemonicParsing="false"
+                                text="Print All Directories"/>
+                        <Button fx:id="printEmptyShowFolders" layoutX="2.0" layoutY="56.0" mnemonicParsing="false"
+                                text="Print Empty Shows"/>
+                        <Button fx:id="setAllActive" layoutX="2.0" layoutY="161.0" mnemonicParsing="false"
+                                text="Set All Active"/>
+                        <Button fx:id="setAllInactive" layoutX="2.0" layoutY="188.0" mnemonicParsing="false"
+                                text="Set All Inactive"/>
+                        <Button fx:id="printIgnoredShows" layoutX="2.0" layoutY="83.0" mnemonicParsing="false"
+                                text="Print Ignored Shows"/>
+                        <Button fx:id="printHiddenShows" layoutX="2.0" layoutY="110.0" mnemonicParsing="false"
+                                text="Print Hidden Shows"/>
+                        <Button fx:id="unHideAll" layoutX="124.0" layoutY="110.0" mnemonicParsing="false"
+                                prefHeight="25.0" prefWidth="73.0" text="UnHide All" wrapText="true"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab text="Dev 2">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <Button fx:id="exit4" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+                        <Button fx:id="printProgramSettingsFileVersion" layoutX="2.0" layoutY="2.0"
+                                mnemonicParsing="false" text="Print PSFV"/>
+                        <Button fx:id="printUserSettingsFileVersion" layoutX="2.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Print USFV"/>
+                        <Button fx:id="clearFile" layoutX="146.0" layoutY="136.0" mnemonicParsing="false"
+                                text="Clear File"/>
+                        <Button fx:id="deleteEverythingAndClose" layoutX="117.0" layoutY="188.0" mnemonicParsing="false"
+                                text="Reset Program"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+    </tabs>
 </TabPane>

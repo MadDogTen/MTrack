@@ -22,7 +22,7 @@ public class ChangesBox {
 
     private static Boolean currentlyOpen = false;
 
-    public Object[] display(String title, Window oldWindow) {
+    public Object[] display(Window oldWindow) {
         if (currentlyOpen) {
             Object[] object = new Object[1];
             object[0] = false;
@@ -33,8 +33,6 @@ public class ChangesBox {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
-
-        window.setTitle(title);
 
         final VBox[] vBox = {new VBox()};
         for (String aMessage : ChangeReporter.changes) {

@@ -16,8 +16,8 @@ public class Variables {
     public static final String UsersExtension = ".user";
     public static final String SettingsExtension = ".settings";
     // Inner Version Numbers
-    public static final int ProgramSettingsFileVersion = 2; //TODO Reset back to 1
-    public static final int UserSettingsFileVersion = 1;
+    public static final int ProgramSettingsFileVersion = 2; //TODO Reset back to 1 for release 0.9
+    public static final int UserSettingsFileVersion = 2;
     // Other
     public static final String EmptyString = "";
     public static final Boolean StartFresh = false;

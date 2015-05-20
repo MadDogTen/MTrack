@@ -16,13 +16,12 @@ import program.input.MoveWindow;
 
 public class MessageBox {
 
-    public void display(String title, String message, Window oldWindow) {
+    public void display(String message, Window oldWindow) {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
 
         Label label = new Label();
         label.setText(message);

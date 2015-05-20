@@ -18,14 +18,13 @@ import program.input.MoveWindow;
 
 public class DoubleTextBox {
 
-    public int[] displaySeasonEpisode(String title, String firstMessage, String secondMessage, Window oldWindow) {
+    public int[] displaySeasonEpisode(String firstMessage, String secondMessage, Window oldWindow) {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         final int[] seasonEpisode = new int[2];
 
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle(title);
         window.setMinWidth(250);
 
         Label label = new Label();
@@ -46,7 +45,7 @@ public class DoubleTextBox {
 
         Button submit = new Button("Submit");
         submit.setOnAction(event -> {
-            if (isValid(title, textField.getText(), textField1.getText(), window)) {
+            if (isValid(textField.getText(), textField1.getText(), window)) {
                 seasonEpisode[0] = Integer.parseInt(textField.getText());
                 seasonEpisode[1] = Integer.parseInt(textField1.getText());
                 window.close();
@@ -87,14 +86,14 @@ public class DoubleTextBox {
         return seasonEpisode;
     }
 
-    private boolean isValid(String title, String messageOne, String messageTwo, Window oldWindow) {
+    private boolean isValid(String messageOne, String messageTwo, Window oldWindow) {
         if (messageOne.isEmpty() || messageTwo.isEmpty()) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display(title, "Fields cannot be empty.", oldWindow);
+            messageBox.display("Fields cannot be empty.", oldWindow);
             return false;
         } else if (!messageOne.matches("^[0-9]+$") || (!messageTwo.matches("^[0-9]+$"))) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display("Try Again", "Both fields need to be numbers", oldWindow);
+            messageBox.display("Both fields need to be numbers", oldWindow);
             return false;
         } else return true;
     }

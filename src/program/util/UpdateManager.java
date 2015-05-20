@@ -36,8 +36,10 @@ public class UpdateManager {
                 ArrayList<String> temp = new ArrayList<>();
                 temp.add(0, String.valueOf(Variables.ProgramSettingsFileVersion));
                 programSettingsFile.put("ProgramVersions", temp);
-            case 1: //TODO Add this to case -2
+                log.info("Program settings file has been updated from version -2.");
+            case 1:
                 programSettingsFile.get("General").add(1, new FileManager().getDataFolder());
+                log.info("Program has been updated from version 1.");
                 updated = true;
         }
 
@@ -47,7 +49,7 @@ public class UpdateManager {
 
             ProgramSettingsController.setSettingsFile(programSettingsFile);
             ProgramSettingsController.saveSettingsFile();
-            log.info("Program settings file was successfully updated.");
+            log.info("Program settings file was successfully updated to version " + newVersion + '.' );
         } else log.info("Program settings file was not updated. This is an error, please report.");
     }
 
@@ -63,6 +65,13 @@ public class UpdateManager {
                 temp.put("0", String.valueOf(Variables.UserSettingsFileVersion));
                 tempPut.put("UserVersions", temp);
                 userSettingsFile.put("UserSettings", tempPut);
+                log.info("User settings file has been updated from version -2.");
+            case 1:
+                HashMap<String, HashMap<String, String>> shows = userSettingsFile.get("ShowSettings");
+                for (String aShow : shows.keySet()) {
+                    shows.get(aShow).put("isHidden", "false");
+                }
+                log.info("User settings file has been updated from version 1.");
                 updated = true;
         }
 
@@ -72,7 +81,7 @@ public class UpdateManager {
 
             UserInfoController.setUserSettingsFile(userSettingsFile);
             UserInfoController.saveUserSettingsFile();
-            log.info("User settings file was successfully updated.");
+            log.info("User settings file was successfully updated to version " + newVersion + '.' );
         } else log.info("User settings file was not updated. This is an error, please report.");
     }
 }
