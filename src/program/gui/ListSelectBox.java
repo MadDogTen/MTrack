@@ -265,7 +265,7 @@ public class ListSelectBox {
         return choice;
     }
 
-    public String pickEpisode(String message, Set<String> episodes, Double width, Double height, Window oldWindow) {
+    private String pickEpisode(String message, Set<String> episodes, Double width, Double height, Window oldWindow) {
         final String[] choice = new String[1];
 
         Stage window = new Stage();

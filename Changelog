@@ -1,5 +1,15 @@
 Changes:
 
+Pre-Alpha 0.8.0 -
+General Code Changes / Cleanup.
+Fixed bug in rechecking for new episodes.
+Removed program saving the data folder, now its found and saved in variables each run (So you can move the program files to a different computer).
+Fixed UpdateShowFiles checkForNewOrRemovedEpisodes from saving the shows wrong.
+Changed way directories are stored to a more reliable system. This fixes some previous bugs related to directories.
+Fixed User Settings file not containing a show that was already added.
+
+Note- The version has been bumped up too 0.8.0. You may need to delete and re-add all directories for this version if playing shows aren't working (All program/user settings are still fine).
+
 Pre-Alpha 0.7.15 -
 General Code Changes.
 Fixed un-hiding all shows.

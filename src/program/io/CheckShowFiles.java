@@ -25,11 +25,11 @@ public class CheckShowFiles {
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
-            ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getAllDirectoriesHashMaps();
+            ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(-1);
             ArrayList<String> activeShows = UserInfoController.getActiveShows();
             FileManager fileManager = new FileManager();
             for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
-                log.info("Rechecking shows...");
+                log.info("Started rechecking shows...");
                 int hashMapIndex = showsFileArray.indexOf(aHashMap);
                 File folderLocation = ProgramSettingsController.getDirectory(hashMapIndex);
                 if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
@@ -43,11 +43,11 @@ public class CheckShowFiles {
                                 int aSeason = seasonsIterator.next();
                                 if (aSeason < currentSeason) {
                                     seasonsIterator.remove();
-                                    log.finest(aSeason + " was skipped in checking.");
+                                    log.finest("Season " + aSeason + " was skipped in rechecking as the current user is past it.");
                                 }
                             }
                             for (Object aSeason : seasons) {
-                                if (fileManager.checkFolderExists(ProgramSettingsController.getDataFolder() + '\\' + aShow + "\\Season " + aSeason + '\\')) {
+                                if (fileManager.checkFolderExists(String.valueOf(folderLocation) + '\\' + aShow + "\\Season " + aSeason + '\\')) {
                                     log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
                                     ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, (Integer) aSeason, folderLocation, aHashMap);
                                     if (!changedEpisodes.isEmpty()) {
@@ -63,6 +63,7 @@ public class CheckShowFiles {
                                 int aSeason = changedSeasonIterator.next();
                                 if (aSeason < currentSeason) {
                                     changedSeasonIterator.remove();
+                                    log.info("Season " + aSeason + " wasn't added as the current user is past it.");
                                 }
                             }
                             if (!changedSeasons.isEmpty()) {
@@ -96,7 +97,7 @@ public class CheckShowFiles {
         if (hasChanged && Main.running) {
             log.info("Some shows have been updated.");
 
-            // Change Writer
+            // Change Writer - Temporary
             ChangeReporter.printChanges();
 
             log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");

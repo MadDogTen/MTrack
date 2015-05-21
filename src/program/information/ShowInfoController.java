@@ -20,7 +20,7 @@ public class ShowInfoController {
     public static void loadShowsFile(Boolean forceRegen) {
         if (forceRegen || showsFile == null) {
             if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
-                ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getAllDirectoriesHashMaps();
+                ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getDirectoriesHashMaps(-1);
 
                 // This crazy thing is to combine all found Shows/Seasons/Episodes from all directory's into one HashMap.
                 long timer = Clock.getTimeMilliSeconds();
@@ -74,14 +74,16 @@ public class ShowInfoController {
     }
 
     @SuppressWarnings("unchecked")
-    public static ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> getAllDirectoriesHashMaps() {
+    public static ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> getDirectoriesHashMaps(int skip) {
         // ArrayList = Shows list from all added Directories
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
         for (String aString : files) {
-            int place = files.indexOf(aString);
-            showsFileArray.add(place, fileManager.loadShows(aString));
+            int place = Integer.parseInt(aString.split("[-]|[.]")[1]);
+            if (skip != place) {
+                showsFileArray.add(fileManager.loadShows(aString));
+            }
         }
         return showsFileArray;
     }
@@ -92,7 +94,7 @@ public class ShowInfoController {
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
         for (String aFile : files) {
-            if (aFile.contains(String.valueOf(index))) {
+            if (aFile.split("[-]|[.]")[1].matches(String.valueOf(index))) {
                 showsFile = fileManager.loadShows(aFile);
                 break;
             }

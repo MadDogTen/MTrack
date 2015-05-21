@@ -13,12 +13,12 @@ public class FileManager {
 
     // Serialise
     public void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
-        if (!new File(getDataFolder() + folder).isDirectory()) {
+        if (!new File(Variables.dataFolder + folder).isDirectory()) {
             createFolder(folder);
         }
         if (overWrite || !checkFileExists(folder, filename, extension)) {
             try {
-                FileOutputStream fos = new FileOutputStream(getDataFolder() + folder + '\\' + filename + extension);
+                FileOutputStream fos = new FileOutputStream(Variables.dataFolder + folder + '\\' + filename + extension);
 
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(objectToSerialise);
@@ -32,11 +32,11 @@ public class FileManager {
 
     // Deserialize
     @SuppressWarnings("unchecked")
-    public HashMap loadShows(String theFile) {
+    public HashMap<String, HashMap<Integer, HashMap<String, String>>> loadShows(String theFile) {
+        HashMap<String, HashMap<Integer, HashMap<String, String>>> loadedHashMap = new HashMap<>(0);
         if (checkFileExists(Variables.DirectoriesFolder, theFile, Variables.EmptyString)) {
-            HashMap<String, HashMap<Integer, HashMap<String, String>>> loadedHashMap = new HashMap<>(0);
             try {
-                FileInputStream fis = new FileInputStream(new File(getDataFolder() + Variables.DirectoriesFolder + '\\' + theFile));
+                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + Variables.DirectoriesFolder + '\\' + theFile));
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedHashMap = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) ois.readObject();
                 ois.close();
@@ -46,16 +46,16 @@ public class FileManager {
             return loadedHashMap;
         }
         log.info("File doesn't exist");
-        return null;
+        return loadedHashMap;
     }
 
     @SuppressWarnings("unchecked")
     public HashMap<String, HashMap<String, HashMap<String, String>>> loadUserInfo(String folder, String filename, String extension) {
+        HashMap<String, HashMap<String, HashMap<String, String>>> loadedHashMap = new HashMap<>();
         if (checkFileExists(folder, filename, extension)) {
-            HashMap<String, HashMap<String, HashMap<String, String>>> loadedHashMap = new HashMap<>();
             FileInputStream fis;
             try {
-                fis = new FileInputStream(getDataFolder() + folder + '\\' + filename + extension);
+                fis = new FileInputStream(Variables.dataFolder + folder + '\\' + filename + extension);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedHashMap = (HashMap<String, HashMap<String, HashMap<String, String>>>) ois.readObject();
                 ois.close();
@@ -64,16 +64,17 @@ public class FileManager {
             }
             return loadedHashMap;
         }
-        return null;
+        log.info("File doesn't exist");
+        return loadedHashMap;
     }
 
     @SuppressWarnings("unchecked")
     public HashMap<String, ArrayList<String>> loadProgramSettings(String filename, String extension) {
+        HashMap<String, ArrayList<String>> loadedHashMap = new HashMap<>();
         if (checkFileExists(Variables.EmptyString, filename, extension)) {
-            HashMap<String, ArrayList<String>> loadedHashMap = new HashMap<>();
             FileInputStream fis;
             try {
-                fis = new FileInputStream(getDataFolder() + '\\' + filename + extension);
+                fis = new FileInputStream(Variables.dataFolder + '\\' + filename + extension);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedHashMap = (HashMap<String, ArrayList<String>>) ois.readObject();
                 ois.close();
@@ -82,18 +83,20 @@ public class FileManager {
             }
             return loadedHashMap;
         }
-        return null;
+        log.info("File doesn't exist");
+        return loadedHashMap;
     }
 
     public boolean checkFileExists(String folder, String filename, String extension) {
-        return new File(getDataFolder() + folder + '\\' + filename + extension).isFile();
+        return new File(Variables.dataFolder + folder + '\\' + filename + extension).isFile();
     }
 
     public boolean checkFolderExists(String aFolder) {
         return new File(aFolder).isDirectory();
     }
 
-    public String getOS() {
+    @SuppressWarnings("AccessOfSystemProperties")
+    private String getOS() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) {
             return "windows";
@@ -109,12 +112,13 @@ public class FileManager {
     }
 
     public void createFolder(String folder) {
-        if (!new File(getDataFolder() + folder).mkdir()) {
-            log.warning("Cannot make: " + getDataFolder() + folder);
+        if (!new File(Variables.dataFolder + folder).mkdir()) {
+            log.warning("Cannot make: " + Variables.dataFolder + folder);
         }
         log.info("Created folder: " + folder);
     }
 
+    @SuppressWarnings("AccessOfSystemProperties")
     public String getDataFolder() {
         String home = System.getProperty("user.home");
         String os = System.getProperty("os.name").toLowerCase();
@@ -132,14 +136,14 @@ public class FileManager {
     public void deleteFile(String folder, String filename, String extension) {
         String file = (folder + '\\' + filename + extension);
         if (!checkFileExists(folder, filename, extension)) {
-            log.warning("File " + getDataFolder() + file + " does not exist!");
+            log.warning("File " + Variables.dataFolder + file + " does not exist!");
         }
-        File toDelete = new File(getDataFolder() + file);
+        File toDelete = new File(Variables.dataFolder + file);
         if (toDelete.canWrite()) {
             if (!toDelete.delete()) {
                 log.warning("Cannot delete: " + toDelete);
             }
-        } else log.warning("File " + getDataFolder() + file + " is write protected!");
+        } else log.warning("File " + Variables.dataFolder + file + " is write protected!");
     }
 
     public void deleteFolder(File toDeleteFolder) {

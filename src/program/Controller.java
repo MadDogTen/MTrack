@@ -26,11 +26,10 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-
 public class Controller implements Initializable {
     private static final Logger log = Logger.getLogger(Controller.class.getName());
 
-    public static String currentList = "active";
+    private static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
     @FXML
     private TabPane tabPane;
@@ -53,7 +52,7 @@ public class Controller implements Initializable {
     @FXML
     private Button viewChanges;
 
-    public static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
+    private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
         if (showList != null) {
             for (String aShow : showList) {
@@ -141,20 +140,11 @@ public class Controller implements Initializable {
                         String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), tabPane.getScene().getWindow());
                         if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
                             log.info("Season & Episode were valid.");
-                            UserInfoController.playAnyEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1], true, -1);
+                            UserInfoController.playAnyEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
                         } else {
                             log.info("Season & Episode weren't valid.");
                         }
                         log.info("\"Play Season + Episode\" is finished running.");
-                        /*DoubleTextBox doubleTextBox = new DoubleTextBox();
-                        int[] seasonEpisode = doubleTextBox.displaySeasonEpisode("Season", "Episode", tabPane.getScene().getWindow());
-                        int fileExists = UserInfoController.doesSeasonEpisodeExists(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]));
-                        if (fileExists == 1 || fileExists == 2) {
-                            UserInfoController.playAnyEpisode(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]), true, -1);
-                        } else {
-                            MessageBox messageBox = new MessageBox();
-                            messageBox.display("Your selection doesn't exist.", tabPane.getScene().getWindow());
-                        }*/
                     });
                     MenuItem setActive = new MenuItem("Allow Updating");
                     setActive.setOnAction(e -> {
@@ -225,7 +215,7 @@ public class Controller implements Initializable {
                                 int fileExists = UserInfoController.doesEpisodeExists(aShow);
                                 if (fileExists == 1 || fileExists == 2) {
                                     tableView.getSelectionModel().clearAndSelect(row.getIndex());
-                                    UserInfoController.playAnyEpisode(aShow, -1, Variables.EmptyString, true, fileExists);
+                                    UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow));
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
                                     int userChoice = showConfirmBox.display("Have the watched the show?", tabPane.getScene().getWindow());
                                     if (userChoice == 1) {

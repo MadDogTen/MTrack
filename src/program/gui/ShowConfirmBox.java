@@ -20,8 +20,6 @@ import java.util.logging.Logger;
 public class ShowConfirmBox {
     private static final Logger log = Logger.getLogger(ShowConfirmBox.class.getName());
 
-    int answer;
-
     public int display(String message, Window oldWindow) {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
@@ -38,14 +36,14 @@ public class ShowConfirmBox {
         noButton.setMinHeight(20);
         noButton.setMinWidth(30);
 
-
+        final int[] answer = new int[1];
         yesButton.setOnAction(e -> {
-            answer = 1;
+            answer[0] = 1;
             window.close();
         });
 
         noButton.setOnAction(e -> {
-            answer = 0;
+            answer[0] = 0;
             window.close();
         });
 
@@ -60,7 +58,7 @@ public class ShowConfirmBox {
         nextEpisode.setMinWidth(30);
 
         nextEpisode.setOnAction(e -> {
-            answer = 2;
+            answer[0] = 2;
             window.close();
         });
 
@@ -80,6 +78,6 @@ public class ShowConfirmBox {
         });
         window.showAndWait();
 
-        return answer;
+        return answer[0];
     }
 }

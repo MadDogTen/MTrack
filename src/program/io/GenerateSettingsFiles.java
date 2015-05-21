@@ -27,14 +27,13 @@ public class GenerateSettingsFiles {
             temp = new ArrayList<>();
             // Index 0 : Update Speed
             temp.add(0, "120");
-            temp.add(1, fileManager.getDataFolder());
             settingsFile.put("General", temp);
 
             // --Default User-- \\
             temp = new ArrayList<>();
             // Index 0 : Using default user
-            // Index 1 : If using default user, What is the username.
             temp.add(0, "false");
+            // Index 1 : If using default user, What the username is.
             temp.add(1, Variables.EmptyString);
             settingsFile.put("DefaultUser", temp);
 

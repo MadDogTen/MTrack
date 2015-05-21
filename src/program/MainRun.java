@@ -22,26 +22,25 @@ import java.util.logging.Logger;
 
 public class MainRun {
     private static final Logger log = Logger.getLogger(MainRun.class.getName());
-    public static boolean hasRan = false, forceRun = true;
-    public static int timer = Clock.getTimeSeconds();
+    private static boolean hasRan = false, forceRun = true;
+    private static int timer = Clock.getTimeSeconds();
 
     public static void startBackend() {
         FileManager fileManager = new FileManager();
+        Variables.setDataFolder(fileManager);
         // If true, It will Delete ALL Files each time the program is ran.
-        if (Variables.StartFresh && fileManager.checkFolderExists(fileManager.getDataFolder())) {
+        if (Variables.StartFresh && fileManager.checkFolderExists(Variables.dataFolder)) {
             log.warning("Starting Fresh...");
-            fileManager.deleteFolder(new File(fileManager.getDataFolder()));
+            fileManager.deleteFolder(new File(Variables.dataFolder));
         }
         // Check
-        if (!fileManager.checkFolderExists(fileManager.getDataFolder())) {
+        if (!fileManager.checkFolderExists(Variables.dataFolder)) {
             firstRun();
         } else if (!fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingsExtension)) {
             generateProgramSettingsFile();
             Strings.UserName = getUser();
-            log.info("Username is set: " + Strings.UserName);
         } else {
             Strings.UserName = getUser();
-            log.info("Username is set: " + Strings.UserName);
         }
 
         if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
@@ -61,6 +60,7 @@ public class MainRun {
         if (forceRun && Clock.timeTakenSeconds(timer) > 2 || Clock.timeTakenSeconds(timer) > Variables.updateSpeed) {
             final Boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
+                @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     CheckShowFiles.recheckShowFile(false);
@@ -97,10 +97,11 @@ public class MainRun {
         log.info("MainRun- First Run, Generating Files...");
         new FileManager().createFolder(Variables.EmptyString);
         generateProgramSettingsFile();
-        chooseDirectories();
+        addDirectories();
 
         final Boolean[] taskRunning = {true};
         Task<Void> task = new Task<Void>() {
+            @SuppressWarnings("ReturnOfNull")
             @Override
             protected Void call() throws Exception {
                 generateShowFiles();
@@ -121,14 +122,12 @@ public class MainRun {
         generateUserSettingsFile(Strings.UserName, false);
     }
 
-    private static void chooseDirectories() {
+    private static void addDirectories() {
         Boolean addAnother = true;
         TextBox textBox = new TextBox();
         ConfirmBox confirmBox = new ConfirmBox();
-        int directoryNumber = 0;
         while (addAnother) {
-            Boolean[] matched = ProgramSettingsController.addDirectory(directoryNumber, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
-            directoryNumber++;
+            Boolean[] matched = ProgramSettingsController.addDirectory(ProgramSettingsController.getLowestFreeDirectoryIndex(), textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
                 messageBox.display("Directory was a duplicate!", Main.window);
@@ -143,6 +142,7 @@ public class MainRun {
 
     // File Generators
     private static void generateProgramSettingsFile() {
+        log.info("Attempting to generate program settings file.");
         new GenerateSettingsFiles().generateProgramSettingsFile(Strings.SettingsFileName, Variables.EmptyString, Variables.SettingsExtension, false);
     }
 

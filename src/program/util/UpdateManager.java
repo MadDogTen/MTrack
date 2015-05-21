@@ -1,16 +1,17 @@
 package program.util;
 
 import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
 import program.information.UserInfoController;
-import program.io.FileManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class UpdateManager {
     private static final Logger log = Logger.getLogger(UpdateManager.class.getName());
-    InnerVersionChecker checker = new InnerVersionChecker();
+    private final InnerVersionChecker checker = new InnerVersionChecker();
 
     public void updateFiles() {
         log.info("Checking if inner versions are matched...");
@@ -38,8 +39,24 @@ public class UpdateManager {
                 programSettingsFile.put("ProgramVersions", temp);
                 log.info("Program settings file has been updated from version -2.");
             case 1:
-                programSettingsFile.get("General").add(1, new FileManager().getDataFolder());
+                programSettingsFile.get("General").add(1, Variables.dataFolder);
                 log.info("Program has been updated from version 1.");
+            case 2:
+            case 1001:
+                programSettingsFile.get("General").remove(1);
+            case 1002:
+                log.info("Converting directories...");
+                if (programSettingsFile.containsKey("Directories")) {
+                    ArrayList<String> directories = programSettingsFile.get("Directories");
+                    ArrayList<String> directoriesFixed = new ArrayList<>();
+                    for (String aDirectory : directories) {
+                        int index = directories.indexOf(aDirectory);
+                        directoriesFixed.add(index + ">" + aDirectory);
+                        log.info("Converted " + aDirectory + " to " + index + '>' + aDirectory);
+                    }
+                    programSettingsFile.replace("Directories", directoriesFixed);
+                } else log.info("Program settings file contains no directories, Nothing was converted.");
+                log.info("Finished converting directories");
                 updated = true;
         }
 
@@ -72,6 +89,24 @@ public class UpdateManager {
                     shows.get(aShow).put("isHidden", "false");
                 }
                 log.info("User settings file has been updated from version 1.");
+            case 2:
+                Object[] allShows = ShowInfoController.getShowsList();
+                if (allShows != null) {
+                    for (Object aShow : allShows) {
+                        if (!userSettingsFile.get("ShowSettings").keySet().contains(String.valueOf(aShow))) {
+                            log.info("Adding " + aShow + " to user settings file.");
+                            HashMap<String, String> temp2 = new HashMap<>();
+                            temp2.put("isActive", "false");
+                            temp2.put("isIgnored", "false");
+                            temp2.put("isHidden", "false");
+                            temp2.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(String.valueOf(aShow))));
+                            Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), Integer.parseInt(temp2.get("CurrentSeason")));
+                            temp2.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
+                            userSettingsFile.get("ShowSettings").put(String.valueOf(aShow), temp2);
+                        }
+                    }
+                }
+
                 updated = true;
         }
 

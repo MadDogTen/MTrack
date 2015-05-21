@@ -18,11 +18,10 @@ import java.util.logging.Logger;
 
 public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
-
+    private final static int timer = Clock.getTimeSeconds();
     public static boolean running = false;
     public static Stage window;
-    public static Thread thread;
-    private static int timer = Clock.getTimeSeconds();
+    private static Thread thread;
 
     public static void main(String args[]) {
         launch(args);
@@ -82,7 +81,7 @@ public class Main extends Application implements Runnable {
         start();
     }
 
-    public synchronized void start() {
+    private synchronized void start() {
         if (!running) {
             running = true;
             thread = new Thread(this);

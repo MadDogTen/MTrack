@@ -21,7 +21,7 @@ public class UserInfoController {
     }
 
     public static ArrayList<String> getAllUsers() {
-        File folder = new File(ProgramSettingsController.getDataFolder() + Variables.UsersFolder);
+        File folder = new File(Variables.dataFolder + Variables.UsersFolder);
         String[] userFile = folder.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -46,6 +46,7 @@ public class UserInfoController {
         loadUserInfo();
         log.info(aShow + " ignore status is: " + ignored);
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
+        log.info(String.valueOf(userSettingsFile.get("ShowSettings").get(aShow)));
         aShowSettings.replace("isIgnored", String.valueOf(ignored));
         userSettingsFile.get("ShowSettings").put(aShow, aShowSettings);
         log.info(String.valueOf(userSettingsFile.get("ShowSettings").get(aShow)));
@@ -54,14 +55,14 @@ public class UserInfoController {
     public static ArrayList<String> getIgnoredShows() {
         loadUserInfo();
         ArrayList<String> ignoredShows = new ArrayList<>();
-            if (userSettingsFile.containsKey("ShowSettings")) {
-                for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
-                    Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
-                    if (isActive) {
-                        ignoredShows.add(aShow);
-                    }
+        if (userSettingsFile.containsKey("ShowSettings")) {
+            for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+                Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
+                if (isActive) {
+                    ignoredShows.add(aShow);
                 }
             }
+        }
         return ignoredShows;
     }
 
@@ -123,30 +124,15 @@ public class UserInfoController {
         } else return -2;
     }
 
-    public static void playAnyEpisode(String aShow, int season, String episode, Boolean fileExists, int episodeType) {
+    public static void playAnyEpisode(String aShow, int season, String episode) {
         loadUserInfo();
         log.info("Attempting to play " + aShow + " Season: " + season + " - Episode: " + episode);
-        HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
-        if (season == -1) {
-            season = Integer.parseInt(aShowSettings.get("CurrentSeason"));
-        }
-        if (episode.isEmpty()) {
-            if (episodeType == 1) {
-                episode = aShowSettings.get("CurrentEpisode");
-            } else if (episodeType == 2) {
-                int temp = Integer.parseInt(aShowSettings.get("CurrentEpisode")) + 1;
-                episode = (aShowSettings.get("CurrentEpisode") + '+' + temp);
-            } else {
-                episode = aShowSettings.get("CurrentEpisode");
-            }
-        }
         String showLocation = ShowInfoController.getEpisode(aShow, String.valueOf(season), episode);
-        if (fileExists) {
-            if (showLocation != null) {
-                File file = new File(showLocation);
-                if (file.exists()) {
-                    new FileManager().open(file);
-                } else log.warning("File doesn't exists!");
+        log.info(showLocation);
+        if (showLocation != null) {
+            File file = new File(showLocation);
+            if (file.exists()) {
+                new FileManager().open(file);
             } else log.warning("File doesn't exists!");
         } else log.warning("File doesn't exists!");
     }
@@ -194,17 +180,17 @@ public class UserInfoController {
         log.info(aShow + " is now set to Season: " + season + " - Episode: " + episode);
     }
 
-    public static boolean isAnotherSeason(String aShow, int season) {
+    private static boolean isAnotherSeason(String aShow, int season) {
         Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
         season++;
         return seasons.contains(season);
     }
 
-    public static boolean isAnotherEpisode(String aShow, int aSeason, int episode) {
+    private static boolean isAnotherEpisode(String aShow, int aSeason, int episode) {
         Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
         if (!episodes.isEmpty()) {
             Set<Integer> episodesInt = episodesToInt(episodes);
-            if (episodesInt.contains(episode + 1)) {
+            if (!episodesInt.isEmpty() && episodesInt.contains(episode + 1)) {
                 return true;
             }
         }
@@ -220,12 +206,15 @@ public class UserInfoController {
 
     }
 
-    public static boolean doesEpisodeExist(String aShow, int season, int episode) {
+    private static boolean doesEpisodeExist(String aShow, int season, int episode) {
         Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(season)));
         if (!episodes.isEmpty()) {
             Set<Integer> episodesInt = episodesToInt(episodes);
-            return episodesInt.contains(episode);
-        } else return false;
+            if (!episodesInt.isEmpty()) {
+                return episodesInt.contains(episode);
+            }
+        }
+        return false;
     }
 
     public static int doesEpisodeExists(String aShow) {
@@ -245,23 +234,7 @@ public class UserInfoController {
         return 0;
     }
 
-    public static int doesSeasonEpisodeExists(String aShow, int season, String episode) {
-        Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(season)));
-        if (!episodes.isEmpty()) {
-            if (episodes.contains(episode)) {
-                return 1;
-            } else {
-                for (String aEpisode : episodes) {
-                    if (aEpisode.contains(episode)) {
-                        return 2;
-                    }
-                }
-            }
-        }
-        return 0;
-    }
-
-    public static Set<Integer> episodesToInt(Set<String> oldEpisodes) {
+    private static Set<Integer> episodesToInt(Set<String> oldEpisodes) {
         Set<Integer> episodes = new HashSet<>();
         if (oldEpisodes != null) {
             for (String aEpisode : oldEpisodes) {
@@ -274,12 +247,16 @@ public class UserInfoController {
                     episodes.add(temp2);
                 } else episodes.add(Integer.valueOf(aEpisode));
             }
-        } else return null;
+        }
         return episodes;
     }
 
     public static int getCurrentSeason(String aShow) {
         return Integer.parseInt(userSettingsFile.get("ShowSettings").get(aShow).get("CurrentSeason"));
+    }
+
+    public static String getCurrentEpisode(String aShow) {
+        return userSettingsFile.get("ShowSettings").get(aShow).get("CurrentEpisode");
     }
 
     public static int getRemainingNumberOfEpisodes(String aShow) {

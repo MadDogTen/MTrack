@@ -16,7 +16,7 @@ public class ImageLoader {
     private static ImageIcon imageIcon;
     private static BufferedImage bufferedImage;
 
-    public static void bufferImageToIcon(String path) {
+    private static void bufferImageToIcon(String path) {
         File file = new File(path);
         try {
             bufferedImage = ImageIO.read(file);
@@ -36,6 +36,6 @@ public class ImageLoader {
     }
 
     public static void setIcon(Stage stage) {
-        stage.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
+        stage.getIcons().add(getImage("/image/MTrackLogo.png"));
     }
 }

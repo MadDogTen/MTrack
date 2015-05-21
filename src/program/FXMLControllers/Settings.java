@@ -130,7 +130,7 @@ public class Settings implements Initializable {
         });
         changeUpdateSpeed.setOnAction(e -> ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120, tabPane.getScene().getWindow())));
         addDirectory.setOnAction(e -> {
-            int index = ProgramSettingsController.getNumberOfDirectories();
+            int index = ProgramSettingsController.getLowestFreeDirectoryIndex();
             Boolean[] wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
@@ -139,6 +139,7 @@ public class Settings implements Initializable {
                 final ArrayList<String> finalDirectories = directories;
                 final Boolean[] taskRunning = {true};
                 Task<Void> task = new Task<Void>() {
+                    @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
                         GenerateNewShowFiles.generateShowsFile(index, new File(finalDirectories.get(index)), false);
@@ -188,6 +189,7 @@ public class Settings implements Initializable {
         });
         forceRecheck.setOnAction(e -> {
             Task<Void> task = new Task<Void>() {
+                @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     CheckShowFiles.recheckShowFile(true);
@@ -197,7 +199,7 @@ public class Settings implements Initializable {
             new Thread(task).start();
         });
         openProgramFolder.setOnAction(e -> {
-            File file = new File(ProgramSettingsController.getDataFolder());
+            File file = new File(Variables.dataFolder);
             try {
                 Desktop.getDesktop().open(file);
             } catch (IOException e1) {
@@ -315,9 +317,8 @@ public class Settings implements Initializable {
                     Boolean confirm = confirmBox.display(("Are you sure to want to clear " + directoryToClear + '?' ), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
-                        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getAllDirectoriesHashMaps();
-                        Set<String> hashMapShows = showsFileArray.get(index).keySet();
-                        showsFileArray.remove(index);
+                        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
+                        Set<String> hashMapShows = ShowInfoController.getDirectoryHashMap(index).keySet();
                         for (String aShow : hashMapShows) {
                             Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                             if (!showExistsElsewhere) {
@@ -338,7 +339,7 @@ public class Settings implements Initializable {
             if (confirmBox.display("Are you sure? This will delete EVERYTHING!", tabPane.getScene().getWindow())) {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
-                new FileManager().deleteFolder(new File(ProgramSettingsController.getDataFolder()));
+                new FileManager().deleteFolder(new File(Variables.dataFolder));
                 program.Main.stop(program.Main.window, true, false);
             }
         });
