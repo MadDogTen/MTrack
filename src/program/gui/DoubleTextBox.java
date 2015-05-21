@@ -16,7 +16,10 @@ import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 
+import java.util.logging.Logger;
+
 public class DoubleTextBox {
+    private static final Logger log = Logger.getLogger(DoubleTextBox.class.getName());
 
     public int[] displaySeasonEpisode(String firstMessage, String secondMessage, Window oldWindow) {
         Stage window = new Stage();

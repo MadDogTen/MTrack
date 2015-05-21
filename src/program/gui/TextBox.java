@@ -21,9 +21,11 @@ import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 
 public class TextBox {
+    private static final Logger log = Logger.getLogger(TextBox.class.getName());
 
     public String display(String message, String messageIfNameFieldIsBlank, String defaultValue, Window oldWindow) {
         Stage window = new Stage();

@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import program.gui.*;
 import program.information.DisplayShows;
 import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.input.MoveWindow;
 import program.io.FileManager;
@@ -122,30 +123,30 @@ public class Controller implements Initializable {
 
                     MenuItem setSeasonEpisode = new MenuItem("Set Season + Episode");
                     setSeasonEpisode.setOnAction(e -> {
-                        /*log.info("\"Set Season + Episode\" is now running...");
+                        log.info("\"Set Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), tabPane.getScene().getWindow());
                         if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
                             log.info("Season & Episode were valid.");
                             UserInfoController.setSeasonEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
                         } else {
                             log.info("Season & Episode weren't valid.");
                         }
-                        log.info("\"Set Season + Episode\" is finished running.");*/
+                        log.info("\"Set Season + Episode\" is finished running.");
                     });
                     MenuItem playSeasonEpisode = new MenuItem("Play Season + Episode");
                     playSeasonEpisode.setOnAction(e -> {
-                        /*log.info("\"Play Season + Episode\" is now running...");
+                        log.info("\"Play Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsListSet(show), tabPane.getScene().getWindow());
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), tabPane.getScene().getWindow());
                         if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
                             log.info("Season & Episode were valid.");
                             UserInfoController.playAnyEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1], true, -1);
                         } else {
                             log.info("Season & Episode weren't valid.");
                         }
-                        log.info("\"Play Season + Episode\" is finished running.");*/
-                        DoubleTextBox doubleTextBox = new DoubleTextBox();
+                        log.info("\"Play Season + Episode\" is finished running.");
+                        /*DoubleTextBox doubleTextBox = new DoubleTextBox();
                         int[] seasonEpisode = doubleTextBox.displaySeasonEpisode("Season", "Episode", tabPane.getScene().getWindow());
                         int fileExists = UserInfoController.doesSeasonEpisodeExists(row.getItem().getShow(), seasonEpisode[0], String.valueOf(seasonEpisode[1]));
                         if (fileExists == 1 || fileExists == 2) {
@@ -153,7 +154,7 @@ public class Controller implements Initializable {
                         } else {
                             MessageBox messageBox = new MessageBox();
                             messageBox.display("Your selection doesn't exist.", tabPane.getScene().getWindow());
-                        }
+                        }*/
                     });
                     MenuItem setActive = new MenuItem("Allow Updating");
                     setActive.setOnAction(e -> {

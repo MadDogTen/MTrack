@@ -19,7 +19,7 @@ public class UpdateShowFiles {
             if (episodesFullList != null) {
                 for (String aEpisode : episodesFullList) {
                     ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
-                    if (episode != null) {
+                    if (!episode.isEmpty()) {
                         if (episode.size() == 2) {
                             String episodeNumber = String.valueOf(episode.get(1));
                             episodeNum.put(episodeNumber, aEpisode);
@@ -49,7 +49,7 @@ public class UpdateShowFiles {
         if (episodesFullList != null) {
             for (String aEpisode : episodesFullList) {
                 ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
-                if (episode != null) {
+                if (!episode.isEmpty()) {
                     if (episode.size() == 2) {
                         String episodeNumber = String.valueOf(episode.get(1));
                         episodeNum.put(episodeNumber, aEpisode);

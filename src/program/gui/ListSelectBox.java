@@ -25,8 +25,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class ListSelectBox {
+    private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
 
     public String display(String message, ArrayList<String> users, Window oldWindow) {
         final String[] userName = new String[1];
@@ -227,7 +229,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 choice[0] = comboBox.getValue();
-                choice[1] = pickEpisode("Pick the Episode", ShowInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
+                choice[1] = pickEpisode("Pick the Episode", ShowInfoController.getEpisodesList(aShow, Integer.parseInt(choice[0])), window.getWidth(), window.getHeight(), window);
                 window.close();
             } else new MessageBox().display("You have to pick a season!", window);
         });
@@ -277,9 +279,15 @@ public class ListSelectBox {
         Label label = new Label();
         label.setText(message);
 
+        // Needed, If you directly use the episodes Set, It completely removes them from the showsFile for some reason (Until you restart).
+        ArrayList<String> episodesArrayList = new ArrayList<>();
+        for (String episode : episodes) {
+            episodesArrayList.add(episode);
+        }
+
         ArrayList<String> episodesSorted = new ArrayList<>();
-        while (!episodes.isEmpty()) {
-            Iterator<String> stringIterator = episodes.iterator();
+        while (!episodesArrayList.isEmpty()) {
+            Iterator<String> stringIterator = episodesArrayList.iterator();
             int lowestEpisodeInt = -1;
             String lowestEpisodeString = null;
             while (stringIterator.hasNext()) {
@@ -298,7 +306,7 @@ public class ListSelectBox {
                 }
             }
             episodesSorted.add(lowestEpisodeString);
-            episodes.remove(lowestEpisodeString);
+            episodesArrayList.remove(lowestEpisodeString);
         }
 
         ObservableList<String> seasonsList = FXCollections.observableArrayList(episodesSorted);

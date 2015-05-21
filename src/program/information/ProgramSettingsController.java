@@ -89,7 +89,7 @@ public class ProgramSettingsController {
         loadProgramSettingsFile();
         log.info("Currently processing removal of: " + directory);
         int index = settingsFile.get("Directories").indexOf(directory);
-        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
+        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getAllDirectoriesHashMaps();
         HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = showsFileArray.get(index);
         showsFileArray.remove(index);
         for (String aShow : showsFile.keySet()) {

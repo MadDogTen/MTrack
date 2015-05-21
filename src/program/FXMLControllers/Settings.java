@@ -155,7 +155,7 @@ public class Settings implements Initializable {
                     }
                 }
                 ShowInfoController.loadShowsFile(true);
-                HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getShowsFile(index);
+                HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getDirectoryHashMap(index);
                 for (String aShow : showsFile.keySet()) {
                     UserInfoController.addNewShow(aShow);
                 }
@@ -173,11 +173,11 @@ public class Settings implements Initializable {
                 if (directoryToDelete != null && !directoryToDelete.isEmpty()) {
                     log.info("Directory selected for deletion: " + directoryToDelete);
                     ConfirmBox confirmBox = new ConfirmBox();
-                    Boolean confirm = confirmBox.display(("Are you sure to want to delete " + directoryToDelete + "?"), tabPane.getScene().getWindow());
+                    Boolean confirm = confirmBox.display(("Are you sure to want to delete " + directoryToDelete + '?'), tabPane.getScene().getWindow());
                     if (confirm && !directoryToDelete.isEmpty()) {
                         ProgramSettingsController.removeDirectory(directoryToDelete);
                         log.info("Directory has been deleted!");
-                    }
+                    } else log.info("No directory has been deleted.");
                 }
             } else {
                 log.info("No directories to delete.");
@@ -226,7 +226,7 @@ public class Settings implements Initializable {
             if (!emptyShows.isEmpty()) {
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 for (String aDirectory : directories) {
-                    Set<String> shows = ShowInfoController.getShowsFile(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
+                    Set<String> shows = ShowInfoController.getDirectoryHashMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     for (String aShow : emptyShows) {
                         String fileString = (aDirectory + '\\' + aShow);
@@ -262,12 +262,15 @@ public class Settings implements Initializable {
             log.info("Finished printing hidden shows.");
         });
         unHideAll.setOnAction(e -> {
-            ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
+            log.info("Un-hiding all shows...");
+            ArrayList<String> ignoredShows = UserInfoController.getHiddenShows();
             if (!ignoredShows.isEmpty()) {
                 for (String aShow : ignoredShows) {
+                    log.info(aShow + " is no longer hidden.");
                     UserInfoController.setHiddenStatus(aShow, false);
                 }
-            }
+            } else log.info("No shows to un-hide.");
+            log.info("Finished un-hiding all shows.");
         });
         setAllActive.setOnAction(e -> {
             Object[] showsList = ShowInfoController.getShowsList();
@@ -312,7 +315,7 @@ public class Settings implements Initializable {
                     Boolean confirm = confirmBox.display(("Are you sure to want to clear " + directoryToClear + '?' ), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
-                        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
+                        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getAllDirectoriesHashMaps();
                         Set<String> hashMapShows = showsFileArray.get(index).keySet();
                         showsFileArray.remove(index);
                         for (String aShow : hashMapShows) {

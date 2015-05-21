@@ -15,7 +15,10 @@ import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 
+import java.util.logging.Logger;
+
 public class ShowConfirmBox {
+    private static final Logger log = Logger.getLogger(ShowConfirmBox.class.getName());
 
     int answer;
 

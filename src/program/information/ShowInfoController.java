@@ -13,17 +13,14 @@ import java.util.regex.Pattern;
 
 public class ShowInfoController {
     private static final Logger log = Logger.getLogger(ShowInfoController.class.getName());
-    // String = Show Name -- HashMap == Seasons in show from seasonEpisode
+
     private static HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile;
-
-
-    // To pull Show Information
 
     @SuppressWarnings("unchecked")
     public static void loadShowsFile(Boolean forceRegen) {
         if (forceRegen || showsFile == null) {
             if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
-                ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getShowsFileArray();
+                ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getAllDirectoriesHashMaps();
 
                 // This crazy thing is to combine all found Shows/Seasons/Episodes from all directory's into one HashMap.
                 long timer = Clock.getTimeMilliSeconds();
@@ -77,7 +74,7 @@ public class ShowInfoController {
     }
 
     @SuppressWarnings("unchecked")
-    public static ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> getShowsFileArray() {
+    public static ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> getAllDirectoriesHashMaps() {
         // ArrayList = Shows list from all added Directories
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
@@ -90,7 +87,7 @@ public class ShowInfoController {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, HashMap<Integer, HashMap<String, String>>> getShowsFile(int index) {
+    public static HashMap<String, HashMap<Integer, HashMap<String, String>>> getDirectoryHashMap(int index) {
         HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = new HashMap<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
@@ -110,19 +107,14 @@ public class ShowInfoController {
         } else return null;
     }
 
-    public static Set<Integer> getSeasonsListSet(String show) {
+    public static Set<Integer> getSeasonsList(String show) {
         loadShowsFile(false);
         return showsFile.get(show).keySet();
     }
 
-    public static Set<String> getEpisodesList(String show, String season) {
+    public static Set<String> getEpisodesList(String show, int season) {
         loadShowsFile(false);
-        int aSeason = Integer.parseInt(String.valueOf(season));
-        HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(show);
-        HashMap<String, String> episodeNumEpisode = seasonEpisode.get(aSeason);
-        if (episodeNumEpisode != null) {
-            return episodeNumEpisode.keySet();
-        } else return null;
+        return showsFile.get(show).get(season).keySet();
     }
 
     public static String getEpisode(String show, String season, String episode) {
@@ -138,74 +130,9 @@ public class ShowInfoController {
         }
     }
 
-    public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {
-        Boolean showExistsElsewhere = false;
-        if (!showsFileArray.isEmpty()) {
-            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
-                if (aHashMap.containsKey(aShow)) {
-                    showExistsElsewhere = true;
-                }
-            }
-        }
-        if (showExistsElsewhere) {
-            log.info(aShow + " exists elsewhere.");
-        } else {
-            log.info(aShow + " doesn't exists elsewhere.");
-        }
-        return showExistsElsewhere;
-    }
-
-    // To get the Season and Episode Number
-    public static ArrayList<Integer> getEpisodeSeasonInfo(String aEpisode) {
-        Pattern MainP = Pattern.compile("s\\d{1,4}e\\d{1,4}");
-        Matcher MainM = MainP.matcher(aEpisode.toLowerCase());
-        if (MainM.find()) {
-            Pattern pattern = Pattern.compile("s\\d{1,4}e\\d{1,4}[e|-]\\d{1,4}");
-            Matcher match = pattern.matcher(aEpisode.toLowerCase());
-            String info;
-            Boolean isDouble = false;
-            if (match.find()) {
-                info = match.group();
-                isDouble = true;
-            } else {
-                info = MainM.group();
-            }
-            String splitResult = info.toLowerCase().replaceFirst("s", Variables.EmptyString);
-            splitResult = splitResult.toLowerCase().replaceFirst("e", " ");
-
-            if (isDouble) {
-                if (splitResult.contains("-")) {
-                    splitResult = splitResult.replaceFirst("-", " ");
-                } else if (splitResult.contains("e")) {
-                    splitResult = splitResult.replaceFirst("e", " ");
-                }
-            }
-            String[] bothString = splitResult.split(" ");
-            ArrayList<Integer> bothInt = new ArrayList<>();
-            bothInt.add(Integer.valueOf(bothString[0]));
-            bothInt.add(Integer.valueOf(bothString[1]));
-            if (isDouble) {
-                bothInt.add(Integer.valueOf(bothString[2]));
-            }
-            return bothInt;
-        }
-        MainP = Pattern.compile("\\d{1,4}x\\d{1,4}");
-        MainM = MainP.matcher(aEpisode.toLowerCase());
-        if (MainM.find()) {
-            String info = MainM.group();
-            String splitResult = info.toLowerCase().replaceFirst("x", " ");
-            String[] bothString = splitResult.split(" ");
-            ArrayList<Integer> bothInt = new ArrayList<>();
-            bothInt.add(Integer.valueOf(bothString[0]));
-            bothInt.add(Integer.valueOf(bothString[1]));
-            return bothInt;
-        }
-        return null;
-    }
-
-    public static int getLowestSeason(String aShow) {
+    public static int findLowestSeason(String aShow) {
         int lowestSeason = -1;
-        Set<Integer> seasons = ShowInfoController.getSeasonsListSet(aShow);
+        Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
         for (int aSeason : seasons) {
             if (lowestSeason == -1) {
                 lowestSeason = aSeason;
@@ -216,7 +143,7 @@ public class ShowInfoController {
         return lowestSeason;
     }
 
-    public static int getLowestEpisode(Set<String> episodes) {
+    public static int findLowestEpisode(Set<String> episodes) {
         int lowestEpisode = -1;
         if (episodes != null) {
             for (String aEpisode : episodes) {
@@ -239,10 +166,23 @@ public class ShowInfoController {
         return lowestEpisode;
     }
 
-    public static void saveShowsHashMapFile(HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap, int hashMapIndex) {
-        new FileManager().save(hashMap, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
-        loadShowsFile(true);
+    public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {
+        Boolean showExistsElsewhere = false;
+        if (!showsFileArray.isEmpty()) {
+            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
+                if (aHashMap.containsKey(aShow)) {
+                    showExistsElsewhere = true;
+                }
+            }
+        }
+        if (showExistsElsewhere) {
+            log.info(aShow + " exists elsewhere.");
+        } else {
+            log.info(aShow + " doesn't exists elsewhere.");
+        }
+        return showExistsElsewhere;
     }
+
 
     public static void printOutAllShowsAndEpisodes() {
         loadShowsFile(false);
@@ -269,5 +209,57 @@ public class ShowInfoController {
             log.info("No shows.");
         }
         log.info("Finished printing out all Shows and Episodes.");
+    }
+
+    // To get the Season and Episode Number
+    public static ArrayList<Integer> getEpisodeSeasonInfo(String aEpisode) {
+        ArrayList<Integer> bothInt = new ArrayList<>();
+        Pattern MainP = Pattern.compile("s\\d{1,4}e\\d{1,4}");
+        Matcher MainM = MainP.matcher(aEpisode.toLowerCase());
+        if (MainM.find()) {
+            Pattern pattern = Pattern.compile("s\\d{1,4}e\\d{1,4}[e|-]\\d{1,4}");
+            Matcher match = pattern.matcher(aEpisode.toLowerCase());
+            String info;
+            Boolean isDouble = false;
+            if (match.find()) {
+                info = match.group();
+                isDouble = true;
+            } else {
+                info = MainM.group();
+            }
+            String splitResult = info.toLowerCase().replaceFirst("s", Variables.EmptyString);
+            splitResult = splitResult.toLowerCase().replaceFirst("e", " ");
+
+            if (isDouble) {
+                if (splitResult.contains("-")) {
+                    splitResult = splitResult.replaceFirst("-", " ");
+                } else if (splitResult.contains("e")) {
+                    splitResult = splitResult.replaceFirst("e", " ");
+                }
+            }
+            String[] bothString = splitResult.split(" ");
+            bothInt.add(Integer.valueOf(bothString[0]));
+            bothInt.add(Integer.valueOf(bothString[1]));
+            if (isDouble) {
+                bothInt.add(Integer.valueOf(bothString[2]));
+            }
+            return bothInt;
+        }
+        MainP = Pattern.compile("\\d{1,4}x\\d{1,4}");
+        MainM = MainP.matcher(aEpisode.toLowerCase());
+        if (MainM.find()) {
+            String info = MainM.group();
+            String splitResult = info.toLowerCase().replaceFirst("x", " ");
+            String[] bothString = splitResult.split(" ");
+            bothInt.add(Integer.valueOf(bothString[0]));
+            bothInt.add(Integer.valueOf(bothString[1]));
+            return bothInt;
+        }
+        return bothInt;
+    }
+
+    public static void saveShowsHashMapFile(HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap, int hashMapIndex) {
+        new FileManager().save(hashMap, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
+        loadShowsFile(true);
     }
 }

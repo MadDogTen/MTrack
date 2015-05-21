@@ -3,7 +3,10 @@ package program.information;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.util.logging.Logger;
+
 public class DisplayShows {
+    private static final Logger log = Logger.getLogger(DisplayShows.class.getName());
 
     private SimpleStringProperty show;
     private SimpleIntegerProperty remaining;

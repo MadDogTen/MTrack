@@ -12,8 +12,10 @@ import program.util.Strings;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class About implements Initializable {
+    private static final Logger log = Logger.getLogger(About.class.getName());
 
     @FXML
     private Pane pane;
@@ -45,7 +47,7 @@ public class About implements Initializable {
         codedUsing.setText(Strings.CodedUsing);
         codedUsing.setAlignment(Pos.CENTER);
 
-        codedWith.setText(Strings.codedWith + " " + Strings.javaVersion);
+        codedWith.setText(Strings.codedWith + ' ' + Strings.javaVersion);
         codedWith.setAlignment(Pos.CENTER);
 
         close.setOnAction(e -> {

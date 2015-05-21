@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 public class ChangeReporter {
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
 
-    public static String[] changes = new String[0];
+    private static String[] changes = new String[0];
 
     public static void addChange(String newInfo) {
         ArrayList<String> newList = new ArrayList<>();
@@ -32,5 +32,9 @@ public class ChangeReporter {
             log.info(changed);
         }
         log.info("Finished listing changes.");
+    }
+
+    public static String[] getChanges() {
+        return changes;
     }
 }

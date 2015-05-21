@@ -14,7 +14,10 @@ import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 
+import java.util.logging.Logger;
+
 public class MessageBox {
+    private static final Logger log = Logger.getLogger(MessageBox.class.getName());
 
     public void display(String message, Window oldWindow) {
         Stage window = new Stage();

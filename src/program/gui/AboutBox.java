@@ -12,7 +12,10 @@ import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.input.MoveWindow;
 
+import java.util.logging.Logger;
+
 public class AboutBox {
+    private static final Logger log = Logger.getLogger(AboutBox.class.getName());
     public void display(Window oldWindow) throws Exception {
         Stage window = new Stage();
         ImageLoader.setIcon(window);

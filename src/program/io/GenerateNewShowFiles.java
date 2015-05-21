@@ -38,13 +38,13 @@ public class GenerateNewShowFiles {
                         for (String aEpisode : episodesFull) {
                             log.info("Episode: " + aEpisode);
                             ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
-                            if (episode != null) {
+                            if (!episode.isEmpty()) {
                                 if (episode.size() == 2) {
                                     String episodeNumber = String.valueOf(episode.get(1));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + "\\" + "Season " + aSeason + "\\" + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
                                 } else if (episode.size() == 3) {
                                     String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + "\\" + "Season " + aSeason + "\\" + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
                                 } else {
                                     log.warning("Error 1 if at this point!" + " + " + episode);
                                 }

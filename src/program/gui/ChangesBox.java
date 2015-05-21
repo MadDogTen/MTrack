@@ -35,7 +35,7 @@ public class ChangesBox {
         window.initStyle(StageStyle.UNDECORATED);
 
         final VBox[] vBox = {new VBox()};
-        for (String aMessage : ChangeReporter.changes) {
+        for (String aMessage : ChangeReporter.getChanges()) {
             Label label = new Label();
             label.setText(aMessage);
             label.setPadding(new Insets(0, 6, 2, 6));

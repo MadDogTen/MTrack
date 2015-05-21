@@ -25,7 +25,7 @@ public class CheckShowFiles {
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
-            ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getShowsFileArray();
+            ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getAllDirectoriesHashMaps();
             ArrayList<String> activeShows = UserInfoController.getActiveShows();
             FileManager fileManager = new FileManager();
             for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
@@ -119,7 +119,7 @@ public class CheckShowFiles {
         if (newEpisodesList != null) {
             for (String aNewEpisode : newEpisodesList) {
                 ArrayList<Integer> EpisodeInfo = ShowInfoController.getEpisodeSeasonInfo(aNewEpisode);
-                if (EpisodeInfo != null) {
+                if (!EpisodeInfo.isEmpty()) {
                     if (EpisodeInfo.size() == 2) {
                         String episodeNumber = String.valueOf(EpisodeInfo.get(1));
                         newEpisodesListFixed.add(episodeNumber);
@@ -189,13 +189,13 @@ public class CheckShowFiles {
                     if (episodesFull != null) {
                         for (String aEpisode : episodesFull) {
                             ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
-                            if (episode != null) {
+                            if (!episode.isEmpty()) {
                                 if (episode.size() == 2) {
                                     String episodeNumber = String.valueOf(episode.get(1));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + "\\" + "Season " + aSeason + "\\" + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
                                 } else if (episode.size() == 3) {
                                     String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + "\\" + "Season " + aSeason + "\\" + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
                                 } else {
                                     log.warning("Error 1 if at this point!" + " + " + episode);
                                 }
@@ -223,7 +223,7 @@ public class CheckShowFiles {
         String[] episodesFull = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
         if (episodesFull != null) {
             for (String aEpisode : episodesFull) {
-                if (ShowInfoController.getEpisodeSeasonInfo(aEpisode) != null) {
+                if (!ShowInfoController.getEpisodeSeasonInfo(aEpisode).isEmpty()) {
                     return false;
                 }
             }

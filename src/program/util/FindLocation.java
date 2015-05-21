@@ -3,13 +3,13 @@ package program.util;
 import program.io.FileManager;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FindLocation implements Serializable {
-    private static final long serialVersionUID = -8763884002300922616L;
+public class FindLocation {
+    private static final Logger log = Logger.getLogger(FindLocation.class.getName());
 
     public static String[] findShows(File dir) {
         return dir.list();
@@ -19,8 +19,8 @@ public class FindLocation implements Serializable {
         File folder = new File(dir + "\\" + show);
         String[] seasonsList, showFolder = folder.list((dir1, name) -> new File(dir1, name).isDirectory());
         ArrayList<Integer> seasonNumber = new ArrayList<>();
-        if (checkIfStringNotNull(showFolder)) {
-            Pattern pattern = Pattern.compile("[s][e][a][s][o][n]\\s\\d{1,3}");
+        if (showFolder != null) {
+            Pattern pattern = Pattern.compile("[s][e][a][s][o][n]\\s\\d{1,4}");
             for (String aShowFolder : showFolder) {
                 Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());
                 if (matcher.find()) {
@@ -35,16 +35,11 @@ public class FindLocation implements Serializable {
 
     public static String[] findEpisodes(File dir, String ShowName, Integer Season) {
         String[] episodes;
-        File folder = new File(dir + "\\" + ShowName + "\\Season" + " " + Season);
+        File folder = new File(dir + "\\" + ShowName + "\\Season" + ' ' + Season);
         if (new FileManager().checkFolderExists(String.valueOf(folder)) && new File(String.valueOf(folder)).list().length > 0) {
             episodes = folder.list((dir1, name) -> (name.toLowerCase().endsWith(".mkv") || name.toLowerCase().endsWith(".avi") || name.toLowerCase().endsWith(".mp4")));
             return episodes;
         }
         return null;
-    }
-
-    // Other Stuff
-    private static boolean checkIfStringNotNull(String[] checker) {
-        return !(checker == null);
     }
 }

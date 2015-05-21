@@ -2,8 +2,9 @@ package program.util;
 
 import program.information.ProgramSettingsController;
 
-public class Variables {
+import java.util.logging.Logger;
 
+public class Variables {
     //---------- Main Variables ----------\\
     public static final int SIZE_WIDTH = 282;
     public static final int SIZE_HEIGHT = 454;
@@ -21,6 +22,7 @@ public class Variables {
     // Other
     public static final String EmptyString = "";
     public static final Boolean StartFresh = false;
+    private static final Logger log = Logger.getLogger(Variables.class.getName());
     public static Integer updateSpeed;
 
 

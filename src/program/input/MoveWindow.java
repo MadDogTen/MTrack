@@ -5,7 +5,10 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
+import java.util.logging.Logger;
+
 public class MoveWindow {
+    private static final Logger log = Logger.getLogger(MoveWindow.class.getName());
 
     public void moveWindow(Window window) {
         final double[] xOffset = new double[1], yOffset = new double[1];

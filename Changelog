@@ -1,5 +1,10 @@
 Changes:
 
+Pre-Alpha 0.7.15 -
+General Code Changes.
+Fixed un-hiding all shows.
+"Set season + episode" and "Play Season + Episode" are both working using the show picker.
+
 Pre-Alpha 0.7.14 -
 General Code Changes.
 Removed debug code.

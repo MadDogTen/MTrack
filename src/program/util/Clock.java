@@ -1,6 +1,9 @@
 package program.util;
 
+import java.util.logging.Logger;
+
 public class Clock {
+    private static final Logger log = Logger.getLogger(Clock.class.getName());
 
     public static long getTimeNano() {
         return System.nanoTime();

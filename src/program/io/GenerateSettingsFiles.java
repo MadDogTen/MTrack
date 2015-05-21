@@ -76,9 +76,9 @@ public class GenerateSettingsFiles {
                     temp.put("isActive", "false");
                     temp.put("isIgnored", "false");
                     temp.put("isHidden", "false");
-                    temp.put("CurrentSeason", String.valueOf(ShowInfoController.getLowestSeason(String.valueOf(aShow))));
-                    Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), temp.get("CurrentSeason"));
-                    temp.put("CurrentEpisode", String.valueOf(ShowInfoController.getLowestEpisode(episodes)));
+                    temp.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(String.valueOf(aShow))));
+                    Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), Integer.parseInt(temp.get("CurrentSeason")));
+                    temp.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
                     tempPut.put(String.valueOf(aShow), temp);
                 }
             }

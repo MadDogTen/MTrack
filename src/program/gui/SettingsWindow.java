@@ -11,7 +11,10 @@ import javafx.stage.StageStyle;
 import program.Main;
 import program.graphics.ImageLoader;
 
+import java.util.logging.Logger;
+
 public class SettingsWindow {
+    private static final Logger log = Logger.getLogger(SettingsWindow.class.getName());
     public void display() throws Exception {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
