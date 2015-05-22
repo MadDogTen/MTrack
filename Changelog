@@ -1,5 +1,11 @@
 Changes:
 
+Pre-Alpha 0.8.1 -
+Fixed issue with sorting double episodes with "Set season + episode" and "Play Season + Episode" after clicking Submit.
+"Allow Updating" and "Stop Updating" buttons are now one "Toggle Updating" button.
+Added button to print all user info.
+Fixed addDirectory searching the wrong directory.
+
 Pre-Alpha 0.8.0 -
 General Code Changes / Cleanup.
 Fixed bug in rechecking for new episodes.

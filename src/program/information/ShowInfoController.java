@@ -21,7 +21,6 @@ public class ShowInfoController {
         if (forceRegen || showsFile == null) {
             if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
                 ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getDirectoriesHashMaps(-1);
-
                 // This crazy thing is to combine all found Shows/Seasons/Episodes from all directory's into one HashMap.
                 long timer = Clock.getTimeMilliSeconds();
                 showsFile = new HashMap<>();

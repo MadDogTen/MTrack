@@ -285,6 +285,7 @@ public class ListSelectBox {
             episodesArrayList.add(episode);
         }
 
+        log.info("Sorting the episodes before displaying...");
         ArrayList<String> episodesSorted = new ArrayList<>();
         while (!episodesArrayList.isEmpty()) {
             Iterator<String> stringIterator = episodesArrayList.iterator();
@@ -292,13 +293,14 @@ public class ListSelectBox {
             String lowestEpisodeString = null;
             while (stringIterator.hasNext()) {
                 String episode = stringIterator.next();
+                log.info(episode);
                 int episodeInt;
                 if (episode.contains("+")) {
-                    String[] splitEpisode = episode.split("[+]");
-                    episodeInt = Integer.parseInt(splitEpisode[0]);
+                    log.info("Processing double episode...");
+                    episodeInt = Integer.parseInt(episode.split("\\+")[0]);
                 } else episodeInt = Integer.parseInt(episode);
                 if (lowestEpisodeInt == -1) {
-                    lowestEpisodeInt = Integer.parseInt(episode);
+                    lowestEpisodeInt = episodeInt;
                     lowestEpisodeString = episode;
                 } else if (episodeInt < lowestEpisodeInt) {
                     lowestEpisodeInt = Integer.parseInt(episode);
@@ -308,6 +310,7 @@ public class ListSelectBox {
             episodesSorted.add(lowestEpisodeString);
             episodesArrayList.remove(lowestEpisodeString);
         }
+        log.info("Finished sorting the episodes.");
 
         ObservableList<String> seasonsList = FXCollections.observableArrayList(episodesSorted);
         ComboBox<String> comboBox = new ComboBox<>(seasonsList);

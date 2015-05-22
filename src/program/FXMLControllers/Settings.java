@@ -83,6 +83,8 @@ public class Settings implements Initializable {
     private Button printHiddenShows;
     @FXML
     private Button unHideAll;
+    @FXML
+    private Button printAllUserInfo;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -134,15 +136,13 @@ public class Settings implements Initializable {
             Boolean[] wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
-                ArrayList<String> directories = ProgramSettingsController.getDirectories();
-                directories = ProgramSettingsController.getDirectories();
-                final ArrayList<String> finalDirectories = directories;
+                File directory = ProgramSettingsController.getDirectory(index);
                 final Boolean[] taskRunning = {true};
                 Task<Void> task = new Task<Void>() {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
-                        GenerateNewShowFiles.generateShowsFile(index, new File(finalDirectories.get(index)), false);
+                        GenerateNewShowFiles.generateShowsFile(index, directory, false);
                         taskRunning[0] = false;
                         return null;
                     }
@@ -304,6 +304,7 @@ public class Settings implements Initializable {
         });
         printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(ProgramSettingsController.getProgramSettingsVersion())));
         printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(UserInfoController.getUserSettingsVersion())));
+        printAllUserInfo.setOnAction(e -> UserInfoController.printAllUserInfo());
         clearFile.setOnAction(e -> {
             ArrayList<File> directories = new ArrayList<>();
             for (String aDirectory : ProgramSettingsController.getDirectories()) {

@@ -146,17 +146,13 @@ public class Controller implements Initializable {
                         }
                         log.info("\"Play Season + Episode\" is finished running.");
                     });
-                    MenuItem setActive = new MenuItem("Allow Updating");
-                    setActive.setOnAction(e -> {
+                    MenuItem toggleActive = new MenuItem("Toggle Updating");
+                    toggleActive.setOnAction(e -> {
                         if (currentList.matches("inactive")) {
                             UserInfoController.setActiveStatus(row.getItem().getShow(), true);
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             tableView.getSelectionModel().clearSelection();
-                        }
-                    });
-                    MenuItem setNotActive = new MenuItem("Stop Updating");
-                    setNotActive.setOnAction(e -> {
-                        if (currentList.matches("active")) {
+                        } else if (currentList.matches("active")) {
                             UserInfoController.setActiveStatus(row.getItem().getShow(), false);
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             tableView.getSelectionModel().clearSelection();
@@ -200,7 +196,7 @@ public class Controller implements Initializable {
                         }
                     });
 
-                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, setActive, setNotActive, setHidden, resetShow, getRemaining, openDirectory);
+                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, setHidden, resetShow, getRemaining, openDirectory);
 
                     row.contextMenuProperty().bind(
                             Bindings.when(Bindings.isNotNull(row.itemProperty()))

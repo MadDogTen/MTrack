@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--suppress ALL -->
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
@@ -80,6 +81,8 @@
                                 text="Clear File"/>
                         <Button fx:id="deleteEverythingAndClose" layoutX="117.0" layoutY="188.0" mnemonicParsing="false"
                                 text="Reset Program"/>
+                        <Button fx:id="printAllUserInfo" layoutX="2.0" layoutY="58.0" mnemonicParsing="false"
+                                text="Print All User Info"/>
                     </children>
                 </AnchorPane>
             </content>

@@ -101,6 +101,7 @@ public class UserInfoController {
 
     public static void setHiddenStatus(String aShow, Boolean isHidden) {
         loadUserInfo();
+        log.info(aShow + " hidden status is: " + isHidden);
         userSettingsFile.get("ShowSettings").get(aShow).replace("isHidden", String.valueOf(isHidden));
     }
 
@@ -339,6 +340,18 @@ public class UserInfoController {
 
     public static void setUserSettingsFile(HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile) {
         UserInfoController.userSettingsFile = userSettingsFile;
+    }
+
+    public static void printAllUserInfo() {
+        log.info("Printing all user info for " + Strings.UserName + "...");
+        for (String aString : userSettingsFile.keySet()) {
+            log.info(aString);
+            HashMap<String, HashMap<String, String>> aHashMap = userSettingsFile.get(aString);
+            for (String aString1 : aHashMap.keySet()) {
+                log.info(aString1 + " - " + String.valueOf(aHashMap.get(aString1)));
+            }
+        }
+        log.info("Finished printing all user info.");
     }
 
     public static void saveUserSettingsFile() {
