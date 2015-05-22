@@ -164,10 +164,8 @@ public class Controller implements Initializable {
                         removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                         tableView.getSelectionModel().clearSelection();
                     });
-                    MenuItem resetShow = new MenuItem("Reset");
+                    MenuItem resetShow = new MenuItem("Reset to Beginning");
                     resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
-                    MenuItem getRemaining = new MenuItem("Get Remaining");
-                    getRemaining.setOnAction(e -> log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining."));
                     MenuItem openDirectory = new MenuItem("Open File Location");
                     openDirectory.setOnAction(e -> {
                         ArrayList<String> directories = ProgramSettingsController.getDirectories();
@@ -195,8 +193,13 @@ public class Controller implements Initializable {
                             }
                         }
                     });
+                    if (Variables.devMode) {
+                        MenuItem getRemaining = new MenuItem("Get Remaining");
+                        getRemaining.setOnAction(e -> log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining."));
+                        rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, setHidden, resetShow, getRemaining, openDirectory);
+                    } else
+                        rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, setHidden, resetShow, openDirectory);
 
-                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, setHidden, resetShow, getRemaining, openDirectory);
 
                     row.contextMenuProperty().bind(
                             Bindings.when(Bindings.isNotNull(row.itemProperty()))

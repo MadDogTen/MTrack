@@ -1,5 +1,9 @@
 Changes:
 
+Pre-Alpha 0.8.2 -
+Fixed getRemainingNumberOfEpisodes potentially causing a NumberFormatException.
+Added "devMode" option in Variables which will disable all dev features when set to false (false by default).
+
 Pre-Alpha 0.8.1 -
 Fixed issue with sorting double episodes with "Set season + episode" and "Play Season + Episode" after clicking Submit.
 "Allow Updating" and "Stop Updating" buttons are now one "Toggle Updating" button.

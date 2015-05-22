@@ -279,7 +279,7 @@ public class UserInfoController {
             for (int aSeason : allSeasons) {
                 int episode = 1;
                 if (aSeason == Integer.parseInt(aShowSettings.get("CurrentSeason"))) {
-                    episode = Integer.parseInt(aShowSettings.get("CurrentEpisode"));
+                    episode = currentEpisodeInt;
                 }
                 Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                 if (!episodes.isEmpty()) {

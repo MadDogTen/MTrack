@@ -22,7 +22,10 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1000;
     // Other
     public static final String EmptyString = "";
-    public static final Boolean StartFresh = false;
+
+    public static final Boolean devMode = false;
+    public static final Boolean StartFresh = false; // Won't work unless devMode is true.
+
     private static final Logger log = Logger.getLogger(Variables.class.getName());
     public static Integer updateSpeed;
     public static String dataFolder;

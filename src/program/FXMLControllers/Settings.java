@@ -4,6 +4,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
@@ -33,6 +34,10 @@ public class Settings implements Initializable {
 
     @FXML
     private TabPane tabPane;
+    @FXML
+    private Tab devTab;
+    @FXML
+    private Tab devTab2;
     @FXML
     private Button exit1;
     @FXML
@@ -214,6 +219,13 @@ public class Settings implements Initializable {
                 log.severe(e1.toString());
             }
         });
+
+        if (!Variables.devMode) {
+            devTab.setDisable(true);
+            devTab2.setDisable(true);
+            tabPane.getTabs().remove(3);
+            tabPane.getTabs().remove(2);
+        }
 
         // Developer
         exit3.setOnAction(e -> {

@@ -43,7 +43,7 @@
                 </AnchorPane>
             </content>
         </Tab>
-        <Tab closable="false" text="Developer">
+        <Tab fx:id="devTab" closable="false" text="Developer">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
@@ -68,7 +68,7 @@
                 </AnchorPane>
             </content>
         </Tab>
-        <Tab text="Dev 2">
+        <Tab fx:id="devTab2" closable="false" text="Dev 2">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>

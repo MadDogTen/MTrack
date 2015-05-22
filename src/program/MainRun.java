@@ -29,7 +29,7 @@ public class MainRun {
         FileManager fileManager = new FileManager();
         Variables.setDataFolder(fileManager);
         // If true, It will Delete ALL Files each time the program is ran.
-        if (Variables.StartFresh && fileManager.checkFolderExists(Variables.dataFolder)) {
+        if (Variables.devMode && Variables.StartFresh && fileManager.checkFolderExists(Variables.dataFolder)) {
             log.warning("Starting Fresh...");
             fileManager.deleteFolder(new File(Variables.dataFolder));
         }
@@ -57,7 +57,7 @@ public class MainRun {
             log.info("MainRun Running...");
             hasRan = true;
         }
-        if (forceRun && Clock.timeTakenSeconds(timer) > 2 || Clock.timeTakenSeconds(timer) > Variables.updateSpeed) {
+        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || Clock.timeTakenSeconds(timer) > Variables.updateSpeed)) {
             final Boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
