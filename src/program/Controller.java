@@ -31,6 +31,7 @@ public class Controller implements Initializable {
 
     private static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
+    private static boolean show0Remaining = false;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -51,11 +52,20 @@ public class Controller implements Initializable {
     private Button refreshTableView;
     @FXML
     private Button viewChanges;
+    @FXML
+    private CheckBox show0RemainingCheckBox;
 
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
         if (showList != null) {
-            for (String aShow : showList) {
+            if (currentList.matches("active") && !show0Remaining) {
+                for (String aShow : showList) {
+                    int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
+                    if (remaining != 0) {
+                        list.add(new DisplayShows(aShow, remaining));
+                    }
+                }
+            } else for (String aShow : showList) {
                 list.add(new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
             }
         }
@@ -64,21 +74,24 @@ public class Controller implements Initializable {
 
     public static void setTableViewFields(String type) {
         if (type.matches("active")) {
-            tableViewFields = MakeTableViewFields(UserInfoController.getActiveShows());
             if (!currentList.matches("active")) {
                 currentList = "active";
             }
+            tableViewFields = MakeTableViewFields(UserInfoController.getActiveShows());
         } else if (type.matches("inactive")) {
-            tableViewFields = MakeTableViewFields(UserInfoController.getInactiveShows());
             if (!currentList.matches("inactive")) {
                 currentList = "inactive";
             }
+            tableViewFields = MakeTableViewFields(UserInfoController.getInactiveShows());
         }
     }
 
     public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere -- Having difficulty doing this.
-        tableViewFields.remove(index);
-        tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
+        removeShowField(index);
+        int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
+        if (show0Remaining && remaining != 0 || currentList.matches("inactive")) {
+            tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
+        }
     }
 
     private static void removeShowField(int index) {
@@ -100,11 +113,17 @@ public class Controller implements Initializable {
         SortedList<DisplayShows> newSortedData = new SortedList<>(newFilteredData);
         newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(newSortedData);
+
+        if (currentList.matches("active")) {
+            show0RemainingCheckBox.setDisable(false);
+        } else if (currentList.matches("inactive")) {
+            show0RemainingCheckBox.setDisable(true);
+        }
     }
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        log.info("Controller - MainController Running...\n");
+        log.info("MainController Running...");
         tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
         MainRun.startBackend();
@@ -117,8 +136,7 @@ public class Controller implements Initializable {
                 param -> {
                     final TableRow<DisplayShows> row = new TableRow<>();
                     final ContextMenu rowMenuActive = new ContextMenu();
-
-                    // MenuItems - TODO Have the menu switch depending on the current list showing
+                    final ContextMenu rowMenuInactive = new ContextMenu();
 
                     MenuItem setSeasonEpisode = new MenuItem("Set Season + Episode");
                     setSeasonEpisode.setOnAction(e -> {
@@ -164,10 +182,24 @@ public class Controller implements Initializable {
                         removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                         tableView.getSelectionModel().clearSelection();
                     });
-                    MenuItem resetShow = new MenuItem("Reset to Beginning");
-                    resetShow.setOnAction(e -> UserInfoController.setToBeginning(row.getItem().getShow()));
+                    MenuItem resetShow = new MenuItem("Reset to...");
+                    resetShow.setOnAction(e -> {
+                        log.info("Reset to running...");
+                        String[] choices = {"Beginning", "End"};
+                        String answer = new SelectBox().display("What should " + row.getItem().getShow() + " be reset to?", choices, tabPane.getScene().getWindow());
+                        log.info(answer);
+                        if (answer.matches("Beginning")) {
+                            UserInfoController.setToBeginning(row.getItem().getShow());
+                            log.info("Show is reset to the beginning.");
+                        } else if (answer.matches("End")) {
+                            UserInfoController.setToEnd(row.getItem().getShow());
+                            log.info("Show is reset to the end.");
+                        }
+                        log.info("Reset to finished running.");
+                    });
                     MenuItem openDirectory = new MenuItem("Open File Location");
                     openDirectory.setOnAction(e -> {
+                        log.info("Started to open show directory...");
                         ArrayList<String> directories = ProgramSettingsController.getDirectories();
                         ArrayList<File> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
@@ -192,22 +224,27 @@ public class Controller implements Initializable {
                                 fileManager.open(file);
                             }
                         }
+                        log.info("Finished opening show directory...");
                     });
-                    if (Variables.devMode) {
-                        MenuItem getRemaining = new MenuItem("Get Remaining");
-                        getRemaining.setOnAction(e -> log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining."));
-                        rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, setHidden, resetShow, getRemaining, openDirectory);
-                    } else
-                        rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, setHidden, resetShow, openDirectory);
-
-
-                    row.contextMenuProperty().bind(
-                            Bindings.when(Bindings.isNotNull(row.itemProperty()))
-                                    .then(rowMenuActive)
-                                    .otherwise((ContextMenu) null));
+                    MenuItem getRemaining = new MenuItem("Get Remaining");
+                    getRemaining.setOnAction(e -> log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining."));
 
                     row.setOnMouseClicked(e -> {
-                        if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2 && (!row.isEmpty())) {
+                        if (e.getButton().equals(MouseButton.SECONDARY) && (!row.isEmpty())) {
+                            if (currentList.matches("active")) {
+                                if (Variables.devMode) {
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, resetShow, getRemaining, openDirectory);
+                                } else
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, resetShow, openDirectory);
+                                row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
+                            } else if (currentList.matches("inactive")) {
+                                if (Variables.devMode) {
+                                    rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory);
+                                } else rowMenuInactive.getItems().addAll(toggleActive, setHidden, openDirectory);
+                                row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuInactive).otherwise((ContextMenu) null));
+                            }
+                        }
+                        if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2 && (!row.isEmpty()) && currentList.matches("active")) {
                             String aShow = row.getItem().getShow();
                             Boolean keepPlaying = true;
                             while (keepPlaying) {
@@ -266,6 +303,17 @@ public class Controller implements Initializable {
                 answer = new ChangesBox().display(neededWindow);
                 keepOpen = (Boolean) answer[0];
             } while (keepOpen);
+        });
+
+        show0RemainingCheckBox.setOnAction(e -> {
+            show0Remaining = show0RemainingCheckBox.isSelected();
+            if (show0Remaining && currentList.matches("active")) {
+                log.info("Now showing shows with 0 episodes remaining.");
+            } else if (currentList.matches("active")) {
+                log.info("No longer showing shows with 0 episodes remaining.");
+            }
+            setTableViewFields(currentList);
+            setTableView();
         });
 
         // || ~~~~ Settings Tab ~~~~ || \\

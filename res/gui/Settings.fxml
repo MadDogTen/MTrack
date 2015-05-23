@@ -15,7 +15,7 @@
                         <Button fx:id="setDefaultUsername" layoutX="23.0" layoutY="31.0" mnemonicParsing="false"
                                 text="Set Default user"/>
                         <Button fx:id="deleteUser" layoutX="23.0" layoutY="62.0" mnemonicParsing="false"
-                                text="Delete Users"/>
+                                text="Delete User"/>
                         <Button fx:id="clearDefaultUsername" layoutX="129.0" layoutY="31.0" mnemonicParsing="false"
                                 text="Reset"/>
                         <Button fx:id="exit1" layoutX="187.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
@@ -83,6 +83,8 @@
                                 text="Reset Program"/>
                         <Button fx:id="printAllUserInfo" layoutX="2.0" layoutY="58.0" mnemonicParsing="false"
                                 text="Print All User Info"/>
+                        <Button fx:id="add1ToDirectoryVersion" layoutX="2.0" layoutY="136.0" mnemonicParsing="false"
+                                text="Directory Version +1"/>
                     </children>
                 </AnchorPane>
             </content>

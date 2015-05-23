@@ -5,25 +5,35 @@
 <TabPane xmlns:fx="http://javafx.com/fxml/1" fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity"
          minHeight="-Infinity" minWidth="-Infinity" prefHeight="454.0" prefWidth="282.0" tabClosingPolicy="UNAVAILABLE"
          xmlns="http://javafx.com/javafx/8" fx:controller="program.Controller">
-    <Tab fx:id="showsTab" text="Shows">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-            <TableView fx:id="tableView" layoutY="40.0" prefHeight="385.0" prefWidth="281.0">
-                <columns>
-                    <TableColumn fx:id="shows" editable="false" prefWidth="214.0" text="Shows"/>
-                    <TableColumn fx:id="remaining" editable="false" minWidth="0.0" prefWidth="52.0"
-                                 text="Left"/>
-                </columns>
-            </TableView>
-            <Button fx:id="exit" layoutX="252.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0"
-                    prefWidth="22.0" text="X" textAlignment="CENTER" textOverrun="CLIP"/>
-            <TextField fx:id="textField" layoutX="8.0" layoutY="6.0"/>
-            <Button fx:id="refreshTableView" layoutX="176.0" layoutY="6.0" mnemonicParsing="false"
-                    text="R"/>
-            <Button fx:id="viewChanges" layoutX="219.0" layoutY="6.0" mnemonicParsing="false"
-                    prefHeight="0.0" prefWidth="0.0" text="C"/>
-        </AnchorPane>
-    </Tab>
-    <Tab fx:id="settingsTab" text="Settings">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
-    </Tab>
+    <tabs>
+        <Tab fx:id="showsTab" text="Shows">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <TableView fx:id="tableView" layoutY="40.0" prefHeight="385.0" prefWidth="281.0">
+                            <columns>
+                                <TableColumn fx:id="shows" editable="false" prefWidth="214.0" text="Shows"/>
+                                <TableColumn fx:id="remaining" editable="false" minWidth="0.0" prefWidth="52.0"
+                                             text="Left"/>
+                            </columns>
+                        </TableView>
+                        <Button fx:id="exit" layoutX="252.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0"
+                                prefWidth="22.0" text="X" textAlignment="CENTER" textOverrun="CLIP"/>
+                        <TextField fx:id="textField" layoutX="8.0" layoutY="6.0"/>
+                        <Button fx:id="refreshTableView" layoutX="193.0" layoutY="6.0" mnemonicParsing="false"
+                                text="R"/>
+                        <Button fx:id="viewChanges" layoutX="219.0" layoutY="6.0" mnemonicParsing="false"
+                                prefHeight="0.0" prefWidth="0.0" text="C"/>
+                        <CheckBox fx:id="show0RemainingCheckBox" layoutX="172.0" layoutY="10.0"
+                                  mnemonicParsing="false"/>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab fx:id="settingsTab" text="Settings">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </content>
+        </Tab>
+    </tabs>
 </TabPane>

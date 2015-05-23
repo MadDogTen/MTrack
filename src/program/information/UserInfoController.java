@@ -99,6 +99,18 @@ public class UserInfoController {
         return inActiveShows;
     }
 
+    public static ArrayList<String> getAllNonIgnoredShows() {
+        loadUserInfo();
+        ArrayList<String> shows = new ArrayList<>();
+        for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+            Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
+            if (!isIgnored) {
+                shows.add(aShow);
+            }
+        }
+        return shows;
+    }
+
     public static void setHiddenStatus(String aShow, Boolean isHidden) {
         loadUserInfo();
         log.info(aShow + " hidden status is: " + isHidden);
@@ -123,6 +135,16 @@ public class UserInfoController {
         if (userSettingsFile.containsKey("UserSettings") && userSettingsFile.get("UserSettings").containsKey("UserVersions")) {
             return Integer.parseInt(userSettingsFile.get("UserSettings").get("UserVersions").get("0"));
         } else return -2;
+    }
+
+    public static int getUserDirectoryVersion() {
+        loadUserInfo();
+        return Integer.parseInt(userSettingsFile.get("UserSettings").get("UserVersions").get("1"));
+    }
+
+    public static void setUserDirectoryVersion(int version) {
+        loadUserInfo();
+        userSettingsFile.get("UserSettings").get("UserVersions").replace("1", String.valueOf(version));
     }
 
     public static void playAnyEpisode(String aShow, int season, String episode) {
@@ -204,7 +226,14 @@ public class UserInfoController {
         aShowSettings.replace("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(ShowInfoController.getEpisodesList(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason"))))));
         userSettingsFile.get("ShowSettings").put(aShow, aShowSettings);
         log.info("UserInfoController- " + aShow + " is reset to Season " + aShowSettings.get("CurrentSeason") + " episode " + aShowSettings.get("CurrentEpisode"));
+    }
 
+    public static void setToEnd(String aShow) {
+        HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
+        aShowSettings.replace("CurrentSeason", String.valueOf(ShowInfoController.findHighestSeason(aShow)));
+        aShowSettings.replace("CurrentEpisode", String.valueOf(ShowInfoController.findHighestEpisode(ShowInfoController.getEpisodesList(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")))) + 1));
+        userSettingsFile.get("ShowSettings").put(aShow, aShowSettings);
+        log.info("UserInfoController- " + aShow + " is reset to Season " + aShowSettings.get("CurrentSeason") + " episode " + aShowSettings.get("CurrentEpisode"));
     }
 
     private static boolean doesEpisodeExist(String aShow, int season, int episode) {
@@ -318,9 +347,6 @@ public class UserInfoController {
     }
 
     public static void addNewShow(String aShow) {
-        if (!userSettingsFile.containsKey("ShowSettings")) {
-            userSettingsFile.put("ShowSettings", new HashMap<>());
-        }
         if (!userSettingsFile.get("ShowSettings").containsKey(aShow)) {
             log.info("Adding " + aShow + " to user settings file.");
             HashMap<String, String> temp = new HashMap<>();

@@ -1,5 +1,6 @@
 package program.io;
 
+import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.util.FindLocation;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 public class GenerateNewShowFiles {
     private static final Logger log = Logger.getLogger(GenerateNewShowFiles.class.getName());
 
-    public static void generateShowsFile(int index, File folderLocation, Boolean forceGen) {
+    public static void generateShowsFile(int index, File folderLocation, Boolean forceGen, Boolean firstRun) {
         FileManager fileManager = new FileManager();
         if (forceGen || !fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
             log.info("Generating ShowsFile for: " + folderLocation);
@@ -62,6 +63,8 @@ public class GenerateNewShowFiles {
                     }
                 }
             }
+            log.info("0");
+            ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, !firstRun);
             fileManager.save(showSeasons, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension, forceGen);
         }
     }

@@ -90,6 +90,7 @@ public class CheckShowFiles {
                         }
                         ShowInfoController.saveShowsHashMapFile(aHashMap, hashMapIndex);
                         changedShows.keySet().forEach(UserInfoController::addNewShow);
+                        ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
                     }
                 }
             }

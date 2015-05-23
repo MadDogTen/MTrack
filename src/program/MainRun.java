@@ -82,7 +82,7 @@ public class MainRun {
     }
 
     private static String getUser() {
-        log.info("getUser Running...\n");
+        log.info("getUser Running...");
         ArrayList<String> Users = UserInfoController.getAllUsers();
         if (ProgramSettingsController.isDefaultUsername()) {
             log.info("MainRun- Using default user.");
@@ -126,8 +126,10 @@ public class MainRun {
         Boolean addAnother = true;
         TextBox textBox = new TextBox();
         ConfirmBox confirmBox = new ConfirmBox();
+        int index = 0;
         while (addAnother) {
-            Boolean[] matched = ProgramSettingsController.addDirectory(ProgramSettingsController.getLowestFreeDirectoryIndex(), textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
+            Boolean[] matched = ProgramSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
+            index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
                 messageBox.display("Directory was a duplicate!", Main.window);
@@ -153,7 +155,7 @@ public class MainRun {
             log.info("Currently generating show files for: " + aDirectory);
             int fileName = directories.indexOf(aDirectory);
             File file = new File(aDirectory);
-            GenerateNewShowFiles.generateShowsFile(fileName, file, false);
+            GenerateNewShowFiles.generateShowsFile(fileName, file, false, true);
         }
         log.info("Finished generating show files.");
     }

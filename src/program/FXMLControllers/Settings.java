@@ -90,6 +90,8 @@ public class Settings implements Initializable {
     private Button unHideAll;
     @FXML
     private Button printAllUserInfo;
+    @FXML
+    private Button add1ToDirectoryVersion;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -125,7 +127,7 @@ public class Settings implements Initializable {
                 }
             } else {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display("There are no users to delete.", tabPane.getScene().getWindow());
+                messageBox.display("There are other users to delete.", tabPane.getScene().getWindow());
             }
         });
         deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));
@@ -147,7 +149,7 @@ public class Settings implements Initializable {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
-                        GenerateNewShowFiles.generateShowsFile(index, directory, false);
+                        GenerateNewShowFiles.generateShowsFile(index, directory, false, false);
                         taskRunning[0] = false;
                         return null;
                     }
@@ -165,6 +167,7 @@ public class Settings implements Initializable {
                 for (String aShow : showsFile.keySet()) {
                     UserInfoController.addNewShow(aShow);
                 }
+                ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
             } else log.info("Directory wasn't added.");
         });
         removeDirectory.setOnAction(e -> {
@@ -182,6 +185,7 @@ public class Settings implements Initializable {
                     Boolean confirm = confirmBox.display(("Are you sure to want to delete " + directoryToDelete + '?'), tabPane.getScene().getWindow());
                     if (confirm && !directoryToDelete.isEmpty()) {
                         ProgramSettingsController.removeDirectory(directoryToDelete);
+                        ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
                         log.info("Directory has been deleted!");
                     } else log.info("No directory has been deleted.");
                 }
@@ -317,6 +321,7 @@ public class Settings implements Initializable {
         printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(ProgramSettingsController.getProgramSettingsVersion())));
         printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(UserInfoController.getUserSettingsVersion())));
         printAllUserInfo.setOnAction(e -> UserInfoController.printAllUserInfo());
+        add1ToDirectoryVersion.setOnAction(e -> ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true));
         clearFile.setOnAction(e -> {
             ArrayList<File> directories = new ArrayList<>();
             for (String aDirectory : ProgramSettingsController.getDirectories()) {
@@ -340,6 +345,7 @@ public class Settings implements Initializable {
                         }
                         HashMap<String, HashMap<Integer, HashMap<String, String>>> blankHashMap = new HashMap<>();
                         ShowInfoController.saveShowsHashMapFile(blankHashMap, index);
+                        ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
                     }
                 }
             } else {

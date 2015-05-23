@@ -1,5 +1,6 @@
 package program.util;
 
+import program.information.ChangeReporter;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
@@ -24,8 +25,12 @@ public class UpdateManager {
         if (version != -1) {
             log.info("User settings file versions didn't match, Updating...");
             convertUserSettingsFile(version, Variables.UserSettingsFileVersion);
-        }
-        log.info("Program settings file versions matched.");
+        } else log.info("User settings file versions matched.");
+        version = ProgramSettingsController.getMainDirectoryVersion();
+        if (version != UserInfoController.getUserDirectoryVersion()) {
+            log.info("User directory version didn't match, Updating...");
+            updateUserShows(version);
+        } else log.info("User directory version matched.");
         log.info("Finished checking if inner versions are matched.");
     }
 
@@ -42,8 +47,10 @@ public class UpdateManager {
                 programSettingsFile.get("General").add(1, Variables.dataFolder);
                 log.info("Program has been updated from version 1.");
             case 2:
+                log.info("Program has been updated from version 2.");
             case 1001:
                 programSettingsFile.get("General").remove(1);
+                log.info("Program has been updated from version 1001.");
             case 1002:
                 log.info("Converting directories...");
                 if (programSettingsFile.containsKey("Directories")) {
@@ -57,6 +64,10 @@ public class UpdateManager {
                     programSettingsFile.replace("Directories", directoriesFixed);
                 } else log.info("Program settings file contains no directories, Nothing was converted.");
                 log.info("Finished converting directories");
+                log.info("Program has been updated from version 1002.");
+            case 1003:
+                programSettingsFile.get("ProgramVersions").add(1, "1");
+                log.info("Program has been updated from version 1003.");
                 updated = true;
         }
 
@@ -106,7 +117,13 @@ public class UpdateManager {
                         }
                     }
                 }
-
+                log.info("User settings file has been updated from version 2.");
+            case 1000:
+                if (!userSettingsFile.containsKey("ShowSettings")) {
+                    userSettingsFile.put("ShowSettings", new HashMap<>());
+                }
+                userSettingsFile.get("UserSettings").get("UserVersions").put("1", "0");
+                log.info("User settings file has been updated from version 1000.");
                 updated = true;
         }
 
@@ -118,5 +135,37 @@ public class UpdateManager {
             UserInfoController.saveUserSettingsFile();
             log.info("User settings file was successfully updated to version " + newVersion + '.' );
         } else log.info("User settings file was not updated. This is an error, please report.");
+    }
+
+    private void updateUserShows(int newVersion) {
+        ArrayList<String> shows = ShowInfoController.getShowsArrayList();
+        ArrayList<String> userShows = UserInfoController.getAllNonIgnoredShows();
+        ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
+        Boolean changed = false;
+        for (String aShow : shows) {
+            if (!userShows.contains(aShow) && !ignoredShows.contains(aShow)) {
+                log.info(aShow + " was found during user shows update and added.");
+                ChangeReporter.addChange(aShow + " has changed");
+                UserInfoController.addNewShow(aShow);
+                changed = true;
+            } else if (ignoredShows.contains(aShow)) {
+                log.info(aShow + " was found during user shows update and un-ignored.");
+                ChangeReporter.addChange(aShow + " has changed");
+                UserInfoController.setIgnoredStatus(aShow, false);
+                changed = true;
+            }
+        }
+        for (String aShow : userShows) {
+            if (!shows.contains(aShow)) {
+                log.info(aShow + " wasn't found during user shows update.");
+                ChangeReporter.addChange(aShow + " has changed");
+                UserInfoController.setIgnoredStatus(aShow, true);
+                changed = true;
+            }
+        }
+        if (!changed) {
+            log.info("No changes found.");
+        }
+        UserInfoController.setUserDirectoryVersion(newVersion);
     }
 }

@@ -14,6 +14,7 @@ public class ProgramSettingsController {
     private static final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
 
     private static HashMap<String, ArrayList<String>> settingsFile;
+    private static boolean mainDirectoryVersionAlreadyChanged = false;
 
     private static void loadProgramSettingsFile() {
         if (settingsFile == null) {
@@ -75,11 +76,33 @@ public class ProgramSettingsController {
         } else return -2;
     }
 
+    public static int getMainDirectoryVersion() {
+        loadProgramSettingsFile();
+        return Integer.parseInt(settingsFile.get("ProgramVersions").get(1));
+    }
+
+    public static void setMainDirectoryVersion(int version, boolean updateUser) {
+        log.info("1");
+        if (mainDirectoryVersionAlreadyChanged) {
+            log.info("8");
+            log.info("Already changed main directory version this run, no further change needed.");
+        } else {
+            settingsFile.get("ProgramVersions").set(1, String.valueOf(version));
+            // Current User should always be up to date, so its version can be updated with the Main Directory Version. Only time updateUser is false is on firstrun.
+            if (updateUser) {
+                UserInfoController.setUserDirectoryVersion(version);
+            }
+            saveSettingsFile();
+            log.info("Main + User directory version updated to: " + version);
+            mainDirectoryVersionAlreadyChanged = true;
+        }
+    }
+
     public static boolean isDirectoryCurrentlyActive(File directory) {
         return directory.isDirectory();
     }
 
-    public static void removeDirectory(String aDirectory) { // TODO Update other users when directory is deleted.
+    public static void removeDirectory(String aDirectory) {
         loadProgramSettingsFile();
         log.info("Currently processing removal of: " + aDirectory);
         int index = getDirectoryIndex(aDirectory);
@@ -146,7 +169,6 @@ public class ProgramSettingsController {
 
     public static Boolean[] addDirectory(int index, File directory) {
         loadProgramSettingsFile();
-        log.info(String.valueOf(index));
         ArrayList<String> directories = settingsFile.get("Directories");
         Boolean[] answer = {false, false};
         if (!directory.toString().isEmpty() && !directories.contains(String.valueOf(directory))) {
@@ -154,7 +176,6 @@ public class ProgramSettingsController {
             directories.add(index + ">" + String.valueOf(directory));
             log.info(index + ">" + String.valueOf(directory));
             settingsFile.replace("Directories", directories);
-            log.info(String.valueOf(settingsFile.get("Directories")));
             answer[0] = true;
         } else if (directory.toString().isEmpty()) {
             answer[1] = true;

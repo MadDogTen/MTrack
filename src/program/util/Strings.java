@@ -7,7 +7,7 @@ public class Strings {
     public static final String ProgramTitle = "MTrack";
 
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Pre-Alpha 0.8.1";
+    public static final String MTrackVersion = "Pre-Alpha 0.8.3";
     public static final String CodedBy = "By: MadDogTen";
     public static final String CodedUsing = "Using: Intellij IDEA 14.1.3";
     public static final String codedWith = "Java";

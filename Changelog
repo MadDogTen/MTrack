@@ -1,5 +1,16 @@
 Changes:
 
+Pre-Alpha 0.8.3 -
+General Code Changes.
+Updated Logo.
+contextMenu now changes depending on which list you are currently on. Still looking for a better way of doing this.
+You can no longer play shows on the inactive list.
+"Reset to beginning" is now "Reset too..." which choice to reset to the beginning or the end.
+By default shows with 0 remaining won't show. Added a checkbox which will toggle it. They are forced to show on the inactive list.
+Added Main Directory Version and User Directory Version, so during startup if they don't match, the user will be updated with any changes (Should mostly work, but I may have missed some things).
+Added Developer button to manually add 1 to directory version.
+Made it so you can no longer hide active shows.
+
 Pre-Alpha 0.8.2 -
 Fixed getRemainingNumberOfEpisodes potentially causing a NumberFormatException.
 Added "devMode" option in Variables which will disable all dev features when set to false (false by default).

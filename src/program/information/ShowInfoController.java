@@ -79,7 +79,7 @@ public class ShowInfoController {
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
         for (String aString : files) {
-            int place = Integer.parseInt(aString.split("[-]|[.]")[1]);
+            int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
             if (skip != place) {
                 showsFileArray.add(fileManager.loadShows(aString));
             }
@@ -93,7 +93,7 @@ public class ShowInfoController {
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
         for (String aFile : files) {
-            if (aFile.split("[-]|[.]")[1].matches(String.valueOf(index))) {
+            if (aFile.split("\\-|\\.")[1].matches(String.valueOf(index))) {
                 showsFile = fileManager.loadShows(aFile);
                 break;
             }
@@ -105,7 +105,18 @@ public class ShowInfoController {
         loadShowsFile(false);
         if (showsFile != null) {
             return showsFile.keySet().toArray();
-        } else return null;
+        } else return new Object[0];
+    }
+
+    public static ArrayList<String> getShowsArrayList() {
+        loadShowsFile(false);
+        ArrayList<String> showsList = new ArrayList<>();
+        if (showsFile != null) {
+            for (String aShow : showsFile.keySet()) {
+                showsList.add(aShow);
+            }
+        }
+        return showsList;
     }
 
     public static Set<Integer> getSeasonsList(String show) {
@@ -144,12 +155,25 @@ public class ShowInfoController {
         return lowestSeason;
     }
 
+    public static int findHighestSeason(String aShow) {
+        int highestSeason = -1;
+        Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
+        for (int aSeason : seasons) {
+            if (highestSeason == -1) {
+                highestSeason = aSeason;
+            } else if (aSeason > highestSeason) {
+                highestSeason = aSeason;
+            }
+        }
+        return highestSeason;
+    }
+
     public static int findLowestEpisode(Set<String> episodes) {
         int lowestEpisode = -1;
         if (episodes != null) {
             for (String aEpisode : episodes) {
                 if (aEpisode.contains("+")) {
-                    String[] temp = aEpisode.split("[+]");
+                    String[] temp = aEpisode.split("\\+");
                     int temp1 = Integer.parseInt(temp[0]),
                             temp2 = Integer.parseInt(temp[1]);
                     if (lowestEpisode == -1) {
@@ -165,6 +189,25 @@ public class ShowInfoController {
             }
         }
         return lowestEpisode;
+    }
+
+    public static int findHighestEpisode(Set<String> episodes) {
+        int highestEpisode = -1;
+        if (episodes != null) {
+            for (String aEpisode : episodes) {
+                int episode;
+                if (aEpisode.contains("+")) {
+                    episode = Integer.parseInt(aEpisode.split("//+")[1]);
+                } else episode = Integer.parseInt(aEpisode);
+                if (highestEpisode == -1) {
+                    highestEpisode = episode;
+                } else if (episode > highestEpisode) {
+                    highestEpisode = episode;
+                }
+
+            }
+        }
+        return highestEpisode;
     }
 
     public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {

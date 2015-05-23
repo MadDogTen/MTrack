@@ -14,13 +14,16 @@ public class GenerateSettingsFiles {
     public void generateProgramSettingsFile(String settingsFileName, String settingsFolder, String extension, Boolean override) {
         FileManager fileManager = new FileManager();
         if (override || !fileManager.checkFileExists(settingsFolder, settingsFileName, extension)) {
-            log.info("GenerateSettingsFiles- Generating program settings file...\n");
+            log.info("GenerateSettingsFiles- Generating program settings file...");
             HashMap<String, ArrayList<String>> settingsFile = new HashMap<>();
             ArrayList<String> temp;
 
             // --Current Program Versions-- \\
             temp = new ArrayList<>();
+            // Index 0 : Program Settings File Version
             temp.add(0, String.valueOf(Variables.ProgramSettingsFileVersion));
+            // Index 1 : Main Directory Version
+            temp.add(1, "0");
             settingsFile.put("ProgramVersions", temp);
 
             // --General Settings-- \\
@@ -48,7 +51,7 @@ public class GenerateSettingsFiles {
     public void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
         FileManager fileManager = new FileManager();
         if (override || !fileManager.checkFileExists(settingsFolder, userName, ".settings")) {
-            log.info("GenerateSettingsFiles- Generating settings file for " + userName + "...\n");
+            log.info("GenerateSettingsFiles- Generating settings file for " + userName + "...");
             HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile = new HashMap<>();
             HashMap<String, HashMap<String, String>> tempPut;
             HashMap<String, String> temp;
@@ -57,7 +60,10 @@ public class GenerateSettingsFiles {
             tempPut = new HashMap<>();
             // --Current User Versions-- \\
             temp = new HashMap<>();
+            // Index 0 : User Settings File Version
             temp.put("0", String.valueOf(Variables.UserSettingsFileVersion));
+            // Index 1 : User Directory Version
+            temp.put("1", "1");
             tempPut.put("UserVersions", temp);
 
             userSettingsFile.put("UserSettings", tempPut);
