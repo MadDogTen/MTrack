@@ -42,6 +42,7 @@ public class Controller implements Initializable {
     private Tab settingsTab;
     @FXML
     private Button exit;
+    @SuppressWarnings("CanBeFinal")
     @FXML
     private TableView<DisplayShows> tableView = new TableView<>();
     @FXML
@@ -90,7 +91,9 @@ public class Controller implements Initializable {
     public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere -- Having difficulty doing this.
         removeShowField(index);
         int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
-        if (show0Remaining && remaining != 0 || currentList.matches("inactive")) {
+        log.info(String.valueOf(show0Remaining));
+        if (show0Remaining || remaining != 0) {
+            log.info("updating");
             tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
         }
     }
@@ -191,9 +194,11 @@ public class Controller implements Initializable {
                         log.info(answer);
                         if (answer.matches("Beginning")) {
                             UserInfoController.setToBeginning(row.getItem().getShow());
+                            updateShowField(row.getItem().getShow(), tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             log.info("Show is reset to the beginning.");
                         } else if (answer.matches("End")) {
                             UserInfoController.setToEnd(row.getItem().getShow());
+                            updateShowField(row.getItem().getShow(), tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             log.info("Show is reset to the end.");
                         }
                         log.info("Reset to finished running.");
@@ -220,7 +225,9 @@ public class Controller implements Initializable {
                             } else {
                                 ListSelectBox listSelectBox = new ListSelectBox();
                                 File file = listSelectBox.directories("Pick the Folder you want to open", folders, tabPane.getScene().getWindow());
-                                fileManager.open(file);
+                                if (!file.toString().isEmpty()) {
+                                    fileManager.open(file);
+                                }
                             }
                         }
                         log.info("Finished opening show directory...");
@@ -232,9 +239,9 @@ public class Controller implements Initializable {
                         if (e.getButton().equals(MouseButton.SECONDARY) && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
                                 if (Variables.devMode) {
-                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, resetShow, getRemaining, openDirectory);
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, resetShow, toggleActive, getRemaining, openDirectory);
                                 } else
-                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, toggleActive, resetShow, openDirectory);
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
                             } else if (currentList.matches("inactive")) {
                                 if (Variables.devMode) {
@@ -254,12 +261,12 @@ public class Controller implements Initializable {
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
                                     int userChoice = showConfirmBox.display("Have the watched the show?", tabPane.getScene().getWindow());
                                     if (userChoice == 1) {
-                                        UserInfoController.changeEpisode(aShow, -2, true, fileExists);
+                                        UserInfoController.changeEpisode(aShow, -2, true);
                                         updateShowField(aShow, tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                                         tableView.getSelectionModel().clearSelection();
                                         keepPlaying = false;
                                     } else if (userChoice == 2) {
-                                        UserInfoController.changeEpisode(aShow, -2, true, fileExists);
+                                        UserInfoController.changeEpisode(aShow, -2, true);
                                         updateShowField(aShow, tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                                         tableView.getSelectionModel().clearSelection();
                                     } else if (userChoice == 0) {
@@ -269,7 +276,7 @@ public class Controller implements Initializable {
                                 } else break;
                             }
                             if (keepPlaying) {
-                                UserInfoController.changeEpisode(aShow, -2, false, 0);
+                                UserInfoController.changeEpisode(aShow, -2, false);
                                 MessageBox messageBox = new MessageBox();
                                 messageBox.display("You have reached the end!", tabPane.getScene().getWindow());
                             }

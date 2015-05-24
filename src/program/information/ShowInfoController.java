@@ -34,6 +34,7 @@ public class ShowInfoController {
                     allShowSeasons.forEach(aSeason -> {
                         HashMap<String, String> episodeNumEpisode = new HashMap<>();
                         showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow) && aHashMap.get(aShow).containsKey(aSeason)).forEach(aHashMap -> aHashMap.get(aShow).get(aSeason).keySet().forEach(aEpisode -> episodeNumEpisode.put(aEpisode, aHashMap.get(aShow).get(aSeason).get(aEpisode))));
+                        log.info(aShow + " - " + aSeason + episodeNumEpisode);
                         seasonEpisode.put(aSeason, episodeNumEpisode);
                     });
                     showsFile.put(aShow, seasonEpisode);

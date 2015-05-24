@@ -1,9 +1,18 @@
 Changes:
 
+Pre-Alpha 0.8.5 -
+General Code Changes.
+Fixed UserInfoController changeEpisode NumberFormatException.
+Fixed show being removed from the Shows list when Controller updateShowFields is called.
+Fixed it removing previous seasons / episodes from the HashMap if current user was passed it (Still need them there if the user wants to play / set to any earlier episode).
+Fixed it finding users incorrectly.
+Moved "Toggle Updating" under "Update to...".
+
 Pre-Alpha 0.8.4 -
 General Changes + Major code overhaul & Intellij Idea warning fixes.
 Moved MoveWindow from Input package to io package.
 FileManager now has 1 loadFile method which loads to an object.
+Fixed a bug with rechecking.
 
 Pre-Alpha 0.8.3 -
 General Code Changes.

@@ -39,16 +39,15 @@ public class CheckShowFiles {
                     for (String aShow : activeShows) {
                         log.info("Currently rechecking " + aShow);
                         int currentSeason = UserInfoController.getCurrentSeason(aShow);
+                        ArrayList<Integer> seasons = new ArrayList<>();
                         if (hashMap.containsKey(aShow)) {
-                            Set<Integer> seasons = hashMap.get(aShow).keySet();
-                            Iterator<Integer> seasonsIterator = seasons.iterator();
-                            while (seasonsIterator.hasNext()) {
-                                int aSeason = seasonsIterator.next();
+                            hashMap.get(aShow).keySet().forEach(aSeason -> {
                                 if (aSeason < currentSeason) {
-                                    seasonsIterator.remove();
                                     log.finest("Season " + aSeason + " was skipped in rechecking as the current user is past it.");
+                                } else if (aSeason >= currentSeason) {
+                                    seasons.add(aSeason);
                                 }
-                            }
+                            });
                             seasons.forEach(aSeason -> {
                                 if (fileManager.checkFolderExists(String.valueOf(folderLocation) + '\\' + aShow + "\\Season " + aSeason + '\\')) {
                                     log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);

@@ -45,6 +45,7 @@ public class ListSelectBox {
         Label label = new Label();
         label.setText(message);
 
+        log.info(String.valueOf(users));
         ObservableList<String> usersList = FXCollections.observableArrayList(users);
         usersList.sorted();
         usersList.add("Add New Username");
@@ -278,7 +279,6 @@ public class ListSelectBox {
         Label label = new Label();
         label.setText(message);
 
-        // Needed, If you directly use the episodes Set, It completely removes them from the showsFile for some reason (Until you restart).
         ArrayList<String> episodesArrayList = new ArrayList<>();
         episodesArrayList.addAll(episodes.stream().collect(Collectors.toList()));
 
