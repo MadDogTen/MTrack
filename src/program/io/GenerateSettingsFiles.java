@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 public class GenerateSettingsFiles {
     private final Logger log = Logger.getLogger(GenerateSettingsFiles.class.getName());
 
-    public void generateProgramSettingsFile(String settingsFileName, String settingsFolder, String extension, Boolean override) {
+    public void generateProgramSettingsFile(Boolean override) {
         FileManager fileManager = new FileManager();
-        if (override || !fileManager.checkFileExists(settingsFolder, settingsFileName, extension)) {
+        if (override || !fileManager.checkFileExists(Variables.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension)) {
             log.info("GenerateSettingsFiles- Generating program settings file...");
             HashMap<String, ArrayList<String>> settingsFile = new HashMap<>();
             ArrayList<String> temp;
@@ -44,13 +44,13 @@ public class GenerateSettingsFiles {
             temp = new ArrayList<>();
             settingsFile.put("Directories", temp);
 
-            fileManager.save(settingsFile, settingsFolder, settingsFileName, extension, true);
+            fileManager.save(settingsFile, Variables.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
         }
     }
 
-    public void generateUserSettingsFile(String userName, String settingsFolder, Boolean override) {
+    public void generateUserSettingsFile(String userName, Boolean override) {
         FileManager fileManager = new FileManager();
-        if (override || !fileManager.checkFileExists(settingsFolder, userName, ".settings")) {
+        if (override || !fileManager.checkFileExists(Variables.SettingsExtension, userName, ".settings")) {
             log.info("GenerateSettingsFiles- Generating settings file for " + userName + "...");
             HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile = new HashMap<>();
             HashMap<String, HashMap<String, String>> tempPut;
@@ -74,19 +74,18 @@ public class GenerateSettingsFiles {
             // Current Episode - "CurrentEpisode"
 
             tempPut = new HashMap<>();
-            Object[] showsList = ShowInfoController.getShowsList();
-            if (showsList != null) {
-                for (Object aShow : showsList) {
+            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            for (String aShow : showsList) {
                     temp = new HashMap<>();
                     temp.put("isActive", "false");
                     temp.put("isIgnored", "false");
                     temp.put("isHidden", "false");
-                    temp.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(String.valueOf(aShow))));
-                    Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), Integer.parseInt(temp.get("CurrentSeason")));
+                temp.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(aShow)));
+                Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp.get("CurrentSeason")));
                     temp.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
-                    tempPut.put(String.valueOf(aShow), temp);
+                tempPut.put(aShow, temp);
                 }
-            }
+
             userSettingsFile.put("ShowSettings", tempPut);
             fileManager.save(userSettingsFile, Variables.UsersFolder, userName, Variables.UsersExtension, false);
         }

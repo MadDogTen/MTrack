@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 public class SettingsWindow {
     private static final Logger log = Logger.getLogger(SettingsWindow.class.getName());
     public void display() throws Exception {
+        log.finest("SettingsWindow has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
@@ -32,8 +33,8 @@ public class SettingsWindow {
         window.setResizable(false);
         window.setScene(scene);
         Platform.runLater(() -> {
-            window.setX(Main.window.getX() + (Main.window.getWidth() / 2) - (window.getWidth() / 2));
-            window.setY(Main.window.getY() + (Main.window.getHeight() / 2) - (window.getHeight() / 2));
+            window.setX(Main.stage.getX() + (Main.stage.getWidth() / 2) - (window.getWidth() / 2));
+            window.setY(Main.stage.getY() + (Main.stage.getHeight() / 2) - (window.getHeight() / 2));
         });
         window.showAndWait();
     }

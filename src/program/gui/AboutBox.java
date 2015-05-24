@@ -10,13 +10,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
-import program.input.MoveWindow;
+import program.io.MoveWindow;
 
 import java.util.logging.Logger;
 
 public class AboutBox {
     private static final Logger log = Logger.getLogger(AboutBox.class.getName());
     public void display(Window oldWindow) throws Exception {
+        log.finest("AboutBox has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);

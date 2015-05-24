@@ -5,7 +5,6 @@ import program.util.Strings;
 import program.util.Variables;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -14,31 +13,17 @@ public class UserInfoController {
 
     private static HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile;
 
+    @SuppressWarnings("unchecked")
     private static void loadUserInfo() {
         if (userSettingsFile == null) {
-            userSettingsFile = new FileManager().loadUserInfo(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+            userSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
         }
     }
 
     public static ArrayList<String> getAllUsers() {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
-        String[] userFile = folder.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return (name.toLowerCase().endsWith(Variables.UsersExtension));
-            }
-        });
         ArrayList<String> users = new ArrayList<>();
-        if (userFile != null) {
-            for (String aUser : userFile) {
-                String user = aUser.replace(Variables.UsersExtension, Variables.EmptyString);
-                users.add(user);
-
-            }
-        }
-        if (!users.isEmpty()) {
-            users.remove("Program");
-        }
+        Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UsersExtension) && !name.toLowerCase().matches("Program"))));
         return users;
     }
 
@@ -46,22 +31,20 @@ public class UserInfoController {
         loadUserInfo();
         log.info(aShow + " ignore status is: " + ignored);
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
-        log.info(String.valueOf(userSettingsFile.get("ShowSettings").get(aShow)));
         aShowSettings.replace("isIgnored", String.valueOf(ignored));
         userSettingsFile.get("ShowSettings").put(aShow, aShowSettings);
-        log.info(String.valueOf(userSettingsFile.get("ShowSettings").get(aShow)));
     }
 
     public static ArrayList<String> getIgnoredShows() {
         loadUserInfo();
         ArrayList<String> ignoredShows = new ArrayList<>();
         if (userSettingsFile.containsKey("ShowSettings")) {
-            for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+            userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
                 Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
                 if (isActive) {
                     ignoredShows.add(aShow);
                 }
-            }
+            });
         }
         return ignoredShows;
     }
@@ -74,40 +57,40 @@ public class UserInfoController {
     public static ArrayList<String> getActiveShows() {
         loadUserInfo();
         ArrayList<String> activeShows = new ArrayList<>();
-        for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+        userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
             Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
             Boolean isHidden = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isHidden"));
             if (isActive && !isIgnored & !isHidden) {
                 activeShows.add(aShow);
             }
-        }
+        });
         return activeShows;
     }
 
     public static ArrayList<String> getInactiveShows() {
         loadUserInfo();
         ArrayList<String> inActiveShows = new ArrayList<>();
-        for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+        userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
             Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
             Boolean isHidden = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isHidden"));
             if (!isActive && !isIgnored && !isHidden) {
                 inActiveShows.add(aShow);
             }
-        }
+        });
         return inActiveShows;
     }
 
     public static ArrayList<String> getAllNonIgnoredShows() {
         loadUserInfo();
         ArrayList<String> shows = new ArrayList<>();
-        for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+        userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
             if (!isIgnored) {
                 shows.add(aShow);
             }
-        }
+        });
         return shows;
     }
 
@@ -120,13 +103,13 @@ public class UserInfoController {
     public static ArrayList<String> getHiddenShows() {
         loadUserInfo();
         ArrayList<String> hiddenShows = new ArrayList<>();
-        for (String aShow : userSettingsFile.get("ShowSettings").keySet()) {
+        userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
             Boolean isHidden = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isHidden"));
             if (isHidden & !isIgnored) {
                 hiddenShows.add(aShow);
             }
-        }
+        });
         return hiddenShows;
     }
 
@@ -250,24 +233,25 @@ public class UserInfoController {
     public static int doesEpisodeExists(String aShow) {
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
         Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")));
+        final int[] answer = {0};
         if (!episodes.isEmpty()) {
             if (episodes.contains(aShowSettings.get("CurrentEpisode"))) {
-                return 1;
+                answer[0] = 1;
             } else {
-                for (String aEpisode : episodes) {
+                episodes.forEach(aEpisode -> {
                     if (aEpisode.contains(aShowSettings.get("CurrentEpisode"))) {
-                        return 2;
+                        answer[0] = 2;
                     }
-                }
+                });
             }
         }
-        return 0;
+        return answer[0];
     }
 
     private static Set<Integer> episodesToInt(Set<String> oldEpisodes) {
         Set<Integer> episodes = new HashSet<>();
         if (oldEpisodes != null) {
-            for (String aEpisode : oldEpisodes) {
+            oldEpisodes.forEach(aEpisode -> {
                 if (aEpisode.contains("+")) {
                     String[] temp = aEpisode.split("\\+");
                     int temp1 = Integer.parseInt(temp[0]);
@@ -276,7 +260,7 @@ public class UserInfoController {
                     episodes.add(temp1);
                     episodes.add(temp2);
                 } else episodes.add(Integer.valueOf(aEpisode));
-            }
+            });
         }
         return episodes;
     }
@@ -313,13 +297,13 @@ public class UserInfoController {
                 Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                 if (!episodes.isEmpty()) {
                     ArrayList<Integer> episodesArray = new ArrayList<>();
-                    for (String aEpisode : episodes) {
+                    episodes.forEach(aEpisode -> {
                         if (aEpisode.contains("+")) {
                             String[] Temp = aEpisode.split("\\+");
                             episodesArray.add(Integer.parseInt(Temp[0]));
                             episodesArray.add(Integer.parseInt(Temp[1]));
                         } else episodesArray.add(Integer.valueOf(aEpisode));
-                    }
+                    });
                     Collections.sort(episodesArray);
                     Iterator<Integer> episodesIterator = episodesArray.iterator();
                     while (aSeason == Integer.parseInt(aShowSettings.get("CurrentSeason")) && episodesIterator.hasNext()) {
@@ -370,13 +354,12 @@ public class UserInfoController {
 
     public static void printAllUserInfo() {
         log.info("Printing all user info for " + Strings.UserName + "...");
-        for (String aString : userSettingsFile.keySet()) {
+        userSettingsFile.keySet().forEach(aString -> {
             log.info(aString);
-            HashMap<String, HashMap<String, String>> aHashMap = userSettingsFile.get(aString);
-            for (String aString1 : aHashMap.keySet()) {
-                log.info(aString1 + " - " + String.valueOf(aHashMap.get(aString1)));
-            }
-        }
+            userSettingsFile.get(aString).keySet().forEach(aString1 -> {
+                log.info(aString1 + " - " + String.valueOf(userSettingsFile.get(aString).get(aString1)));
+            });
+        });
         log.info("Finished printing all user info.");
     }
 

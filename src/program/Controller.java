@@ -16,8 +16,8 @@ import program.information.DisplayShows;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
-import program.input.MoveWindow;
 import program.io.FileManager;
+import program.io.MoveWindow;
 import program.util.Variables;
 
 import java.io.File;
@@ -25,7 +25,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("WeakerAccess")
 public class Controller implements Initializable {
     private static final Logger log = Logger.getLogger(Controller.class.getName());
 
@@ -59,15 +61,14 @@ public class Controller implements Initializable {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
         if (showList != null) {
             if (currentList.matches("active") && !show0Remaining) {
-                for (String aShow : showList) {
+                showList.forEach(aShow -> {
                     int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
                     if (remaining != 0) {
                         list.add(new DisplayShows(aShow, remaining));
                     }
-                }
-            } else for (String aShow : showList) {
-                list.add(new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
-            }
+                });
+            } else
+                list.addAll(showList.stream().map(aShow -> new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow))).collect(Collectors.toList()));
         }
         return list;
     }
@@ -203,21 +204,19 @@ public class Controller implements Initializable {
                         ArrayList<String> directories = ProgramSettingsController.getDirectories();
                         ArrayList<File> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
-                        for (String aDirectory : directories) {
+                        directories.forEach(aDirectory -> {
                             String fileString = (aDirectory + '\\' + row.getItem().getShow());
                             if (fileManager.checkFolderExists(fileString)) {
                                 folders.add(new File(fileString));
                             }
-                        }
+                        });
                         if (folders.size() == 1) {
                             fileManager.open(folders.get(0));
                         } else {
                             ConfirmBox confirmBox = new ConfirmBox();
                             Boolean openAll = confirmBox.display("Do you want to open ALL associated folders?", tabPane.getScene().getWindow());
                             if (openAll) {
-                                for (File aFolder : folders) {
-                                    fileManager.open(aFolder);
-                                }
+                                folders.forEach(fileManager::open);
                             } else {
                                 ListSelectBox listSelectBox = new ListSelectBox();
                                 File file = listSelectBox.directories("Pick the Folder you want to open", folders, tabPane.getScene().getWindow());
@@ -281,7 +280,7 @@ public class Controller implements Initializable {
         );
 
         // ~~~~ Buttons ~~~~ \\
-        exit.setOnAction(e -> Main.stop(Main.window, false, true));
+        exit.setOnAction(e -> Main.stop(Main.stage, false, true));
         refreshTableView.setOnAction(event -> {
             if (currentList.matches("active")) {
                 setTableViewFields("inactive");
@@ -328,7 +327,7 @@ public class Controller implements Initializable {
             }
         });
 
-        // Allow the undecorated window to be moved.
+        // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(tabPane);
     }
 }

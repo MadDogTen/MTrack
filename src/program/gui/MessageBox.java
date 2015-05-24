@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
-import program.input.MoveWindow;
+import program.io.MoveWindow;
 
 import java.util.logging.Logger;
 
@@ -20,6 +20,7 @@ public class MessageBox {
     private static final Logger log = Logger.getLogger(MessageBox.class.getName());
 
     public void display(String message, Window oldWindow) {
+        log.finest("MessageBox has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);

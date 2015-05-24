@@ -1,4 +1,4 @@
-package program.input;
+package program.io;
 
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseButton;
@@ -11,6 +11,7 @@ public class MoveWindow {
     private static final Logger log = Logger.getLogger(MoveWindow.class.getName());
 
     public void moveWindow(Window window) {
+        log.finest("MessageBox is now running.");
         final double[] xOffset = new double[1], yOffset = new double[1];
         window.getScene().setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
@@ -26,34 +27,36 @@ public class MoveWindow {
         });
     }
 
-    public void moveWindow(TabPane window) {
+    public void moveWindow(TabPane tabPane) {
+        log.finest("MessageBox TabPane is now running.");
         final double[] xOffset = new double[1], yOffset = new double[1];
-        window.setOnMousePressed(e -> {
+        tabPane.setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
                 xOffset[0] = e.getSceneX();
                 yOffset[0] = e.getSceneY();
             }
         });
-        window.setOnMouseDragged(e -> {
+        tabPane.setOnMouseDragged(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
-                window.getScene().getWindow().setX(e.getScreenX() - xOffset[0]);
-                window.getScene().getWindow().setY(e.getScreenY() - yOffset[0]);
+                tabPane.getScene().getWindow().setX(e.getScreenX() - xOffset[0]);
+                tabPane.getScene().getWindow().setY(e.getScreenY() - yOffset[0]);
             }
         });
     }
 
-    public void moveWindow(Pane window) {
+    public void moveWindow(Pane pane) {
+        log.finest("MessageBox Pane is now running.");
         final double[] xOffset = new double[1], yOffset = new double[1];
-        window.setOnMousePressed(e -> {
+        pane.setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
                 xOffset[0] = e.getSceneX();
                 yOffset[0] = e.getSceneY();
             }
         });
-        window.setOnMouseDragged(e -> {
+        pane.setOnMouseDragged(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
-                window.getScene().getWindow().setX(e.getScreenX() - xOffset[0]);
-                window.getScene().getWindow().setY(e.getScreenY() - yOffset[0]);
+                pane.getScene().getWindow().setX(e.getScreenX() - xOffset[0]);
+                pane.getScene().getWindow().setY(e.getScreenY() - yOffset[0]);
             }
         });
     }

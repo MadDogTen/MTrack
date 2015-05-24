@@ -26,6 +26,7 @@ public class ImageLoader {
         imageIcon = new ImageIcon(bufferedImage);
     }
 
+    @SuppressWarnings("unused")
     public static ImageIcon getIcon(String path) {
         bufferImageToIcon(path);
         return imageIcon;

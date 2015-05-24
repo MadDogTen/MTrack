@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
-import program.input.MoveWindow;
+import program.io.MoveWindow;
 import program.util.Variables;
 
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ public class SelectBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
 
     public String display(String message, String[] buttonsText, Window oldWindow) {
+        log.finest("SelectBox has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
@@ -41,21 +42,20 @@ public class SelectBox {
         Button close = new Button("X");
 
         final String[] answer = new String[1];
-        for (Button aButton : buttons) {
+        HBox layout2 = new HBox();
+        buttons.forEach(aButton -> {
             aButton.setOnAction(e -> {
                 answer[0] = aButton.getText();
                 window.close();
             });
-        }
+            layout2.getChildren().add(aButton);
+        });
+
         close.setOnAction(e -> {
             answer[0] = Variables.EmptyString;
             window.close();
         });
 
-        HBox layout2 = new HBox();
-        for (Button aButton : buttons) {
-            layout2.getChildren().add(aButton);
-        }
         layout2.getChildren().add(close);
         layout2.setAlignment(Pos.CENTER);
 

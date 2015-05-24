@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ProgramSettingsController {
     private static final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
@@ -16,9 +17,10 @@ public class ProgramSettingsController {
     private static HashMap<String, ArrayList<String>> settingsFile;
     private static boolean mainDirectoryVersionAlreadyChanged = false;
 
+    @SuppressWarnings("unchecked")
     private static void loadProgramSettingsFile() {
         if (settingsFile == null) {
-            settingsFile = new FileManager().loadProgramSettings(Strings.SettingsFileName, Variables.SettingsExtension);
+            settingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Variables.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
         }
     }
 
@@ -62,11 +64,20 @@ public class ProgramSettingsController {
         loadProgramSettingsFile();
         ArrayList<String> directories = new ArrayList<>();
         if (settingsFile.containsKey("Directories")) {
-            for (String aDirectory : settingsFile.get("Directories")) {
-                directories.add(aDirectory.split(">")[1]);
-            }
+            directories.addAll(settingsFile.get("Directories").stream().map(aDirectory -> aDirectory.split(">")[1]).collect(Collectors.toList()));
         }
         return directories;
+    }
+
+    public static ArrayList<Integer> getDirectoriesIndexes() {
+        loadProgramSettingsFile();
+        ArrayList<Integer> directoriesIndexes = new ArrayList<>();
+        if (settingsFile.containsKey("Directories")) {
+            getDirectories().forEach(aDirectory -> {
+                directoriesIndexes.add(getDirectoryIndex(aDirectory));
+            });
+        }
+        return directoriesIndexes;
     }
 
     public static int getProgramSettingsVersion() { //TODO Remove -2 return when program is at Version 0.9
@@ -82,13 +93,11 @@ public class ProgramSettingsController {
     }
 
     public static void setMainDirectoryVersion(int version, boolean updateUser) {
-        log.info("1");
         if (mainDirectoryVersionAlreadyChanged) {
-            log.info("8");
             log.info("Already changed main directory version this run, no further change needed.");
         } else {
             settingsFile.get("ProgramVersions").set(1, String.valueOf(version));
-            // Current User should always be up to date, so its version can be updated with the Main Directory Version. Only time updateUser is false is on firstrun.
+            // Current User should always be up to date, so its version can be updated with the Main Directory Version. Only time updateUser is false is on firstRun.
             if (updateUser) {
                 UserInfoController.setUserDirectoryVersion(version);
             }
@@ -108,13 +117,13 @@ public class ProgramSettingsController {
         int index = getDirectoryIndex(aDirectory);
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
         Set<String> hashMapShows = ShowInfoController.getDirectoryHashMap(index).keySet();
-        for (String aShow : hashMapShows) {
+        hashMapShows.forEach(aShow -> {
             log.info("Currently checking: " + aShow);
             Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
             if (!showExistsElsewhere) {
                 UserInfoController.setIgnoredStatus(aShow, true);
             }
-        }
+        });
         new FileManager().deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
         settingsFile.get("Directories").remove(index + ">" + aDirectory);
         log.info("Finished processing removal of the directory.");
@@ -124,9 +133,7 @@ public class ProgramSettingsController {
         loadProgramSettingsFile();
         log.info("Printing out all directories:");
         if (!getDirectories().isEmpty()) {
-            for (String aDirectory : getDirectories()) {
-                log.info(aDirectory);
-            }
+            getDirectories().forEach(log::info);
         } else {
             log.info("No directories.");
         }
@@ -147,10 +154,10 @@ public class ProgramSettingsController {
         loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
         ArrayList<String> directoriesNames = new ArrayList<>();
-        for (String aDirectory : directories) {
+        directories.forEach(aDirectory -> {
             int index = Integer.parseInt(aDirectory.split(">")[0]);
             directoriesNames.add("Directory-" + index + Variables.ShowsExtension);
-        }
+        });
         return directoriesNames;
     }
 
@@ -184,14 +191,14 @@ public class ProgramSettingsController {
     }
 
     public static int getLowestFreeDirectoryIndex() {
-        int lowestFreeIndex = 0;
-        for (String aDirectory : settingsFile.get("Directories")) {
+        final int[] lowestFreeIndex = {0};
+        settingsFile.get("Directories").forEach(aDirectory -> {
             int currentInt = Integer.parseInt(aDirectory.split(">")[0]);
-            if (lowestFreeIndex == currentInt) {
-                lowestFreeIndex++;
+            if (lowestFreeIndex[0] == currentInt) {
+                lowestFreeIndex[0]++;
             }
-        }
-        return lowestFreeIndex;
+        });
+        return lowestFreeIndex[0];
     }
 
     public static HashMap<String, ArrayList<String>> getSettingsFile() {

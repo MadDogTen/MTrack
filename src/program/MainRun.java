@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+@SuppressWarnings("WeakerAccess")
 public class MainRun {
     private static final Logger log = Logger.getLogger(MainRun.class.getName());
     private static boolean hasRan = false, forceRun = true;
@@ -111,7 +112,7 @@ public class MainRun {
         };
         new Thread(task).start();
         TextBox textBox = new TextBox();
-        Strings.UserName = textBox.display("Please enter your username: ", "Use default username?", "PublicDefault", Main.window);
+        Strings.UserName = textBox.display("Please enter your username: ", "Use default username?", "PublicDefault", Main.stage);
         while (taskRunning[0]) {
             try {
                 Thread.sleep(500);
@@ -128,15 +129,15 @@ public class MainRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            Boolean[] matched = ProgramSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.window));
+            Boolean[] matched = ProgramSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.stage));
             index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display("Directory was a duplicate!", Main.window);
+                messageBox.display("Directory was a duplicate!", Main.stage);
             } else if (matched[1]) {
                 break;
             }
-            if (!confirmBox.display("Add another directory?", Main.window)) {
+            if (!confirmBox.display("Add another directory?", Main.stage)) {
                 addAnother = false;
             }
         }
@@ -145,23 +146,23 @@ public class MainRun {
     // File Generators
     private static void generateProgramSettingsFile() {
         log.info("Attempting to generate program settings file.");
-        new GenerateSettingsFiles().generateProgramSettingsFile(Strings.SettingsFileName, Variables.EmptyString, Variables.SettingsExtension, false);
+        new GenerateSettingsFiles().generateProgramSettingsFile(false);
     }
 
     private static void generateShowFiles() {
         log.info("Generating show files for first run...");
         ArrayList<String> directories = ProgramSettingsController.getDirectories();
-        for (String aDirectory : directories) {
+        directories.forEach(aDirectory -> {
             log.info("Currently generating show files for: " + aDirectory);
             int fileName = directories.indexOf(aDirectory);
             File file = new File(aDirectory);
             GenerateNewShowFiles.generateShowsFile(fileName, file, false, true);
-        }
+        });
         log.info("Finished generating show files.");
     }
 
     private static void generateUserSettingsFile(String userName, Boolean override) {
         log.info("Attempting to generate settings file for " + userName + '.' );
-        new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName, Variables.SettingsExtension, override);
+        new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName, override);
     }
 }

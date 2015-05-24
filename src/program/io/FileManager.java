@@ -4,7 +4,6 @@ import program.util.Variables;
 
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -32,59 +31,21 @@ public class FileManager {
 
     // Deserialize
     @SuppressWarnings("unchecked")
-    public HashMap<String, HashMap<Integer, HashMap<String, String>>> loadShows(String theFile) {
-        HashMap<String, HashMap<Integer, HashMap<String, String>>> loadedHashMap = new HashMap<>(0);
-        if (checkFileExists(Variables.DirectoriesFolder, theFile, Variables.EmptyString)) {
+    public Object loadFile(String folder, String theFile, String extension) {
+        Object loadedFile = new HashMap<>(0);
+        if (checkFileExists(folder, theFile, extension)) {
             try {
-                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + Variables.DirectoriesFolder + '\\' + theFile));
+                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + '\\' + theFile + extension));
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                loadedHashMap = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) ois.readObject();
+                loadedFile = ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
                 log.severe(e.toString());
             }
-            return loadedHashMap;
+            return loadedFile;
         }
-        log.info("File doesn't exist");
-        return loadedHashMap;
-    }
-
-    @SuppressWarnings("unchecked")
-    public HashMap<String, HashMap<String, HashMap<String, String>>> loadUserInfo(String folder, String filename, String extension) {
-        HashMap<String, HashMap<String, HashMap<String, String>>> loadedHashMap = new HashMap<>();
-        if (checkFileExists(folder, filename, extension)) {
-            FileInputStream fis;
-            try {
-                fis = new FileInputStream(Variables.dataFolder + folder + '\\' + filename + extension);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                loadedHashMap = (HashMap<String, HashMap<String, HashMap<String, String>>>) ois.readObject();
-                ois.close();
-            } catch (ClassNotFoundException | IOException e) {
-                log.severe(e.toString());
-            }
-            return loadedHashMap;
-        }
-        log.info("File doesn't exist");
-        return loadedHashMap;
-    }
-
-    @SuppressWarnings("unchecked")
-    public HashMap<String, ArrayList<String>> loadProgramSettings(String filename, String extension) {
-        HashMap<String, ArrayList<String>> loadedHashMap = new HashMap<>();
-        if (checkFileExists(Variables.EmptyString, filename, extension)) {
-            FileInputStream fis;
-            try {
-                fis = new FileInputStream(Variables.dataFolder + '\\' + filename + extension);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                loadedHashMap = (HashMap<String, ArrayList<String>>) ois.readObject();
-                ois.close();
-            } catch (ClassNotFoundException | IOException e) {
-                log.severe(e.toString());
-            }
-            return loadedHashMap;
-        }
-        log.info("File doesn't exist");
-        return loadedHashMap;
+        log.info("File doesn't exist - " + (Variables.dataFolder + folder + '\\' + theFile + extension));
+        return loadedFile;
     }
 
     public boolean checkFileExists(String folder, String filename, String extension) {

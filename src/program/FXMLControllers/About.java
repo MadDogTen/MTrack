@@ -7,13 +7,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import program.input.MoveWindow;
+import program.io.MoveWindow;
 import program.util.Strings;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+@SuppressWarnings("WeakerAccess")
 public class About implements Initializable {
     private static final Logger log = Logger.getLogger(About.class.getName());
 
@@ -34,7 +35,7 @@ public class About implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        log.finest("About has been opened.");
         programName.setText(Strings.ProgramTitle);
         programName.setAlignment(Pos.CENTER);
 
@@ -55,7 +56,7 @@ public class About implements Initializable {
             stage.close();
         });
 
-        // Allow the undecorated window to be moved.
+        // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(pane);
     }
 }

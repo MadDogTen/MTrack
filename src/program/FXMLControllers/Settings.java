@@ -8,14 +8,15 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
+import program.Main;
 import program.gui.*;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
-import program.input.MoveWindow;
 import program.io.CheckShowFiles;
 import program.io.FileManager;
 import program.io.GenerateNewShowFiles;
+import program.io.MoveWindow;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -28,10 +29,13 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("WeakerAccess")
 public class Settings implements Initializable {
     private static final Logger log = Logger.getLogger(Settings.class.getName());
 
+    @SuppressWarnings("unused")
     @FXML
     private TabPane tabPane;
     @FXML
@@ -164,18 +168,14 @@ public class Settings implements Initializable {
                 }
                 ShowInfoController.loadShowsFile(true);
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getDirectoryHashMap(index);
-                for (String aShow : showsFile.keySet()) {
-                    UserInfoController.addNewShow(aShow);
-                }
+                showsFile.keySet().forEach(UserInfoController::addNewShow);
                 ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
             } else log.info("Directory wasn't added.");
         });
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
             ArrayList<File> directories = new ArrayList<>();
-            for (String aDirectory : ProgramSettingsController.getDirectories()) {
-                directories.add(new File(aDirectory));
-            }
+            directories.addAll(ProgramSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
             if (!directories.isEmpty()) {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToDelete = String.valueOf(listSelectBox.directories("Directory to delete:", directories, tabPane.getScene().getWindow()));
@@ -243,17 +243,17 @@ public class Settings implements Initializable {
             log.info("Printing empty shows:");
             if (!emptyShows.isEmpty()) {
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
-                for (String aDirectory : directories) {
+                directories.forEach(aDirectory -> {
                     Set<String> shows = ShowInfoController.getDirectoryHashMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
-                    for (String aShow : emptyShows) {
+                    emptyShows.forEach(aShow -> {
                         String fileString = (aDirectory + '\\' + aShow);
                         if (new FileManager().checkFolderExists(fileString) && !shows.contains(aShow)) {
                             emptyShowsDir.add(aShow);
                         }
-                    }
+                    });
                     log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
-                }
+                });
             } else {
                 log.info("No empty shows");
             }
@@ -263,9 +263,7 @@ public class Settings implements Initializable {
             log.info("Printing ignored shows:");
             ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
             if (!ignoredShows.isEmpty()) {
-                for (String aIgnoredShow : ignoredShows) {
-                    log.info(aIgnoredShow);
-                }
+                ignoredShows.forEach(log::info);
             } else log.info("No ignored shows.");
             log.info("Finished printing ignored shows.");
         });
@@ -273,9 +271,7 @@ public class Settings implements Initializable {
             log.info("Printing hidden shows:");
             ArrayList<String> hiddenShows = UserInfoController.getHiddenShows();
             if (!hiddenShows.isEmpty()) {
-                for (String aHiddenShow : hiddenShows) {
-                    log.info(aHiddenShow);
-                }
+                hiddenShows.forEach(log::info);
             } else log.info("No hidden shows.");
             log.info("Finished printing hidden shows.");
         });
@@ -283,30 +279,30 @@ public class Settings implements Initializable {
             log.info("Un-hiding all shows...");
             ArrayList<String> ignoredShows = UserInfoController.getHiddenShows();
             if (!ignoredShows.isEmpty()) {
-                for (String aShow : ignoredShows) {
+                ignoredShows.forEach(aShow -> {
                     log.info(aShow + " is no longer hidden.");
                     UserInfoController.setHiddenStatus(aShow, false);
-                }
+                });
             } else log.info("No shows to un-hide.");
             log.info("Finished un-hiding all shows.");
         });
         setAllActive.setOnAction(e -> {
-            Object[] showsList = ShowInfoController.getShowsList();
-            if (showsList != null) {
-                for (Object aShow : showsList) {
-                    UserInfoController.setActiveStatus(String.valueOf(aShow), true);
-                }
+            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            if (!showsList.isEmpty()) {
+                showsList.forEach(aShow -> {
+                    UserInfoController.setActiveStatus(aShow, true);
+                });
                 log.info("Set all shows active.");
             } else {
                 log.info("No shows to change.");
             }
         });
         setAllInactive.setOnAction(e -> {
-            Object[] showsList = ShowInfoController.getShowsList();
-            if (showsList != null) {
-                for (Object aShow : showsList) {
-                    UserInfoController.setActiveStatus(String.valueOf(aShow), false);
-                }
+            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            if (!showsList.isEmpty()) {
+                showsList.forEach(aShow -> {
+                    UserInfoController.setActiveStatus(aShow, false);
+                });
                 log.info("Set all shows inactive.");
             } else {
                 log.info("No shows to change.");
@@ -324,9 +320,7 @@ public class Settings implements Initializable {
         add1ToDirectoryVersion.setOnAction(e -> ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true));
         clearFile.setOnAction(e -> {
             ArrayList<File> directories = new ArrayList<>();
-            for (String aDirectory : ProgramSettingsController.getDirectories()) {
-                directories.add(new File(aDirectory));
-            }
+            directories.addAll(ProgramSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
             if (!directories.isEmpty()) {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToClear = String.valueOf(listSelectBox.directories("Directory to Clear:", directories, tabPane.getScene().getWindow()));
@@ -336,13 +330,12 @@ public class Settings implements Initializable {
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
                         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
-                        Set<String> hashMapShows = ShowInfoController.getDirectoryHashMap(index).keySet();
-                        for (String aShow : hashMapShows) {
+                        ShowInfoController.getDirectoryHashMap(index).keySet().forEach(aShow -> {
                             Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                             if (!showExistsElsewhere) {
                                 UserInfoController.setIgnoredStatus(aShow, true);
                             }
-                        }
+                        });
                         HashMap<String, HashMap<Integer, HashMap<String, String>>> blankHashMap = new HashMap<>();
                         ShowInfoController.saveShowsHashMapFile(blankHashMap, index);
                         ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
@@ -359,12 +352,12 @@ public class Settings implements Initializable {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
                 new FileManager().deleteFolder(new File(Variables.dataFolder));
-                program.Main.stop(program.Main.window, true, false);
+                program.Main.stop(Main.stage, true, false);
             }
         });
         deleteEverythingAndClose.setTooltip(new Tooltip("Warning, Unrecoverable!"));
 
-        // Allow the undecorated window to be moved.
+        // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(tabPane);
     }
 }

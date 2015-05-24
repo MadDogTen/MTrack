@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
-import program.input.MoveWindow;
+import program.io.MoveWindow;
 
 import java.util.logging.Logger;
 
@@ -21,6 +21,7 @@ public class ShowConfirmBox {
     private static final Logger log = Logger.getLogger(ShowConfirmBox.class.getName());
 
     public int display(String message, Window oldWindow) {
+        log.finest("ShowConfirmBox has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);

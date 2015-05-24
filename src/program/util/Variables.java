@@ -3,8 +3,7 @@ package program.util;
 import program.information.ProgramSettingsController;
 import program.io.FileManager;
 
-import java.util.logging.Logger;
-
+@SuppressWarnings("ClassWithoutLogger")
 public class Variables {
     //---------- Main Variables ----------\\
     public static final int SIZE_WIDTH = 282;
@@ -26,7 +25,6 @@ public class Variables {
     public static final Boolean devMode = false; //TODO Turn off before pushing changes.
     public static final Boolean StartFresh = false; // Won't work unless devMode is true.
 
-    private static final Logger log = Logger.getLogger(Variables.class.getName());
     public static Integer updateSpeed;
     public static String dataFolder;
 

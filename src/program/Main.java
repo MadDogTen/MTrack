@@ -20,7 +20,7 @@ public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
     private final static int timer = Clock.getTimeSeconds();
     public static boolean running = false;
-    public static Stage window;
+    public static Stage stage;
     private static Thread thread;
 
     public static void main(String args[]) {
@@ -46,7 +46,7 @@ public class Main extends Application implements Runnable {
             } else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
 
-            window.close();
+            stage.close();
             try {
                 thread.join();
             } catch (InterruptedException e) {
@@ -57,26 +57,26 @@ public class Main extends Application implements Runnable {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        window = primaryStage;
-        ImageLoader.setIcon(window);
-        window.initStyle(StageStyle.UNDECORATED);
+        stage = primaryStage;
+        ImageLoader.setIcon(stage);
+        stage.initStyle(StageStyle.UNDECORATED);
         Parent root = FXMLLoader.load(getClass().getResource("/gui/MainGui.fxml"));
-        window.setTitle("MTrack");
-        window.setWidth(Variables.SIZE_WIDTH);
-        window.setHeight(Variables.SIZE_HEIGHT);
+        stage.setTitle("MTrack");
+        stage.setWidth(Variables.SIZE_WIDTH);
+        stage.setHeight(Variables.SIZE_HEIGHT);
 
         Scene scene = new Scene(root);
 
         scene.setFill(Color.WHITESMOKE);
 
-        window.setOnCloseRequest(e -> {
+        stage.setOnCloseRequest(e -> {
             e.consume();
-            stop(window, true, true);
+            stop(stage, true, true);
         });
 
-        window.setResizable(true);
-        window.setScene(scene);
-        window.show();
+        stage.setResizable(true);
+        stage.setScene(scene);
+        stage.show();
 
         start();
     }

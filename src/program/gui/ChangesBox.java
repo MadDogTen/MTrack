@@ -13,7 +13,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.information.ChangeReporter;
-import program.input.MoveWindow;
+import program.io.MoveWindow;
 
 import java.util.logging.Logger;
 
@@ -23,6 +23,7 @@ public class ChangesBox {
     private static Boolean currentlyOpen = false;
 
     public Object[] display(Window oldWindow) {
+        log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
             Object[] object = new Object[1];
             object[0] = false;

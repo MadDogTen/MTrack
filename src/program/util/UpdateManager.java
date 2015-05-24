@@ -16,14 +16,15 @@ public class UpdateManager {
 
     public void updateFiles() {
         log.info("Checking if inner versions are matched...");
+        // -1 is returned if they match, otherwise the old version number is returned.
         int version = checker.checkProgramSettingsFileVersion();
         if (version != -1) {
-            log.info("Program settings file versions didn't match, Updating...");
+            log.info("Program settings file versions didn't match " + Variables.ProgramSettingsFileVersion + " - " + version + ", Updating...");
             convertProgramSettingsFile(version, Variables.ProgramSettingsFileVersion);
         } else log.info("Program settings file versions matched.");
         version = checker.checkUserSettingsFileVersion();
         if (version != -1) {
-            log.info("User settings file versions didn't match, Updating...");
+            log.info("User settings file versions didn't match " + Variables.UserSettingsFileVersion + " - " + version + ", Updating...");
             convertUserSettingsFile(version, Variables.UserSettingsFileVersion);
         } else log.info("User settings file versions matched.");
         version = ProgramSettingsController.getMainDirectoryVersion();
@@ -56,11 +57,11 @@ public class UpdateManager {
                 if (programSettingsFile.containsKey("Directories")) {
                     ArrayList<String> directories = programSettingsFile.get("Directories");
                     ArrayList<String> directoriesFixed = new ArrayList<>();
-                    for (String aDirectory : directories) {
+                    directories.forEach(aDirectory -> {
                         int index = directories.indexOf(aDirectory);
                         directoriesFixed.add(index + ">" + aDirectory);
                         log.info("Converted " + aDirectory + " to " + index + '>' + aDirectory);
-                    }
+                    });
                     programSettingsFile.replace("Directories", directoriesFixed);
                 } else log.info("Program settings file contains no directories, Nothing was converted.");
                 log.info("Finished converting directories");
@@ -96,27 +97,29 @@ public class UpdateManager {
                 log.info("User settings file has been updated from version -2.");
             case 1:
                 HashMap<String, HashMap<String, String>> shows = userSettingsFile.get("ShowSettings");
-                for (String aShow : shows.keySet()) {
-                    shows.get(aShow).put("isHidden", "false");
+                if (shows != null) {
+                    shows.keySet().forEach(aShow -> {
+                        shows.get(aShow).put("isHidden", "false");
+                    });
                 }
                 log.info("User settings file has been updated from version 1.");
             case 2:
-                Object[] allShows = ShowInfoController.getShowsList();
-                if (allShows != null) {
-                    for (Object aShow : allShows) {
-                        if (!userSettingsFile.get("ShowSettings").keySet().contains(String.valueOf(aShow))) {
-                            log.info("Adding " + aShow + " to user settings file.");
-                            HashMap<String, String> temp2 = new HashMap<>();
-                            temp2.put("isActive", "false");
-                            temp2.put("isIgnored", "false");
-                            temp2.put("isHidden", "false");
-                            temp2.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(String.valueOf(aShow))));
-                            Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), Integer.parseInt(temp2.get("CurrentSeason")));
-                            temp2.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
-                            userSettingsFile.get("ShowSettings").put(String.valueOf(aShow), temp2);
-                        }
+                ShowInfoController.getShowsList().forEach(aShow -> {
+                    if (!userSettingsFile.containsKey("ShowSettings")) {
+                        userSettingsFile.put("ShowSettings", new HashMap<>());
                     }
-                }
+                    if (!userSettingsFile.get("ShowSettings").keySet().contains(aShow)) {
+                        log.info("Adding " + aShow + " to user settings file.");
+                        HashMap<String, String> temp2 = new HashMap<>();
+                        temp2.put("isActive", "false");
+                        temp2.put("isIgnored", "false");
+                        temp2.put("isHidden", "false");
+                        temp2.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(aShow)));
+                        Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp2.get("CurrentSeason")));
+                        temp2.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
+                        userSettingsFile.get("ShowSettings").put(aShow, temp2);
+                    }
+                });
                 log.info("User settings file has been updated from version 2.");
             case 1000:
                 if (!userSettingsFile.containsKey("ShowSettings")) {
@@ -138,32 +141,32 @@ public class UpdateManager {
     }
 
     private void updateUserShows(int newVersion) {
-        ArrayList<String> shows = ShowInfoController.getShowsArrayList();
+        ArrayList<String> shows = ShowInfoController.getShowsList();
         ArrayList<String> userShows = UserInfoController.getAllNonIgnoredShows();
         ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
-        Boolean changed = false;
-        for (String aShow : shows) {
+        final Boolean[] changed = {false};
+        shows.forEach(aShow -> {
             if (!userShows.contains(aShow) && !ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and added.");
                 ChangeReporter.addChange(aShow + " has changed");
                 UserInfoController.addNewShow(aShow);
-                changed = true;
+                changed[0] = true;
             } else if (ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and un-ignored.");
                 ChangeReporter.addChange(aShow + " has changed");
                 UserInfoController.setIgnoredStatus(aShow, false);
-                changed = true;
+                changed[0] = true;
             }
-        }
-        for (String aShow : userShows) {
+        });
+        userShows.forEach(aShow -> {
             if (!shows.contains(aShow)) {
                 log.info(aShow + " wasn't found during user shows update.");
                 ChangeReporter.addChange(aShow + " has changed");
                 UserInfoController.setIgnoredStatus(aShow, true);
-                changed = true;
+                changed[0] = true;
             }
-        }
-        if (!changed) {
+        });
+        if (!changed[0]) {
             log.info("No changes found.");
         }
         UserInfoController.setUserDirectoryVersion(newVersion);

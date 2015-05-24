@@ -15,8 +15,8 @@ import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
-import program.input.MoveWindow;
 import program.io.FileManager;
+import program.io.MoveWindow;
 import program.util.Variables;
 
 import java.io.File;
@@ -28,6 +28,7 @@ public class TextBox {
     private static final Logger log = Logger.getLogger(TextBox.class.getName());
 
     public String display(String message, String messageIfNameFieldIsBlank, String defaultValue, Window oldWindow) {
+        log.finest("TextBox display has been opened.");
         Stage window = new Stage();
         window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
         final String[] userName = new String[1];
@@ -71,6 +72,7 @@ public class TextBox {
     }
 
     private boolean isValid(String messageIfBlank, String message, Window oldWindow) {
+        log.finest("isValid has been called.");
         if (message.isEmpty()) {
             ConfirmBox confirmBox = new ConfirmBox();
             return confirmBox.display(messageIfBlank, oldWindow);
@@ -90,6 +92,7 @@ public class TextBox {
     }
 
     public File addDirectoriesDisplay(String message, ArrayList<String> currentDirectories, String messageIfFieldIsBlank, String messageIfNotDirectory, Window oldWindow) {
+        log.finest("TextBox addDirectoriesDisplay has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         final File[] directories = new File[1];
@@ -141,6 +144,7 @@ public class TextBox {
     }
 
     private boolean isDirectoryValid(ArrayList<String> currentDirectories, String messageIfBlank, String messageIfNotDirectory, String message, Window oldWindow) {
+        log.finest("isDirectoryValid has been called.");
         if (currentDirectories.contains(message)) {
             new MessageBox().display("Directory is already added.", oldWindow);
             return false;
@@ -158,6 +162,7 @@ public class TextBox {
     }
 
     public int updateSpeed(String message, String messageFieldIsBlank, int defaultValue, Window oldWindow) {
+        log.finest("TextBox updateSpeed has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         final int[] userName = new int[1];
@@ -202,6 +207,7 @@ public class TextBox {
     }
 
     private boolean isUpdateSpeedValid(String messageIfBlank, String textFieldValue, Window oldWindow) {
+        log.finest("isUpdateSpeedValid has been called.");
         if (textFieldValue.isEmpty()) {
             ConfirmBox confirmBox = new ConfirmBox();
             return confirmBox.display(messageIfBlank, oldWindow);

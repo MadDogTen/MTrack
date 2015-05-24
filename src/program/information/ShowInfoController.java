@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ShowInfoController {
     private static final Logger log = Logger.getLogger(ShowInfoController.class.getName());
@@ -25,49 +26,22 @@ public class ShowInfoController {
                 long timer = Clock.getTimeMilliSeconds();
                 showsFile = new HashMap<>();
                 ArrayList<String> allShows = new ArrayList<>();
-                for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
-                    if (aHashMap != null) {
-                        Set<String> showsSet = aHashMap.keySet();
-                        for (String aShow : showsSet) {
-                            if (!allShows.contains(aShow)) {
-                                allShows.add(aShow);
-                            }
-                        }
-                    }
-                }
-                for (String aShow : allShows) {
+                showsFileArray.stream().filter(aHashMap -> aHashMap != null).forEach(aHashMap -> aHashMap.keySet().stream().filter(aShow -> !allShows.contains(aShow)).forEach(allShows::add));
+                allShows.forEach(aShow -> {
                     HashMap<Integer, HashMap<String, String>> seasonEpisode = new HashMap<>();
                     ArrayList<Integer> allShowSeasons = new ArrayList<>();
-                    for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
-                        if (aHashMap.containsKey(aShow)) {
-                            Set<Integer> seasonSet = aHashMap.get(aShow).keySet();
-                            for (int aSeason : seasonSet) {
-                                if (!allShowSeasons.contains(aSeason)) {
-                                    allShowSeasons.add(aSeason);
-                                }
-                            }
-                        }
-                    }
-                    for (Integer aSeason : allShowSeasons) {
+                    showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow)).forEach(aHashMap -> aHashMap.get(aShow).keySet().stream().filter(aSeason -> !allShowSeasons.contains(aSeason)).forEach(allShowSeasons::add));
+                    allShowSeasons.forEach(aSeason -> {
                         HashMap<String, String> episodeNumEpisode = new HashMap<>();
-                        for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
-                            if (aHashMap.containsKey(aShow) && aHashMap.get(aShow).containsKey(aSeason)) {
-                                Set<String> allShowSeasonEpisodes = aHashMap.get(aShow).get(aSeason).keySet();
-                                for (String aEpisode : allShowSeasonEpisodes) {
-                                    episodeNumEpisode.put(aEpisode, aHashMap.get(aShow).get(aSeason).get(aEpisode));
-                                }
-                            }
-                        }
+                        showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow) && aHashMap.get(aShow).containsKey(aSeason)).forEach(aHashMap -> aHashMap.get(aShow).get(aSeason).keySet().forEach(aEpisode -> episodeNumEpisode.put(aEpisode, aHashMap.get(aShow).get(aSeason).get(aEpisode))));
                         seasonEpisode.put(aSeason, episodeNumEpisode);
-                    }
+                    });
                     showsFile.put(aShow, seasonEpisode);
-                }
+                });
                 log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
             } else {
                 FileManager fileManager = new FileManager();
-                for (String aString : ProgramSettingsController.getDirectoriesNames()) {
-                    showsFile = fileManager.loadShows(aString);
-                }
+                ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Variables.EmptyString));
             }
         }
     }
@@ -78,12 +52,12 @@ public class ShowInfoController {
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
-        for (String aString : files) {
+        files.forEach(aString -> {
             int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
             if (skip != place) {
-                showsFileArray.add(fileManager.loadShows(aString));
+                showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Variables.EmptyString));
             }
-        }
+        });
         return showsFileArray;
     }
 
@@ -94,27 +68,18 @@ public class ShowInfoController {
         FileManager fileManager = new FileManager();
         for (String aFile : files) {
             if (aFile.split("\\-|\\.")[1].matches(String.valueOf(index))) {
-                showsFile = fileManager.loadShows(aFile);
+                showsFile = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aFile, Variables.EmptyString);
                 break;
             }
         }
         return showsFile;
     }
 
-    public static Object[] getShowsList() {
-        loadShowsFile(false);
-        if (showsFile != null) {
-            return showsFile.keySet().toArray();
-        } else return new Object[0];
-    }
-
-    public static ArrayList<String> getShowsArrayList() {
+    public static ArrayList<String> getShowsList() {
         loadShowsFile(false);
         ArrayList<String> showsList = new ArrayList<>();
         if (showsFile != null) {
-            for (String aShow : showsFile.keySet()) {
-                showsList.add(aShow);
-            }
+            showsList.addAll(showsFile.keySet().stream().collect(Collectors.toList()));
         }
         return showsList;
     }
@@ -143,88 +108,86 @@ public class ShowInfoController {
     }
 
     public static int findLowestSeason(String aShow) {
-        int lowestSeason = -1;
-        Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
-        for (int aSeason : seasons) {
-            if (lowestSeason == -1) {
-                lowestSeason = aSeason;
-            } else if (aSeason < lowestSeason) {
-                lowestSeason = aSeason;
+        final int[] lowestSeason = {-1};
+        ShowInfoController.getSeasonsList(aShow).forEach(aSeason -> {
+            if (lowestSeason[0] == -1) {
+                lowestSeason[0] = aSeason;
+            } else if (aSeason < lowestSeason[0]) {
+                lowestSeason[0] = aSeason;
             }
-        }
-        return lowestSeason;
+        });
+        return lowestSeason[0];
     }
 
     public static int findHighestSeason(String aShow) {
-        int highestSeason = -1;
+        final int[] highestSeason = {-1};
         Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
-        for (int aSeason : seasons) {
-            if (highestSeason == -1) {
-                highestSeason = aSeason;
-            } else if (aSeason > highestSeason) {
-                highestSeason = aSeason;
+        seasons.forEach(aSeason -> {
+            if (highestSeason[0] == -1) {
+                highestSeason[0] = aSeason;
+            } else if (aSeason > highestSeason[0]) {
+                highestSeason[0] = aSeason;
             }
-        }
-        return highestSeason;
+        });
+        return highestSeason[0];
     }
 
     public static int findLowestEpisode(Set<String> episodes) {
-        int lowestEpisode = -1;
+        final int[] lowestEpisode = {-1};
         if (episodes != null) {
-            for (String aEpisode : episodes) {
+            episodes.forEach(aEpisode -> {
                 if (aEpisode.contains("+")) {
                     String[] temp = aEpisode.split("\\+");
                     int temp1 = Integer.parseInt(temp[0]),
                             temp2 = Integer.parseInt(temp[1]);
-                    if (lowestEpisode == -1) {
-                        lowestEpisode = temp1;
-                    } else if (temp2 < lowestEpisode) {
-                        lowestEpisode = temp1;
+                    if (lowestEpisode[0] == -1) {
+                        lowestEpisode[0] = temp1;
+                    } else if (temp2 < lowestEpisode[0]) {
+                        lowestEpisode[0] = temp1;
                     }
-                } else if (lowestEpisode == -1) {
-                    lowestEpisode = Integer.parseInt(aEpisode);
-                } else if (Integer.parseInt(aEpisode) < lowestEpisode) {
-                    lowestEpisode = Integer.parseInt(aEpisode);
+                } else if (lowestEpisode[0] == -1) {
+                    lowestEpisode[0] = Integer.parseInt(aEpisode);
+                } else if (Integer.parseInt(aEpisode) < lowestEpisode[0]) {
+                    lowestEpisode[0] = Integer.parseInt(aEpisode);
                 }
-            }
+            });
         }
-        return lowestEpisode;
+        return lowestEpisode[0];
     }
 
     public static int findHighestEpisode(Set<String> episodes) {
-        int highestEpisode = -1;
+        final int[] highestEpisode = {-1};
         if (episodes != null) {
-            for (String aEpisode : episodes) {
+            episodes.forEach(aEpisode -> {
                 int episode;
                 if (aEpisode.contains("+")) {
                     episode = Integer.parseInt(aEpisode.split("//+")[1]);
                 } else episode = Integer.parseInt(aEpisode);
-                if (highestEpisode == -1) {
-                    highestEpisode = episode;
-                } else if (episode > highestEpisode) {
-                    highestEpisode = episode;
+                if (highestEpisode[0] == -1) {
+                    highestEpisode[0] = episode;
+                } else if (episode > highestEpisode[0]) {
+                    highestEpisode[0] = episode;
                 }
-
-            }
+            });
         }
-        return highestEpisode;
+        return highestEpisode[0];
     }
 
     public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {
-        Boolean showExistsElsewhere = false;
+        final Boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
-            for (HashMap<String, HashMap<Integer, HashMap<String, String>>> aHashMap : showsFileArray) {
+            showsFileArray.forEach(aHashMap -> {
                 if (aHashMap.containsKey(aShow)) {
-                    showExistsElsewhere = true;
+                    showExistsElsewhere[0] = true;
                 }
-            }
+            });
         }
-        if (showExistsElsewhere) {
+        if (showExistsElsewhere[0]) {
             log.info(aShow + " exists elsewhere.");
         } else {
             log.info(aShow + " doesn't exists elsewhere.");
         }
-        return showExistsElsewhere;
+        return showExistsElsewhere[0];
     }
 
 
@@ -232,23 +195,19 @@ public class ShowInfoController {
         loadShowsFile(false);
         log.info("Printing out all Shows and Episodes:");
         if (showsFile != null) {
-            Set<String> Show = showsFile.keySet();
-            int numberOfShows = 0;
-            for (String aShow : Show) {
+            final int[] numberOfShows = {0};
+            showsFile.keySet().forEach(aShow -> {
                 log.info(aShow);
-                HashMap<Integer, HashMap<String, String>> seasons = showsFile.get(aShow);
-                Set<Integer> season = seasons.keySet();
-                for (int aSeason : season) {
+                showsFile.get(aShow).keySet().forEach(aSeason -> {
                     log.info("Season: " + aSeason);
-                    HashMap<String, String> episodes = seasons.get(aSeason);
-                    Set<String> episode = episodes.keySet();
-                    for (String aEpisode : episode) {
+                    HashMap<String, String> episodes = showsFile.get(aShow).get(aSeason);
+                    episodes.keySet().forEach(aEpisode -> {
                         log.info(episodes.get(aEpisode));
-                    }
-                }
-                numberOfShows++;
-            }
-            log.info("Total Number of Shows: " + numberOfShows);
+                    });
+                });
+                numberOfShows[0]++;
+            });
+            log.info("Total Number of Shows: " + numberOfShows[0]);
         } else {
             log.info("No shows.");
         }

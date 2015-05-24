@@ -17,7 +17,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.information.ShowInfoController;
-import program.input.MoveWindow;
+import program.io.MoveWindow;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ListSelectBox {
     private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
@@ -216,9 +217,7 @@ public class ListSelectBox {
         label.setText(message);
 
         ArrayList<String> seasonsString = new ArrayList<>();
-        for (Integer aSeason : seasons) {
-            seasonsString.add(String.valueOf(aSeason));
-        }
+        seasonsString.addAll(seasons.stream().map(String::valueOf).collect(Collectors.toList()));
 
         ObservableList<String> seasonsList = FXCollections.observableArrayList(seasonsString);
         seasonsList.sorted();
@@ -281,9 +280,7 @@ public class ListSelectBox {
 
         // Needed, If you directly use the episodes Set, It completely removes them from the showsFile for some reason (Until you restart).
         ArrayList<String> episodesArrayList = new ArrayList<>();
-        for (String episode : episodes) {
-            episodesArrayList.add(episode);
-        }
+        episodesArrayList.addAll(episodes.stream().collect(Collectors.toList()));
 
         log.info("Sorting the episodes before displaying...");
         ArrayList<String> episodesSorted = new ArrayList<>();

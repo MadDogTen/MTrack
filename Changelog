@@ -1,5 +1,10 @@
 Changes:
 
+Pre-Alpha 0.8.4 -
+General Changes + Major code overhaul & Intellij Idea warning fixes.
+Moved MoveWindow from Input package to io package.
+FileManager now has 1 loadFile method which loads to an object.
+
 Pre-Alpha 0.8.3 -
 General Code Changes.
 Updated Logo.
