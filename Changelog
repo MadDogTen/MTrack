@@ -1,5 +1,8 @@
 Changes:
 
+Pre-Alpha 0.8.6.1 -
+Removed a couple unneeded debugging log strings.
+
 Pre-Alpha 0.8.5 -
 General Code Changes.
 Fixed UserInfoController changeEpisode NumberFormatException.

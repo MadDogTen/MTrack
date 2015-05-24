@@ -91,7 +91,6 @@ public class Controller implements Initializable {
     public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere -- Having difficulty doing this.
         removeShowField(index);
         int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
-        log.info(String.valueOf(show0Remaining));
         if (show0Remaining || remaining != 0) {
             log.info("updating");
             tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
