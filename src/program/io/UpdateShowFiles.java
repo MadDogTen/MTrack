@@ -17,7 +17,8 @@ public class UpdateShowFiles {
         changedSeasons.forEach(aSeason -> {
             HashMap<String, String> episodeNum = new HashMap<>(0);
             ArrayList<String> episodesFullList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
-            if (!episodesFullList.isEmpty()) {
+            if (episodesFullList.isEmpty()) seasonEpisode.remove(aSeason);
+            else {
                 episodesFullList.forEach(aEpisode -> {
                     ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
                     if (!episode.isEmpty()) {
@@ -37,7 +38,7 @@ public class UpdateShowFiles {
                 } else if (!episodeNum.isEmpty()) {
                     seasonEpisode.put(aSeason, episodeNum);
                 }
-            } else seasonEpisode.remove(aSeason);
+            }
         });
         showsFile.replace(aShow, seasonEpisode);
         ShowInfoController.saveShowsHashMapFile(showsFile, hashMapIndex);

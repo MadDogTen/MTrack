@@ -11,16 +11,14 @@ public class InnerVersionChecker {
     public int checkProgramSettingsFileVersion() {
         log.finest("checkProgramSettingsFileVersion has been ran.");
         int version = ProgramSettingsController.getProgramSettingsVersion();
-        if (Variables.ProgramSettingsFileVersion != version) {
-            return version;
-        } else return -1;
+        if (Variables.ProgramSettingsFileVersion == version) return -1;
+        else return version;
     }
 
     public int checkUserSettingsFileVersion() {
         log.finest("checkUserSettingsFileVersion has been ran.");
         int version = UserInfoController.getUserSettingsVersion();
-        if (Variables.UserSettingsFileVersion != version) {
-            return version;
-        } else return -1;
+        if (Variables.UserSettingsFileVersion == version) return -1;
+        else return version;
     }
 }

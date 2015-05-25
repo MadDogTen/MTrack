@@ -290,7 +290,6 @@ public class ListSelectBox {
             String lowestEpisodeString = null;
             while (stringIterator.hasNext()) {
                 String episode = stringIterator.next();
-                log.info(episode);
                 int episodeInt;
                 if (episode.contains("+")) {
                     log.info("Processing double episode...");

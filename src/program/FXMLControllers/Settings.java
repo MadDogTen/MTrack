@@ -39,17 +39,9 @@ public class Settings implements Initializable {
     @FXML
     private TabPane tabPane;
     @FXML
-    private Tab devTab;
+    private Tab developerTab;
     @FXML
-    private Tab devTab2;
-    @FXML
-    private Button exit1;
-    @FXML
-    private Button exit2;
-    @FXML
-    private Button exit3;
-    @FXML
-    private Button exit4;
+    private Button exit;
     @FXML
     private Button forceRecheck;
     @FXML
@@ -103,7 +95,7 @@ public class Settings implements Initializable {
         // ~~~~ Buttons ~~~~ \\
 
         // Users
-        exit1.setOnAction(e -> {
+        exit.setOnAction(e -> {
             Stage stage = (Stage) tabPane.getScene().getWindow();
             stage.close();
         });
@@ -119,28 +111,24 @@ public class Settings implements Initializable {
         deleteUser.setOnAction(e -> {
             ArrayList<String> users = UserInfoController.getAllUsers();
             users.remove(Strings.UserName);
-            if (!users.isEmpty()) {
+            if (users.isEmpty()) {
+                MessageBox messageBox = new MessageBox();
+                messageBox.display("There are other users to delete.", tabPane.getScene().getWindow());
+            } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String userToDelete = listSelectBox.defaultUser("User to delete:", users, tabPane.getScene().getWindow());
                 if (userToDelete != null) {
                     ConfirmBox confirmBox = new ConfirmBox();
-                    Boolean confirm = confirmBox.display(("Are you sure to want to delete " + userToDelete + '?' ), tabPane.getScene().getWindow());
+                    Boolean confirm = confirmBox.display(("Are you sure to want to delete " + userToDelete + '?'), tabPane.getScene().getWindow());
                     if (confirm && !userToDelete.isEmpty()) {
                         new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UsersExtension);
                     }
                 }
-            } else {
-                MessageBox messageBox = new MessageBox();
-                messageBox.display("There are other users to delete.", tabPane.getScene().getWindow());
             }
         });
         deleteUser.setTooltip(new Tooltip("Delete Users. Note: Can't delete current user!"));
 
         // Other
-        exit2.setOnAction(e -> {
-            Stage stage = (Stage) tabPane.getScene().getWindow();
-            stage.close();
-        });
         changeUpdateSpeed.setOnAction(e -> ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed("Enter how fast you want it to scan the show(s) folder(s)", "Leave it as is?", 120, tabPane.getScene().getWindow())));
         addDirectory.setOnAction(e -> {
             int index = ProgramSettingsController.getLowestFreeDirectoryIndex();
@@ -176,7 +164,11 @@ public class Settings implements Initializable {
             log.info("Remove Directory Started:");
             ArrayList<File> directories = new ArrayList<>();
             directories.addAll(ProgramSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
-            if (!directories.isEmpty()) {
+            if (directories.isEmpty()) {
+                log.info("No directories to delete.");
+                MessageBox messageBox = new MessageBox();
+                messageBox.display("There are no directories to delete.", tabPane.getScene().getWindow());
+            } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToDelete = String.valueOf(listSelectBox.directories("Directory to delete:", directories, tabPane.getScene().getWindow()));
                 if (directoryToDelete != null && !directoryToDelete.isEmpty()) {
@@ -189,10 +181,6 @@ public class Settings implements Initializable {
                         log.info("Directory has been deleted!");
                     } else log.info("No directory has been deleted.");
                 }
-            } else {
-                log.info("No directories to delete.");
-                MessageBox messageBox = new MessageBox();
-                messageBox.display("There are no directories to delete.", tabPane.getScene().getWindow());
             }
             log.info("Remove Directory Finished!");
         });
@@ -225,23 +213,18 @@ public class Settings implements Initializable {
         });
 
         if (!Variables.devMode) {
-            devTab.setDisable(true);
-            devTab2.setDisable(true);
+            developerTab.setDisable(true);
             tabPane.getTabs().remove(3);
-            tabPane.getTabs().remove(2);
         }
 
         // Developer
-        exit3.setOnAction(e -> {
-            Stage stage = (Stage) tabPane.getScene().getWindow();
-            stage.close();
-        });
         printAllShows.setOnAction(e -> ShowInfoController.printOutAllShowsAndEpisodes());
         printAllDirectories.setOnAction(e -> ProgramSettingsController.printAllDirectories());
         printEmptyShowFolders.setOnAction(e -> {
             ArrayList<String> emptyShows = CheckShowFiles.getEmptyShows();
             log.info("Printing empty shows:");
-            if (!emptyShows.isEmpty()) {
+            if (emptyShows.isEmpty()) log.info("No empty shows");
+            else {
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 directories.forEach(aDirectory -> {
                     Set<String> shows = ShowInfoController.getDirectoryHashMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
@@ -254,66 +237,54 @@ public class Settings implements Initializable {
                     });
                     log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
                 });
-            } else {
-                log.info("No empty shows");
             }
             log.info("Finished printing empty shows.");
         });
         printIgnoredShows.setOnAction(e -> {
             log.info("Printing ignored shows:");
             ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
-            if (!ignoredShows.isEmpty()) {
-                ignoredShows.forEach(log::info);
-            } else log.info("No ignored shows.");
+            if (ignoredShows.isEmpty()) log.info("No ignored shows.");
+            else ignoredShows.forEach(log::info);
             log.info("Finished printing ignored shows.");
         });
         printHiddenShows.setOnAction(e -> {
             log.info("Printing hidden shows:");
             ArrayList<String> hiddenShows = UserInfoController.getHiddenShows();
-            if (!hiddenShows.isEmpty()) {
-                hiddenShows.forEach(log::info);
-            } else log.info("No hidden shows.");
+            if (hiddenShows.isEmpty()) log.info("No hidden shows.");
+            else hiddenShows.forEach(log::info);
+
             log.info("Finished printing hidden shows.");
         });
         unHideAll.setOnAction(e -> {
             log.info("Un-hiding all shows...");
             ArrayList<String> ignoredShows = UserInfoController.getHiddenShows();
-            if (!ignoredShows.isEmpty()) {
+            if (ignoredShows.isEmpty()) log.info("No shows to un-hide.");
+            else {
                 ignoredShows.forEach(aShow -> {
                     log.info(aShow + " is no longer hidden.");
                     UserInfoController.setHiddenStatus(aShow, false);
                 });
-            } else log.info("No shows to un-hide.");
+            }
             log.info("Finished un-hiding all shows.");
         });
         setAllActive.setOnAction(e -> {
             ArrayList<String> showsList = ShowInfoController.getShowsList();
-            if (!showsList.isEmpty()) {
-                showsList.forEach(aShow -> {
-                    UserInfoController.setActiveStatus(aShow, true);
-                });
+            if (showsList.isEmpty()) log.info("No shows to change.");
+            else {
+                showsList.forEach(aShow -> UserInfoController.setActiveStatus(aShow, true));
                 log.info("Set all shows active.");
-            } else {
-                log.info("No shows to change.");
             }
         });
         setAllInactive.setOnAction(e -> {
             ArrayList<String> showsList = ShowInfoController.getShowsList();
-            if (!showsList.isEmpty()) {
-                showsList.forEach(aShow -> {
-                    UserInfoController.setActiveStatus(aShow, false);
-                });
+            if (showsList.isEmpty()) log.info("No shows to change.");
+            else {
+                showsList.forEach(aShow -> UserInfoController.setActiveStatus(aShow, false));
                 log.info("Set all shows inactive.");
-            } else {
-                log.info("No shows to change.");
             }
         });
 
         // Dev 2
-        exit4.setOnAction(e -> {
-            Stage stage = (Stage) tabPane.getScene().getWindow();
-            stage.close();
-        });
         printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(ProgramSettingsController.getProgramSettingsVersion())));
         printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(UserInfoController.getUserSettingsVersion())));
         printAllUserInfo.setOnAction(e -> UserInfoController.printAllUserInfo());
@@ -321,12 +292,15 @@ public class Settings implements Initializable {
         clearFile.setOnAction(e -> {
             ArrayList<File> directories = new ArrayList<>();
             directories.addAll(ProgramSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
-            if (!directories.isEmpty()) {
+            if (directories.isEmpty()) {
+                MessageBox messageBox = new MessageBox();
+                messageBox.display("There are no directories to clear.", tabPane.getScene().getWindow());
+            } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToClear = String.valueOf(listSelectBox.directories("Directory to Clear:", directories, tabPane.getScene().getWindow()));
                 if (directoryToClear != null) {
                     ConfirmBox confirmBox = new ConfirmBox();
-                    Boolean confirm = confirmBox.display(("Are you sure to want to clear " + directoryToClear + '?' ), tabPane.getScene().getWindow());
+                    Boolean confirm = confirmBox.display(("Are you sure to want to clear " + directoryToClear + '?'), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
                         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
@@ -341,9 +315,6 @@ public class Settings implements Initializable {
                         ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
                     }
                 }
-            } else {
-                MessageBox messageBox = new MessageBox();
-                messageBox.display("There are no directories to clear.", tabPane.getScene().getWindow());
             }
         });
         deleteEverythingAndClose.setOnAction(e -> {

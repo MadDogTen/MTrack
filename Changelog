@@ -1,6 +1,11 @@
 Changes:
 
-Pre-Alpha 0.8.6.1 -
+Pre-Alpha 0.8.6 -
+General Code Cleanup.
+Worked on the Gui a bit, Still more to be done.
+Fixed UserInfoController getRemaining checking previous seasons.
+
+Pre-Alpha 0.8.5.1 -
 Removed a couple unneeded debugging log strings.
 
 Pre-Alpha 0.8.5 -

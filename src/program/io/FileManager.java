@@ -144,11 +144,7 @@ public class FileManager {
                 Runtime.getRuntime().exec(new String[]{
                         "rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()
                 });
-            } else if (os.contains("mac")) {
-                Runtime.getRuntime().exec(new String[]{
-                        "/usr/bin/open", file.getAbsolutePath()
-                });
-            } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+            } else if (os.contains("mac") || os.contains("nix") || os.contains("nux") || os.contains("aix")) {
                 Runtime.getRuntime().exec(new String[]{
                         "/usr/bin/open", file.getAbsolutePath()
                 });

@@ -21,9 +21,8 @@ public class GenerateNewShowFiles {
             // String = Show Name -- HashMap == Seasons in show from seasonEpisode
             HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);
             final ArrayList<String> ignoredShows;
-            if (!UserInfoController.getAllUsers().isEmpty()) {
-                ignoredShows = UserInfoController.getIgnoredShows();
-            } else ignoredShows = new ArrayList<>();
+            if (UserInfoController.getAllUsers().isEmpty()) ignoredShows = new ArrayList<>();
+            else ignoredShows = UserInfoController.getIgnoredShows();
             FindLocation.findShows(folderLocation).forEach(aShow -> {
                 log.info("Currently Processing: " + aShow);
                 // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode

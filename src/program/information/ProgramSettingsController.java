@@ -73,9 +73,7 @@ public class ProgramSettingsController {
         loadProgramSettingsFile();
         ArrayList<Integer> directoriesIndexes = new ArrayList<>();
         if (settingsFile.containsKey("Directories")) {
-            getDirectories().forEach(aDirectory -> {
-                directoriesIndexes.add(getDirectoryIndex(aDirectory));
-            });
+            getDirectories().forEach(aDirectory -> directoriesIndexes.add(getDirectoryIndex(aDirectory)));
         }
         return directoriesIndexes;
     }
@@ -132,11 +130,9 @@ public class ProgramSettingsController {
     public static void printAllDirectories() {
         loadProgramSettingsFile();
         log.info("Printing out all directories:");
-        if (!getDirectories().isEmpty()) {
-            getDirectories().forEach(log::info);
-        } else {
+        if (getDirectories().isEmpty()) {
             log.info("No directories.");
-        }
+        } else getDirectories().forEach(log::info);
         log.info("Finished printing out all directories:");
     }
 

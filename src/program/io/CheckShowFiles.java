@@ -185,9 +185,8 @@ public class CheckShowFiles {
                         }
                     }
                 });
-                if (!seasonEpisode.keySet().isEmpty()) {
-                    newShows.put(aShow, seasonEpisode);
-                } else emptyShows.add(aShow);
+                if (seasonEpisode.keySet().isEmpty()) emptyShows.add(aShow);
+                else newShows.put(aShow, seasonEpisode);
             }
         });
         runNumber++;

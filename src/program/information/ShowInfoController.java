@@ -110,9 +110,7 @@ public class ShowInfoController {
     public static int findLowestSeason(String aShow) {
         final int[] lowestSeason = {-1};
         ShowInfoController.getSeasonsList(aShow).forEach(aSeason -> {
-            if (lowestSeason[0] == -1) {
-                lowestSeason[0] = aSeason;
-            } else if (aSeason < lowestSeason[0]) {
+            if (lowestSeason[0] == -1 || aSeason < lowestSeason[0]) {
                 lowestSeason[0] = aSeason;
             }
         });
@@ -123,9 +121,7 @@ public class ShowInfoController {
         final int[] highestSeason = {-1};
         Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
         seasons.forEach(aSeason -> {
-            if (highestSeason[0] == -1) {
-                highestSeason[0] = aSeason;
-            } else if (aSeason > highestSeason[0]) {
+            if (highestSeason[0] == -1 || aSeason > highestSeason[0]) {
                 highestSeason[0] = aSeason;
             }
         });
@@ -140,14 +136,10 @@ public class ShowInfoController {
                     String[] temp = aEpisode.split("\\+");
                     int temp1 = Integer.parseInt(temp[0]),
                             temp2 = Integer.parseInt(temp[1]);
-                    if (lowestEpisode[0] == -1) {
-                        lowestEpisode[0] = temp1;
-                    } else if (temp2 < lowestEpisode[0]) {
+                    if (lowestEpisode[0] == -1 || temp2 < lowestEpisode[0]) {
                         lowestEpisode[0] = temp1;
                     }
-                } else if (lowestEpisode[0] == -1) {
-                    lowestEpisode[0] = Integer.parseInt(aEpisode);
-                } else if (Integer.parseInt(aEpisode) < lowestEpisode[0]) {
+                } else if (lowestEpisode[0] == -1 || Integer.parseInt(aEpisode) < lowestEpisode[0]) {
                     lowestEpisode[0] = Integer.parseInt(aEpisode);
                 }
             });
@@ -163,9 +155,7 @@ public class ShowInfoController {
                 if (aEpisode.contains("+")) {
                     episode = Integer.parseInt(aEpisode.split("//+")[1]);
                 } else episode = Integer.parseInt(aEpisode);
-                if (highestEpisode[0] == -1) {
-                    highestEpisode[0] = episode;
-                } else if (episode > highestEpisode[0]) {
+                if (highestEpisode[0] == -1 || episode > highestEpisode[0]) {
                     highestEpisode[0] = episode;
                 }
             });
@@ -201,9 +191,7 @@ public class ShowInfoController {
                 showsFile.get(aShow).keySet().forEach(aSeason -> {
                     log.info("Season: " + aSeason);
                     HashMap<String, String> episodes = showsFile.get(aShow).get(aSeason);
-                    episodes.keySet().forEach(aEpisode -> {
-                        log.info(episodes.get(aEpisode));
-                    });
+                    episodes.keySet().forEach(aEpisode -> log.info(episodes.get(aEpisode)));
                 });
                 numberOfShows[0]++;
             });

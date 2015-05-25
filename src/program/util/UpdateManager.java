@@ -18,20 +18,23 @@ public class UpdateManager {
         log.info("Checking if inner versions are matched...");
         // -1 is returned if they match, otherwise the old version number is returned.
         int version = checker.checkProgramSettingsFileVersion();
-        if (version != -1) {
+        if (version == -1) log.info("Program settings file versions matched.");
+        else {
             log.info("Program settings file versions didn't match " + Variables.ProgramSettingsFileVersion + " - " + version + ", Updating...");
             convertProgramSettingsFile(version, Variables.ProgramSettingsFileVersion);
-        } else log.info("Program settings file versions matched.");
+        }
         version = checker.checkUserSettingsFileVersion();
-        if (version != -1) {
+        if (version == -1) log.info("User settings file versions matched.");
+        else {
             log.info("User settings file versions didn't match " + Variables.UserSettingsFileVersion + " - " + version + ", Updating...");
             convertUserSettingsFile(version, Variables.UserSettingsFileVersion);
-        } else log.info("User settings file versions matched.");
+        }
         version = ProgramSettingsController.getMainDirectoryVersion();
-        if (version != UserInfoController.getUserDirectoryVersion()) {
+        if (version == UserInfoController.getUserDirectoryVersion()) log.info("User directory version matched.");
+        else {
             log.info("User directory version didn't match, Updating...");
             updateUserShows(version);
-        } else log.info("User directory version matched.");
+        }
         log.info("Finished checking if inner versions are matched.");
     }
 
@@ -98,9 +101,7 @@ public class UpdateManager {
             case 1:
                 HashMap<String, HashMap<String, String>> shows = userSettingsFile.get("ShowSettings");
                 if (shows != null) {
-                    shows.keySet().forEach(aShow -> {
-                        shows.get(aShow).put("isHidden", "false");
-                    });
+                    shows.keySet().forEach(aShow -> shows.get(aShow).put("isHidden", "false"));
                 }
                 log.info("User settings file has been updated from version 1.");
             case 2:

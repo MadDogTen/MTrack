@@ -26,14 +26,6 @@ public class ChangeReporter {
         changes = new String[0];
     }
 
-    public static void printChanges() {
-        log.info("Starting to list changes:");
-        for (String changed : changes) {
-            log.info(changed);
-        }
-        log.info("Finished listing changes.");
-    }
-
     public static String[] getChanges() {
         return changes;
     }

@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import program.gui.*;
 import program.information.DisplayShows;
@@ -23,6 +24,7 @@ import program.util.Variables;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -35,6 +37,8 @@ public class Controller implements Initializable {
     private static ObservableList<DisplayShows> tableViewFields;
     private static boolean show0Remaining = false;
     @FXML
+    private Pane pane;
+    @FXML
     private TabPane tabPane;
     @FXML
     private Tab showsTab;
@@ -42,6 +46,8 @@ public class Controller implements Initializable {
     private Tab settingsTab;
     @FXML
     private Button exit;
+    @FXML
+    private Button minimize;
     @SuppressWarnings("CanBeFinal")
     @FXML
     private TableView<DisplayShows> tableView = new TableView<>();
@@ -52,9 +58,11 @@ public class Controller implements Initializable {
     @FXML
     private TextField textField;
     @FXML
-    private Button refreshTableView;
+    private MenuButton menuButton;
     @FXML
-    private Button viewChanges;
+    private MenuItem changeTableView;
+    @FXML
+    private MenuItem viewChanges;
     @FXML
     private CheckBox show0RemainingCheckBox;
 
@@ -127,7 +135,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         log.info("MainController Running...");
-        tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
+        pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
         MainRun.startBackend();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
@@ -145,7 +153,7 @@ public class Controller implements Initializable {
                     setSeasonEpisode.setOnAction(e -> {
                         log.info("\"Set Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), tabPane.getScene().getWindow());
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), pane.getScene().getWindow());
                         if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
                             log.info("Season & Episode were valid.");
                             UserInfoController.setSeasonEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
@@ -158,7 +166,7 @@ public class Controller implements Initializable {
                     playSeasonEpisode.setOnAction(e -> {
                         log.info("\"Play Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), tabPane.getScene().getWindow());
+                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), pane.getScene().getWindow());
                         if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
                             log.info("Season & Episode were valid.");
                             UserInfoController.playAnyEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
@@ -189,7 +197,7 @@ public class Controller implements Initializable {
                     resetShow.setOnAction(e -> {
                         log.info("Reset to running...");
                         String[] choices = {"Beginning", "End"};
-                        String answer = new SelectBox().display("What should " + row.getItem().getShow() + " be reset to?", choices, tabPane.getScene().getWindow());
+                        String answer = new SelectBox().display("What should " + row.getItem().getShow() + " be reset to?", choices, pane.getScene().getWindow());
                         log.info(answer);
                         if (answer.matches("Beginning")) {
                             UserInfoController.setToBeginning(row.getItem().getShow());
@@ -218,12 +226,12 @@ public class Controller implements Initializable {
                             fileManager.open(folders.get(0));
                         } else {
                             ConfirmBox confirmBox = new ConfirmBox();
-                            Boolean openAll = confirmBox.display("Do you want to open ALL associated folders?", tabPane.getScene().getWindow());
+                            Boolean openAll = confirmBox.display("Do you want to open ALL associated folders?", pane.getScene().getWindow());
                             if (openAll) {
                                 folders.forEach(fileManager::open);
                             } else {
                                 ListSelectBox listSelectBox = new ListSelectBox();
-                                File file = listSelectBox.directories("Pick the Folder you want to open", folders, tabPane.getScene().getWindow());
+                                File file = listSelectBox.directories("Pick the Folder you want to open", folders, pane.getScene().getWindow());
                                 if (!file.toString().isEmpty()) {
                                     fileManager.open(file);
                                 }
@@ -258,7 +266,7 @@ public class Controller implements Initializable {
                                     tableView.getSelectionModel().clearAndSelect(row.getIndex());
                                     UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow));
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
-                                    int userChoice = showConfirmBox.display("Have the watched the show?", tabPane.getScene().getWindow());
+                                    int userChoice = showConfirmBox.display("Have the watched the show?", pane.getScene().getWindow());
                                     if (userChoice == 1) {
                                         UserInfoController.changeEpisode(aShow, -2, true);
                                         updateShowField(aShow, tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
@@ -277,7 +285,7 @@ public class Controller implements Initializable {
                             if (keepPlaying) {
                                 UserInfoController.changeEpisode(aShow, -2, false);
                                 MessageBox messageBox = new MessageBox();
-                                messageBox.display("You have reached the end!", tabPane.getScene().getWindow());
+                                messageBox.display("You have reached the end!", pane.getScene().getWindow());
                             }
                         }
                     });
@@ -287,7 +295,9 @@ public class Controller implements Initializable {
 
         // ~~~~ Buttons ~~~~ \\
         exit.setOnAction(e -> Main.stop(Main.stage, false, true));
-        refreshTableView.setOnAction(event -> {
+        minimize.setOnAction(e -> Main.stage.setIconified(true));
+
+        changeTableView.setOnAction(event -> {
             if (currentList.matches("active")) {
                 setTableViewFields("inactive");
                 log.info("TableViewFields set to inactive.");
@@ -297,11 +307,12 @@ public class Controller implements Initializable {
             }
             setTableView();
         });
+
         viewChanges.setOnAction(e -> {
             Boolean keepOpen = false;
             Object[] answer = null;
             do {
-                Stage neededWindow = (Stage) tabPane.getScene().getWindow();
+                Stage neededWindow = (Stage) pane.getScene().getWindow();
                 if (answer != null && answer[1] != null) {
                     neededWindow = (Stage) answer[1];
                 }
@@ -320,6 +331,7 @@ public class Controller implements Initializable {
             setTableViewFields(currentList);
             setTableView();
         });
+        show0RemainingCheckBox.setTooltip(new Tooltip("Show/Hide shows with 0 episode left."));
 
         // || ~~~~ Settings Tab ~~~~ || \\
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
@@ -329,7 +341,7 @@ public class Controller implements Initializable {
             try {
                 settingsWindow.display();
             } catch (Exception e1) {
-                log.severe(e1.toString());
+                log.severe(Arrays.toString(e1.getStackTrace()));
             }
         });
 

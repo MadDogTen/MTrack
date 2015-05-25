@@ -3,7 +3,7 @@ package program.gui;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.TabPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -21,7 +21,7 @@ public class SettingsWindow {
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
-        TabPane root = FXMLLoader.load(getClass().getResource("/gui/Settings.fxml"));
+        Pane root = FXMLLoader.load(getClass().getResource("/gui/Settings.fxml"));
 
         window.setTitle("MTrack");
 
