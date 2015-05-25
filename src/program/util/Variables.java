@@ -9,7 +9,7 @@ public class Variables {
     public static final int SIZE_WIDTH = 282;
     public static final int SIZE_HEIGHT = 454;
     // Base Directories
-    public static final String ProgramRootFolder = "\\MTrackPersonal";
+    public static final String ProgramRootFolder = "\\MTrack";
     public static final String DirectoriesFolder = "\\Directories";
     public static final String UsersFolder = "\\Users";
     // Extensions
