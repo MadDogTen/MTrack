@@ -1,5 +1,6 @@
 package program.io;
 
+import program.Controller;
 import program.Main;
 import program.information.ChangeReporter;
 import program.information.ProgramSettingsController;
@@ -39,6 +40,7 @@ public class CheckShowFiles {
                     for (String aShow : activeShows) {
                         log.info("Currently rechecking " + aShow);
                         int currentSeason = UserInfoController.getCurrentSeason(aShow);
+                        final boolean[] hasShowChanged = {false};
                         ArrayList<Integer> seasons = new ArrayList<>();
                         if (hashMap.containsKey(aShow)) {
                             hashMap.get(aShow).keySet().forEach(aSeason -> {
@@ -49,12 +51,13 @@ public class CheckShowFiles {
                                 }
                             });
                             seasons.forEach(aSeason -> {
-                                if (fileManager.checkFolderExists(String.valueOf(folderLocation) + '\\' + aShow + "\\Season " + aSeason + '\\')) {
+                                if (fileManager.checkFolderExists(String.valueOf(folderLocation) + '/' + aShow + "/Season " + aSeason + '/')) {
                                     log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
                                     ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, aSeason, folderLocation, hashMap);
                                     if (!changedEpisodes.isEmpty()) {
                                         ChangeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
                                         hasChanged[0] = true;
+                                        hasShowChanged[0] = true;
                                         UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, aSeason, hashMap, aIndex);
                                     }
                                 }
@@ -70,7 +73,11 @@ public class CheckShowFiles {
                             if (!changedSeasons.isEmpty()) {
                                 ChangeReporter.addChange(aShow + "- Season(s): " + changedSeasons + " has changed");
                                 hasChanged[0] = true;
+                                hasShowChanged[0] = true;
                                 UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, hashMap, aIndex);
+                            }
+                            if (hasShowChanged[0]) {
+                                Controller.updateShowField(aShow, true);
                             }
                             if (!Main.running || (!forceRun && !keepRunning)) {
                                 break;
@@ -171,10 +178,10 @@ public class CheckShowFiles {
                             if (!episode.isEmpty()) {
                                 if (episode.size() == 2) {
                                     String episodeNumber = String.valueOf(episode.get(1));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "/" + aShow + '/' + "Season " + aSeason + '/' + aEpisode));
                                 } else if (episode.size() == 3) {
                                     String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "/" + aShow + '/' + "Season " + aSeason + '/' + aEpisode));
                                 } else {
                                     log.warning("Error 1 if at this point!" + " + " + episode);
                                 }

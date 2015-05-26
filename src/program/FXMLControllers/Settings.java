@@ -8,6 +8,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
+import program.Controller;
 import program.Main;
 import program.gui.*;
 import program.information.ProgramSettingsController;
@@ -156,7 +157,10 @@ public class Settings implements Initializable {
                 }
                 ShowInfoController.loadShowsFile(true);
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getDirectoryHashMap(index);
-                showsFile.keySet().forEach(UserInfoController::addNewShow);
+                showsFile.keySet().forEach(aShow -> {
+                    UserInfoController.addNewShow(aShow);
+                    Controller.updateShowField(aShow, true);
+                });
                 ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
             } else log.info("Directory wasn't added.");
         });
@@ -230,7 +234,7 @@ public class Settings implements Initializable {
                     Set<String> shows = ShowInfoController.getDirectoryHashMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     emptyShows.forEach(aShow -> {
-                        String fileString = (aDirectory + '\\' + aShow);
+                        String fileString = (aDirectory + '/' + aShow);
                         if (new FileManager().checkFolderExists(fileString) && !shows.contains(aShow)) {
                             emptyShowsDir.add(aShow);
                         }
@@ -271,7 +275,10 @@ public class Settings implements Initializable {
             ArrayList<String> showsList = ShowInfoController.getShowsList();
             if (showsList.isEmpty()) log.info("No shows to change.");
             else {
-                showsList.forEach(aShow -> UserInfoController.setActiveStatus(aShow, true));
+                showsList.forEach(aShow -> {
+                    UserInfoController.setActiveStatus(aShow, true);
+                    Controller.updateShowField(aShow, true);
+                });
                 log.info("Set all shows active.");
             }
         });
@@ -279,7 +286,10 @@ public class Settings implements Initializable {
             ArrayList<String> showsList = ShowInfoController.getShowsList();
             if (showsList.isEmpty()) log.info("No shows to change.");
             else {
-                showsList.forEach(aShow -> UserInfoController.setActiveStatus(aShow, false));
+                showsList.forEach(aShow -> {
+                    UserInfoController.setActiveStatus(aShow, false);
+                    Controller.updateShowField(aShow, true);
+                });
                 log.info("Set all shows inactive.");
             }
         });

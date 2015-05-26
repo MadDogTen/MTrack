@@ -35,7 +35,7 @@ public class Controller implements Initializable {
 
     private static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
-    private static boolean show0Remaining = false;
+    private static boolean show0Remaining;
     @FXML
     private Pane pane;
     @FXML
@@ -96,12 +96,26 @@ public class Controller implements Initializable {
         }
     }
 
-    public static void updateShowField(String aShow, int index) { // TODO Make this usable elsewhere -- Having difficulty doing this.
-        removeShowField(index);
+    public static void updateShowField(String aShow, Boolean showExists) {
+        int index = -2;
+        for (DisplayShows test : tableViewFields) {
+            if (test.getShow().replaceAll("[(]|[)]", "").matches(aShow.replaceAll("[(]|[)]", ""))) {
+                index = tableViewFields.indexOf(test);
+                break;
+            }
+        }
+        Boolean isShowActive = (UserInfoController.isShowActive(aShow) && showExists), remove = false;
+        if (currentList.contains("active") && !isShowActive || currentList.contains("inactive") && isShowActive) {
+            remove = true;
+        }
+        if (index != -2) {
+            removeShowField(index);
+        }
         int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
-        if (show0Remaining || remaining != 0) {
-            log.info("updating");
-            tableViewFields.add(index, new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow)));
+        if (show0Remaining || remaining != 0 && !remove && index != -2) {
+            tableViewFields.add(index, new DisplayShows(aShow, remaining));
+        } else if (index == -2 && !remove) {
+            tableViewFields.add(new DisplayShows(aShow, remaining));
         }
     }
 
@@ -138,10 +152,14 @@ public class Controller implements Initializable {
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
         MainRun.startBackend();
+        show0Remaining = ProgramSettingsController.getShow0Remaining();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
+        shows.setSortType(TableColumn.SortType.ASCENDING);
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
         setTableView();
         tableView.getItems();
+
+        tableView.getSortOrder().add(shows);
 
         tableView.setRowFactory(
                 param -> {
@@ -157,6 +175,8 @@ public class Controller implements Initializable {
                         if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
                             log.info("Season & Episode were valid.");
                             UserInfoController.setSeasonEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
+                            updateShowField(row.getItem().getShow(), true);
+                            tableView.getSelectionModel().clearSelection();
                         } else {
                             log.info("Season & Episode weren't valid.");
                         }
@@ -201,11 +221,13 @@ public class Controller implements Initializable {
                         log.info(answer);
                         if (answer.matches("Beginning")) {
                             UserInfoController.setToBeginning(row.getItem().getShow());
-                            updateShowField(row.getItem().getShow(), tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                            updateShowField(row.getItem().getShow(), true);
+                            tableView.getSelectionModel().clearSelection();
                             log.info("Show is reset to the beginning.");
                         } else if (answer.matches("End")) {
                             UserInfoController.setToEnd(row.getItem().getShow());
-                            updateShowField(row.getItem().getShow(), tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                            updateShowField(row.getItem().getShow(), true);
+                            tableView.getSelectionModel().clearSelection();
                             log.info("Show is reset to the end.");
                         }
                         log.info("Reset to finished running.");
@@ -217,7 +239,7 @@ public class Controller implements Initializable {
                         ArrayList<File> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
-                            String fileString = (aDirectory + '\\' + row.getItem().getShow());
+                            String fileString = (aDirectory + '/' + row.getItem().getShow());
                             if (fileManager.checkFolderExists(fileString)) {
                                 folders.add(new File(fileString));
                             }
@@ -263,18 +285,17 @@ public class Controller implements Initializable {
                             while (keepPlaying) {
                                 int fileExists = UserInfoController.doesEpisodeExists(aShow);
                                 if (fileExists == 1 || fileExists == 2) {
-                                    tableView.getSelectionModel().clearAndSelect(row.getIndex());
                                     UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow));
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
                                     int userChoice = showConfirmBox.display("Have the watched the show?", pane.getScene().getWindow());
                                     if (userChoice == 1) {
                                         UserInfoController.changeEpisode(aShow, -2, true);
-                                        updateShowField(aShow, tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                                        updateShowField(aShow, true);
                                         tableView.getSelectionModel().clearSelection();
                                         keepPlaying = false;
                                     } else if (userChoice == 2) {
                                         UserInfoController.changeEpisode(aShow, -2, true);
-                                        updateShowField(aShow, tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                                        updateShowField(aShow, true);
                                         tableView.getSelectionModel().clearSelection();
                                     } else if (userChoice == 0) {
                                         tableView.getSelectionModel().clearSelection();
@@ -321,8 +342,14 @@ public class Controller implements Initializable {
             } while (keepOpen);
         });
 
+        show0RemainingCheckBox.setSelected(show0Remaining);
+        if (show0Remaining) {
+            setTableViewFields(currentList);
+            setTableView();
+        }
         show0RemainingCheckBox.setOnAction(e -> {
             show0Remaining = show0RemainingCheckBox.isSelected();
+            ProgramSettingsController.setShow0Remaining(show0Remaining);
             if (show0Remaining && currentList.matches("active")) {
                 log.info("Now showing shows with 0 episodes remaining.");
             } else if (currentList.matches("active")) {

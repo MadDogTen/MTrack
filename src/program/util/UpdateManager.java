@@ -17,23 +17,24 @@ public class UpdateManager {
     public void updateFiles() {
         log.info("Checking if inner versions are matched...");
         // -1 is returned if they match, otherwise the old version number is returned.
-        int version = checker.checkProgramSettingsFileVersion();
-        if (version == -1) log.info("Program settings file versions matched.");
+        int programSettingsFileVersion = checker.checkProgramSettingsFileVersion();
+        if (programSettingsFileVersion == -1) log.info("Program settings file versions matched.");
         else {
-            log.info("Program settings file versions didn't match " + Variables.ProgramSettingsFileVersion + " - " + version + ", Updating...");
-            convertProgramSettingsFile(version, Variables.ProgramSettingsFileVersion);
+            log.info("Program settings file versions didn't match " + Variables.ProgramSettingsFileVersion + " - " + programSettingsFileVersion + ", Updating...");
+            convertProgramSettingsFile(programSettingsFileVersion, Variables.ProgramSettingsFileVersion);
         }
-        version = checker.checkUserSettingsFileVersion();
-        if (version == -1) log.info("User settings file versions matched.");
+        int userSettingsFileVersion = checker.checkUserSettingsFileVersion();
+        if (userSettingsFileVersion == -1) log.info("User settings file versions matched.");
         else {
-            log.info("User settings file versions didn't match " + Variables.UserSettingsFileVersion + " - " + version + ", Updating...");
-            convertUserSettingsFile(version, Variables.UserSettingsFileVersion);
+            log.info("User settings file versions didn't match " + Variables.UserSettingsFileVersion + " - " + userSettingsFileVersion + ", Updating...");
+            convertUserSettingsFile(userSettingsFileVersion, Variables.UserSettingsFileVersion);
         }
-        version = ProgramSettingsController.getMainDirectoryVersion();
-        if (version == UserInfoController.getUserDirectoryVersion()) log.info("User directory version matched.");
+        int mainDirectoryVersion = ProgramSettingsController.getMainDirectoryVersion();
+        if (mainDirectoryVersion == UserInfoController.getUserDirectoryVersion())
+            log.info("User directory version matched.");
         else {
             log.info("User directory version didn't match, Updating...");
-            updateUserShows(version);
+            updateUserShows(mainDirectoryVersion);
         }
         log.info("Finished checking if inner versions are matched.");
     }
@@ -72,6 +73,8 @@ public class UpdateManager {
             case 1003:
                 programSettingsFile.get("ProgramVersions").add(1, "1");
                 log.info("Program has been updated from version 1003.");
+            case 1004:
+                programSettingsFile.get("General").add(1, "false");
                 updated = true;
         }
 

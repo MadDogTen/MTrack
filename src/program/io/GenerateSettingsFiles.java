@@ -30,6 +30,8 @@ public class GenerateSettingsFiles {
             temp = new ArrayList<>();
             // Index 0 : Update Speed
             temp.add(0, "120");
+            // Index 1 : show0Remaining
+            temp.add(1, "false");
             settingsFile.put("General", temp);
 
             // --Default User-- \\
@@ -82,7 +84,7 @@ public class GenerateSettingsFiles {
                     temp.put("isHidden", "false");
                 temp.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(aShow)));
                 Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp.get("CurrentSeason")));
-                    temp.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
+                temp.put("CurrentEpisode", ShowInfoController.findLowestEpisode(episodes));
                 tempPut.put(aShow, temp);
                 }
 

@@ -293,13 +293,10 @@ public class ListSelectBox {
                 int episodeInt;
                 if (episode.contains("+")) {
                     log.info("Processing double episode...");
-                    episodeInt = Integer.parseInt(episode.split("\\+")[0]);
+                    episodeInt = Integer.parseInt(episode.split("[+]")[0]);
                 } else episodeInt = Integer.parseInt(episode);
-                if (lowestEpisodeInt == -1) {
+                if (lowestEpisodeInt == -1 || episodeInt < lowestEpisodeInt) {
                     lowestEpisodeInt = episodeInt;
-                    lowestEpisodeString = episode;
-                } else if (episodeInt < lowestEpisodeInt) {
-                    lowestEpisodeInt = Integer.parseInt(episode);
                     lowestEpisodeString = episode;
                 }
             }

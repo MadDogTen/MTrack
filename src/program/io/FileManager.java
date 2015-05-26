@@ -17,7 +17,7 @@ public class FileManager {
         }
         if (overWrite || !checkFileExists(folder, filename, extension)) {
             try {
-                FileOutputStream fos = new FileOutputStream(Variables.dataFolder + folder + '\\' + filename + extension);
+                FileOutputStream fos = new FileOutputStream(Variables.dataFolder + folder + '/' + filename + extension);
 
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(objectToSerialise);
@@ -35,7 +35,7 @@ public class FileManager {
         Object loadedFile = new HashMap<>(0);
         if (checkFileExists(folder, theFile, extension)) {
             try {
-                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + '\\' + theFile + extension));
+                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + '/' + theFile + extension));
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedFile = ois.readObject();
                 ois.close();
@@ -44,12 +44,12 @@ public class FileManager {
             }
             return loadedFile;
         }
-        log.info("File doesn't exist - " + (Variables.dataFolder + folder + '\\' + theFile + extension));
+        log.info("File doesn't exist - " + (Variables.dataFolder + folder + '/' + theFile + extension));
         return loadedFile;
     }
 
     public boolean checkFileExists(String folder, String filename, String extension) {
-        return new File(Variables.dataFolder + folder + '\\' + filename + extension).isFile();
+        return new File(Variables.dataFolder + folder + '/' + filename + extension).isFile();
     }
 
     public boolean checkFolderExists(String aFolder) {
@@ -82,20 +82,20 @@ public class FileManager {
     @SuppressWarnings("AccessOfSystemProperties")
     public String getDataFolder() {
         String home = System.getProperty("user.home");
-        String os = System.getProperty("os.name").toLowerCase();
+        String os = getOS();
         if (os.contains("windows")) {
             home = System.getenv("appdata");
         } else if (os.contains("mac")) {
             home += "~/Library/Application Support";
         } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-            home += "~/.";
+            home += "";
         }
         File dir = new File(home, Variables.ProgramRootFolder);
         return dir.getAbsolutePath();
     }
 
     public void deleteFile(String folder, String filename, String extension) {
-        String file = (folder + '\\' + filename + extension);
+        String file = (folder + '/' + filename + extension);
         if (!checkFileExists(folder, filename, extension)) {
             log.warning("File " + Variables.dataFolder + file + " does not exist!");
         }

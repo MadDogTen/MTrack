@@ -58,6 +58,11 @@ public class UserInfoController {
         userSettingsFile.get("ShowSettings").get(aShow).replace("isActive", String.valueOf(active));
     }
 
+    public static boolean isShowActive(String aShow) {
+        loadUserInfo();
+        return Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
+    }
+
     public static ArrayList<String> getActiveShows() {
         loadUserInfo();
         ArrayList<String> activeShows = new ArrayList<>();
@@ -154,21 +159,21 @@ public class UserInfoController {
             String currentEpisodeString = aShowSettings.get("CurrentEpisode");
             int currentEpisode;
             if (currentEpisodeString.contains("+")) {
-                currentEpisode = Integer.parseInt(currentEpisodeString.split("\\+")[1]);
+                currentEpisode = Integer.parseInt(currentEpisodeString.split("[+]")[1]);
             } else currentEpisode = Integer.parseInt(currentEpisodeString);
-            if (isAnotherEpisode(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")), currentEpisode)) {
-                currentEpisode++;
-                aShowSettings.replace("CurrentEpisode", String.valueOf(currentEpisode));
+            String isAnotherEpisode = isAnotherEpisode(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")), currentEpisode);
+            if (!isAnotherEpisode.contains("-3")) {
+                aShowSettings.replace("CurrentEpisode", isAnotherEpisode);
                 log.info("UserInfoController- " + aShow + " is now on episode " + aShowSettings.get("CurrentEpisode"));
             } else if (isAnotherSeason(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")))) {
                 int newSeason = Integer.parseInt(aShowSettings.get("CurrentSeason"));
                 newSeason += 1;
                 aShowSettings.replace("CurrentSeason", String.valueOf(newSeason));
-                if (isAnotherEpisode(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")), 0)) {
-                    aShowSettings.replace("CurrentEpisode", String.valueOf(1));
+                String isAnotherEpisode2 = isAnotherEpisode(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")), 0);
+                if (isAnotherEpisode2.contains("-3")) aShowSettings.replace("CurrentEpisode", String.valueOf(0));
+                else {
+                    aShowSettings.replace("CurrentEpisode", isAnotherEpisode2);
                     log.info("UserInfoController- " + aShow + " is now on episode " + aShowSettings.get("CurrentEpisode"));
-                } else {
-                    aShowSettings.replace("CurrentEpisode", String.valueOf(0));
                 }
             } else {
                 currentEpisode++;
@@ -197,15 +202,18 @@ public class UserInfoController {
         return seasons.contains(season);
     }
 
-    private static boolean isAnotherEpisode(String aShow, int aSeason, int episode) {
+    private static String isAnotherEpisode(String aShow, int aSeason, int episode) {
         Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
+        int newEpisode = episode + 1;
         if (!episodes.isEmpty()) {
             Set<Integer> episodesInt = episodesToInt(episodes);
-            if (!episodesInt.isEmpty() && episodesInt.contains(episode + 1)) {
-                return true;
+            if (episodesInt.contains(newEpisode)) {
+                if (episodes.contains(String.valueOf(newEpisode) + '+' + String.valueOf(newEpisode + 1))) {
+                    return String.valueOf(newEpisode) + '+' + String.valueOf(newEpisode + 1);
+                } else return String.valueOf(newEpisode);
             }
         }
-        return false;
+        return "-3";
     }
 
     public static void setToBeginning(String aShow) {
@@ -238,15 +246,15 @@ public class UserInfoController {
     public static int doesEpisodeExists(String aShow) {
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
         Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")));
-        final int[] answer = {0};
         if (!episodes.isEmpty()) {
             if (episodes.contains(aShowSettings.get("CurrentEpisode"))) {
                 if (aShowSettings.get("CurrentEpisode").contains("+")) {
-                    answer[0] = 2;
-                } else answer[0] = 1;
+                    return 2;
+                }
+                return 1;
             }
         }
-        return answer[0];
+        return 0;
     }
 
     private static Set<Integer> episodesToInt(Set<String> oldEpisodes) {
@@ -254,7 +262,7 @@ public class UserInfoController {
         if (oldEpisodes != null) {
             oldEpisodes.forEach(aEpisode -> {
                 if (aEpisode.contains("+")) {
-                    String[] temp = aEpisode.split("\\+");
+                    String[] temp = aEpisode.split("[+]");
                     int temp1 = Integer.parseInt(temp[0]);
                     int temp2 = Integer.parseInt(temp[1]);
 
@@ -287,7 +295,7 @@ public class UserInfoController {
         if (!allSeasonAllowed.isEmpty()) {
             int currentEpisodeInt;
             if (aShowSettings.get("CurrentEpisode").contains("+")) {
-                String[] temp = aShowSettings.get("CurrentEpisode").split("\\+");
+                String[] temp = aShowSettings.get("CurrentEpisode").split("[+]");
                 currentEpisodeInt = Integer.parseInt(temp[1]);
             } else currentEpisodeInt = Integer.parseInt(aShowSettings.get("CurrentEpisode"));
             for (int aSeason : allSeasonAllowed) {
@@ -300,7 +308,7 @@ public class UserInfoController {
                     ArrayList<Integer> episodesArray = new ArrayList<>();
                     episodes.forEach(aEpisode -> {
                         if (aEpisode.contains("+")) {
-                            String[] Temp = aEpisode.split("\\+");
+                            String[] Temp = aEpisode.split("[+]");
                             episodesArray.add(Integer.parseInt(Temp[0]));
                             episodesArray.add(Integer.parseInt(Temp[1]));
                         } else episodesArray.add(Integer.valueOf(aEpisode));
@@ -346,7 +354,7 @@ public class UserInfoController {
             temp.put("isHidden", "false");
             temp.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(String.valueOf(aShow))));
             Set<String> episodes = ShowInfoController.getEpisodesList(String.valueOf(aShow), Integer.parseInt(temp.get("CurrentSeason")));
-            temp.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
+            temp.put("CurrentEpisode", ShowInfoController.findLowestEpisode(episodes));
             userSettingsFile.get("ShowSettings").put(aShow, temp);
         }
     }

@@ -1,5 +1,6 @@
 package program.information;
 
+import program.Controller;
 import program.io.FileManager;
 import program.util.Strings;
 import program.util.Variables;
@@ -33,6 +34,16 @@ public class ProgramSettingsController {
         loadProgramSettingsFile();
         settingsFile.get("General").set(0, String.valueOf(updateSpeed));
         Variables.setUpdateSpeed();
+    }
+
+    public static boolean getShow0Remaining() {
+        loadProgramSettingsFile();
+        return Boolean.valueOf(settingsFile.get("General").get(1));
+    }
+
+    public static void setShow0Remaining(boolean show0Remaining) {
+        loadProgramSettingsFile();
+        settingsFile.get("General").set(1, String.valueOf(show0Remaining));
     }
 
     public static boolean isDefaultUsername() {
@@ -121,6 +132,7 @@ public class ProgramSettingsController {
             if (!showExistsElsewhere) {
                 UserInfoController.setIgnoredStatus(aShow, true);
             }
+            Controller.updateShowField(aShow, showExistsElsewhere);
         });
         new FileManager().deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
         settingsFile.get("Directories").remove(index + ">" + aDirectory);

@@ -128,23 +128,26 @@ public class ShowInfoController {
         return highestSeason[0];
     }
 
-    public static int findLowestEpisode(Set<String> episodes) {
-        final int[] lowestEpisode = {-1};
+    public static String findLowestEpisode(Set<String> episodes) {
+        final String[] lowestEpisodeString = new String[1];
+        final int[] lowestEpisodeInt = {-1};
         if (episodes != null) {
             episodes.forEach(aEpisode -> {
                 if (aEpisode.contains("+")) {
-                    String[] temp = aEpisode.split("\\+");
+                    String[] temp = aEpisode.split("[+]");
                     int temp1 = Integer.parseInt(temp[0]),
                             temp2 = Integer.parseInt(temp[1]);
-                    if (lowestEpisode[0] == -1 || temp2 < lowestEpisode[0]) {
-                        lowestEpisode[0] = temp1;
+                    if (lowestEpisodeInt[0] == -1 || temp2 < lowestEpisodeInt[0]) {
+                        lowestEpisodeInt[0] = temp1;
+                        lowestEpisodeString[0] = aEpisode;
                     }
-                } else if (lowestEpisode[0] == -1 || Integer.parseInt(aEpisode) < lowestEpisode[0]) {
-                    lowestEpisode[0] = Integer.parseInt(aEpisode);
+                } else if (lowestEpisodeInt[0] == -1 || Integer.parseInt(aEpisode) < lowestEpisodeInt[0]) {
+                    lowestEpisodeInt[0] = Integer.parseInt(aEpisode);
+                    lowestEpisodeString[0] = aEpisode;
                 }
             });
         }
-        return lowestEpisode[0];
+        return lowestEpisodeString[0];
     }
 
     public static int findHighestEpisode(Set<String> episodes) {
@@ -153,7 +156,7 @@ public class ShowInfoController {
             episodes.forEach(aEpisode -> {
                 int episode;
                 if (aEpisode.contains("+")) {
-                    episode = Integer.parseInt(aEpisode.split("//+")[1]);
+                    episode = Integer.parseInt(aEpisode.split("[+]")[1]);
                 } else episode = Integer.parseInt(aEpisode);
                 if (highestEpisode[0] == -1 || episode > highestEpisode[0]) {
                     highestEpisode[0] = episode;
@@ -161,6 +164,11 @@ public class ShowInfoController {
             });
         }
         return highestEpisode[0];
+    }
+
+    public static boolean doesShowExist(String aShow) {
+        loadShowsFile(false);
+        return showsFile.containsKey(aShow);
     }
 
     public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {

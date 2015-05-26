@@ -1,5 +1,14 @@
 Changes:
 
+Pre-Alpha 0.8.7 -
+General Code Fixes / Cleanup.
+Made preparations for Ubuntu support.
+Fixed ListSelectBox pickEpisode NumberFormatException.
+Made Controller updateShowField (Finally) usable from other classes.
+Fixed issue playing shows with the first found episode being a double episode.
+"Show/Hide shows with 0 episode left." now keeps its state after restart.
+Set default sort as shows ascending.
+
 Pre-Alpha 0.8.6 -
 General Code Cleanup.
 Worked on the Gui a bit, Still more to be done.

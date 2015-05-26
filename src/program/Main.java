@@ -60,7 +60,9 @@ public class Main extends Application implements Runnable {
         stage = primaryStage;
         ImageLoader.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
-        Parent root = FXMLLoader.load(getClass().getResource("/gui/MainGui.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/MainGui.fxml"));
+        Parent root = fxmlLoader.load();
+
         stage.setTitle("MTrack");
         stage.setWidth(Variables.SIZE_WIDTH);
         stage.setHeight(Variables.SIZE_HEIGHT);

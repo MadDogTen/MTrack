@@ -105,7 +105,7 @@ public class TextBox {
         label.setText(message);
 
         TextField textField = new TextField();
-        textField.setPromptText("\\PathToDirectory\\Shows");
+        textField.setPromptText("/PathToDirectory/Shows");
 
         Button submit = new Button("Submit");
         submit.setOnAction(e -> {

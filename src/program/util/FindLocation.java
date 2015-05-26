@@ -20,7 +20,7 @@ public class FindLocation {
 
     public static ArrayList<Integer> findSeasons(File dir, String show) {
         log.finest("Searching for seasons...");
-        File folder = new File(dir + "\\" + show);
+        File folder = new File(dir + "/" + show);
         ArrayList<String> showFolder = new ArrayList<>();
         Collections.addAll(showFolder, folder.list((dir1, name) -> new File(dir1, name).isDirectory()));
         ArrayList<Integer> seasonNumber = new ArrayList<>();
@@ -40,7 +40,7 @@ public class FindLocation {
     public static ArrayList<String> findEpisodes(File dir, String ShowName, Integer Season) {
         log.finest("Searching for episodes...");
         ArrayList<String> episodes = new ArrayList<>();
-        File folder = new File(dir + "\\" + ShowName + "\\Season" + ' ' + Season);
+        File folder = new File(dir + "/" + ShowName + "/Season" + ' ' + Season);
         if (new FileManager().checkFolderExists(String.valueOf(folder)) && new File(String.valueOf(folder)).list().length > 0) {
             Collections.addAll(episodes, folder.list((dir1, name) -> name.toLowerCase().endsWith(".mkv") || name.toLowerCase().endsWith(".avi") || name.toLowerCase().endsWith(".mp4") || name.toLowerCase().endsWith(".ts")));
             return episodes;

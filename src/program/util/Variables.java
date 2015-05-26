@@ -9,15 +9,15 @@ public class Variables {
     public static final int SIZE_WIDTH = 282;
     public static final int SIZE_HEIGHT = 454;
     // Base Directories
-    public static final String ProgramRootFolder = "\\MTrackPersonal";
-    public static final String DirectoriesFolder = "\\Directories";
-    public static final String UsersFolder = "\\Users";
+    public static final String ProgramRootFolder = "/MTrack";
+    public static final String DirectoriesFolder = "/Directories";
+    public static final String UsersFolder = "/Users";
     // Extensions
     public static final String ShowsExtension = ".shows";
     public static final String UsersExtension = ".user";
     public static final String SettingsExtension = ".settings";
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- Set back to 1 for release. \\
-    public static final int ProgramSettingsFileVersion = 1004;
+    public static final int ProgramSettingsFileVersion = 1005;
     public static final int UserSettingsFileVersion = 1001;
     // Other
     public static final String EmptyString = "";
