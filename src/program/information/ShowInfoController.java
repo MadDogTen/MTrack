@@ -171,11 +171,6 @@ public class ShowInfoController {
         return highestEpisode[0];
     }
 
-    public static boolean doesShowExist(String aShow) {
-        loadShowsFile(false);
-        return showsFile.containsKey(aShow);
-    }
-
     public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {
         final Boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
@@ -249,10 +244,10 @@ public class ShowInfoController {
             }
             return bothInt;
         }
-        MainP = Pattern.compile("\\d{1,4}x\\d{1,4}");
-        MainM = MainP.matcher(aEpisode.toLowerCase());
-        if (MainM.find()) {
-            String info = MainM.group();
+        Pattern MainP2 = Pattern.compile("\\d{1,4}x\\d{1,4}");
+        Matcher MainM2 = MainP2.matcher(aEpisode.toLowerCase());
+        if (MainM2.find()) {
+            String info = MainM2.group();
             String splitResult = info.toLowerCase().replaceFirst("x", " ");
             String[] bothString = splitResult.split(" ");
             bothInt.add(Integer.valueOf(bothString[0]));

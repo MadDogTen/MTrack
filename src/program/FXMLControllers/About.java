@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class About implements Initializable {
     private static final Logger log = Logger.getLogger(About.class.getName());
 
+    @SuppressWarnings("unused")
     @FXML
     private Pane pane;
     @FXML

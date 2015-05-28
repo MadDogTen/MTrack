@@ -327,13 +327,13 @@ public class UserInfoController {
                         episodesArray.forEach(episodesAllowed::add);
                     }
                     Collections.sort(episodesAllowed);
-                    episodesIterator = episodesAllowed.iterator();
-                    while (episodesIterator.hasNext()) {
-                        int e = episodesIterator.next();
+                    Iterator<Integer> episodesIterator2 = episodesAllowed.iterator();
+                    while (episodesIterator2.hasNext()) {
+                        int e = episodesIterator2.next();
                         if (e == episode) {
                             remaining++;
                             episode++;
-                            episodesIterator.remove();
+                            episodesIterator2.remove();
                         } else return remaining;
                     }
                     if (!episodesAllowed.isEmpty()) {

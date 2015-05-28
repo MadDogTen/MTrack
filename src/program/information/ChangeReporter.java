@@ -9,6 +9,7 @@ public class ChangeReporter {
     private static String[] changes = new String[0];
 
     public static void addChange(String newInfo) {
+        log.info("Adding new change...");
         ArrayList<String> newList = new ArrayList<>();
         newList.add(0, newInfo);
         int currentPlace = 1;
@@ -20,10 +21,12 @@ public class ChangeReporter {
         for (int i = 0; i < currentPlace; i++) {
             changes[i] = newList.get(i);
         }
+        log.info("Finished adding new change.");
     }
 
     public static void resetChanges() {
         changes = new String[0];
+        log.info("Change list has been cleared.");
     }
 
     public static String[] getChanges() {

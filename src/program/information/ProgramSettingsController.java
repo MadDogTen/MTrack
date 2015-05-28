@@ -101,15 +101,13 @@ public class ProgramSettingsController {
         return Integer.parseInt(settingsFile.get("ProgramVersions").get(1));
     }
 
-    public static void setMainDirectoryVersion(int version, boolean updateUser) {
+    public static void setMainDirectoryVersion(int version) {
         if (mainDirectoryVersionAlreadyChanged) {
             log.info("Already changed main directory version this run, no further change needed.");
         } else {
             settingsFile.get("ProgramVersions").set(1, String.valueOf(version));
             // Current User should always be up to date, so its version can be updated with the Main Directory Version. Only time updateUser is false is on firstRun.
-            if (updateUser) {
-                UserInfoController.setUserDirectoryVersion(version);
-            }
+            UserInfoController.setUserDirectoryVersion(version);
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;

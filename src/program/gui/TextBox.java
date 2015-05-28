@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 public class TextBox {
     private static final Logger log = Logger.getLogger(TextBox.class.getName());
 
+    @SuppressWarnings("SameParameterValue")
     public String display(String message, String messageIfNameFieldIsBlank, String defaultValue, Window oldWindow) {
         log.finest("TextBox display has been opened.");
         Stage window = new Stage();
@@ -91,6 +92,7 @@ public class TextBox {
         } else return true;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public File addDirectoriesDisplay(String message, ArrayList<String> currentDirectories, String messageIfFieldIsBlank, String messageIfNotDirectory, Window oldWindow) {
         log.finest("TextBox addDirectoriesDisplay has been opened.");
         Stage window = new Stage();
@@ -161,6 +163,7 @@ public class TextBox {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     public int updateSpeed(String message, String messageFieldIsBlank, int defaultValue, Window oldWindow) {
         log.finest("TextBox updateSpeed has been opened.");
         Stage window = new Stage();

@@ -45,7 +45,7 @@ public class MainRun {
         }
 
         if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
-            generateUserSettingsFile(Strings.UserName, false);
+            generateUserSettingsFile(Strings.UserName);
         }
         log.info("Username is set: " + Strings.UserName);
         new UpdateManager().updateFiles();
@@ -120,7 +120,7 @@ public class MainRun {
                 log.severe(e.toString());
             }
         }
-        generateUserSettingsFile(Strings.UserName, false);
+        generateUserSettingsFile(Strings.UserName);
     }
 
     private static void addDirectories() {
@@ -146,7 +146,7 @@ public class MainRun {
     // File Generators
     private static void generateProgramSettingsFile() {
         log.info("Attempting to generate program settings file.");
-        new GenerateSettingsFiles().generateProgramSettingsFile(false);
+        new GenerateSettingsFiles().generateProgramSettingsFile();
     }
 
     private static void generateShowFiles() {
@@ -156,13 +156,13 @@ public class MainRun {
             log.info("Currently generating show files for: " + aDirectory);
             int fileName = directories.indexOf(aDirectory);
             File file = new File(aDirectory);
-            GenerateNewShowFiles.generateShowsFile(fileName, file, false, true);
+            GenerateNewShowFiles.generateShowsFile(fileName, file);
         });
         log.info("Finished generating show files.");
     }
 
-    private static void generateUserSettingsFile(String userName, Boolean override) {
+    private static void generateUserSettingsFile(String userName) {
         log.info("Attempting to generate settings file for " + userName + '.' );
-        new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName, override);
+        new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName);
     }
 }

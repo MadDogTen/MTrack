@@ -12,9 +12,9 @@ import java.util.logging.Logger;
 public class GenerateSettingsFiles {
     private final Logger log = Logger.getLogger(GenerateSettingsFiles.class.getName());
 
-    public void generateProgramSettingsFile(Boolean override) {
+    public void generateProgramSettingsFile() {
         FileManager fileManager = new FileManager();
-        if (override || !fileManager.checkFileExists(Strings.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension)) {
+        if (!fileManager.checkFileExists(Strings.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension)) {
             log.info("GenerateSettingsFiles- Generating program settings file...");
             HashMap<String, ArrayList<String>> settingsFile = new HashMap<>();
             ArrayList<String> temp;
@@ -51,9 +51,9 @@ public class GenerateSettingsFiles {
         }
     }
 
-    public void generateUserSettingsFile(String userName, Boolean override) {
+    public void generateUserSettingsFile(String userName) {
         FileManager fileManager = new FileManager();
-        if (override || !fileManager.checkFileExists(Variables.SettingsExtension, userName, ".settings")) {
+        if (!fileManager.checkFileExists(Variables.SettingsExtension, userName, ".settings")) {
             log.info("GenerateSettingsFiles- Generating settings file for " + userName + "...");
             HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile = new HashMap<>();
             HashMap<String, HashMap<String, String>> tempPut;

@@ -39,6 +39,7 @@ public class UpdateManager {
         log.info("Finished checking if inner versions are matched.");
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void convertProgramSettingsFile(int oldVersion, int newVersion) {
         HashMap<String, ArrayList<String>> programSettingsFile = ProgramSettingsController.getSettingsFile();
         Boolean updated = false;
@@ -88,6 +89,7 @@ public class UpdateManager {
         } else log.info("Program settings file was not updated. This is an error, please report.");
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void convertUserSettingsFile(int oldVersion, int newVersion) {
         HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile = UserInfoController.getUserSettingsFile();
         Boolean updated = false;
@@ -152,12 +154,12 @@ public class UpdateManager {
         shows.forEach(aShow -> {
             if (!userShows.contains(aShow) && !ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and added.");
-                ChangeReporter.addChange(aShow + " has changed");
+                ChangeReporter.addChange(aShow + " was added.");
                 UserInfoController.addNewShow(aShow);
                 changed[0] = true;
             } else if (ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and un-ignored.");
-                ChangeReporter.addChange(aShow + " has changed");
+                ChangeReporter.addChange(aShow + " was added.");
                 UserInfoController.setIgnoredStatus(aShow, false);
                 changed[0] = true;
             }
@@ -165,7 +167,7 @@ public class UpdateManager {
         userShows.forEach(aShow -> {
             if (!shows.contains(aShow)) {
                 log.info(aShow + " wasn't found during user shows update.");
-                ChangeReporter.addChange(aShow + " has changed");
+                ChangeReporter.addChange(aShow + " has been removed.");
                 UserInfoController.setIgnoredStatus(aShow, true);
                 changed[0] = true;
             }

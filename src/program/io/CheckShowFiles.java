@@ -2,11 +2,11 @@ package program.io;
 
 import program.Controller;
 import program.Main;
-import program.information.ChangeReporter;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.util.Clock;
+import program.util.FindChangedShows;
 import program.util.FindLocation;
 import program.util.Strings;
 
@@ -28,8 +28,8 @@ public class CheckShowFiles {
     public static void recheckShowFile(Boolean forceRun) {
         final Boolean[] hasChanged = {false};
         int timer = Clock.getTimeSeconds();
-        /*FindChangedShows findChangedShows = new FindChangedShows();
-        findChangedShows.findChangedShows(ShowInfoController.getShowsFile());*/
+        FindChangedShows findChangedShows = new FindChangedShows();
+        findChangedShows.findChangedShows(ShowInfoController.getShowsFile());
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             log.info("Started rechecking shows...");
             recheckShowFileRunning = true;
@@ -78,7 +78,6 @@ public class CheckShowFiles {
                                     //log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
                                     ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, aSeason, folderLocation, hashMap);
                                     if (!changedEpisodes.isEmpty()) {
-                                        ChangeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
                                         hasChanged[0] = true;
                                         hasShowChanged[0] = true;
                                         UpdateShowFiles.checkForNewOrRemovedEpisodes(folderLocation, aShow, aSeason, hashMap, aIndex);
@@ -94,7 +93,6 @@ public class CheckShowFiles {
                                 }
                             }
                             if (!changedSeasons.isEmpty()) {
-                                ChangeReporter.addChange(aShow + "- Season(s): " + changedSeasons + " has changed");
                                 hasChanged[0] = true;
                                 hasShowChanged[0] = true;
                                 UpdateShowFiles.checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, hashMap, aIndex);
@@ -114,9 +112,6 @@ public class CheckShowFiles {
                     hasChanged[0] = true;
                     ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
                     changedShows.keySet().forEach(aNewShow -> {
-                        if (!ShowInfoController.doesShowExistElsewhere(aNewShow, ShowInfoController.getDirectoriesHashMaps(aIndex))) {
-                            ChangeReporter.addChange(aNewShow + " has been added!");
-                        }
                         hashMap.put(aNewShow, changedShows.get(aNewShow));
                         if (ignoredShows.contains(aNewShow)) {
                             UserInfoController.setIgnoredStatus(aNewShow, false);
@@ -128,13 +123,13 @@ public class CheckShowFiles {
                         UserInfoController.addNewShow(aShow);
                         Controller.updateShowField(aShow, true);
                     });
-                    ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
+                    ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
                 }
             });
         }
         if (hasChanged[0] && Main.running) {
             ShowInfoController.loadShowsFile(true);
-            /*findChangedShows.findShowFileDifferences(ShowInfoController.getShowsFile());*/
+            findChangedShows.findShowFileDifferences(ShowInfoController.getShowsFile());
             log.info("Some shows have been updated.");
             log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
         } else if (Main.running) {

@@ -105,6 +105,7 @@ public class Controller implements Initializable {
                 break;
             }
         }
+        log.info(String.valueOf(index));
         Boolean isShowActive = (UserInfoController.isShowActive(aShow) && showExists), remove = false;
         if (currentList.contains("active") && !isShowActive || currentList.contains("inactive") && isShowActive) {
             remove = true;
@@ -114,7 +115,7 @@ public class Controller implements Initializable {
         }
         if (!remove) {
             int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
-            if (show0Remaining || remaining != 0 && index != -2) {
+            if ((show0Remaining || remaining != 0) && index != -2) {
                 tableViewFields.add(index, new DisplayShows(aShow, remaining));
             } else if (index == -2) {
                 tableViewFields.add(new DisplayShows(aShow, remaining));

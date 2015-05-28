@@ -8,7 +8,7 @@ public class Strings {
     public static final String ProgramTitle = "MTrack";
 
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Pre-Alpha 0.8.8";
+    public static final String MTrackVersion = "Pre-Alpha 0.8.9";
     public static final String CodedBy = "By: MadDogTen";
     public static final String CodedUsing = "Using: Intellij IDEA 14.1.3";
     public static final String codedWith = "Java";
@@ -18,7 +18,7 @@ public class Strings {
     public static final String SettingsFileName = "Program";
     // Other
     public static final String EmptyString = "";
-    public static String FileSeparator = File.separator;
+    public static final String FileSeparator = File.separator;
     // Strings set by program
     public static String UserName;
 }

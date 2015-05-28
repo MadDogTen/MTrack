@@ -1,5 +1,10 @@
 Changes:
 
+Pre-Alpha 0.8.9 -
+General Code Changes.
+Fixed Controller updateShowField potentially hanging when adding a show.
+Switched to the improved change tracking system. Still highly unfinished.
+
 Pre-Alpha 0.8.8 -
 General Code / Bug fixes.
 Replaced all file separators with Strings.FileSeparator which uses File.separator.

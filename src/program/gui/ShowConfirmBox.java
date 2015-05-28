@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 public class ShowConfirmBox {
     private static final Logger log = Logger.getLogger(ShowConfirmBox.class.getName());
 
+    @SuppressWarnings("SameParameterValue")
     public int display(String message, Window oldWindow) {
         log.finest("ShowConfirmBox has been opened.");
         Stage window = new Stage();

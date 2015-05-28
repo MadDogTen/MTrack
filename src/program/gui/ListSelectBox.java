@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public class ListSelectBox {
     private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
 
+    @SuppressWarnings("SameParameterValue")
     public String display(String message, ArrayList<String> users, Window oldWindow) {
         final String[] userName = new String[1];
         userName[0] = Strings.DefaultUsername;
@@ -203,6 +204,7 @@ public class ListSelectBox {
         return file[0];
     }
 
+    @SuppressWarnings("SameParameterValue")
     public String[] pickSeasonEpisode(String message, String aShow, Set<Integer> seasons, Window oldWindow) {
         final String[] choice = new String[2];
 
@@ -264,6 +266,7 @@ public class ListSelectBox {
         return choice;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private String pickEpisode(String message, Set<String> episodes, Double width, Double height, Window oldWindow) {
         final String[] choice = new String[1];
 

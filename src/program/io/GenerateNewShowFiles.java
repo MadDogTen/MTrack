@@ -15,9 +15,9 @@ import java.util.logging.Logger;
 public class GenerateNewShowFiles {
     private static final Logger log = Logger.getLogger(GenerateNewShowFiles.class.getName());
 
-    public static void generateShowsFile(int index, File folderLocation, Boolean forceGen, Boolean firstRun) {
+    public static void generateShowsFile(int index, File folderLocation) {
         FileManager fileManager = new FileManager();
-        if (forceGen || !fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
+        if (!fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
             log.info("Generating ShowsFile for: " + folderLocation);
             // String = Show Name -- HashMap == Seasons in show from seasonEpisode
             HashMap<String, HashMap<Integer, HashMap<String, String>>> showSeasons = new HashMap<>(0);
@@ -60,8 +60,8 @@ public class GenerateNewShowFiles {
                 }
             });
             log.info("0");
-            ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, !firstRun);
-            fileManager.save(showSeasons, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension, forceGen);
+            ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
+            fileManager.save(showSeasons, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension, false);
         }
     }
 }

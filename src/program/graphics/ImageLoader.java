@@ -32,11 +32,12 @@ public class ImageLoader {
         return imageIcon;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public static Image getImage(String directory) {
         return new Image(directory);
     }
 
     public static void setIcon(Stage stage) {
-        stage.getIcons().add(getImage("/image/MTrackLogo.png"));
+        stage.getIcons().add(new Image("/image/MTrackLogo.png"));
     }
 }
