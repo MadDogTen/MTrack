@@ -38,6 +38,6 @@ public class ImageLoader {
     }
 
     public static void setIcon(Stage stage) {
-        stage.getIcons().add(new Image("/image/MTrackLogo.png"));
+        stage.getIcons().add(getImage("/image/MTrackLogo.png"));
     }
 }

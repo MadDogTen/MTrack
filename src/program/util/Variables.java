@@ -20,7 +20,7 @@ public class Variables {
     public static final int ProgramSettingsFileVersion = 1005;
     public static final int UserSettingsFileVersion = 1001;
 
-    public static final Boolean devMode = false; //TODO Turn off before pushing changes.
+    public static final Boolean devMode = false;
     public static final Boolean StartFresh = false; // Won't work unless devMode is true.
 
     public static Integer updateSpeed;

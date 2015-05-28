@@ -1,5 +1,8 @@
 Changes:
 
+Pre-Alpha 0.8.9.1 -
+A few small changes.
+
 Pre-Alpha 0.8.9 -
 General Code Changes.
 Fixed Controller updateShowField potentially hanging when adding a show.

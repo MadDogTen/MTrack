@@ -106,7 +106,7 @@ public class ProgramSettingsController {
             log.info("Already changed main directory version this run, no further change needed.");
         } else {
             settingsFile.get("ProgramVersions").set(1, String.valueOf(version));
-            // Current User should always be up to date, so its version can be updated with the Main Directory Version. Only time updateUser is false is on firstRun.
+            // Current User should always be up to date, so its version can be updated with the Main Directory Version.
             UserInfoController.setUserDirectoryVersion(version);
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
