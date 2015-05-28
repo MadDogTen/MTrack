@@ -108,7 +108,7 @@ public class Settings implements Initializable {
                 ProgramSettingsController.setDefaultUsername(defaultUsername, 1);
             }
         });
-        clearDefaultUsername.setOnAction(e -> ProgramSettingsController.setDefaultUsername(Variables.EmptyString, 0));
+        clearDefaultUsername.setOnAction(e -> ProgramSettingsController.setDefaultUsername(Strings.EmptyString, 0));
         deleteUser.setOnAction(e -> {
             ArrayList<String> users = UserInfoController.getAllUsers();
             users.remove(Strings.UserName);
@@ -234,7 +234,7 @@ public class Settings implements Initializable {
                     Set<String> shows = ShowInfoController.getDirectoryHashMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     emptyShows.forEach(aShow -> {
-                        String fileString = (aDirectory + '/' + aShow);
+                        String fileString = (aDirectory + Strings.FileSeparator + aShow);
                         if (new FileManager().checkFolderExists(fileString) && !shows.contains(aShow)) {
                             emptyShowsDir.add(aShow);
                         }

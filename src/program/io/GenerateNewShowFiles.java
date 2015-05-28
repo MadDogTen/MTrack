@@ -4,6 +4,7 @@ import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.util.FindLocation;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.io.File;
@@ -38,10 +39,10 @@ public class GenerateNewShowFiles {
                             if (!episode.isEmpty()) {
                                 if (episode.size() == 2) {
                                     String episodeNumber = String.valueOf(episode.get(1));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                                 } else if (episode.size() == 3) {
                                     String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "\\" + aShow + '\\' + "Season " + aSeason + '\\' + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                                 } else {
                                     log.warning("Error 1 if at this point!" + " + " + episode);
                                 }

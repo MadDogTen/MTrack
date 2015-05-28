@@ -14,7 +14,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.io.MoveWindow;
-import program.util.Variables;
+import program.util.Strings;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -52,7 +52,7 @@ public class SelectBox {
         });
 
         close.setOnAction(e -> {
-            answer[0] = Variables.EmptyString;
+            answer[0] = Strings.EmptyString;
             window.close();
         });
 

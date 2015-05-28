@@ -17,7 +17,7 @@ import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.io.FileManager;
 import program.io.MoveWindow;
-import program.util.Variables;
+import program.util.Strings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -117,7 +117,7 @@ public class TextBox {
 
         Button exit = new Button("X");
         exit.setOnAction(e -> {
-            directories[0] = new File(Variables.EmptyString);
+            directories[0] = new File(Strings.EmptyString);
             window.close();
         });
 

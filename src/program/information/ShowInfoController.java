@@ -2,6 +2,7 @@ package program.information;
 
 import program.io.FileManager;
 import program.util.Clock;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.util.ArrayList;
@@ -41,9 +42,13 @@ public class ShowInfoController {
                 log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
             } else {
                 FileManager fileManager = new FileManager();
-                ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Variables.EmptyString));
+                ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
             }
         }
+    }
+
+    public static HashMap<String, HashMap<Integer, HashMap<String, String>>> getShowsFile() {
+        return showsFile;
     }
 
     @SuppressWarnings("unchecked")
@@ -55,7 +60,7 @@ public class ShowInfoController {
         files.forEach(aString -> {
             int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
             if (skip != place) {
-                showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Variables.EmptyString));
+                showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
             }
         });
         return showsFileArray;
@@ -68,7 +73,7 @@ public class ShowInfoController {
         FileManager fileManager = new FileManager();
         for (String aFile : files) {
             if (aFile.split("\\-|\\.")[1].matches(String.valueOf(index))) {
-                showsFile = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aFile, Variables.EmptyString);
+                showsFile = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aFile, Strings.EmptyString);
                 break;
             }
         }
@@ -226,7 +231,7 @@ public class ShowInfoController {
             } else {
                 info = MainM.group();
             }
-            String splitResult = info.toLowerCase().replaceFirst("s", Variables.EmptyString);
+            String splitResult = info.toLowerCase().replaceFirst("s", Strings.EmptyString);
             splitResult = splitResult.toLowerCase().replaceFirst("e", " ");
 
             if (isDouble) {

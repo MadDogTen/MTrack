@@ -1,5 +1,12 @@
 Changes:
 
+Pre-Alpha 0.8.8 -
+General Code / Bug fixes.
+Replaced all file separators with Strings.FileSeparator which uses File.separator.
+Moved Variables.EmptyString to Strings.EmptyString.
+Started work on a improved way to track changes. Currently unfinished & disabled.
+Now checked for shows that are removed from the folder.
+
 Pre-Alpha 0.8.7 -
 General Code Fixes / Cleanup.
 Made preparations for Ubuntu support.

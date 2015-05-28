@@ -8,6 +8,7 @@ import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.util.Clock;
 import program.util.FindLocation;
+import program.util.Strings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,17 +28,39 @@ public class CheckShowFiles {
     public static void recheckShowFile(Boolean forceRun) {
         final Boolean[] hasChanged = {false};
         int timer = Clock.getTimeSeconds();
+        /*FindChangedShows findChangedShows = new FindChangedShows();
+        findChangedShows.findChangedShows(ShowInfoController.getShowsFile());*/
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             log.info("Started rechecking shows...");
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
-            ArrayList<String> activeShows = UserInfoController.getActiveShows();
             FileManager fileManager = new FileManager();
             ProgramSettingsController.getDirectoriesIndexes().forEach(aIndex -> {
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap = ShowInfoController.getDirectoryHashMap(aIndex);
                 File folderLocation = ProgramSettingsController.getDirectory(aIndex);
                 if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
-                    for (String aShow : activeShows) {
+                    ArrayList<String> removedShows = new ArrayList<>();
+                    // Check if any shows were removed.
+                    UserInfoController.getActiveShows().forEach(aShow -> {
+                        if (!fileManager.checkFolderExists(folderLocation + Strings.FileSeparator + aShow)) {
+                            hashMap.remove(aShow);
+                            removedShows.add(aShow);
+                        }
+                    });
+                    if (!removedShows.isEmpty()) {
+                        ShowInfoController.saveShowsHashMapFile(hashMap, aIndex);
+                        ShowInfoController.loadShowsFile(true);
+                        removedShows.forEach(aShow -> {
+                            log.info(aShow + " is no longer found in \"" + folderLocation + "\".");
+                            Boolean doesShowExistElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, ShowInfoController.getDirectoriesHashMaps(aIndex));
+                            if (!doesShowExistElsewhere) {
+                                UserInfoController.setIgnoredStatus(aShow, true);
+                            }
+                            Controller.updateShowField(aShow, doesShowExistElsewhere);
+                        });
+                        hasChanged[0] = true;
+                    }
+                    for (String aShow : UserInfoController.getActiveShows()) {
                         log.info("Currently rechecking " + aShow);
                         int currentSeason = UserInfoController.getCurrentSeason(aShow);
                         final boolean[] hasShowChanged = {false};
@@ -51,8 +74,8 @@ public class CheckShowFiles {
                                 }
                             });
                             seasons.forEach(aSeason -> {
-                                if (fileManager.checkFolderExists(String.valueOf(folderLocation) + '/' + aShow + "/Season " + aSeason + '/')) {
-                                    log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
+                                if (fileManager.checkFolderExists(String.valueOf(folderLocation) + Strings.FileSeparator + aShow + "/Season " + aSeason + Strings.FileSeparator)) {
+                                    //log.info("Checking for new episodes for " + aShow + " - Season: " + aSeason);
                                     ArrayList<String> changedEpisodes = hasEpisodesChanged(aShow, aSeason, folderLocation, hashMap);
                                     if (!changedEpisodes.isEmpty()) {
                                         ChangeReporter.addChange(aShow + "- Season: " + aSeason + " Episode(s): " + changedEpisodes + " has changed");
@@ -84,26 +107,34 @@ public class CheckShowFiles {
                             }
                         }
                     }
-                    HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, hashMap, forceRun);
-                    if (!changedShows.isEmpty()) {
-                        log.info("Current Shows have changed.");
-                        hasChanged[0] = true;
-                        ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
-                        changedShows.keySet().forEach(aNewShow -> {
+                }
+                HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, hashMap, forceRun);
+                if (!changedShows.isEmpty()) {
+                    log.info("Current Shows have changed.");
+                    hasChanged[0] = true;
+                    ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
+                    changedShows.keySet().forEach(aNewShow -> {
+                        if (!ShowInfoController.doesShowExistElsewhere(aNewShow, ShowInfoController.getDirectoriesHashMaps(aIndex))) {
                             ChangeReporter.addChange(aNewShow + " has been added!");
-                            hashMap.put(aNewShow, changedShows.get(aNewShow));
-                            if (ignoredShows.contains(aNewShow)) {
-                                UserInfoController.setIgnoredStatus(aNewShow, false);
-                            }
-                        });
-                        ShowInfoController.saveShowsHashMapFile(hashMap, aIndex);
-                        changedShows.keySet().forEach(UserInfoController::addNewShow);
-                        ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
-                    }
+                        }
+                        hashMap.put(aNewShow, changedShows.get(aNewShow));
+                        if (ignoredShows.contains(aNewShow)) {
+                            UserInfoController.setIgnoredStatus(aNewShow, false);
+                        }
+                    });
+                    ShowInfoController.saveShowsHashMapFile(hashMap, aIndex);
+                    ShowInfoController.loadShowsFile(true);
+                    changedShows.keySet().forEach(aShow -> {
+                        UserInfoController.addNewShow(aShow);
+                        Controller.updateShowField(aShow, true);
+                    });
+                    ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1, true);
                 }
             });
         }
         if (hasChanged[0] && Main.running) {
+            ShowInfoController.loadShowsFile(true);
+            /*findChangedShows.findShowFileDifferences(ShowInfoController.getShowsFile());*/
             log.info("Some shows have been updated.");
             log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
         } else if (Main.running) {
@@ -178,10 +209,10 @@ public class CheckShowFiles {
                             if (!episode.isEmpty()) {
                                 if (episode.size() == 2) {
                                     String episodeNumber = String.valueOf(episode.get(1));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "/" + aShow + '/' + "Season " + aSeason + '/' + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                                 } else if (episode.size() == 3) {
                                     String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
-                                    episodeNumEpisode.put(episodeNumber, (folderLocation + "/" + aShow + '/' + "Season " + aSeason + '/' + aEpisode));
+                                    episodeNumEpisode.put(episodeNumber, (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                                 } else {
                                     log.warning("Error 1 if at this point!" + " + " + episode);
                                 }

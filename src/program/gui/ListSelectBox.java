@@ -19,7 +19,6 @@ import program.graphics.ImageLoader;
 import program.information.ShowInfoController;
 import program.io.MoveWindow;
 import program.util.Strings;
-import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -90,7 +89,7 @@ public class ListSelectBox {
 
     public String defaultUser(String message, ArrayList<String> users, Window oldWindow) {
         final String[] userName = new String[1];
-        userName[0] = Variables.EmptyString;
+        userName[0] = Strings.EmptyString;
 
         Stage window = new Stage();
         ImageLoader.setIcon(window);
@@ -150,7 +149,7 @@ public class ListSelectBox {
 
     public File directories(String message, ArrayList<File> files, Window oldWindow) {
         final File[] file = new File[1];
-        file[0] = new File(Variables.EmptyString);
+        file[0] = new File(Strings.EmptyString);
 
         Stage window = new Stage();
         ImageLoader.setIcon(window);

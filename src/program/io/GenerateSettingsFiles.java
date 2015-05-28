@@ -1,6 +1,7 @@
 package program.io;
 
 import program.information.ShowInfoController;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class GenerateSettingsFiles {
 
     public void generateProgramSettingsFile(Boolean override) {
         FileManager fileManager = new FileManager();
-        if (override || !fileManager.checkFileExists(Variables.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension)) {
+        if (override || !fileManager.checkFileExists(Strings.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension)) {
             log.info("GenerateSettingsFiles- Generating program settings file...");
             HashMap<String, ArrayList<String>> settingsFile = new HashMap<>();
             ArrayList<String> temp;
@@ -39,14 +40,14 @@ public class GenerateSettingsFiles {
             // Index 0 : Using default user
             temp.add(0, "false");
             // Index 1 : If using default user, What the username is.
-            temp.add(1, Variables.EmptyString);
+            temp.add(1, Strings.EmptyString);
             settingsFile.put("DefaultUser", temp);
 
             // --Directories-- \\
             temp = new ArrayList<>();
             settingsFile.put("Directories", temp);
 
-            fileManager.save(settingsFile, Variables.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
+            fileManager.save(settingsFile, Strings.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
         }
     }
 

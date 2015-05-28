@@ -27,7 +27,7 @@ public class UserInfoController {
             Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UsersExtension) && !name.toLowerCase().matches("Program"))));
         }
         ArrayList<String> usersCleaned = new ArrayList<>();
-        users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UsersExtension, Variables.EmptyString)));
+        users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UsersExtension, Strings.EmptyString)));
         return usersCleaned;
     }
 

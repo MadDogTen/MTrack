@@ -2,6 +2,7 @@ package program.io;
 
 import program.information.ShowInfoController;
 import program.util.FindLocation;
+import program.util.Strings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,10 +55,10 @@ public class UpdateShowFiles {
                 if (!episode.isEmpty()) {
                     if (episode.size() == 2) {
                         String episodeNumber = String.valueOf(episode.get(1));
-                        episodeNum.put(episodeNumber, (folderLocation + "/" + aShow + '/' + "Season " + aSeason + '/' + aEpisode));
+                        episodeNum.put(episodeNumber, (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                     } else if (episode.size() == 3) {
                         String episodeNumber = String.valueOf(episode.get(1) + "+" + episode.get(2));
-                        episodeNum.put(episodeNumber, (folderLocation + "/" + aShow + '/' + "Season " + aSeason + '/' + aEpisode));
+                        episodeNum.put(episodeNumber, (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                     } else {
                         log.warning("Error 2 if at this point!" + " + " + episode);
                     }

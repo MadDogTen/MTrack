@@ -21,7 +21,7 @@ public class ProgramSettingsController {
     @SuppressWarnings("unchecked")
     private static void loadProgramSettingsFile() {
         if (settingsFile == null) {
-            settingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Variables.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
+            settingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
         }
     }
 
@@ -63,7 +63,7 @@ public class ProgramSettingsController {
         ArrayList<String> defaultUsername = settingsFile.get("DefaultUser");
         if (option == 0) {
             defaultUsername.set(0, "false");
-            defaultUsername.set(1, Variables.EmptyString);
+            defaultUsername.set(1, Strings.EmptyString);
         } else if (option == 1) {
             defaultUsername.set(0, "true");
             defaultUsername.set(1, userName);
@@ -179,7 +179,7 @@ public class ProgramSettingsController {
             }
         }
         log.info("Error if this is reached, Please report.");
-        return new File(Variables.EmptyString);
+        return new File(Strings.EmptyString);
     }
 
     public static Boolean[] addDirectory(int index, File directory) {
@@ -220,7 +220,7 @@ public class ProgramSettingsController {
     // Save the file
     public static void saveSettingsFile() {
         if (settingsFile != null) {
-            new FileManager().save(settingsFile, Variables.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
+            new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
             log.info("ProgramSettingsController- settingsFile has been saved!");
         }
     }

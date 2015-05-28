@@ -19,6 +19,7 @@ import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.io.FileManager;
 import program.io.MoveWindow;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.io.File;
@@ -68,7 +69,7 @@ public class Controller implements Initializable {
 
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
-        if (showList != null) {
+        if (!showList.isEmpty()) {
             if (currentList.matches("active") && !show0Remaining) {
                 showList.forEach(aShow -> {
                     int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
@@ -111,11 +112,13 @@ public class Controller implements Initializable {
         if (index != -2) {
             removeShowField(index);
         }
-        int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
-        if (show0Remaining || remaining != 0 && !remove && index != -2) {
-            tableViewFields.add(index, new DisplayShows(aShow, remaining));
-        } else if (index == -2 && !remove) {
-            tableViewFields.add(new DisplayShows(aShow, remaining));
+        if (!remove) {
+            int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
+            if (show0Remaining || remaining != 0 && index != -2) {
+                tableViewFields.add(index, new DisplayShows(aShow, remaining));
+            } else if (index == -2) {
+                tableViewFields.add(new DisplayShows(aShow, remaining));
+            }
         }
     }
 
@@ -239,7 +242,7 @@ public class Controller implements Initializable {
                         ArrayList<File> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
-                            String fileString = (aDirectory + '/' + row.getItem().getShow());
+                            String fileString = (aDirectory + Strings.FileSeparator + row.getItem().getShow());
                             if (fileManager.checkFolderExists(fileString)) {
                                 folders.add(new File(fileString));
                             }

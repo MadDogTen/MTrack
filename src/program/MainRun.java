@@ -96,7 +96,7 @@ public class MainRun {
 
     private static void firstRun() {
         log.info("MainRun- First Run, Generating Files...");
-        new FileManager().createFolder(Variables.EmptyString);
+        new FileManager().createFolder(Strings.EmptyString);
         generateProgramSettingsFile();
         addDirectories();
 

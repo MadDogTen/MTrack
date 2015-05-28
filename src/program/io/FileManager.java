@@ -1,5 +1,6 @@
 package program.io;
 
+import program.util.Strings;
 import program.util.Variables;
 
 import java.awt.*;
@@ -17,7 +18,7 @@ public class FileManager {
         }
         if (overWrite || !checkFileExists(folder, filename, extension)) {
             try {
-                FileOutputStream fos = new FileOutputStream(Variables.dataFolder + folder + '/' + filename + extension);
+                FileOutputStream fos = new FileOutputStream(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension);
 
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(objectToSerialise);
@@ -35,7 +36,7 @@ public class FileManager {
         Object loadedFile = new HashMap<>(0);
         if (checkFileExists(folder, theFile, extension)) {
             try {
-                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + '/' + theFile + extension));
+                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 loadedFile = ois.readObject();
                 ois.close();
@@ -44,12 +45,12 @@ public class FileManager {
             }
             return loadedFile;
         }
-        log.info("File doesn't exist - " + (Variables.dataFolder + folder + '/' + theFile + extension));
+        log.info("File doesn't exist - " + (Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));
         return loadedFile;
     }
 
     public boolean checkFileExists(String folder, String filename, String extension) {
-        return new File(Variables.dataFolder + folder + '/' + filename + extension).isFile();
+        return new File(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension).isFile();
     }
 
     public boolean checkFolderExists(String aFolder) {
@@ -95,7 +96,7 @@ public class FileManager {
     }
 
     public void deleteFile(String folder, String filename, String extension) {
-        String file = (folder + '/' + filename + extension);
+        String file = (folder + Strings.FileSeparator + filename + extension);
         if (!checkFileExists(folder, filename, extension)) {
             log.warning("File " + Variables.dataFolder + file + " does not exist!");
         }
