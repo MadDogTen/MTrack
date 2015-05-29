@@ -18,6 +18,7 @@ public class FindChangedShows {
 
     public void findShowFileDifferences(HashMap<String, HashMap<Integer, HashMap<String, String>>> oldShowsFile) {
         log.info("findShowFileDifferences running...");
+        final boolean[] hasChanged = {false};
         ArrayList<String> showsFound = new ArrayList<>();
         showsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
             if (oldShowsFile.containsKey(aShow)) {
@@ -25,6 +26,7 @@ public class FindChangedShows {
             } else {
                 log.info(aShow + " Removed");
                 ChangeReporter.addChange(aShow + " was removed.");
+                hasChanged[0] = true;
             }
         });
         showsFound.forEach(aShowFound -> {
@@ -35,12 +37,14 @@ public class FindChangedShows {
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Removed");
                     ChangeReporter.addChange(aShowFound + " - Season " + aSeason + " was removed.");
+                    hasChanged[0] = true;
                 }
             });
             seasonsFound.forEach(aSeasonFound -> showsFile.get(aShowFound).get(aSeasonFound).forEach((aEpisode, StringString) -> {
                 if (!oldShowsFile.get(aShowFound).get(aSeasonFound).containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Removed");
                     ChangeReporter.addChange(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " was removed");
+                    hasChanged[0] = true;
                 }
             }));
         });
@@ -52,6 +56,7 @@ public class FindChangedShows {
             } else {
                 log.info(aShow + " Added");
                 ChangeReporter.addChange(aShow + " was added.");
+                hasChanged[0] = true;
             }
         });
         showsFoundOld.forEach(aShowFound -> {
@@ -62,15 +67,22 @@ public class FindChangedShows {
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Added");
                     ChangeReporter.addChange(aShowFound + " - Season " + aSeason + " was added.");
+                    hasChanged[0] = true;
                 }
             });
             seasonsFoundOld.forEach(aSeasonFound -> oldShowsFile.get(aShowFound).get(aSeasonFound).forEach((aEpisode, StringString) -> {
                 if (!showsFile.get(aShowFound).get(aSeasonFound).containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Added");
                     ChangeReporter.addChange(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " was added.");
+                    hasChanged[0] = true;
                 }
             }));
         });
+        if (hasChanged[0]) {
+            log.info("Some files have been changed.");
+        } else {
+            log.info("No files have changed.");
+        }
         log.info("Finished running findShowFileDifferences.");
     }
 }

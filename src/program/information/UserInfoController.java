@@ -14,10 +14,8 @@ public class UserInfoController {
     private static HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile;
 
     @SuppressWarnings("unchecked")
-    private static void loadUserInfo() {
-        if (userSettingsFile == null) {
-            userSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
-        }
+    public static void loadUserInfo() {
+        userSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
     }
 
     public static ArrayList<String> getAllUsers() {
@@ -32,7 +30,6 @@ public class UserInfoController {
     }
 
     public static void setIgnoredStatus(String aShow, Boolean ignored) {
-        loadUserInfo();
         log.info(aShow + " ignore status is: " + ignored);
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
         aShowSettings.replace("isIgnored", String.valueOf(ignored));
@@ -40,7 +37,6 @@ public class UserInfoController {
     }
 
     public static ArrayList<String> getIgnoredShows() {
-        loadUserInfo();
         ArrayList<String> ignoredShows = new ArrayList<>();
         if (userSettingsFile.containsKey("ShowSettings")) {
             userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
@@ -54,17 +50,14 @@ public class UserInfoController {
     }
 
     public static void setActiveStatus(String aShow, Boolean active) {
-        loadUserInfo();
         userSettingsFile.get("ShowSettings").get(aShow).replace("isActive", String.valueOf(active));
     }
 
     public static boolean isShowActive(String aShow) {
-        loadUserInfo();
         return Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
     }
 
     public static ArrayList<String> getActiveShows() {
-        loadUserInfo();
         ArrayList<String> activeShows = new ArrayList<>();
         userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
@@ -78,7 +71,6 @@ public class UserInfoController {
     }
 
     public static ArrayList<String> getInactiveShows() {
-        loadUserInfo();
         ArrayList<String> inActiveShows = new ArrayList<>();
         userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isActive = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isActive"));
@@ -92,7 +84,6 @@ public class UserInfoController {
     }
 
     public static ArrayList<String> getAllNonIgnoredShows() {
-        loadUserInfo();
         ArrayList<String> shows = new ArrayList<>();
         userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
@@ -104,13 +95,11 @@ public class UserInfoController {
     }
 
     public static void setHiddenStatus(String aShow, Boolean isHidden) {
-        loadUserInfo();
         log.info(aShow + " hidden status is: " + isHidden);
         userSettingsFile.get("ShowSettings").get(aShow).replace("isHidden", String.valueOf(isHidden));
     }
 
     public static ArrayList<String> getHiddenShows() {
-        loadUserInfo();
         ArrayList<String> hiddenShows = new ArrayList<>();
         userSettingsFile.get("ShowSettings").keySet().forEach(aShow -> {
             Boolean isIgnored = Boolean.valueOf(userSettingsFile.get("ShowSettings").get(aShow).get("isIgnored"));
@@ -123,24 +112,20 @@ public class UserInfoController {
     }
 
     public static int getUserSettingsVersion() { //TODO Remove -2 return when program is at Version 0.9
-        loadUserInfo();
         if (userSettingsFile.containsKey("UserSettings") && userSettingsFile.get("UserSettings").containsKey("UserVersions")) {
             return Integer.parseInt(userSettingsFile.get("UserSettings").get("UserVersions").get("0"));
         } else return -2;
     }
 
     public static int getUserDirectoryVersion() {
-        loadUserInfo();
         return Integer.parseInt(userSettingsFile.get("UserSettings").get("UserVersions").get("1"));
     }
 
     public static void setUserDirectoryVersion(int version) {
-        loadUserInfo();
         userSettingsFile.get("UserSettings").get("UserVersions").replace("1", String.valueOf(version));
     }
 
     public static void playAnyEpisode(String aShow, int season, String episode) {
-        loadUserInfo();
         log.info("Attempting to play " + aShow + " Season: " + season + " - Episode: " + episode);
         String showLocation = ShowInfoController.getEpisode(aShow, String.valueOf(season), episode);
         log.info(showLocation);
@@ -153,7 +138,6 @@ public class UserInfoController {
     }
 
     public static void changeEpisode(String aShow, int episode, Boolean fileExists) {
-        loadUserInfo();
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
         if (fileExists && episode == -2) {
             String currentEpisodeString = aShowSettings.get("CurrentEpisode");
@@ -190,7 +174,6 @@ public class UserInfoController {
     }
 
     public static void setSeasonEpisode(String aShow, int season, String episode) {
-        loadUserInfo();
         userSettingsFile.get("ShowSettings").get(aShow).replace("CurrentSeason", String.valueOf(season));
         userSettingsFile.get("ShowSettings").get(aShow).replace("CurrentEpisode", episode);
         log.info(aShow + " is now set to Season: " + season + " - Episode: " + episode);

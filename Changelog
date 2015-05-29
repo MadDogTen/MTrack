@@ -1,5 +1,12 @@
 Changes:
 
+Pre-Alpha 0.8.10 -
+General Cleanup.
+Moved file loading to MainRun and removed all unnecessary checks.
+Re-added firstRun check to ShowInfoController setMainDirectoryVersion.
+Made GenerateNewShowFiles, UpdateShowFiles & Most of CheckShowFiles non-static.
+Fixed CheckShowFiles reCheckShowFile improperly searching for removed shows.
+
 Pre-Alpha 0.8.9.1 -
 A few small changes.
 

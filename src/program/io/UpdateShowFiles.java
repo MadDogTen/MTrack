@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
 public class UpdateShowFiles {
-    private static final Logger log = Logger.getLogger(UpdateShowFiles.class.getName());
+    private final Logger log = Logger.getLogger(UpdateShowFiles.class.getName());
 
-    public static void checkForNewOrRemovedSeasons(File folderLocation, String aShow, ArrayList<Integer> changedSeasons, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
+    public void checkForNewOrRemovedSeasons(File folderLocation, String aShow, ArrayList<Integer> changedSeasons, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
         HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
         changedSeasons.forEach(aSeason -> {
             HashMap<String, String> episodeNum = new HashMap<>(0);
@@ -45,7 +45,7 @@ public class UpdateShowFiles {
         ShowInfoController.saveShowsHashMapFile(showsFile, hashMapIndex);
     }
 
-    public static void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
+    public void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
         HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
         HashMap<String, String> episodeNum = new HashMap<>();
         ArrayList<String> episodesFullList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);

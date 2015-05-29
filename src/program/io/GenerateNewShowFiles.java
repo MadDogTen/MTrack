@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class GenerateNewShowFiles {
-    private static final Logger log = Logger.getLogger(GenerateNewShowFiles.class.getName());
+    private final Logger log = Logger.getLogger(GenerateNewShowFiles.class.getName());
 
-    public static void generateShowsFile(int index, File folderLocation) {
+    public void generateShowsFile(int index, File folderLocation) {
         FileManager fileManager = new FileManager();
         if (!fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
             log.info("Generating ShowsFile for: " + folderLocation);

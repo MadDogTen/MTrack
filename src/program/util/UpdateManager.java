@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 public class UpdateManager {
-    private static final Logger log = Logger.getLogger(UpdateManager.class.getName());
+    private final Logger log = Logger.getLogger(UpdateManager.class.getName());
     private final InnerVersionChecker checker = new InnerVersionChecker();
 
     public void updateFiles() {

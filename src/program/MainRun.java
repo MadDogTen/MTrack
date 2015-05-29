@@ -6,6 +6,7 @@ import program.gui.ListSelectBox;
 import program.gui.MessageBox;
 import program.gui.TextBox;
 import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.io.CheckShowFiles;
 import program.io.FileManager;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 @SuppressWarnings("WeakerAccess")
 public class MainRun {
     private static final Logger log = Logger.getLogger(MainRun.class.getName());
+    public static boolean firstRun = false;
     private static boolean hasRan = false, forceRun = true;
     private static int timer = Clock.getTimeSeconds();
 
@@ -39,15 +41,24 @@ public class MainRun {
             firstRun();
         } else if (!fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingsExtension)) {
             generateProgramSettingsFile();
+            ProgramSettingsController.loadProgramSettingsFile();
             Strings.UserName = getUser();
+            ShowInfoController.loadShowsFile();
+            UserInfoController.loadUserInfo();
         } else {
+            ProgramSettingsController.loadProgramSettingsFile();
             Strings.UserName = getUser();
+            ShowInfoController.loadShowsFile();
+            UserInfoController.loadUserInfo();
         }
 
         if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
             generateUserSettingsFile(Strings.UserName);
         }
         log.info("Username is set: " + Strings.UserName);
+        // Load all necessary files.
+        log.info("Loading files...");
+        log.info("Finished loading files.");
         new UpdateManager().updateFiles();
         Variables.setUpdateSpeed();
         Controller.setTableViewFields("active");
@@ -64,7 +75,7 @@ public class MainRun {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
-                    CheckShowFiles.recheckShowFile(false);
+                    new CheckShowFiles().recheckShowFile(false);
                     taskRunning[0] = false;
                     return null;
                 }
@@ -95,9 +106,11 @@ public class MainRun {
     }
 
     private static void firstRun() {
+        firstRun = true;
         log.info("MainRun- First Run, Generating Files...");
         new FileManager().createFolder(Strings.EmptyString);
         generateProgramSettingsFile();
+        ProgramSettingsController.loadProgramSettingsFile();
         addDirectories();
 
         final Boolean[] taskRunning = {true};
@@ -120,7 +133,11 @@ public class MainRun {
                 log.severe(e.toString());
             }
         }
+        log.info(Strings.UserName);
+        ShowInfoController.loadShowsFile();
         generateUserSettingsFile(Strings.UserName);
+        UserInfoController.loadUserInfo();
+        firstRun = false;
     }
 
     private static void addDirectories() {
@@ -156,7 +173,7 @@ public class MainRun {
             log.info("Currently generating show files for: " + aDirectory);
             int fileName = directories.indexOf(aDirectory);
             File file = new File(aDirectory);
-            GenerateNewShowFiles.generateShowsFile(fileName, file);
+            new GenerateNewShowFiles().generateShowsFile(fileName, file);
         });
         log.info("Finished generating show files.");
     }

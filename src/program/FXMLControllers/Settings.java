@@ -143,7 +143,7 @@ public class Settings implements Initializable {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
-                        GenerateNewShowFiles.generateShowsFile(index, directory);
+                        new GenerateNewShowFiles().generateShowsFile(index, directory);
                         taskRunning[0] = false;
                         return null;
                     }
@@ -156,7 +156,7 @@ public class Settings implements Initializable {
                         log.severe(e1.toString());
                     }
                 }
-                ShowInfoController.loadShowsFile(true);
+                ShowInfoController.loadShowsFile();
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getDirectoryHashMap(index);
                 showsFile.keySet().forEach(aShow -> {
                     UserInfoController.addNewShow(aShow);
@@ -194,7 +194,7 @@ public class Settings implements Initializable {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
-                    CheckShowFiles.recheckShowFile(true);
+                    new CheckShowFiles().recheckShowFile(true);
                     return null;
                 }
             };

@@ -1,6 +1,7 @@
 package program.information;
 
 import program.Controller;
+import program.MainRun;
 import program.io.FileManager;
 import program.util.Strings;
 import program.util.Variables;
@@ -19,41 +20,33 @@ public class ProgramSettingsController {
     private static boolean mainDirectoryVersionAlreadyChanged = false;
 
     @SuppressWarnings("unchecked")
-    private static void loadProgramSettingsFile() {
-        if (settingsFile == null) {
-            settingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
-        }
+    public static void loadProgramSettingsFile() {
+        settingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
     }
 
     public static int getUpdateSpeed() {
-        loadProgramSettingsFile();
         return Integer.parseInt(settingsFile.get("General").get(0));
     }
 
     public static void setUpdateSpeed(int updateSpeed) {
-        loadProgramSettingsFile();
         settingsFile.get("General").set(0, String.valueOf(updateSpeed));
         Variables.setUpdateSpeed();
     }
 
     public static boolean getShow0Remaining() {
-        loadProgramSettingsFile();
         return Boolean.valueOf(settingsFile.get("General").get(1));
     }
 
     public static void setShow0Remaining(boolean show0Remaining) {
-        loadProgramSettingsFile();
         settingsFile.get("General").set(1, String.valueOf(show0Remaining));
     }
 
     public static boolean isDefaultUsername() {
-        loadProgramSettingsFile();
         ArrayList<String> defaultUser = settingsFile.get("DefaultUser");
         return Boolean.parseBoolean(defaultUser.get(0));
     }
 
     public static String getDefaultUsername() {
-        loadProgramSettingsFile();
         ArrayList<String> defaultUser = settingsFile.get("DefaultUser");
         return defaultUser.get(1);
     }
@@ -72,7 +65,6 @@ public class ProgramSettingsController {
     }
 
     public static ArrayList<String> getDirectories() {
-        loadProgramSettingsFile();
         ArrayList<String> directories = new ArrayList<>();
         if (settingsFile.containsKey("Directories")) {
             directories.addAll(settingsFile.get("Directories").stream().map(aDirectory -> aDirectory.split(">")[1]).collect(Collectors.toList()));
@@ -81,7 +73,6 @@ public class ProgramSettingsController {
     }
 
     public static ArrayList<Integer> getDirectoriesIndexes() {
-        loadProgramSettingsFile();
         ArrayList<Integer> directoriesIndexes = new ArrayList<>();
         if (settingsFile.containsKey("Directories")) {
             getDirectories().forEach(aDirectory -> directoriesIndexes.add(getDirectoryIndex(aDirectory)));
@@ -90,14 +81,12 @@ public class ProgramSettingsController {
     }
 
     public static int getProgramSettingsVersion() { //TODO Remove -2 return when program is at Version 0.9
-        loadProgramSettingsFile();
         if (settingsFile.containsKey("ProgramVersions")) {
             return Integer.parseInt(settingsFile.get("ProgramVersions").get(0));
         } else return -2;
     }
 
     public static int getMainDirectoryVersion() {
-        loadProgramSettingsFile();
         return Integer.parseInt(settingsFile.get("ProgramVersions").get(1));
     }
 
@@ -107,7 +96,9 @@ public class ProgramSettingsController {
         } else {
             settingsFile.get("ProgramVersions").set(1, String.valueOf(version));
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
-            UserInfoController.setUserDirectoryVersion(version);
+            if (!MainRun.firstRun) {
+                UserInfoController.setUserDirectoryVersion(version);
+            }
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;
@@ -119,7 +110,6 @@ public class ProgramSettingsController {
     }
 
     public static void removeDirectory(String aDirectory) {
-        loadProgramSettingsFile();
         log.info("Currently processing removal of: " + aDirectory);
         int index = getDirectoryIndex(aDirectory);
         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
@@ -138,7 +128,6 @@ public class ProgramSettingsController {
     }
 
     public static void printAllDirectories() {
-        loadProgramSettingsFile();
         log.info("Printing out all directories:");
         if (getDirectories().isEmpty()) {
             log.info("No directories.");
@@ -157,7 +146,6 @@ public class ProgramSettingsController {
     }
 
     public static ArrayList<String> getDirectoriesNames() {
-        loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
         ArrayList<String> directoriesNames = new ArrayList<>();
         directories.forEach(aDirectory -> {
@@ -168,7 +156,6 @@ public class ProgramSettingsController {
     }
 
     public static File getDirectory(int index) {
-        loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
         for (String aDirectory : directories) {
             String[] split = aDirectory.split(">");
@@ -181,7 +168,6 @@ public class ProgramSettingsController {
     }
 
     public static Boolean[] addDirectory(int index, File directory) {
-        loadProgramSettingsFile();
         ArrayList<String> directories = settingsFile.get("Directories");
         Boolean[] answer = {false, false};
         if (!directory.toString().isEmpty() && !directories.contains(String.valueOf(directory))) {
