@@ -266,14 +266,25 @@ public class Controller implements Initializable {
                     });
                     MenuItem getRemaining = new MenuItem("Get Remaining");
                     getRemaining.setOnAction(e -> log.info("Controller - There are " + UserInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow()) + " episode(s) remaining."));
+                    MenuItem playPreviousEpisode = new MenuItem("Play Previous Episode");
+                    playPreviousEpisode.setOnAction(e -> {
+                        log.info("Attempting to play previous episode...");
+                        String[] seasonEpisode = UserInfoController.getPreviousEpisodeIfExists(row.getItem().getShow());
+                        if (seasonEpisode[0].contains("-2") || seasonEpisode[0].contains("-3")) {
+                            new MessageBox().display("No directly preceding episodes found.", tabPane.getScene().getWindow());
+                        } else {
+                            UserInfoController.playAnyEpisode(row.getItem().getShow(), Integer.parseInt(seasonEpisode[0]), String.valueOf(seasonEpisode[1]));
+                        }
+                        log.info("Finished attempting to play previous episode.");
+                    });
 
                     row.setOnMouseClicked(e -> {
                         if (e.getButton().equals(MouseButton.SECONDARY) && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
                                 if (Variables.devMode) {
-                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, resetShow, toggleActive, getRemaining, openDirectory);
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory);
                                 } else
-                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, resetShow, toggleActive, openDirectory);
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
                             } else if (currentList.matches("inactive")) {
                                 if (Variables.devMode) {

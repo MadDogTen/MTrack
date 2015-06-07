@@ -240,6 +240,57 @@ public class UserInfoController {
         return 0;
     }
 
+    public static String[] getPreviousEpisodeIfExists(String aShow) {
+        String[] seasonEpisodeReturn = new String[2];
+        HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
+        seasonEpisodeReturn[0] = aShowSettings.get("CurrentSeason");
+        Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")));
+        String episode = aShowSettings.get("CurrentEpisode");
+        int episodeInt;
+        if (aShowSettings.get("CurrentEpisode").contains("+")) {
+            String[] split = aShowSettings.get("CurrentEpisode").split("[+]");
+            episodeInt = Integer.parseInt(split[0]);
+        } else episodeInt = Integer.parseInt(episode);
+        episodeInt -= 1;
+        for (String aEpisode : episodes) {
+            seasonEpisodeReturn[1] = aEpisode;
+            if (aEpisode.contains("+")) {
+                String[] split = aEpisode.split("[+]");
+                if (split[0].matches(String.valueOf(episodeInt)) || split[1].matches(String.valueOf(episodeInt))) {
+                    return seasonEpisodeReturn;
+                }
+            } else if (aEpisode.matches(String.valueOf(episodeInt))) {
+                return seasonEpisodeReturn;
+            }
+        }
+        if (episodeInt == 0) {
+            log.info(String.valueOf(episodeInt));
+            Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
+            int season = Integer.parseInt(aShowSettings.get("CurrentSeason"));
+            season -= 1;
+            if (seasons.contains(season)) {
+                seasonEpisodeReturn[0] = String.valueOf(season);
+                if (!ShowInfoController.getEpisodesList(aShow, season).isEmpty()) {
+                    Set<String> episodesPreviousSeason = ShowInfoController.getEpisodesList(aShow, season);
+                    log.info(String.valueOf(episodesPreviousSeason));
+                    episodeInt = ShowInfoController.findHighestEpisode(episodesPreviousSeason);
+                    for (String aEpisode : episodesPreviousSeason) {
+                        if (aEpisode.contains(String.valueOf(episodeInt))) {
+                            seasonEpisodeReturn[1] = aEpisode;
+                            return seasonEpisodeReturn;
+                        }
+                    }
+                    return seasonEpisodeReturn;
+                }
+            }
+        } else {
+            seasonEpisodeReturn[0] = "-3";
+            return seasonEpisodeReturn;
+        }
+        seasonEpisodeReturn[0] = "-2";
+        return seasonEpisodeReturn;
+    }
+
     private static Set<Integer> episodesToInt(Set<String> oldEpisodes) {
         Set<Integer> episodes = new HashSet<>();
         if (oldEpisodes != null) {
