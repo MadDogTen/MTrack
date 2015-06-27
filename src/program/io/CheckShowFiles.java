@@ -28,6 +28,10 @@ public class CheckShowFiles {
         return emptyShows;
     }
 
+    public static boolean getRecheckShowFileRunning() {
+        return recheckShowFileRunning;
+    }
+
     public void recheckShowFile(Boolean forceRun) {
         final Boolean[] hasChanged = {false};
         int timer = Clock.getTimeSeconds();

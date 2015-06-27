@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -17,8 +18,10 @@ import program.information.DisplayShows;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
+import program.io.CheckShowFiles;
 import program.io.FileManager;
 import program.io.MoveWindow;
+import program.util.Clock;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -66,6 +69,8 @@ public class Controller implements Initializable {
     private MenuItem viewChanges;
     @FXML
     private CheckBox show0RemainingCheckBox;
+    @FXML
+    private ProgressIndicator isCurrentlyRechecking;
 
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
@@ -388,5 +393,31 @@ public class Controller implements Initializable {
 
         // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(tabPane);
+
+        // Shows an indicator when its rechecking the shows.
+        isCurrentlyRechecking.setTooltip(new Tooltip("Currently Rechecking..."));
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                int Timer = Clock.getTimeSeconds();
+                while (Main.running || Timer++ >= Clock.getTimeSeconds()) {
+                    isCurrentlyRechecking();
+                    Thread.sleep(1000);
+                }
+                //noinspection ReturnOfNull
+                return null;
+            }
+        };
+        new Thread(task).start();
+    }
+
+    private void isCurrentlyRechecking() {
+        if (CheckShowFiles.getRecheckShowFileRunning()) {
+            if (!isCurrentlyRechecking.isVisible()) {
+                isCurrentlyRechecking.setVisible(true);
+            }
+        } else if (isCurrentlyRechecking.isVisible()) {
+            isCurrentlyRechecking.setVisible(false);
+        }
     }
 }
