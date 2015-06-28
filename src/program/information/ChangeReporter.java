@@ -7,6 +7,7 @@ public class ChangeReporter {
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
 
     private static String[] changes = new String[0];
+    private static Boolean isChanges = false;
 
     public static void addChange(String newInfo) {
         log.info("Adding new change...");
@@ -21,15 +22,21 @@ public class ChangeReporter {
         for (int i = 0; i < currentPlace; i++) {
             changes[i] = newList.get(i);
         }
+        isChanges = true;
         log.info("Finished adding new change.");
     }
 
     public static void resetChanges() {
         changes = new String[0];
+        isChanges = false;
         log.info("Change list has been cleared.");
     }
 
     public static String[] getChanges() {
         return changes;
+    }
+
+    public static Boolean getIsChanges() {
+        return isChanges;
     }
 }

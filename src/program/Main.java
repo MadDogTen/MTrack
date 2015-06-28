@@ -8,7 +8,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import program.graphics.ImageLoader;
+import program.gui.ChangesBox;
 import program.gui.ConfirmBox;
+import program.gui.SettingsWindow;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.util.Clock;
@@ -19,7 +21,7 @@ import java.util.logging.Logger;
 public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
     private final static int timer = Clock.getTimeSeconds();
-    public static boolean running = false;
+    public static boolean programRunning = true, programFullyRunning = false;
     public static Stage stage;
     private static Thread thread;
 
@@ -38,7 +40,8 @@ public class Main extends Application implements Runnable {
                 ProgramSettingsController.saveSettingsFile();
                 UserInfoController.saveUserSettingsFile();
             }
-            running = false;
+            programFullyRunning = false;
+            programRunning = false;
 
             int timeRan = Clock.timeTakenSeconds(timer);
             if (timeRan > 60) {
@@ -46,6 +49,11 @@ public class Main extends Application implements Runnable {
             } else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
 
+            if (ChangesBox.getStage() != null)
+                ChangesBox.getStage().close();
+
+            if (SettingsWindow.getStage() != null)
+                SettingsWindow.getStage().close();
             stage.close();
             try {
                 thread.join();
@@ -84,8 +92,8 @@ public class Main extends Application implements Runnable {
     }
 
     private synchronized void start() {
-        if (!running) {
-            running = true;
+        if (!programFullyRunning) {
+            programFullyRunning = true;
             thread = new Thread(this);
             thread.start();
         }
@@ -93,7 +101,7 @@ public class Main extends Application implements Runnable {
 
     @Override
     public void run() {
-        while (running) {
+        while (programFullyRunning) {
             MainRun.tick();
             try {
                 Thread.sleep(200);

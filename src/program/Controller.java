@@ -14,14 +14,10 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import program.gui.*;
-import program.information.DisplayShows;
-import program.information.ProgramSettingsController;
-import program.information.ShowInfoController;
-import program.information.UserInfoController;
+import program.information.*;
 import program.io.CheckShowFiles;
 import program.io.FileManager;
 import program.io.MoveWindow;
-import program.util.Clock;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -71,6 +67,8 @@ public class Controller implements Initializable {
     private CheckBox show0RemainingCheckBox;
     @FXML
     private ProgressIndicator isCurrentlyRechecking;
+    @FXML
+    private Button changesAlert;
 
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
@@ -348,18 +346,18 @@ public class Controller implements Initializable {
             setTableView();
         });
 
-        viewChanges.setOnAction(e -> {
-            Boolean keepOpen = false;
-            Object[] answer = null;
-            do {
-                Stage neededWindow = (Stage) pane.getScene().getWindow();
-                if (answer != null && answer[1] != null) {
-                    neededWindow = (Stage) answer[1];
-                }
-                answer = new ChangesBox().display(neededWindow);
-                keepOpen = (Boolean) answer[0];
-            } while (keepOpen);
-        });
+        viewChanges.setOnAction(e -> openChangeBox());
+        changesAlert.setOnAction(e -> openChangeBox());
+        changesAlert.setStyle(
+                "-fx-background-radius: 5em; " +
+                        "-fx-min-width: 20px; " +
+                        "-fx-min-height: 20px; " +
+                        "-fx-max-width: 20px; " +
+                        "-fx-max-height: 20px; " +
+                        "-fx-background-color: -fx-body-color;" +
+                        "-fx-background-insets: 0px; " +
+                        "-fx-padding: 0px;"
+        );
 
         show0RemainingCheckBox.setSelected(show0Remaining);
         if (show0Remaining) {
@@ -383,9 +381,8 @@ public class Controller implements Initializable {
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
         settingsTab.setOnSelectionChanged(e -> {
             selectionModel.select(showsTab);
-            SettingsWindow settingsWindow = new SettingsWindow();
             try {
-                settingsWindow.display();
+                new SettingsWindow().display();
             } catch (Exception e1) {
                 log.severe(Arrays.toString(e1.getStackTrace()));
             }
@@ -399,16 +396,33 @@ public class Controller implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                int Timer = Clock.getTimeSeconds();
-                while (Main.running || Timer++ >= Clock.getTimeSeconds()) {
+                while (Main.programRunning) {
                     isCurrentlyRechecking();
-                    Thread.sleep(1000);
+                    isChangesListPopulated();
+                    Thread.sleep(800);
                 }
                 //noinspection ReturnOfNull
                 return null;
             }
         };
         new Thread(task).start();
+    }
+
+    private void openChangeBox() {
+        if (ChangesBox.getStage() == null) {
+            Boolean keepOpen;
+            Object[] answer = null;
+            do {
+                Stage neededWindow = (Stage) pane.getScene().getWindow();
+                if (answer != null && answer[1] != null) {
+                    neededWindow = (Stage) answer[1];
+                }
+                answer = new ChangesBox().display(neededWindow);
+                keepOpen = (Boolean) answer[0];
+            } while (keepOpen);
+        } else {
+            new ChangesBox().display(pane.getScene().getWindow());
+        }
     }
 
     private void isCurrentlyRechecking() {
@@ -419,5 +433,14 @@ public class Controller implements Initializable {
         } else if (isCurrentlyRechecking.isVisible()) {
             isCurrentlyRechecking.setVisible(false);
         }
+    }
+
+    private void isChangesListPopulated() {
+        if (ChangeReporter.getIsChanges()) {
+            changesAlert.setVisible(true);
+        } else if (changesAlert.isVisible()) {
+            changesAlert.setVisible(false);
+        }
+        changesAlert.setVisible(true);
     }
 }

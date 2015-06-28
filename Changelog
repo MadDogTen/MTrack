@@ -1,7 +1,17 @@
 Changes:
 
+Pre-Alpha 0.9.0 -
+General Code Changes.
+Cleaned up the indicator code.
+If the ChangesBox is already open and you press the button to open it, it will now be brought to the front and centered.
+ChangesBox is now closed when the program is exited.
+Change the ChangeBox from showing changes as labels in a vBox to ListView.
+Added Button to open the ChangeBox that only shows when there are changes.
+
+Note- Bumped version to 0.9.0.
+
 Pre-Alpha 0.8.12 -
-Added an indicator when rechecking for shows.
+Added a rechecking indicator when program is rechecking for shows.
 
 Pre-Alpha 0.8.11 -
 Added Right-Click menuItem to play the previous episode.

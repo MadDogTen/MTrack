@@ -111,10 +111,8 @@ public class UserInfoController {
         return hiddenShows;
     }
 
-    public static int getUserSettingsVersion() { //TODO Remove -2 return when program is at Version 0.9
-        if (userSettingsFile.containsKey("UserSettings") && userSettingsFile.get("UserSettings").containsKey("UserVersions")) {
-            return Integer.parseInt(userSettingsFile.get("UserSettings").get("UserVersions").get("0"));
-        } else return -2;
+    public static int getUserSettingsVersion() {
+        return Integer.parseInt(userSettingsFile.get("UserSettings").get("UserVersions").get("0"));
     }
 
     public static int getUserDirectoryVersion() {

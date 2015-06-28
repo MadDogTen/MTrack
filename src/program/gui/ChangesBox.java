@@ -1,11 +1,13 @@
 package program.gui;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -14,6 +16,7 @@ import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.information.ChangeReporter;
 import program.io.MoveWindow;
+import program.util.Variables;
 
 import java.util.logging.Logger;
 
@@ -21,27 +24,34 @@ public class ChangesBox {
     private static final Logger log = Logger.getLogger(ChangesBox.class.getName());
 
     private static Boolean currentlyOpen = false;
+    private static Stage window;
+
+    public static Stage getStage() {
+        return window;
+    }
 
     public Object[] display(Window oldWindow) {
         log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
-            Object[] object = new Object[1];
-            object[0] = false;
-            return object;
+            window.toFront();
+            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            return new Object[]{false};
         } else {
             currentlyOpen = true;
         }
-        Stage window = new Stage();
+        window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
 
-        final VBox[] vBox = {new VBox()};
-        for (String aMessage : ChangeReporter.getChanges()) {
-            Label label = new Label();
-            label.setText(aMessage);
-            label.setPadding(new Insets(0, 6, 2, 6));
-            vBox[0].getChildren().add(label);
-        }
+        ListView<String> listView = new ListView<>();
+        listView.setEditable(false);
+
+        ObservableList<String> observableList = FXCollections.observableArrayList();
+        observableList.addAll(ChangeReporter.getChanges());
+
+        listView.setItems(observableList);
+        listView.setMaxHeight(Variables.SIZE_HEIGHT);
 
         Button clear = new Button("Clear");
         Button refresh = new Button("Refresh");
@@ -51,7 +61,7 @@ public class ChangesBox {
         final Stage[] thisWindow = new Stage[1];
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();
-            vBox[0].getChildren().clear();
+            listView.getItems().clear();
             answerBoolean[0] = true;
             thisWindow[0] = window;
             window.close();
@@ -74,7 +84,11 @@ public class ChangesBox {
         hBox.setPadding(new Insets(12, 12, 12, 12));
 
         VBox layout = new VBox();
-        layout.getChildren().addAll(hBox, vBox[0]);
+        if (listView.getItems().isEmpty()) {
+            layout.getChildren().addAll(hBox);
+        } else {
+            layout.getChildren().addAll(hBox, listView);
+        }
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout);
@@ -91,6 +105,7 @@ public class ChangesBox {
         answer[0] = answerBoolean[0];
         answer[1] = thisWindow[0];
         currentlyOpen = false;
+        window = null;
         return answer;
     }
 }

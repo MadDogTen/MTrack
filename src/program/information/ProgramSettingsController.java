@@ -80,10 +80,8 @@ public class ProgramSettingsController {
         return directoriesIndexes;
     }
 
-    public static int getProgramSettingsVersion() { //TODO Remove -2 return when program is at Version 0.9
-        if (settingsFile.containsKey("ProgramVersions")) {
-            return Integer.parseInt(settingsFile.get("ProgramVersions").get(0));
-        } else return -2;
+    public static int getProgramSettingsVersion() {
+        return Integer.parseInt(settingsFile.get("ProgramVersions").get(0));
     }
 
     public static int getMainDirectoryVersion() {

@@ -109,7 +109,7 @@ public class CheckShowFiles {
                             if (hasShowChanged[0]) {
                                 Controller.updateShowField(aShow, true);
                             }
-                            if (!Main.running || (!forceRun && !keepRunning)) {
+                            if (!Main.programFullyRunning || (!forceRun && !keepRunning)) {
                                 break;
                             }
                         }
@@ -136,12 +136,12 @@ public class CheckShowFiles {
                 }
             });
         }
-        if (hasChanged[0] && Main.running) {
+        if (hasChanged[0] && Main.programFullyRunning) {
             ShowInfoController.loadShowsFile();
             findChangedShows.findShowFileDifferences(ShowInfoController.getShowsFile());
             log.info("Some shows have been updated.");
             log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
-        } else if (Main.running) {
+        } else if (Main.programFullyRunning) {
             log.info("All shows were the same.");
             log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
         }
@@ -199,7 +199,7 @@ public class CheckShowFiles {
                 emptyShows = new ArrayList<>();
                 runNumber = 0;
             }
-            if (Main.running && !oldShows.contains(aShow) && !emptyShows.contains(aShow)) {
+            if (Main.programFullyRunning && !oldShows.contains(aShow) && !emptyShows.contains(aShow)) {
                 log.info("Currently checking if new & valid: " + aShow);
                 // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
                 HashMap<Integer, HashMap<String, String>> seasonEpisode = new HashMap<>(0);

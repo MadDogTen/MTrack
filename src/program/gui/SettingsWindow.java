@@ -15,9 +15,15 @@ import java.util.logging.Logger;
 
 public class SettingsWindow {
     private static final Logger log = Logger.getLogger(SettingsWindow.class.getName());
+    private static Stage window;
+
+    public static Stage getStage() {
+        return window;
+    }
+
     public void display() throws Exception {
         log.finest("SettingsWindow has been opened.");
-        Stage window = new Stage();
+        window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
@@ -37,5 +43,6 @@ public class SettingsWindow {
             window.setY(Main.stage.getY() + (Main.stage.getHeight() / 2) - (window.getHeight() / 2));
         });
         window.showAndWait();
+        window = null;
     }
 }
