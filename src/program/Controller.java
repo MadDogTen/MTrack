@@ -441,6 +441,5 @@ public class Controller implements Initializable {
         } else if (changesAlert.isVisible()) {
             changesAlert.setVisible(false);
         }
-        changesAlert.setVisible(true);
     }
 }
