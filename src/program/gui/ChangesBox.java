@@ -16,6 +16,7 @@ import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.information.ChangeReporter;
 import program.io.MoveWindow;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.util.logging.Logger;
@@ -53,9 +54,9 @@ public class ChangesBox {
         listView.setItems(observableList);
         listView.setMaxHeight(Variables.SIZE_HEIGHT);
 
-        Button clear = new Button("Clear");
-        Button refresh = new Button("Refresh");
-        Button close = new Button("Close");
+        Button clear = new Button(Strings.Clear);
+        Button refresh = new Button(Strings.Refresh);
+        Button close = new Button(Strings.Close);
 
         final Boolean[] answerBoolean = {false};
         final Stage[] thisWindow = new Stage[1];

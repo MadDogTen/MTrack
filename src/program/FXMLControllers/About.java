@@ -52,6 +52,7 @@ public class About implements Initializable {
         codedWith.setText(Strings.codedWith + ' ' + Strings.javaVersion);
         codedWith.setAlignment(Pos.CENTER);
 
+        close.setText(Strings.Close);
         close.setOnAction(e -> {
             Stage stage = (Stage) pane.getScene().getWindow();
             stage.close();

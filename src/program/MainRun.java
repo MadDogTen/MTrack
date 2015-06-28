@@ -102,8 +102,7 @@ public class MainRun {
             log.info("MainRun- Using default user.");
             return ProgramSettingsController.getDefaultUsername();
         } else {
-            ListSelectBox listSelectBox = new ListSelectBox();
-            return listSelectBox.display("Choose your Username:", Users, null);
+            return new ListSelectBox().display(Strings.ChooseYourUsername, Users, null);
         }
     }
 
@@ -127,7 +126,7 @@ public class MainRun {
         };
         new Thread(task).start();
         TextBox textBox = new TextBox();
-        Strings.UserName = textBox.display("Please enter your username: ", "Use default username?", "PublicDefault", Main.stage);
+        Strings.UserName = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, Main.stage);
         while (taskRunning[0]) {
             try {
                 Thread.sleep(500);
@@ -152,11 +151,11 @@ public class MainRun {
             index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display("Directory was a duplicate!", Main.stage);
+                messageBox.display(Strings.DirectoryWasADuplicate, Main.stage);
             } else if (matched[1]) {
                 break;
             }
-            if (!confirmBox.display("Add another directory?", Main.stage)) {
+            if (!confirmBox.display(Strings.AddAnotherDirectory, Main.stage)) {
                 addAnother = false;
             }
         }

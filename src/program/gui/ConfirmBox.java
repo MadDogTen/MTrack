@@ -14,6 +14,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.io.MoveWindow;
+import program.util.Strings;
 
 import java.util.logging.Logger;
 
@@ -31,7 +32,7 @@ public class ConfirmBox {
         Label label = new Label();
         label.setText(message);
 
-        Button yesButton = new Button("Yes"), noButton = new Button("No");
+        Button yesButton = new Button(Strings.Yes), noButton = new Button(Strings.No);
         yesButton.setMinHeight(20);
         yesButton.setMinWidth(30);
         noButton.setMinHeight(20);

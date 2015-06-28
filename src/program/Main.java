@@ -14,6 +14,7 @@ import program.gui.SettingsWindow;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.util.Clock;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.util.logging.Logger;
@@ -33,7 +34,7 @@ public class Main extends Application implements Runnable {
         ConfirmBox confirmBox = new ConfirmBox();
         Boolean answer = true;
         if (!forceStop) {
-            answer = confirmBox.display("Are you sure?", stage.getScene().getWindow());
+            answer = confirmBox.display(Strings.AreYouSure, stage.getScene().getWindow());
         }
         if (answer) {
             if (saveSettings) {
@@ -71,7 +72,6 @@ public class Main extends Application implements Runnable {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/MainGui.fxml"));
         Parent root = fxmlLoader.load();
 
-        stage.setTitle("MTrack");
         stage.setWidth(Variables.SIZE_WIDTH);
         stage.setHeight(Variables.SIZE_HEIGHT);
 

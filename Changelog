@@ -1,5 +1,10 @@
 Changes:
 
+Pre-Alpha 0.9.2 -
+General Code Cleanup.
+Added button in settings user tab to add a new user.
+Put all Strings into Strings.java file for future translation support. May have missed some.
+
 Pre-Alpha 0.9.1 -
 Made "Set Inactive" or "Set Active" show instead of "Toggle Updating" when right clicking on a show depending on the list your currently on.
 If you set a show as active on the inactive list, It will force a recheck when you switch back to the active Shows list.

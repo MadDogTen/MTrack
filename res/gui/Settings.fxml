@@ -10,7 +10,7 @@
         <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
                  prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-                <Tab closable="false" text="Main">
+                <Tab fx:id="mainTab" closable="false" text="Main">
                     <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
@@ -23,21 +23,23 @@
                 </AnchorPane>
                     </content>
                 </Tab>
-                <Tab closable="false" text="Users">
+                <Tab fx:id="usersTab" closable="false" text="Users">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
                             <children>
                                 <Button fx:id="setDefaultUsername" layoutX="27.0" layoutY="31.0" mnemonicParsing="false"
                                         text="Set Default user"/>
-                                <Button fx:id="deleteUser" layoutX="38.0" layoutY="63.0" mnemonicParsing="false"
-                                        text="Delete User"/>
-                                <Button fx:id="clearDefaultUsername" layoutX="136.0" layoutY="31.0"
+                                <Button fx:id="clearDefaultUsername" layoutX="129.0" layoutY="31.0"
                                         mnemonicParsing="false" text="Reset"/>
+                                <Button fx:id="deleteUser" layoutX="94.0" layoutY="60.0" mnemonicParsing="false"
+                                        text="Delete User"/>
+                                <Button fx:id="addUser" layoutX="27.0" layoutY="60.0" mnemonicParsing="false"
+                                        text="Add User"/>
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab closable="false" text="Other">
+                <Tab fx:id="otherTab" closable="false" text="Other">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
@@ -57,7 +59,7 @@
                     <children>
                         <TabPane prefHeight="216.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab closable="false" text="Dev 1">
+                                <Tab fx:id="dev1Tab" closable="false" text="Dev 1">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                             <children>
@@ -82,7 +84,7 @@
                                         </AnchorPane>
                                     </content>
                                 </Tab>
-                                <Tab closable="false" text="Dev 2">
+                                <Tab fx:id="dev2Tab" closable="false" text="Dev 2">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                             <children>

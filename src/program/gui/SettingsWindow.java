@@ -29,9 +29,6 @@ public class SettingsWindow {
         window.initModality(Modality.APPLICATION_MODAL);
         Pane root = FXMLLoader.load(getClass().getResource("/gui/Settings.fxml"));
 
-        window.setTitle("MTrack");
-
-        assert root != null;
         Scene scene = new Scene(root);
 
         scene.setFill(Color.WHITESMOKE);

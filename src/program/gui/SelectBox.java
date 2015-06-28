@@ -39,7 +39,7 @@ public class SelectBox {
             buttons.add(new Button(aString));
         }
 
-        Button close = new Button("X");
+        Button close = new Button(Strings.ExitButtonText);
 
         final String[] answer = new String[1];
         HBox layout2 = new HBox();

@@ -24,8 +24,6 @@ public class AboutBox {
         window.initModality(Modality.APPLICATION_MODAL);
         Pane root = FXMLLoader.load(getClass().getResource("/gui/About.fxml"));
 
-        window.setTitle("MTrack");
-
         assert root != null;
         Scene scene = new Scene(root);
 

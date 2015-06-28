@@ -20,6 +20,7 @@ import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.io.MoveWindow;
 import program.util.Strings;
+import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class ListSelectBox {
         userName[0] = Strings.DefaultUsername;
 
         Stage window = new Stage();
-        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
+        window.getIcons().add(ImageLoader.getImage(Variables.Logo));
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
@@ -49,15 +50,15 @@ public class ListSelectBox {
         log.info(String.valueOf(users));
         ObservableList<String> usersList = FXCollections.observableArrayList(users);
         usersList.sorted();
-        usersList.add("Add New Username");
+        usersList.add(Strings.AddNewUsername);
         ComboBox<String> comboBox = new ComboBox<>(usersList);
-        comboBox.setValue("Add New Username");
+        comboBox.setValue(Strings.AddNewUsername);
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
-            if (comboBox.getValue().contentEquals("Add New Username")) {
+            if (comboBox.getValue().contentEquals(Strings.AddNewUsername)) {
                 TextBox textBox = new TextBox();
-                userName[0] = textBox.display("Please enter your username: ", "Use default username?", "PublicDefault", window);
+                userName[0] = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, window);
                 window.close();
             } else if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 userName[0] = comboBox.getValue();
@@ -111,12 +112,12 @@ public class ListSelectBox {
             comboBox.setValue(currentDefaultUser);
         }
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display("Default user not set.", window);
+                    messageBox.display(Strings.DefaultUserNotSet, window);
                     window.close();
                 } else {
                     userName[0] = comboBox.getValue();
@@ -125,7 +126,7 @@ public class ListSelectBox {
             }
         });
 
-        Button exit = new Button("X");
+        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             userName[0] = null;
             window.close();
@@ -171,12 +172,12 @@ public class ListSelectBox {
         fileList.sorted();
         ComboBox<File> comboBox = new ComboBox<>(fileList);
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display("Please choose a folder.", window);
+                    messageBox.display(Strings.PleaseChooseAFolder, window);
                 } else {
                     file[0] = comboBox.getValue();
                     window.close();
@@ -184,7 +185,7 @@ public class ListSelectBox {
             }
         });
 
-        Button exit = new Button("X");
+        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> window.close());
 
         HBox buttonLayout = new HBox();
@@ -214,7 +215,7 @@ public class ListSelectBox {
         final String[] choice = new String[2];
 
         Stage window = new Stage();
-        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
+        window.getIcons().add(ImageLoader.getImage(Variables.Logo));
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
@@ -231,16 +232,16 @@ public class ListSelectBox {
         ComboBox<String> comboBox = new ComboBox<>(seasonsList);
 
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 choice[0] = comboBox.getValue();
-                choice[1] = pickEpisode("Pick the Episode", ShowInfoController.getEpisodesList(aShow, Integer.parseInt(choice[0])), window.getWidth(), window.getHeight(), window);
+                choice[1] = pickEpisode(Strings.PickTheEpisode, ShowInfoController.getEpisodesList(aShow, Integer.parseInt(choice[0])), window.getWidth(), window.getHeight(), window);
                 window.close();
-            } else new MessageBox().display("You have to pick a season!", window);
+            } else new MessageBox().display(Strings.YouHaveToPickASeason, window);
         });
 
-        Button exit = new Button("X");
+        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             choice[0] = "-1";
             choice[1] = "-1";
@@ -276,7 +277,7 @@ public class ListSelectBox {
         final String[] choice = new String[1];
 
         Stage window = new Stage();
-        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
+        window.getIcons().add(ImageLoader.getImage(Variables.Logo));
         window.initStyle(StageStyle.UNDECORATED);
 
         window.initModality(Modality.APPLICATION_MODAL);
@@ -315,15 +316,15 @@ public class ListSelectBox {
         ObservableList<String> seasonsList = FXCollections.observableArrayList(episodesSorted);
         ComboBox<String> comboBox = new ComboBox<>(seasonsList);
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 choice[0] = comboBox.getValue();
                 window.close();
-            } else new MessageBox().display("You have to pick a episode!", window);
+            } else new MessageBox().display(Strings.YouHaveToPickAEpisode, window);
         });
 
-        Button exit = new Button("X");
+        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             choice[0] = "-1";
             window.close();

@@ -2,6 +2,7 @@ package program.graphics;
 
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import program.util.Variables;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -38,6 +39,6 @@ public class ImageLoader {
     }
 
     public static void setIcon(Stage stage) {
-        stage.getIcons().add(getImage("/image/MTrackLogo.png"));
+        stage.getIcons().add(getImage(Variables.Logo));
     }
 }

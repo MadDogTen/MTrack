@@ -13,6 +13,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
 import program.io.MoveWindow;
+import program.util.Strings;
 
 import java.util.logging.Logger;
 
@@ -30,7 +31,7 @@ public class MessageBox {
         Label label = new Label();
         label.setText(message);
 
-        Button close = new Button("Close");
+        Button close = new Button(Strings.Close);
         close.setMinHeight(20);
         close.setMinWidth(30);
 

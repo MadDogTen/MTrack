@@ -18,6 +18,7 @@ import program.information.UserInfoController;
 import program.io.FileManager;
 import program.io.MoveWindow;
 import program.util.Strings;
+import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class TextBox {
     public String display(String message, String messageIfNameFieldIsBlank, String defaultValue, Window oldWindow) {
         log.finest("TextBox display has been opened.");
         Stage window = new Stage();
-        window.getIcons().add(ImageLoader.getImage("/image/MTrackLogo.png"));
+        window.getIcons().add(ImageLoader.getImage(Variables.Logo));
         final String[] userName = new String[1];
 
         window.initStyle(StageStyle.UNDECORATED);
@@ -43,7 +44,7 @@ public class TextBox {
 
         TextField textField = new TextField();
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(event -> {
             if (isValid(messageIfNameFieldIsBlank, textField.getText(), window)) {
                 userName[0] = textField.getText();
@@ -77,17 +78,17 @@ public class TextBox {
         if (message.isEmpty()) {
             ConfirmBox confirmBox = new ConfirmBox();
             return confirmBox.display(messageIfBlank, oldWindow);
-        } else if (message.contentEquals("Add New Username") || !message.matches("^[a-zA-Z0-9]+$")) {
+        } else if (message.contentEquals(Strings.AddNewUsername) || !message.matches("^[a-zA-Z0-9]+$")) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display("Username isn't valid.", oldWindow);
+            messageBox.display(Strings.UsernameIsntValid, oldWindow);
             return false;
         } else if (UserInfoController.getAllUsers().contains(message)) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display("Username already taken.", oldWindow);
+            messageBox.display(Strings.UsernameAlreadyTaken, oldWindow);
             return false;
         } else if (message.length() > 20) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display("Username is too long.", oldWindow);
+            messageBox.display(Strings.UsernameIsTooLong, oldWindow);
             return false;
         } else return true;
     }
@@ -109,7 +110,7 @@ public class TextBox {
         TextField textField = new TextField();
         textField.setPromptText("/PathToDirectory/Shows");
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
             if (isDirectoryValid(currentDirectories, messageIfFieldIsBlank, messageIfNotDirectory, textField.getText(), window)) {
                 directories[0] = new File(textField.getText());
@@ -117,7 +118,7 @@ public class TextBox {
             } else textField.clear();
         });
 
-        Button exit = new Button("X");
+        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             directories[0] = new File(Strings.EmptyString);
             window.close();
@@ -148,7 +149,7 @@ public class TextBox {
     private boolean isDirectoryValid(ArrayList<String> currentDirectories, String messageIfBlank, String messageIfNotDirectory, String message, Window oldWindow) {
         log.finest("isDirectoryValid has been called.");
         if (currentDirectories.contains(message)) {
-            new MessageBox().display("Directory is already added.", oldWindow);
+            new MessageBox().display(Strings.DirectoryIsAlreadyAdded, oldWindow);
             return false;
         } else if (new FileManager().checkFolderExists(message)) {
             return true;
@@ -180,7 +181,7 @@ public class TextBox {
         TextField textField = new TextField();
         textField.setText(String.valueOf(ProgramSettingsController.getUpdateSpeed()));
 
-        Button submit = new Button("Submit");
+        Button submit = new Button(Strings.Submit);
         submit.setOnAction(event -> {
             if (isUpdateSpeedValid(messageFieldIsBlank, textField.getText(), window)) {
                 if (textField.getText().isEmpty()) {
@@ -216,7 +217,7 @@ public class TextBox {
             return confirmBox.display(messageIfBlank, oldWindow);
         } else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) < 10) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display("Must be a number greater than or equal to 10", oldWindow);
+            messageBox.display(Strings.MustBeANumberGreaterThanOrEqualTo10, oldWindow);
             return false;
         } else return true;
     }
