@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.graphics.ImageLoader;
+import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.io.MoveWindow;
 import program.util.Strings;
@@ -105,6 +106,10 @@ public class ListSelectBox {
         ObservableList<String> usersList = FXCollections.observableArrayList(users);
         usersList.sorted();
         ComboBox<String> comboBox = new ComboBox<>(usersList);
+        String currentDefaultUser = ProgramSettingsController.getDefaultUsername();
+        if (currentDefaultUser != null && !currentDefaultUser.isEmpty()) {
+            comboBox.setValue(currentDefaultUser);
+        }
 
         Button submit = new Button("Submit");
         submit.setOnAction(e -> {

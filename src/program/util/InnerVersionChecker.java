@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
 public class InnerVersionChecker {
-    private static final Logger log = Logger.getLogger(InnerVersionChecker.class.getName());
+    private final Logger log = Logger.getLogger(InnerVersionChecker.class.getName());
     public int checkProgramSettingsFileVersion() {
         log.finest("checkProgramSettingsFileVersion has been ran.");
         int version = ProgramSettingsController.getProgramSettingsVersion();

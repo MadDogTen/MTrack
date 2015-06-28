@@ -1,5 +1,12 @@
 Changes:
 
+Pre-Alpha 0.9.1 -
+Made "Set Inactive" or "Set Active" show instead of "Toggle Updating" when right clicking on a show depending on the list your currently on.
+If you set a show as active on the inactive list, It will force a recheck when you switch back to the active Shows list.
+When choosing a Default User, it will preselect the current default user if there is one.
+Fixed NullPointerException when trying to add a new user at startup.
+If the ShowConfirmBox is currently open, the program will slow down rechecking to 10x longer than the update time.
+
 Pre-Alpha 0.9.0.1 -
 Removed code I used for testing.
 
@@ -120,7 +127,7 @@ Pre-Alpha 0.7.13 -
 General Code Changes.
 Renamed Logo from LogoChoice to MTrackLogo and increased logo resolution (143 x 155 -> 1001 x 1036).
 Fixed issue with generateShowFile not running as checkFileExists was swapped (Needs to return true when file doesn't exist).
-Fixed UserInfoController getInactiveShows potentially throwing a NullPointerExemption.
+Fixed UserInfoController getInactiveShows potentially throwing a NullPointerException.
 Fixed UserInfoController getIgnoredShows potentially hanging the program.
 Added forceRegen option to loadShowsFile, which fixes a NullPointerException.
 Added button to set the season and episode (by right clicking a show and choosing "Set Season + Episode"). Currently not working + disabled.

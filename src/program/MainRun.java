@@ -54,6 +54,7 @@ public class MainRun {
 
         if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
             generateUserSettingsFile(Strings.UserName);
+            UserInfoController.loadUserInfo();
         }
         log.info("Username is set: " + Strings.UserName);
         // Load all necessary files.
@@ -69,7 +70,8 @@ public class MainRun {
             log.info("MainRun Running...");
             hasRan = true;
         }
-        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || Clock.timeTakenSeconds(timer) > Variables.updateSpeed)) {
+        Boolean isShowCurrentlyPlaying = Controller.getIsShowCurrentlyPlaying();
+        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) && !isShowCurrentlyPlaying || isShowCurrentlyPlaying && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             final Boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")

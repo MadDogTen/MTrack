@@ -35,7 +35,7 @@ public class Controller implements Initializable {
 
     private static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
-    private static boolean show0Remaining;
+    private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
     @FXML
     private Pane pane;
     @FXML
@@ -129,6 +129,10 @@ public class Controller implements Initializable {
         tableViewFields.remove(index);
     }
 
+    public static boolean getIsShowCurrentlyPlaying() {
+        return isShowCurrentlyPlaying;
+    }
+
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -201,10 +205,13 @@ public class Controller implements Initializable {
                         }
                         log.info("\"Play Season + Episode\" is finished running.");
                     });
-                    MenuItem toggleActive = new MenuItem("Toggle Updating");
+                    MenuItem toggleActive = new MenuItem();
                     toggleActive.setOnAction(e -> {
                         if (currentList.matches("inactive")) {
                             UserInfoController.setActiveStatus(row.getItem().getShow(), true);
+                            if (!wereShowsChanged) {
+                                wereShowsChanged = true;
+                            }
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             tableView.getSelectionModel().clearSelection();
                         } else if (currentList.matches("active")) {
@@ -284,12 +291,14 @@ public class Controller implements Initializable {
                     row.setOnMouseClicked(e -> {
                         if (e.getButton().equals(MouseButton.SECONDARY) && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
+                                toggleActive.setText("Set Inactive");
                                 if (Variables.devMode) {
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory);
                                 } else
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
                             } else if (currentList.matches("inactive")) {
+                                toggleActive.setText("Set Active");
                                 if (Variables.devMode) {
                                     rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory);
                                 } else rowMenuInactive.getItems().addAll(toggleActive, setHidden, openDirectory);
@@ -299,6 +308,7 @@ public class Controller implements Initializable {
                         if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2 && (!row.isEmpty()) && currentList.matches("active")) {
                             String aShow = row.getItem().getShow();
                             Boolean keepPlaying = true;
+                            isShowCurrentlyPlaying = true;
                             while (keepPlaying) {
                                 int fileExists = UserInfoController.doesEpisodeExists(aShow);
                                 if (fileExists == 1 || fileExists == 2) {
@@ -325,6 +335,7 @@ public class Controller implements Initializable {
                                 MessageBox messageBox = new MessageBox();
                                 messageBox.display("You have reached the end!", pane.getScene().getWindow());
                             }
+                            isShowCurrentlyPlaying = false;
                         }
                     });
                     return row;
@@ -340,6 +351,17 @@ public class Controller implements Initializable {
                 setTableViewFields("inactive");
                 log.info("TableViewFields set to inactive.");
             } else if (currentList.matches("inactive")) {
+                if (wereShowsChanged) {
+                    Task<Void> task = new Task<Void>() {
+                        @SuppressWarnings("ReturnOfNull")
+                        @Override
+                        protected Void call() throws Exception {
+                            new CheckShowFiles().recheckShowFile(true);
+                            return null;
+                        }
+                    };
+                    new Thread(task).start();
+                }
                 setTableViewFields("active");
                 log.info("TableViewFields set to active.");
             }
