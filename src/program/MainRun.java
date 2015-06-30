@@ -12,6 +12,7 @@ import program.io.CheckShowFiles;
 import program.io.FileManager;
 import program.io.GenerateNewShowFiles;
 import program.io.GenerateSettingsFiles;
+import program.lang.en_US;
 import program.util.Clock;
 import program.util.Strings;
 import program.util.UpdateManager;
@@ -29,6 +30,7 @@ public class MainRun {
     private static int timer = Clock.getTimeSeconds();
 
     public static void startBackend() {
+        new en_US(); //TODO Finish lang
         FileManager fileManager = new FileManager();
         Variables.setDataFolder(fileManager);
         // If true, It will Delete ALL Files each time the program is ran.
