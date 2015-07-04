@@ -30,7 +30,7 @@ public class MainRun {
     private static int timer = Clock.getTimeSeconds();
 
     public static void startBackend() {
-        new en_US(); //TODO Finish lang
+        new en_US().setAllStrings(); //TODO Finish lang
         FileManager fileManager = new FileManager();
         Variables.setDataFolder(fileManager);
         // If true, It will Delete ALL Files each time the program is ran.
