@@ -418,7 +418,7 @@ public class Controller implements Initializable {
         });
 
         // Allow the undecorated stage to be moved.
-        new MoveWindow().moveWindow(tabPane);
+        new MoveWindow().moveWindow(tabPane, null);
 
         // Shows an indicator when its rechecking the shows.
         isCurrentlyRechecking.setTooltip(new Tooltip(Strings.CurrentlyRechecking));

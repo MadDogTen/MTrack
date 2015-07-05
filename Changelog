@@ -1,5 +1,8 @@
 Changes:
 
+Pre-Alpha 0.9.5 -
+If you move a Stage with APPLICATION_MODAL applied, it will now move the parent window with it.
+
 Pre-Alpha 0.9.4 -
 Even more work on translation support.
 

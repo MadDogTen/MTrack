@@ -77,7 +77,7 @@ public class ShowConfirmBox {
         Platform.runLater(() -> {
             window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
             window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
-            new MoveWindow().moveWindow(window);
+            new MoveWindow().moveWindow(window, oldWindow);
         });
         window.showAndWait();
 

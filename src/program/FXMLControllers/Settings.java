@@ -384,6 +384,6 @@ public class Settings implements Initializable {
         deleteEverythingAndClose.setTooltip(new Tooltip(Strings.WarningUnrecoverable));
 
         // Allow the undecorated stage to be moved.
-        new MoveWindow().moveWindow(tabPane);
+        new MoveWindow().moveWindow(tabPane, Main.stage);
     }
 }
