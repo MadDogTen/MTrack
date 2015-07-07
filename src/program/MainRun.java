@@ -69,9 +69,9 @@ public class MainRun {
             log.info("MainRun Running...");
             hasRan = true;
         }
-        Boolean isShowCurrentlyPlaying = Controller.getIsShowCurrentlyPlaying();
+        boolean isShowCurrentlyPlaying = Controller.getIsShowCurrentlyPlaying();
         if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) && !isShowCurrentlyPlaying || isShowCurrentlyPlaying && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
-            final Boolean[] taskRunning = {true};
+            final boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
@@ -114,7 +114,7 @@ public class MainRun {
         getLanguage();
         addDirectories();
 
-        final Boolean[] taskRunning = {true};
+        final boolean[] taskRunning = {true};
         Task<Void> task = new Task<Void>() {
             @SuppressWarnings("ReturnOfNull")
             @Override
@@ -142,12 +142,12 @@ public class MainRun {
     }
 
     private void addDirectories() {
-        Boolean addAnother = true;
+        boolean addAnother = true;
         TextBox textBox = new TextBox();
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            Boolean[] matched = ProgramSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.stage));
+            boolean[] matched = ProgramSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.stage));
             index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();

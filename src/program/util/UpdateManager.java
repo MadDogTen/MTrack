@@ -54,7 +54,7 @@ public class UpdateManager {
     @SuppressWarnings("SameParameterValue")
     private void convertProgramSettingsFile(int oldVersion, int newVersion) {
         HashMap<String, ArrayList<String>> programSettingsFile = ProgramSettingsController.getSettingsFile();
-        Boolean updated = false;
+        boolean updated = false;
         switch (oldVersion) {
             case -2:
                 ArrayList<String> temp = new ArrayList<>();
@@ -106,7 +106,7 @@ public class UpdateManager {
     @SuppressWarnings("SameParameterValue")
     private void convertUserSettingsFile(int oldVersion, int newVersion) {
         HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile = UserInfoController.getUserSettingsFile();
-        Boolean updated = false;
+        boolean updated = false;
         switch (oldVersion) {
             case -2:
                 HashMap<String, HashMap<String, String>> tempPut;
@@ -164,7 +164,7 @@ public class UpdateManager {
         ArrayList<String> shows = ShowInfoController.getShowsList();
         ArrayList<String> userShows = UserInfoController.getAllNonIgnoredShows();
         ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
-        final Boolean[] changed = {false};
+        final boolean[] changed = {false};
         shows.forEach(aShow -> {
             if (!userShows.contains(aShow) && !ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and added.");

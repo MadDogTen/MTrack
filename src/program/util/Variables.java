@@ -21,8 +21,8 @@ public class Variables {
     public static final int ProgramSettingsFileVersion = 1006;
     public static final int UserSettingsFileVersion = 1001;
 
-    public static final Boolean devMode = false;
-    public static final Boolean StartFresh = false; // Won't work unless devMode is true.
+    public static final boolean devMode = false;
+    public static final boolean StartFresh = false; // Won't work unless devMode is true.
 
     public static final Integer defaultUpdateSpeed = 12;
     public static final String Logo = "/image/MTrackLogo.png";

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class ChangesBox {
     private static final Logger log = Logger.getLogger(ChangesBox.class.getName());
 
-    private static Boolean currentlyOpen = false;
+    private static boolean currentlyOpen = false;
     private static Stage window;
 
     public static Stage getStage() {
@@ -58,7 +58,7 @@ public class ChangesBox {
         Button refresh = new Button(Strings.Refresh);
         Button close = new Button(Strings.Close);
 
-        final Boolean[] answerBoolean = {false};
+        final boolean[] answerBoolean = {false};
         final Stage[] thisWindow = new Stage[1];
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();

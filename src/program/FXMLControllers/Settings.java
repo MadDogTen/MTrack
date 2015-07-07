@@ -148,7 +148,7 @@ public class Settings implements Initializable {
                 String userToDelete = listSelectBox.defaultUser(Strings.UserToDelete, users, tabPane.getScene().getWindow());
                 if (userToDelete != null) {
                     ConfirmBox confirmBox = new ConfirmBox();
-                    Boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + userToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
+                    boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + userToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
                     if (confirm && !userToDelete.isEmpty()) {
                         new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UsersExtension);
                     }
@@ -163,11 +163,11 @@ public class Settings implements Initializable {
         addDirectory.setText(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
             int index = ProgramSettingsController.getLowestFreeDirectoryIndex();
-            Boolean[] wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, ProgramSettingsController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, tabPane.getScene().getWindow()));
+            boolean[] wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, ProgramSettingsController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
                 File directory = ProgramSettingsController.getDirectory(index);
-                final Boolean[] taskRunning = {true};
+                final boolean[] taskRunning = {true};
                 Task<Void> task = new Task<Void>() {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
@@ -209,7 +209,7 @@ public class Settings implements Initializable {
                 if (directoryToDelete != null && !directoryToDelete.isEmpty()) {
                     log.info("Directory selected for deletion: " + directoryToDelete);
                     ConfirmBox confirmBox = new ConfirmBox();
-                    Boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + directoryToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
+                    boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + directoryToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
                     if (confirm && !directoryToDelete.isEmpty()) {
                         ProgramSettingsController.removeDirectory(directoryToDelete);
                         ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
@@ -370,12 +370,12 @@ public class Settings implements Initializable {
                 String directoryToClear = String.valueOf(listSelectBox.directories(Strings.DirectoryToClear, directories, tabPane.getScene().getWindow()));
                 if (directoryToClear != null) {
                     ConfirmBox confirmBox = new ConfirmBox();
-                    Boolean confirm = confirmBox.display((Strings.AreYouSureToWantToClear + directoryToClear + Strings.QuestionMark), tabPane.getScene().getWindow());
+                    boolean confirm = confirmBox.display((Strings.AreYouSureToWantToClear + directoryToClear + Strings.QuestionMark), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
                         ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
                         ShowInfoController.getDirectoryHashMap(index).keySet().forEach(aShow -> {
-                            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
+                            boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                             if (!showExistsElsewhere) {
                                 UserInfoController.setIgnoredStatus(aShow, true);
                             }

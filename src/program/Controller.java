@@ -104,7 +104,7 @@ public class Controller implements Initializable {
         }
     }
 
-    public static void updateShowField(String aShow, Boolean showExists) {
+    public static void updateShowField(String aShow, boolean showExists) {
         int index = -2;
         for (DisplayShows test : tableViewFields) {
             if (test.getShow().replaceAll("[(]|[)]", "").matches(aShow.replaceAll("[(]|[)]", ""))) {
@@ -112,7 +112,7 @@ public class Controller implements Initializable {
                 break;
             }
         }
-        Boolean isShowActive = (UserInfoController.isShowActive(aShow) && showExists), remove = false;
+        boolean isShowActive = (UserInfoController.isShowActive(aShow) && showExists), remove = false;
         if (currentList.contains("active") && !isShowActive || currentList.contains("inactive") && isShowActive) {
             remove = true;
         }
@@ -269,7 +269,7 @@ public class Controller implements Initializable {
                             fileManager.open(folders.get(0));
                         } else {
                             ConfirmBox confirmBox = new ConfirmBox();
-                            Boolean openAll = confirmBox.display(Strings.DoYouWantToOpenAllAssociatedFolders, pane.getScene().getWindow());
+                            boolean openAll = confirmBox.display(Strings.DoYouWantToOpenAllAssociatedFolders, pane.getScene().getWindow());
                             if (openAll) {
                                 folders.forEach(fileManager::open);
                             } else {
@@ -315,7 +315,7 @@ public class Controller implements Initializable {
                         }
                         if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2 && (!row.isEmpty()) && currentList.matches("active")) {
                             String aShow = row.getItem().getShow();
-                            Boolean keepPlaying = true;
+                            boolean keepPlaying = true;
                             isShowCurrentlyPlaying = true;
                             while (keepPlaying) {
                                 int fileExists = UserInfoController.doesEpisodeExists(aShow);
@@ -436,7 +436,7 @@ public class Controller implements Initializable {
             @Override
             protected Void call() throws Exception {
                 while (Main.programRunning) {
-                    Boolean currentlyRechecking = isCurrentlyRechecking();
+                    boolean currentlyRechecking = isCurrentlyRechecking();
                     if (currentlyRechecking) {
                         if (CheckShowFiles.isCurrentlyCheckingDirectories()) {
                             if (!pingingDirectory.isVisible()) {
@@ -478,7 +478,7 @@ public class Controller implements Initializable {
 
     private void openChangeBox() {
         if (ChangesBox.getStage() == null) {
-            Boolean keepOpen;
+            boolean keepOpen;
             Object[] answer = null;
             do {
                 Stage neededWindow = (Stage) pane.getScene().getWindow();
@@ -486,7 +486,7 @@ public class Controller implements Initializable {
                     neededWindow = (Stage) answer[1];
                 }
                 answer = new ChangesBox().display(neededWindow);
-                keepOpen = (Boolean) answer[0];
+                keepOpen = (boolean) answer[0];
             } while (keepOpen);
         } else {
             new ChangesBox().display(pane.getScene().getWindow());

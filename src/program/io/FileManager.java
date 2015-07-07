@@ -12,7 +12,7 @@ public class FileManager {
     private final Logger log = Logger.getLogger(FileManager.class.getName());
 
     // Serialise
-    public void save(Serializable objectToSerialise, String folder, String filename, String extension, Boolean overWrite) {
+    public void save(Serializable objectToSerialise, String folder, String filename, String extension, boolean overWrite) {
         if (!new File(Variables.dataFolder + folder).isDirectory()) {
             createFolder(folder);
         }

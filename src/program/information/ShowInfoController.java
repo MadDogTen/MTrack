@@ -166,7 +166,7 @@ public class ShowInfoController {
     }
 
     public static boolean doesShowExistElsewhere(String aShow, ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray) {
-        final Boolean[] showExistsElsewhere = {false};
+        final boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
             showsFileArray.forEach(aHashMap -> {
                 if (aHashMap.containsKey(aShow)) {
@@ -212,7 +212,7 @@ public class ShowInfoController {
             Pattern pattern = Pattern.compile("s\\d{1,4}e\\d{1,4}[e|-]\\d{1,4}");
             Matcher match = pattern.matcher(aEpisode.toLowerCase());
             String info;
-            Boolean isDouble = false;
+            boolean isDouble = false;
             if (match.find()) {
                 info = match.group();
                 isDouble = true;

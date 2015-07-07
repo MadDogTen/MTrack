@@ -30,9 +30,9 @@ public class Main extends Application implements Runnable {
         launch(args);
     }
 
-    public synchronized static void stop(Stage stage, Boolean forceStop, Boolean saveSettings) {
+    public synchronized static void stop(Stage stage, boolean forceStop, boolean saveSettings) {
         ConfirmBox confirmBox = new ConfirmBox();
-        Boolean answer = true;
+        boolean answer = true;
         if (!forceStop) {
             answer = confirmBox.display(Strings.AreYouSure, stage.getScene().getWindow());
         }

@@ -41,8 +41,8 @@ public class CheckShowFiles {
         return currentlyCheckingDirectories;
     }
 
-    public void recheckShowFile(Boolean forceRun) {
-        final Boolean[] hasChanged = {false};
+    public void recheckShowFile(boolean forceRun) {
+        final boolean[] hasChanged = {false};
         int timer = Clock.getTimeSeconds();
         FindChangedShows findChangedShows = new FindChangedShows();
         findChangedShows.findChangedShows(ShowInfoController.getShowsFile());
@@ -78,7 +78,7 @@ public class CheckShowFiles {
                         ShowInfoController.loadShowsFile();
                         removedShows.forEach(aShow -> {
                             log.info(aShow + " is no longer found in \"" + folderLocation + "\".");
-                            Boolean doesShowExistElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, ShowInfoController.getDirectoriesHashMaps(aIndex));
+                            boolean doesShowExistElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, ShowInfoController.getDirectoriesHashMaps(aIndex));
                             if (!doesShowExistElsewhere) {
                                 UserInfoController.setIgnoredStatus(aShow, true);
                             }
@@ -212,7 +212,7 @@ public class CheckShowFiles {
         return ChangedSeasons;
     }
 
-    private HashMap<String, HashMap<Integer, HashMap<String, String>>> hasShowsChanged(File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, Boolean forceRun) {
+    private HashMap<String, HashMap<Integer, HashMap<String, String>>> hasShowsChanged(File folderLocation, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, boolean forceRun) {
         HashMap<String, HashMap<Integer, HashMap<String, String>>> newShows = new HashMap<>(0);
         Set<String> oldShows = showsFile.keySet();
         FindLocation.findShows(folderLocation).forEach(aShow -> {
@@ -256,9 +256,9 @@ public class CheckShowFiles {
         return newShows;
     }
 
-    private Boolean isSeasonEmpty(String aShow, Integer aSeason, File folderLocation) {
+    private boolean isSeasonEmpty(String aShow, Integer aSeason, File folderLocation) {
         ArrayList<String> episodesFull = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
-        final Boolean[] answer = {true};
+        final boolean[] answer = {true};
         if (!episodesFull.isEmpty()) {
             episodesFull.forEach(aEpisode -> {
                 if (!ShowInfoController.getEpisodeSeasonInfo(aEpisode).isEmpty()) {

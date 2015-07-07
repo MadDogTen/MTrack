@@ -121,7 +121,7 @@ public class ProgramSettingsController {
         Set<String> hashMapShows = ShowInfoController.getDirectoryHashMap(index).keySet();
         hashMapShows.forEach(aShow -> {
             log.info("Currently checking: " + aShow);
-            Boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
+            boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
             if (!showExistsElsewhere) {
                 UserInfoController.setIgnoredStatus(aShow, true);
             }
@@ -172,9 +172,9 @@ public class ProgramSettingsController {
         return new File(Strings.EmptyString);
     }
 
-    public static Boolean[] addDirectory(int index, File directory) {
+    public static boolean[] addDirectory(int index, File directory) {
         ArrayList<String> directories = settingsFile.get("Directories");
-        Boolean[] answer = {false, false};
+        boolean[] answer = {false, false};
         if (!directory.toString().isEmpty() && !directories.contains(String.valueOf(directory))) {
             log.info("Added Directory");
             directories.add(index + ">" + String.valueOf(directory));

@@ -7,7 +7,7 @@ public class ChangeReporter {
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
 
     private static String[] changes = new String[0];
-    private static Boolean isChanges = false;
+    private static boolean isChanges = false;
 
     public static void addChange(String newInfo) {
         log.info("Adding new change...");
@@ -36,7 +36,7 @@ public class ChangeReporter {
         return changes;
     }
 
-    public static Boolean getIsChanges() {
+    public static boolean getIsChanges() {
         return isChanges;
     }
 }
