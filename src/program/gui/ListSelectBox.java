@@ -353,4 +353,61 @@ public class ListSelectBox {
 
         return choice[0];
     }
+
+    public String pickLanguage(String message, ArrayList<String> languages, Window oldWindow) {
+        final String[] language = new String[1];
+        language[0] = Variables.DefaultLanguage;
+
+        Stage window = new Stage();
+        window.getIcons().add(ImageLoader.getImage(Variables.Logo));
+        window.initStyle(StageStyle.UNDECORATED);
+
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setMinWidth(250);
+
+        Label label = new Label();
+        label.setText(message);
+
+        log.info(String.valueOf(languages));
+        ObservableList<String> languageList = FXCollections.observableArrayList(languages);
+        languageList.sorted();
+        ComboBox<String> comboBox = new ComboBox<>(languageList);
+
+        Button submit = new Button(Strings.Submit);
+        submit.setOnAction(e -> {
+            if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
+                language[0] = comboBox.getValue();
+                window.close();
+            }
+        });
+
+        Button exit = new Button(Strings.ExitButtonText);
+        exit.setOnAction(e -> {
+            language[0] = "-1";
+            window.close();
+        });
+
+        HBox buttonLayout = new HBox();
+        buttonLayout.getChildren().addAll(submit, exit);
+        buttonLayout.setAlignment(Pos.CENTER);
+        buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, comboBox, buttonLayout);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+
+        window.setScene(scene);
+        Platform.runLater(() -> {
+            if (oldWindow != null) {
+                window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
+                window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            }
+            new MoveWindow().moveWindow(window, oldWindow);
+        });
+        window.showAndWait();
+
+        return language[0];
+    }
 }

@@ -15,6 +15,7 @@ import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.io.*;
+import program.util.LanguageHandler;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -99,6 +100,8 @@ public class Settings implements Initializable {
     private Button printAllUserInfo;
     @FXML
     private Button add1ToDirectoryVersion;
+    @FXML
+    private Button changeLanguage;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -215,6 +218,19 @@ public class Settings implements Initializable {
                 }
             }
             log.info("Remove Directory Finished!");
+        });
+        changeLanguage.setText(Strings.ChangeLanguage);
+        changeLanguage.setOnAction(e -> {
+            LanguageHandler languageHandler = new LanguageHandler();
+            ArrayList<String> languages = languageHandler.getLanguageNames();
+            if (languages.contains(ProgramSettingsController.getLanguage())) {
+                languages.remove(ProgramSettingsController.getLanguage());
+            }
+            String languageChoice = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages, tabPane.getScene().getWindow());
+            if (!languageChoice.contains("-1")) {
+                ProgramSettingsController.setLanguage(languageChoice);
+                new MessageBox().display(Strings.RestartTheProgramForTheNewLanguageToTakeEffect, tabPane.getScene().getWindow());
+            }
         });
         forceRecheck.setText(Strings.ForceRecheckShows);
         forceRecheck.setOnAction(e -> {

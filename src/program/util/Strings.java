@@ -9,7 +9,7 @@ public class Strings {
     public static final String ProgramTitle = "MTrack";
 
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Pre-Alpha 0.9.6";
+    public static final String MTrackVersion = "Pre-Alpha 0.9.7";
     public static final String CodedBy = "MadDogTen";
     public static final String CodedUsing = "Using: Intellij IDEA 14.1.4";
     public static final String codedWith = "Java";
@@ -23,7 +23,8 @@ public class Strings {
 
     // All Other Text
     public static String DefaultUsername;
-    /*public static String TextMissing;*/
+    @SuppressWarnings("unused")
+    public static String TextMissing;
 
     // Single Words
     public static String Submit;
@@ -127,11 +128,10 @@ public class Strings {
     public static String Dev2;
     public static String SetDefaultUser;
     public static String DirectoryToDelete;
+    public static String PleaseChooseYourLanguage;
+    public static String ChangeLanguage;
+    public static String RestartTheProgramForTheNewLanguageToTakeEffect;
 
     // Strings set by program
     public static String UserName;
-
-    /*public static void verifyAllStringsAreSet() {
-
-    }*/
 }

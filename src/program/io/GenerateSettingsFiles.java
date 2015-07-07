@@ -33,6 +33,8 @@ public class GenerateSettingsFiles {
             temp.add(0, "120");
             // Index 1 : show0Remaining
             temp.add(1, "false");
+            // Index 2 : language
+            temp.add(2, Strings.EmptyString);
             settingsFile.put("General", temp);
 
             // --Default User-- \\

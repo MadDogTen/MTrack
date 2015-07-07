@@ -1,22 +1,27 @@
 Changes:
 
+Pre-Alpha 0.9.7 -
+MainRun is no longer static.
+More work on multilingual support, Mostly works now. To add a new language, simply copy the template, rename the file, add fill in all the strings, and do a pull request; I will handle the rest. Lipsum is temporarily added for demonstration purposes.
+Added "Change Language" button in settings "Other" Tab.
+
 Pre-Alpha 0.9.6 -
-Changed the progress indicator to show it's progress. Currently progress is splitten up between directories, then split between the active shows.
+Changed the progress indicator to show it's progress. Currently progress is split up between directories, then split between the active shows.
 Added indicator over the progress indicator to show when it is currently checking if folders are active. (You may not see this if the shows are stored on an SSD or the Hard Drive was already active)
 
 Pre-Alpha 0.9.5 -
 If you move a Stage with APPLICATION_MODAL applied, it will now move the parent window with it.
 
 Pre-Alpha 0.9.4 -
-Even more work on translation support.
+Even more work on multilingual support.
 
 Pre-Alpha 0.9.3 -
-More work on translation support.
+More work on multilingual support.
 
 Pre-Alpha 0.9.2 -
 General Code Cleanup.
 Added button in settings user tab to add a new user.
-Put all Strings into Strings.java file for future translation support. May have missed some.
+Put all Strings into Strings.java file for future multilingual support. May have missed some.
 
 Pre-Alpha 0.9.1 -
 Made "Set Inactive" or "Set Active" show instead of "Toggle Updating" when right clicking on a show depending on the list your currently on.

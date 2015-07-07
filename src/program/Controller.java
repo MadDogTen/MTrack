@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class Controller implements Initializable {
+    public final static MainRun mainRun = new MainRun();
     private static final Logger log = Logger.getLogger(Controller.class.getName());
-
     private static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
     private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
@@ -165,7 +165,7 @@ public class Controller implements Initializable {
         log.info("MainController Running...");
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
-        MainRun.startBackend();
+        mainRun.startBackend();
         showsTab.setText(Strings.Shows);
         settingsTab.setText(Strings.Settings);
         show0Remaining = ProgramSettingsController.getShow0Remaining();

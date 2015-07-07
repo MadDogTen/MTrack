@@ -1,7 +1,6 @@
 package program.information;
 
 import program.Controller;
-import program.MainRun;
 import program.io.FileManager;
 import program.util.Strings;
 import program.util.Variables;
@@ -39,6 +38,14 @@ public class ProgramSettingsController {
 
     public static void setShow0Remaining(boolean show0Remaining) {
         settingsFile.get("General").set(1, String.valueOf(show0Remaining));
+    }
+
+    public static String getLanguage() {
+        return settingsFile.get("General").get(2);
+    }
+
+    public static void setLanguage(String language) {
+        settingsFile.get("General").set(2, language);
     }
 
     public static boolean isDefaultUsername() {
@@ -94,7 +101,7 @@ public class ProgramSettingsController {
         } else {
             settingsFile.get("ProgramVersions").set(1, String.valueOf(version));
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
-            if (!MainRun.firstRun) {
+            if (!Controller.mainRun.firstRun) {
                 UserInfoController.setUserDirectoryVersion(version);
             }
             saveSettingsFile();

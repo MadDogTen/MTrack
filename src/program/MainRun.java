@@ -12,11 +12,7 @@ import program.io.CheckShowFiles;
 import program.io.FileManager;
 import program.io.GenerateNewShowFiles;
 import program.io.GenerateSettingsFiles;
-import program.lang.en_US;
-import program.util.Clock;
-import program.util.Strings;
-import program.util.UpdateManager;
-import program.util.Variables;
+import program.util.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,13 +20,12 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
 public class MainRun {
-    private static final Logger log = Logger.getLogger(MainRun.class.getName());
-    public static boolean firstRun = false;
-    private static boolean hasRan = false, forceRun = true;
-    private static int timer = Clock.getTimeSeconds();
+    private final Logger log = Logger.getLogger(MainRun.class.getName());
+    public boolean firstRun = false;
+    private boolean hasRan = false, forceRun = true;
+    private int timer = Clock.getTimeSeconds();
 
-    public static void startBackend() {
-        new en_US().setAllStrings(); //TODO Finish lang
+    public void startBackend() {
         FileManager fileManager = new FileManager();
         Variables.setDataFolder(fileManager);
         // If true, It will Delete ALL Files each time the program is ran.
@@ -39,16 +34,20 @@ public class MainRun {
             fileManager.deleteFolder(new File(Variables.dataFolder));
         }
         // Check
+        UpdateManager updateManager = new UpdateManager();
         if (!fileManager.checkFolderExists(Variables.dataFolder)) {
             firstRun();
         } else if (!fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingsExtension)) {
             generateProgramSettingsFile();
             ProgramSettingsController.loadProgramSettingsFile();
+            getLanguage();
             Strings.UserName = getUser();
             ShowInfoController.loadShowsFile();
             UserInfoController.loadUserInfo();
         } else {
             ProgramSettingsController.loadProgramSettingsFile();
+            updateManager.updateProgramSettingsFile();
+            getLanguage();
             Strings.UserName = getUser();
             ShowInfoController.loadShowsFile();
             UserInfoController.loadUserInfo();
@@ -59,15 +58,13 @@ public class MainRun {
             UserInfoController.loadUserInfo();
         }
         log.info("Username is set: " + Strings.UserName);
-        // Load all necessary files.
-        log.info("Loading files...");
-        log.info("Finished loading files.");
-        new UpdateManager().updateFiles();
+        updateManager.updateUserSettingsFile();
+        updateManager.updateMainDirectoryVersion();
         Variables.setUpdateSpeed();
         Controller.setTableViewFields("active");
     }
 
-    public static void tick() {
+    public void tick() {
         if (!hasRan) {
             log.info("MainRun Running...");
             hasRan = true;
@@ -97,7 +94,7 @@ public class MainRun {
         }
     }
 
-    private static String getUser() {
+    private String getUser() {
         log.info("getUser Running...");
         ArrayList<String> Users = UserInfoController.getAllUsers();
         if (ProgramSettingsController.isDefaultUsername()) {
@@ -108,7 +105,7 @@ public class MainRun {
         }
     }
 
-    private static void firstRun() {
+    private void firstRun() {
         firstRun = true;
         log.info("MainRun- First Run, Generating Files...");
         new FileManager().createFolder(Strings.EmptyString);
@@ -143,7 +140,7 @@ public class MainRun {
         firstRun = false;
     }
 
-    private static void addDirectories() {
+    private void addDirectories() {
         Boolean addAnother = true;
         TextBox textBox = new TextBox();
         ConfirmBox confirmBox = new ConfirmBox();
@@ -163,13 +160,35 @@ public class MainRun {
         }
     }
 
+    private void getLanguage() {
+        LanguageHandler languageHandler = new LanguageHandler();
+        ArrayList<String> languages = languageHandler.getLanguageNames();
+        String language = ProgramSettingsController.getLanguage();
+        if (languages.size() == 1) {
+            languages.forEach(languageHandler::setLanguage);
+        } else {
+            if (language != null && !language.isEmpty() && languages.contains(language)) {
+                languageHandler.setLanguage(language);
+                log.info("Language is set: " + language);
+            } else {
+                languageHandler.setLanguage(Variables.DefaultLanguage);
+                String languageChoice = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages, null);
+                if (languageChoice != null && !languageChoice.isEmpty()) {
+                    languageHandler.setLanguage(languageChoice);
+                    ProgramSettingsController.setLanguage(languageChoice);
+                    log.info("Language is set: " + languageChoice);
+                } else getLanguage();
+            }
+        }
+    }
+
     // File Generators
-    private static void generateProgramSettingsFile() {
+    private void generateProgramSettingsFile() {
         log.info("Attempting to generate program settings file.");
         new GenerateSettingsFiles().generateProgramSettingsFile();
     }
 
-    private static void generateShowFiles() {
+    private void generateShowFiles() {
         log.info("Generating show files for first run...");
         ArrayList<String> directories = ProgramSettingsController.getDirectories();
         directories.forEach(aDirectory -> {
@@ -181,7 +200,7 @@ public class MainRun {
         log.info("Finished generating show files.");
     }
 
-    private static void generateUserSettingsFile(String userName) {
+    private void generateUserSettingsFile(String userName) {
         log.info("Attempting to generate settings file for " + userName + '.' );
         new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName);
     }

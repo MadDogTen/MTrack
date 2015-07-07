@@ -120,8 +120,9 @@ public class en_US {
         allStrings.put("Dev2", "Dev 2");
         allStrings.put("SetDefaultUser", "Set Default User");
         allStrings.put("DirectoryToDelete", "Directory to delete:");
-
-        log.info("Finished loading en_US.");
+        allStrings.put("PleaseChooseYourLanguage", "Please choose your language: ");
+        allStrings.put("ChangeLanguage", "Change Language");
+        allStrings.put("RestartTheProgramForTheNewLanguageToTakeEffect", "Restart the program for the new language to take effect.");
     }
 
     public void setAllStrings() {
@@ -231,17 +232,12 @@ public class en_US {
         Strings.Dev2 = allStrings.get("Dev2");
         Strings.SetDefaultUser = allStrings.get("SetDefaultUser");
         Strings.DirectoryToDelete = allStrings.get("DirectoryToDelete");
-
-        log.info("Finished setting language to en_US.");
+        Strings.PleaseChooseYourLanguage = allStrings.get("PleaseChooseYourLanguage");
+        Strings.ChangeLanguage = allStrings.get("ChangeLanguage");
+        Strings.RestartTheProgramForTheNewLanguageToTakeEffect = allStrings.get("RestartTheProgramForTheNewLanguageToTakeEffect");
     }
 
-    /*public String getSingleString(String stringName) {
-        if (allStrings.containsKey(stringName)) {
-            return allStrings.get(stringName);
-        } else return allStrings.get("TextMissing");
-    }*/
-
-    /*public String getLanguageName() {
+    public String registerLanguage() {
         return allStrings.get("LanguageName");
-    }*/
+    }
 }

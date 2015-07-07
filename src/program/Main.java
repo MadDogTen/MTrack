@@ -66,6 +66,7 @@ public class Main extends Application implements Runnable {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
         stage = primaryStage;
         ImageLoader.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
@@ -102,7 +103,7 @@ public class Main extends Application implements Runnable {
     @Override
     public void run() {
         while (programFullyRunning) {
-            MainRun.tick();
+            Controller.mainRun.tick();
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
