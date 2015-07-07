@@ -1,5 +1,9 @@
 Changes:
 
+Pre-Alpha 0.9.6 -
+Changed the progress indicator to show it's progress. Currently progress is splitten up between directories, then split between the active shows.
+Added indicator over the progress indicator to show when it is currently checking if folders are active. (You may not see this if the shows are stored on an SSD or the Hard Drive was already active)
+
 Pre-Alpha 0.9.5 -
 If you move a Stage with APPLICATION_MODAL applied, it will now move the parent window with it.
 

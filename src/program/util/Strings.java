@@ -9,8 +9,8 @@ public class Strings {
     public static final String ProgramTitle = "MTrack";
 
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Pre-Alpha 0.9.5";
-    public static final String CodedBy = "By.isEmpty()) { MadDogTen";
+    public static final String MTrackVersion = "Pre-Alpha 0.9.6";
+    public static final String CodedBy = "MadDogTen";
     public static final String CodedUsing = "Using: Intellij IDEA 14.1.4";
     public static final String codedWith = "Java";
     public static final String javaVersion = "Version: 1.8.0_45";
@@ -23,7 +23,7 @@ public class Strings {
 
     // All Other Text
     public static String DefaultUsername;
-    public static String TextMissing;
+    /*public static String TextMissing;*/
 
     // Single Words
     public static String Submit;
@@ -131,7 +131,7 @@ public class Strings {
     // Strings set by program
     public static String UserName;
 
-    public static void verifyAllStringsAreSet() {
+    /*public static void verifyAllStringsAreSet() {
 
-    }
+    }*/
 }

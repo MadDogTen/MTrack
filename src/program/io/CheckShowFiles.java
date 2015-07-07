@@ -19,9 +19,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class CheckShowFiles {
-    private static boolean recheckShowFileRunning = false, keepRunning = false;
+    private static boolean recheckShowFileRunning = false, keepRunning = false, currentlyCheckingDirectories = false;
     private static ArrayList<String> emptyShows = new ArrayList<>();
     private static int runNumber = 0;
+    private static double recheckShowFilePercentage;
     private final Logger log = Logger.getLogger(CheckShowFiles.class.getName());
 
     public static ArrayList<String> getEmptyShows() {
@@ -30,6 +31,14 @@ public class CheckShowFiles {
 
     public static boolean getRecheckShowFileRunning() {
         return recheckShowFileRunning;
+    }
+
+    public static double getRecheckShowFilePercentage() {
+        return recheckShowFilePercentage / 100;
+    }
+
+    public static boolean isCurrentlyCheckingDirectories() {
+        return currentlyCheckingDirectories;
     }
 
     public void recheckShowFile(Boolean forceRun) {
@@ -42,8 +51,14 @@ public class CheckShowFiles {
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
             FileManager fileManager = new FileManager();
+            recheckShowFilePercentage = 0;
+            double percentagePerDirectory = 100 / ProgramSettingsController.getDirectories().size();
+            currentlyCheckingDirectories = true;
+            ProgramSettingsController.getDirectories().forEach(directory -> ProgramSettingsController.isDirectoryCurrentlyActive(new File(directory)));
+            currentlyCheckingDirectories = false;
             ProgramSettingsController.getDirectoriesIndexes().forEach(aIndex -> {
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap = ShowInfoController.getDirectoryHashMap(aIndex);
+                double percentagePerShow = percentagePerDirectory / (UserInfoController.getActiveShows().size() + 2);
                 File folderLocation = ProgramSettingsController.getDirectory(aIndex);
                 log.info("Directory currently being rechecked: \"" + folderLocation + "\".");
                 if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
@@ -113,6 +128,7 @@ public class CheckShowFiles {
                                 break;
                             }
                         }
+                        recheckShowFilePercentage += percentagePerShow;
                     }
                 }
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> changedShows = hasShowsChanged(folderLocation, hashMap, forceRun);
@@ -134,8 +150,10 @@ public class CheckShowFiles {
                     });
                     ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
                 }
+                recheckShowFilePercentage += (percentagePerShow * 2);
             });
         }
+        recheckShowFilePercentage = 100;
         if (hasChanged[0] && Main.programFullyRunning) {
             ShowInfoController.loadShowsFile();
             findChangedShows.findShowFileDifferences(ShowInfoController.getShowsFile());

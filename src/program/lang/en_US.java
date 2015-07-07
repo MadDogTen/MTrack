@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 public class en_US {
     private final Logger log = Logger.getLogger(en_US.class.getName());
 
-    private HashMap<String, String> allStrings = new HashMap<>();
+    private final HashMap<String, String> allStrings = new HashMap<>();
 
     public en_US() {
         log.info("Loading en_US...");
@@ -235,13 +235,13 @@ public class en_US {
         log.info("Finished setting language to en_US.");
     }
 
-    public String getSingleString(String stringName) {
+    /*public String getSingleString(String stringName) {
         if (allStrings.containsKey(stringName)) {
             return allStrings.get(stringName);
         } else return allStrings.get("TextMissing");
-    }
+    }*/
 
-    public String getLanguageName() {
+    /*public String getLanguageName() {
         return allStrings.get("LanguageName");
-    }
+    }*/
 }

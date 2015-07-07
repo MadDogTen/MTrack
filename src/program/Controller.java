@@ -1,5 +1,6 @@
 package program;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import program.gui.*;
 import program.information.*;
@@ -69,6 +71,8 @@ public class Controller implements Initializable {
     private ProgressIndicator isCurrentlyRechecking;
     @FXML
     private Button changesAlert;
+    @FXML
+    private Circle pingingDirectory;
 
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
@@ -405,6 +409,9 @@ public class Controller implements Initializable {
             setTableView();
         });
         show0RemainingCheckBox.setTooltip(new Tooltip(Strings.ShowHideShowsWith0EpisodeLeft));
+        Tooltip.install(
+                pingingDirectory,
+                new Tooltip("Pinging Directories..."));
 
         // || ~~~~ Settings Tab ~~~~ || \\
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
@@ -422,13 +429,45 @@ public class Controller implements Initializable {
 
         // Shows an indicator when its rechecking the shows.
         isCurrentlyRechecking.setTooltip(new Tooltip(Strings.CurrentlyRechecking));
+
+        final boolean[] lowerOpacity = {false};
+        final double[] currentOpacity = {1};
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 while (Main.programRunning) {
-                    isCurrentlyRechecking();
+                    Boolean currentlyRechecking = isCurrentlyRechecking();
+                    if (currentlyRechecking) {
+                        if (CheckShowFiles.isCurrentlyCheckingDirectories()) {
+                            if (!pingingDirectory.isVisible()) {
+                                pingingDirectory.setVisible(true);
+                            }
+                            pingingDirectory.setOpacity(currentOpacity[0]);
+                            if (currentOpacity[0] >= 1.25) {
+                                lowerOpacity[0] = true;
+                            } else if (currentOpacity[0] <= 0.25) {
+                                lowerOpacity[0] = false;
+                            }
+                            if (lowerOpacity[0]) {
+                                currentOpacity[0] -= 0.03;
+                            } else {
+                                currentOpacity[0] += 0.03;
+                            }
+                        } else if (pingingDirectory.isVisible()) {
+                            pingingDirectory.setVisible(false);
+                        }
+
+                        Platform.runLater(() -> {
+                            Double temp = CheckShowFiles.getRecheckShowFilePercentage();
+                            isCurrentlyRechecking.setProgress(temp);
+                        });
+                    }
                     isChangesListPopulated();
-                    Thread.sleep(800);
+                    if (currentlyRechecking) {
+                        Thread.sleep(80);
+                    } else {
+                        Thread.sleep(800);
+                    }
                 }
                 //noinspection ReturnOfNull
                 return null;
@@ -454,14 +493,16 @@ public class Controller implements Initializable {
         }
     }
 
-    private void isCurrentlyRechecking() {
+    private boolean isCurrentlyRechecking() {
         if (CheckShowFiles.getRecheckShowFileRunning()) {
             if (!isCurrentlyRechecking.isVisible()) {
                 isCurrentlyRechecking.setVisible(true);
             }
+            return true;
         } else if (isCurrentlyRechecking.isVisible()) {
             isCurrentlyRechecking.setVisible(false);
         }
+        return false;
     }
 
     private void isChangesListPopulated() {
