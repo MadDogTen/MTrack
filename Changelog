@@ -1,5 +1,8 @@
 Changes:
 
+Pre-Alpha 0.9.7.2 -
+Fixed program hanging (+ refusing to completely exit) on CheckShowFiles recheckShowFile if no directories are added.
+
 Pre-Alpha 0.9.7.1 -
 Added getLanguage() to MainRun firstRun.
 You can no longer close the Language choice on firstRun.

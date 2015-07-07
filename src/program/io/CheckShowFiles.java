@@ -52,13 +52,16 @@ public class CheckShowFiles {
             keepRunning = !forceRun;
             FileManager fileManager = new FileManager();
             recheckShowFilePercentage = 0;
-            double percentagePerDirectory = 100 / ProgramSettingsController.getDirectories().size();
+            final double[] percentagePerDirectory = {0};
+            if (!ProgramSettingsController.getDirectories().isEmpty()) {
+                percentagePerDirectory[0] = 100 / ProgramSettingsController.getDirectories().size();
+            }
             currentlyCheckingDirectories = true;
             ProgramSettingsController.getDirectories().forEach(directory -> ProgramSettingsController.isDirectoryCurrentlyActive(new File(directory)));
             currentlyCheckingDirectories = false;
             ProgramSettingsController.getDirectoriesIndexes().forEach(aIndex -> {
                 HashMap<String, HashMap<Integer, HashMap<String, String>>> hashMap = ShowInfoController.getDirectoryHashMap(aIndex);
-                double percentagePerShow = percentagePerDirectory / (UserInfoController.getActiveShows().size() + 2);
+                double percentagePerShow = percentagePerDirectory[0] / (UserInfoController.getActiveShows().size() + 2);
                 File folderLocation = ProgramSettingsController.getDirectory(aIndex);
                 log.info("Directory currently being rechecked: \"" + folderLocation + "\".");
                 if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
