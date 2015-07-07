@@ -111,6 +111,7 @@ public class MainRun {
         new FileManager().createFolder(Strings.EmptyString);
         generateProgramSettingsFile();
         ProgramSettingsController.loadProgramSettingsFile();
+        getLanguage();
         addDirectories();
 
         final Boolean[] taskRunning = {true};

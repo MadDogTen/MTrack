@@ -15,6 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import program.Controller;
 import program.graphics.ImageLoader;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
@@ -381,14 +382,19 @@ public class ListSelectBox {
             }
         });
 
-        Button exit = new Button(Strings.ExitButtonText);
-        exit.setOnAction(e -> {
-            language[0] = "-1";
-            window.close();
-        });
-
         HBox buttonLayout = new HBox();
-        buttonLayout.getChildren().addAll(submit, exit);
+
+        if (Controller.mainRun.firstRun) {
+            buttonLayout.getChildren().addAll(submit);
+        } else {
+            Button exit = new Button(Strings.ExitButtonText);
+            exit.setOnAction(e -> {
+                language[0] = "-1";
+                window.close();
+            });
+            buttonLayout.getChildren().addAll(submit, exit);
+        }
+
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
 

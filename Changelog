@@ -1,5 +1,9 @@
 Changes:
 
+Pre-Alpha 0.9.7.1 -
+Added getLanguage() to MainRun firstRun.
+You can no longer close the Language choice on firstRun.
+
 Pre-Alpha 0.9.7 -
 MainRun is no longer static.
 More work on multilingual support, Mostly works now. To add a new language, simply copy the template, rename the file, add fill in all the strings, and do a pull request; I will handle the rest. Lipsum is temporarily added for demonstration purposes.
