@@ -25,7 +25,7 @@ public class ShowInfoController {
             ArrayList<HashSet<Show>> showsFileArray = getDirectoriesHashMaps(-1);
             // This crazy thing is to combine all found Shows/Seasons/Episodes from all directory's into one HashMap.
             long timer = Clock.getTimeMilliSeconds();
-            showsFile = new HashMap<>();
+            showsFile = new HashSet<>();
             HashSet<Show> allShows = new HashSet<>();
             showsFileArray.stream().filter(aShowSet -> aShowSet != null).forEach(aShowSet -> aShowSet.stream().forEach(aShow -> {
                 if (!allShows.contains(aShow)) {
@@ -34,20 +34,20 @@ public class ShowInfoController {
             }));
             allShows.forEach(aShow -> {
                 HashSet<Episode> seasons = new HashSet<>();
-                ArrayList<Integer> allShowSeasons = new ArrayList<>();
+                HashSet<Season> allShowSeasons = new HashSet<>();
                 showsFileArray.stream().filter(aShowSet -> aShowSet.contains(aShow)).forEach(aShowSet -> aShowSet.
                 (aShow).keySet().stream().filter(aSeason -> !allShowSeasons.contains(aSeason)).forEach(allShowSeasons::add))
                 allShowSeasons.forEach(aSeason -> {
-                    HashMap<String, String> episodeNumEpisode = new HashMap<>();
-                    showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow) && aHashMap.get(aShow).containsKey(aSeason)).forEach(aHashMap -> aHashMap.get(aShow).get(aSeason).keySet().forEach(aEpisode -> episodeNumEpisode.put(aEpisode, aHashMap.get(aShow).get(aSeason).get(aEpisode))));
-                    seasonEpisode.put(aSeason, episodeNumEpisode);
+                    HashSet<Episode> episode = new HashSet<>();
+                    showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow) && aHashMap.get(aShow).containsKey(aSeason)).forEach(aHashMap -> aHashMap.get(aShow).get(aSeason).keySet().forEach(aEpisode -> episode.add(aHashMap.get(aShow).get(aSeason).get(aEpisode))));
+                    seasons.add(new Episode(aSeason, episodeNumEpisode));
                 });
                 showsFile.put(aShow, seasonEpisode);
             });
             log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
         } else {
             FileManager fileManager = new FileManager();
-            ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+            ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (HashSet<Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
         }
     }
 
