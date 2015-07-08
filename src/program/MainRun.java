@@ -8,7 +8,6 @@ import program.gui.TextBox;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
-import program.io.CheckShowFiles;
 import program.io.FileManager;
 import program.io.GenerateNewShowFiles;
 import program.io.GenerateSettingsFiles;
@@ -28,15 +27,17 @@ public class MainRun {
     public void startBackend() {
         FileManager fileManager = new FileManager();
         Variables.setDataFolder(fileManager);
-        // If true, It will Delete ALL Files each time the program is ran.
-        if (Variables.devMode && Variables.StartFresh && fileManager.checkFolderExists(Variables.dataFolder)) {
+        // If both Variables devMode & StartFresh are true, It will Delete ALL Files each time the program is ran.
+        //noinspection PointlessBooleanExpression,ConstantConditions
+        if (Variables.devMode && Variables.startFresh && fileManager.checkFolderExists(Variables.dataFolder)) {
             log.warning("Starting Fresh...");
             fileManager.deleteFolder(new File(Variables.dataFolder));
         }
-        // Check
         UpdateManager updateManager = new UpdateManager();
+        // First it checks if the MTrack folder currently exists, if not, creates it.
         if (!fileManager.checkFolderExists(Variables.dataFolder)) {
             firstRun();
+            // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         } else if (!fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingsExtension)) {
             generateProgramSettingsFile();
             ProgramSettingsController.loadProgramSettingsFile();
@@ -44,6 +45,7 @@ public class MainRun {
             Strings.UserName = getUser();
             ShowInfoController.loadShowsFile();
             UserInfoController.loadUserInfo();
+            // If those both exists, then it starts normally.
         } else {
             ProgramSettingsController.loadProgramSettingsFile();
             updateManager.updateProgramSettingsFile();
@@ -70,13 +72,14 @@ public class MainRun {
             hasRan = true;
         }
         boolean isShowCurrentlyPlaying = Controller.getIsShowCurrentlyPlaying();
+        //noinspection PointlessBooleanExpression,ConstantConditions
         if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) && !isShowCurrentlyPlaying || isShowCurrentlyPlaying && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             final boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
-                    new CheckShowFiles().recheckShowFile(false);
+                    Controller.checkShowFiles.recheckShowFile(false);
                     taskRunning[0] = false;
                     return null;
                 }
@@ -94,6 +97,7 @@ public class MainRun {
         }
     }
 
+    // This first checks if a DefaultUser currently exists, and if not, prompts the user to choose / create one.
     private String getUser() {
         log.info("getUser Running...");
         ArrayList<String> Users = UserInfoController.getAllUsers();
@@ -141,6 +145,7 @@ public class MainRun {
         firstRun = false;
     }
 
+    // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
     private void addDirectories() {
         boolean addAnother = true;
         TextBox textBox = new TextBox();
@@ -161,6 +166,7 @@ public class MainRun {
         }
     }
 
+    // Prompts the user to choose which language to startup with. If there is only 1 language, then it will skip the prompt and start with it.
     private void getLanguage() {
         LanguageHandler languageHandler = new LanguageHandler();
         ArrayList<String> languages = languageHandler.getLanguageNames();
@@ -184,11 +190,13 @@ public class MainRun {
     }
 
     // File Generators
+    // Generates the program settings file.
     private void generateProgramSettingsFile() {
         log.info("Attempting to generate program settings file.");
         new GenerateSettingsFiles().generateProgramSettingsFile();
     }
 
+    // Generates the ShowFiles (If a directory is added, otherwise this is skipped).
     private void generateShowFiles() {
         log.info("Generating show files for first run...");
         ArrayList<String> directories = ProgramSettingsController.getDirectories();
@@ -201,6 +209,7 @@ public class MainRun {
         log.info("Finished generating show files.");
     }
 
+    // Generates a user settings file for the given username.
     private void generateUserSettingsFile(String userName) {
         log.info("Attempting to generate settings file for " + userName + '.' );
         new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName);

@@ -14,7 +14,10 @@ import program.gui.*;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
-import program.io.*;
+import program.io.FileManager;
+import program.io.GenerateNewShowFiles;
+import program.io.GenerateSettingsFiles;
+import program.io.MoveWindow;
 import program.util.LanguageHandler;
 import program.util.Strings;
 import program.util.Variables;
@@ -238,7 +241,7 @@ public class Settings implements Initializable {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
-                    new CheckShowFiles().recheckShowFile(true);
+                    Controller.checkShowFiles.recheckShowFile(true);
                     return null;
                 }
             };
@@ -263,6 +266,7 @@ public class Settings implements Initializable {
             }
         });
 
+        //noinspection PointlessBooleanExpression
         if (!Variables.devMode) {
             developerTab.setDisable(true);
             tabPane.getTabs().remove(3);
@@ -275,7 +279,7 @@ public class Settings implements Initializable {
         printAllDirectories.setOnAction(e -> ProgramSettingsController.printAllDirectories());
         printEmptyShowFolders.setText(Strings.PrintEmptyShows);
         printEmptyShowFolders.setOnAction(e -> {
-            ArrayList<String> emptyShows = CheckShowFiles.getEmptyShows();
+            ArrayList<String> emptyShows = Controller.checkShowFiles.getEmptyShows();
             log.info("Printing empty shows:");
             if (emptyShows.isEmpty()) log.info("No empty shows");
             else {

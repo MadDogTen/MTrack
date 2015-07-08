@@ -34,9 +34,14 @@ import java.util.stream.Collectors;
 @SuppressWarnings("WeakerAccess")
 public class Controller implements Initializable {
     public final static MainRun mainRun = new MainRun();
+    public static final CheckShowFiles checkShowFiles = new CheckShowFiles();
     private static final Logger log = Logger.getLogger(Controller.class.getName());
+    // This is the list that is currently showing in the tableView. Currently can only be "active" or "inactive".
     private static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
+    // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
+    // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
+    // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
     private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
     @FXML
     private Pane pane;
@@ -74,6 +79,7 @@ public class Controller implements Initializable {
     @FXML
     private Circle pingingDirectory;
 
+    // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShows> list = FXCollections.observableArrayList();
         if (!showList.isEmpty()) {
@@ -90,6 +96,7 @@ public class Controller implements Initializable {
         return list;
     }
 
+    // This sets the current tableView to whichever you want.
     public static void setTableViewFields(String type) {
         if (type.matches("active")) {
             if (!currentList.matches("active")) {
@@ -104,6 +111,7 @@ public class Controller implements Initializable {
         }
     }
 
+    // Public method to update a particular show with new information. If the show happens to have been remove, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
     public static void updateShowField(String aShow, boolean showExists) {
         int index = -2;
         for (DisplayShows test : tableViewFields) {
@@ -129,6 +137,7 @@ public class Controller implements Initializable {
         }
     }
 
+    // Used to remove the show from the current list. If you are on the active list and set a show inactive, then it will remove it; and the same if you make a show active on the inactive list.
     private static void removeShowField(int index) {
         tableViewFields.remove(index);
     }
@@ -137,6 +146,7 @@ public class Controller implements Initializable {
         return isShowCurrentlyPlaying;
     }
 
+    // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -365,7 +375,7 @@ public class Controller implements Initializable {
                         @SuppressWarnings("ReturnOfNull")
                         @Override
                         protected Void call() throws Exception {
-                            new CheckShowFiles().recheckShowFile(true);
+                            checkShowFiles.recheckShowFile(true);
                             return null;
                         }
                     };
@@ -438,7 +448,7 @@ public class Controller implements Initializable {
                 while (Main.programRunning) {
                     boolean currentlyRechecking = isCurrentlyRechecking();
                     if (currentlyRechecking) {
-                        if (CheckShowFiles.isCurrentlyCheckingDirectories()) {
+                        if (checkShowFiles.isCurrentlyCheckingDirectories()) {
                             if (!pingingDirectory.isVisible()) {
                                 pingingDirectory.setVisible(true);
                             }
@@ -458,7 +468,7 @@ public class Controller implements Initializable {
                         }
 
                         Platform.runLater(() -> {
-                            Double temp = CheckShowFiles.getRecheckShowFilePercentage();
+                            Double temp = checkShowFiles.getRecheckShowFilePercentage();
                             isCurrentlyRechecking.setProgress(temp);
                         });
                     }
@@ -494,7 +504,7 @@ public class Controller implements Initializable {
     }
 
     private boolean isCurrentlyRechecking() {
-        if (CheckShowFiles.getRecheckShowFileRunning()) {
+        if (checkShowFiles.getRecheckShowFileRunning()) {
             if (!isCurrentlyRechecking.isVisible()) {
                 isCurrentlyRechecking.setVisible(true);
             }

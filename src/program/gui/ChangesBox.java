@@ -13,9 +13,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import program.graphics.ImageLoader;
 import program.information.ChangeReporter;
 import program.io.MoveWindow;
+import program.util.ImageLoader;
 import program.util.Strings;
 import program.util.Variables;
 

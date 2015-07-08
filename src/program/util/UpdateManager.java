@@ -10,37 +10,33 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Logger;
 
+
+// Ch
 public class UpdateManager {
     private final Logger log = Logger.getLogger(UpdateManager.class.getName());
-    private final InnerVersionChecker checker = new InnerVersionChecker();
 
-    /*public void updateAllFiles() {
-        log.info("Checking if inner versions are matched...");
-        updateProgramSettingsFile();
-        updateUserSettingsFile();
-        updateMainDirectoryVersion();
-        log.info("Finished checking if inner versions are matched.");
-    }*/
-
-    // -1 is returned if they match, otherwise the old version number is returned.
+    // These both compare the version defined in Variables (Latest Version) with the version the files are currently at (Old Version), and if they don't match, converts the files to the latest version.
     public void updateProgramSettingsFile() {
-        int programSettingsFileVersion = checker.checkProgramSettingsFileVersion();
-        if (programSettingsFileVersion == -1) log.info("Program settings file versions matched.");
-        else {
-            log.info("Program settings file versions didn't match " + Variables.ProgramSettingsFileVersion + " - " + programSettingsFileVersion + ", Updating...");
-            convertProgramSettingsFile(programSettingsFileVersion, Variables.ProgramSettingsFileVersion);
+        int newVersion = Variables.ProgramSettingsFileVersion, currentVersion = ProgramSettingsController.getProgramSettingsVersion();
+        if (Variables.ProgramSettingsFileVersion == currentVersion) {
+            log.info("Program settings file versions matched.");
+        } else {
+            log.info("Program settings file versions didn't match " + newVersion + " - " + currentVersion + ", Updating...");
+            convertProgramSettingsFile(currentVersion, newVersion);
         }
     }
 
     public void updateUserSettingsFile() {
-        int userSettingsFileVersion = checker.checkUserSettingsFileVersion();
-        if (userSettingsFileVersion == -1) log.info("User settings file versions matched.");
-        else {
-            log.info("User settings file versions didn't match " + Variables.UserSettingsFileVersion + " - " + userSettingsFileVersion + ", Updating...");
-            convertUserSettingsFile(userSettingsFileVersion, Variables.UserSettingsFileVersion);
+        int newVersion = Variables.UserSettingsFileVersion, oldVersion = UserInfoController.getUserSettingsVersion();
+        if (newVersion == oldVersion) {
+            log.info("User settings file versions matched.");
+        } else {
+            log.info("User settings file versions didn't match " + newVersion + " - " + oldVersion + ", Updating...");
+            convertUserSettingsFile(oldVersion, newVersion);
         }
     }
 
+    // This checks if the user has the latest show information, and if they don't, updates it to the latest.
     public void updateMainDirectoryVersion() {
         int mainDirectoryVersion = ProgramSettingsController.getMainDirectoryVersion();
         if (mainDirectoryVersion == UserInfoController.getUserDirectoryVersion())
@@ -51,6 +47,7 @@ public class UpdateManager {
         }
     }
 
+    // These are ran if the versions didn't match, and updates the file with the latest information. It uses the oldVersion to find where it last updated, and runs through all the cases at and below it to catch it up, than updates the file to the latest version if it ran successfully.
     @SuppressWarnings("SameParameterValue")
     private void convertProgramSettingsFile(int oldVersion, int newVersion) {
         HashMap<String, ArrayList<String>> programSettingsFile = ProgramSettingsController.getSettingsFile();
@@ -99,7 +96,7 @@ public class UpdateManager {
 
             ProgramSettingsController.setSettingsFile(programSettingsFile);
             ProgramSettingsController.saveSettingsFile();
-            log.info("Program settings file was successfully updated to version " + newVersion + '.' );
+            log.info("Program settings file was successfully updated to version " + newVersion + '.');
         } else log.info("Program settings file was not updated. This is an error, please report.");
     }
 
@@ -156,10 +153,11 @@ public class UpdateManager {
 
             UserInfoController.setUserSettingsFile(userSettingsFile);
             UserInfoController.saveUserSettingsFile();
-            log.info("User settings file was successfully updated to version " + newVersion + '.' );
+            log.info("User settings file was successfully updated to version " + newVersion + '.');
         } else log.info("User settings file was not updated. This is an error, please report.");
     }
 
+    // This finds what shows have been added / remove if another user has ran the program (and found updated information) since you last ran your profile.
     private void updateUserShows(int newVersion) {
         ArrayList<String> shows = ShowInfoController.getShowsList();
         ArrayList<String> userShows = UserInfoController.getAllNonIgnoredShows();

@@ -1,8 +1,7 @@
-package program.graphics;
+package program.util;
 
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import program.util.Variables;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

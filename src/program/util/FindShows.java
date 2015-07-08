@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FindLocation {
-    private static final Logger log = Logger.getLogger(FindLocation.class.getName());
+public class FindShows {
+    private static final Logger log = Logger.getLogger(FindShows.class.getName());
 
     public static ArrayList<String> findShows(File dir) {
         ArrayList<String> result = new ArrayList<>();

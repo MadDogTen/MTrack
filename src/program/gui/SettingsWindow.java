@@ -9,7 +9,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import program.Main;
-import program.graphics.ImageLoader;
+import program.util.ImageLoader;
 
 import java.util.logging.Logger;
 

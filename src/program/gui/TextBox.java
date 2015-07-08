@@ -12,11 +12,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import program.graphics.ImageLoader;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.io.FileManager;
 import program.io.MoveWindow;
+import program.util.ImageLoader;
 import program.util.Strings;
 import program.util.Variables;
 

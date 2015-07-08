@@ -16,10 +16,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.Controller;
-import program.graphics.ImageLoader;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.io.MoveWindow;
+import program.util.ImageLoader;
 import program.util.Strings;
 import program.util.Variables;
 

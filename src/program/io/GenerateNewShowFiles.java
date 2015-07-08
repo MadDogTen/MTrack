@@ -3,7 +3,7 @@ package program.io;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
-import program.util.FindLocation;
+import program.util.FindShows;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -24,15 +24,15 @@ public class GenerateNewShowFiles {
             final ArrayList<String> ignoredShows;
             if (UserInfoController.getAllUsers().isEmpty()) ignoredShows = new ArrayList<>();
             else ignoredShows = UserInfoController.getIgnoredShows();
-            FindLocation.findShows(folderLocation).forEach(aShow -> {
+            FindShows.findShows(folderLocation).forEach(aShow -> {
                 log.info("Currently Processing: " + aShow);
                 // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
                 HashMap<Integer, HashMap<String, String>> seasonEpisode = new HashMap<>(0);
-                FindLocation.findSeasons(folderLocation, aShow).forEach(aSeason -> {
+                FindShows.findSeasons(folderLocation, aShow).forEach(aSeason -> {
                     log.info("Season: " + aSeason);
                     // First String = Episode Number -- Second String = Episode Location
                     HashMap<String, String> episodeNumEpisode = new HashMap<>(0);
-                    ArrayList<String> episodesFull = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
+                    ArrayList<String> episodesFull = FindShows.findEpisodes(folderLocation, aShow, aSeason);
                     episodesFull.forEach(aEpisode -> {
                             log.info("Episode: " + aEpisode);
                             ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);

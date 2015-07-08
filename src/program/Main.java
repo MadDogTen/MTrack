@@ -7,13 +7,13 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import program.graphics.ImageLoader;
 import program.gui.ChangesBox;
 import program.gui.ConfirmBox;
 import program.gui.SettingsWindow;
 import program.information.ProgramSettingsController;
 import program.information.UserInfoController;
 import program.util.Clock;
+import program.util.ImageLoader;
 import program.util.Strings;
 import program.util.Variables;
 

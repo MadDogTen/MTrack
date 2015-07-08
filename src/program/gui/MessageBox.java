@@ -11,8 +11,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import program.graphics.ImageLoader;
 import program.io.MoveWindow;
+import program.util.ImageLoader;
 import program.util.Strings;
 
 import java.util.logging.Logger;

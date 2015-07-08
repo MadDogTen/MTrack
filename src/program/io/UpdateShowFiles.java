@@ -1,7 +1,7 @@
 package program.io;
 
 import program.information.ShowInfoController;
-import program.util.FindLocation;
+import program.util.FindShows;
 import program.util.Strings;
 
 import java.io.File;
@@ -17,7 +17,7 @@ public class UpdateShowFiles {
         HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
         changedSeasons.forEach(aSeason -> {
             HashMap<String, String> episodeNum = new HashMap<>(0);
-            ArrayList<String> episodesFullList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
+            ArrayList<String> episodesFullList = FindShows.findEpisodes(folderLocation, aShow, aSeason);
             if (episodesFullList.isEmpty()) seasonEpisode.remove(aSeason);
             else {
                 episodesFullList.forEach(aEpisode -> {
@@ -48,7 +48,7 @@ public class UpdateShowFiles {
     public void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile, int hashMapIndex) {
         HashMap<Integer, HashMap<String, String>> seasonEpisode = showsFile.get(aShow);
         HashMap<String, String> episodeNum = new HashMap<>();
-        ArrayList<String> episodesFullList = FindLocation.findEpisodes(folderLocation, aShow, aSeason);
+        ArrayList<String> episodesFullList = FindShows.findEpisodes(folderLocation, aShow, aSeason);
         if (!episodesFullList.isEmpty()) {
             episodesFullList.forEach(aEpisode -> {
                 ArrayList<Integer> episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);

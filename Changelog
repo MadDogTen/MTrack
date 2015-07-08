@@ -1,7 +1,13 @@
 Changes:
 
+Pre-Alpha 0.9.8 -
+Added comments. Still tons more to add.
+Cleaned up unnecessary code.
+
+Note- Most likely no new features for a bit as I add comments, clean up, and refactor.
+
 Pre-Alpha 0.9.7.3 -
-Converted all Object Boolean's to Primitive boolean's.
+Converted all Object Booleans to Primitive booleans.
 
 Pre-Alpha 0.9.7.2 -
 Fixed program hanging (+ refusing to completely exit) on CheckShowFiles recheckShowFile if no directories are added.
