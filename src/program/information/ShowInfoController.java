@@ -7,6 +7,7 @@ import program.util.Variables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -16,21 +17,26 @@ import java.util.stream.Collectors;
 public class ShowInfoController {
     private static final Logger log = Logger.getLogger(ShowInfoController.class.getName());
 
-    private static HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile;
+    private static HashSet<Show> showsFile;
 
     @SuppressWarnings("unchecked")
     public static void loadShowsFile() {
         if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
-            ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = getDirectoriesHashMaps(-1);
+            ArrayList<HashSet<Show>> showsFileArray = getDirectoriesHashMaps(-1);
             // This crazy thing is to combine all found Shows/Seasons/Episodes from all directory's into one HashMap.
             long timer = Clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();
-            ArrayList<String> allShows = new ArrayList<>();
-            showsFileArray.stream().filter(aHashMap -> aHashMap != null).forEach(aHashMap -> aHashMap.keySet().stream().filter(aShow -> !allShows.contains(aShow)).forEach(allShows::add));
+            HashSet<Show> allShows = new HashSet<>();
+            showsFileArray.stream().filter(aShowSet -> aShowSet != null).forEach(aShowSet -> aShowSet.stream().forEach(aShow -> {
+                if (!allShows.contains(aShow)) {
+                    allShows.add(aShow);
+                }
+            }));
             allShows.forEach(aShow -> {
-                HashMap<Integer, HashMap<String, String>> seasonEpisode = new HashMap<>();
+                HashSet<Episode> seasons = new HashSet<>();
                 ArrayList<Integer> allShowSeasons = new ArrayList<>();
-                showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow)).forEach(aHashMap -> aHashMap.get(aShow).keySet().stream().filter(aSeason -> !allShowSeasons.contains(aSeason)).forEach(allShowSeasons::add));
+                showsFileArray.stream().filter(aShowSet -> aShowSet.contains(aShow)).forEach(aShowSet -> aShowSet.
+                (aShow).keySet().stream().filter(aSeason -> !allShowSeasons.contains(aSeason)).forEach(allShowSeasons::add))
                 allShowSeasons.forEach(aSeason -> {
                     HashMap<String, String> episodeNumEpisode = new HashMap<>();
                     showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow) && aHashMap.get(aShow).containsKey(aSeason)).forEach(aHashMap -> aHashMap.get(aShow).get(aSeason).keySet().forEach(aEpisode -> episodeNumEpisode.put(aEpisode, aHashMap.get(aShow).get(aSeason).get(aEpisode))));
@@ -50,15 +56,15 @@ public class ShowInfoController {
     }
 
     @SuppressWarnings("unchecked")
-    public static ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> getDirectoriesHashMaps(int skip) {
+    public static ArrayList<HashSet<Show>> getDirectoriesHashMaps(int skip) {
         // ArrayList = Shows list from all added Directories
-        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
+        ArrayList<HashSet<Show>> showsFileArray = new ArrayList<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
         files.forEach(aString -> {
             int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
             if (skip != place) {
-                showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+                showsFileArray.add((HashSet<Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
             }
         });
         return showsFileArray;
@@ -204,8 +210,8 @@ public class ShowInfoController {
     }
 
     // To get the Season and Episode Number
-    public static ArrayList<Integer> getEpisodeSeasonInfo(String aEpisode) {
-        ArrayList<Integer> bothInt = new ArrayList<>();
+    public static int[] getEpisodeSeasonInfo(String aEpisode) {
+        int[] bothInt = new int[2];
         Pattern MainP = Pattern.compile("s\\d{1,4}e\\d{1,4}");
         Matcher MainM = MainP.matcher(aEpisode.toLowerCase());
         if (MainM.find()) {
@@ -230,10 +236,9 @@ public class ShowInfoController {
                 }
             }
             String[] bothString = splitResult.split(" ");
-            bothInt.add(Integer.valueOf(bothString[0]));
-            bothInt.add(Integer.valueOf(bothString[1]));
+            bothInt[0] = Integer.valueOf(bothString[1]);
             if (isDouble) {
-                bothInt.add(Integer.valueOf(bothString[2]));
+                bothInt[1] = Integer.valueOf(bothString[2]);
             }
             return bothInt;
         }
@@ -243,8 +248,8 @@ public class ShowInfoController {
             String info = MainM2.group();
             String splitResult = info.toLowerCase().replaceFirst("x", " ");
             String[] bothString = splitResult.split(" ");
-            bothInt.add(Integer.valueOf(bothString[0]));
-            bothInt.add(Integer.valueOf(bothString[1]));
+            bothInt[0] = Integer.valueOf(bothString[0]);
+            bothInt[1] = Integer.valueOf(bothString[1]);
             return bothInt;
         }
         return bothInt;
