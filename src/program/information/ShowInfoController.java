@@ -20,7 +20,7 @@ public class ShowInfoController {
     public static void loadShowsFile() {
         if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
             showsFile = new HashMap<>();
-            ArrayList<Map<String, Show>> showsFileArray = getDirectoriesHashMaps(-1);
+            ArrayList<Map<String, Show>> showsFileArray = getDirectoriesMaps(-1);
             HashSet<String> allShows = new HashSet<>();
             showsFileArray.forEach(showsHashSet -> showsHashSet.forEach((aShow, Show) -> allShows.add(aShow)));
             allShows.forEach(aShow -> {
@@ -49,7 +49,7 @@ public class ShowInfoController {
     }
 
     @SuppressWarnings("unchecked")
-    public static ArrayList<Map<String, Show>> getDirectoriesHashMaps(int skip) {
+    public static ArrayList<Map<String, Show>> getDirectoriesMaps(int skip) {
         // ArrayList = Shows list from all added Directories
         ArrayList<Map<String, Show>> showsFileArray = new ArrayList<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
@@ -64,7 +64,7 @@ public class ShowInfoController {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Show> getDirectoryHashMap(int index) {
+    public static Map<String, Show> getDirectoryMap(int index) {
         Map<String, Show> showsFile = new HashMap<>();
         ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();

@@ -25,6 +25,7 @@ import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -352,7 +353,7 @@ public class ListSelectBox {
         return choice[0];
     }
 
-    public String pickLanguage(String message, ArrayList<String> languages, Window oldWindow) {
+    public String pickLanguage(String message, Collection<String> languages, Window oldWindow) {
         final String[] language = new String[1];
         language[0] = Variables.DefaultLanguage;
 

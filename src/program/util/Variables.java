@@ -16,7 +16,7 @@ public class Variables {
     public static final String ShowsExtension = ".shows";
     public static final String UsersExtension = ".user";
     public static final String SettingsExtension = ".settings";
-    public static final String DefaultLanguage = "English US";
+    public static final String DefaultLanguage = "en_US";
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- Set back to 1 for release. \\
     public static final int ProgramSettingsFileVersion = 1006;
     public static final int UserSettingsFileVersion = 1001;

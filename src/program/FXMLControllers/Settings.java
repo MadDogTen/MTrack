@@ -187,7 +187,7 @@ public class Settings implements Initializable {
                     }
                 }
                 ShowInfoController.loadShowsFile();
-                Map<String, Show> showsFile = ShowInfoController.getDirectoryHashMap(index);
+                Map<String, Show> showsFile = ShowInfoController.getDirectoryMap(index);
                 showsFile.keySet().forEach(aShow -> {
                     UserInfoController.addNewShow(aShow);
                     Controller.updateShowField(aShow, true);
@@ -223,13 +223,20 @@ public class Settings implements Initializable {
         changeLanguage.setText(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {
             LanguageHandler languageHandler = new LanguageHandler();
-            ArrayList<String> languages = languageHandler.getLanguageNames();
-            if (languages.contains(ProgramSettingsController.getLanguage())) {
+            Map<String, String> languages = languageHandler.getLanguageNames();
+            if (languages.containsKey(ProgramSettingsController.getLanguage())) {
                 languages.remove(ProgramSettingsController.getLanguage());
             }
-            String languageChoice = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages, tabPane.getScene().getWindow());
-            if (!languageChoice.contains("-1")) {
-                ProgramSettingsController.setLanguage(languageChoice);
+            String languageReadable = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages.values(), tabPane.getScene().getWindow());
+            if (!languageReadable.contains("-1")) {
+                String internalName = Strings.EmptyString;
+                for (String langKey : languages.keySet()) {
+                    if (languages.get(langKey).matches(languageReadable)) {
+                        internalName = langKey;
+                        break;
+                    }
+                }
+                ProgramSettingsController.setLanguage(internalName);
                 new MessageBox().display(Strings.RestartTheProgramForTheNewLanguageToTakeEffect, tabPane.getScene().getWindow());
             }
         });
@@ -283,7 +290,7 @@ public class Settings implements Initializable {
             else {
                 ArrayList<String> directories = ProgramSettingsController.getDirectories();
                 directories.forEach(aDirectory -> {
-                    Set<String> shows = ShowInfoController.getDirectoryHashMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
+                    Set<String> shows = ShowInfoController.getDirectoryMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     emptyShows.forEach(aShow -> {
                         String fileString = (aDirectory + Strings.FileSeparator + aShow);
@@ -375,15 +382,15 @@ public class Settings implements Initializable {
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToClear + directoryToClear + Strings.QuestionMark), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
-                        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
-                        ShowInfoController.getDirectoryHashMap(index).keySet().forEach(aShow -> {
+                        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesMaps(index);
+                        ShowInfoController.getDirectoryMap(index).keySet().forEach(aShow -> {
                             boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                             if (!showExistsElsewhere) {
                                 UserInfoController.setIgnoredStatus(aShow, true);
                             }
                         });
-                        Map<String, Show> blankHashMap = new HashMap<>();
-                        ShowInfoController.saveShowsArrayListFile(blankHashMap, index);
+                        Map<String, Show> blankMap = new HashMap<>();
+                        ShowInfoController.saveShowsArrayListFile(blankMap, index);
                         ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
                     }
                 }

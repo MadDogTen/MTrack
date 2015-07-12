@@ -19,18 +19,15 @@ public class GenerateNewShowFiles {
         FileManager fileManager = new FileManager();
         if (!fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
             log.info("Generating ShowsFile for: " + folderLocation);
-            // String = Show Name -- HashMap == Seasons in show from seasonEpisode
             Map<String, Show> shows = new HashMap<>();
             final ArrayList<String> ignoredShows;
             if (UserInfoController.getAllUsers().isEmpty()) ignoredShows = new ArrayList<>();
             else ignoredShows = UserInfoController.getIgnoredShows();
             FindShows.findShows(folderLocation).forEach(aShow -> {
                 log.info("Currently Processing: " + aShow);
-                // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
                 Map<Integer, Season> seasons = new HashMap<>();
                 FindShows.findSeasons(folderLocation, aShow).forEach(aSeason -> {
                     log.info("Season: " + aSeason);
-                    // First String = Episode Number -- Second String = Episode Location
                     Map<Integer, Episode> episodes = new HashMap<>();
                     ArrayList<String> episodesFull = FindShows.findEpisodes(folderLocation, aShow, aSeason);
                     episodesFull.forEach(aEpisode -> {

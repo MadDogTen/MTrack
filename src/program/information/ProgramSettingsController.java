@@ -118,8 +118,8 @@ public class ProgramSettingsController {
     public static void removeDirectory(String aDirectory) {
         log.info("Currently processing removal of: " + aDirectory);
         int index = getDirectoryIndex(aDirectory);
-        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
-        Set<String> hashMapShows = ShowInfoController.getDirectoryHashMap(index).keySet();
+        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesMaps(index);
+        Set<String> hashMapShows = ShowInfoController.getDirectoryMap(index).keySet();
         hashMapShows.forEach(aShow -> {
             log.info("Currently checking: " + aShow);
             boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);

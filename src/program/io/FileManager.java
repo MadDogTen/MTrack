@@ -5,7 +5,6 @@ import program.util.Variables;
 
 import java.awt.*;
 import java.io.*;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class FileManager {
@@ -33,7 +32,7 @@ public class FileManager {
     // Deserialize
     @SuppressWarnings("unchecked")
     public Object loadFile(String folder, String theFile, String extension) {
-        Object loadedFile = new HashMap<>(0);
+        Object loadedFile = new Object();
         if (checkFileExists(folder, theFile, extension)) {
             try {
                 FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));

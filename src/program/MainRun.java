@@ -15,6 +15,7 @@ import program.util.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
@@ -152,7 +153,7 @@ public class MainRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = ProgramSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", Main.stage));
+            boolean[] matched = ProgramSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", ProgramSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", null));
             index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
@@ -169,21 +170,36 @@ public class MainRun {
     // Prompts the user to choose which language to startup with. If there is only 1 language, then it will skip the prompt and start with it.
     private void getLanguage() {
         LanguageHandler languageHandler = new LanguageHandler();
-        ArrayList<String> languages = languageHandler.getLanguageNames();
+        Map<String, String> languages = languageHandler.getLanguageNames();
         String language = ProgramSettingsController.getLanguage();
         if (languages.size() == 1) {
-            languages.forEach(languageHandler::setLanguage);
+            languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
         } else {
-            if (language != null && !language.isEmpty() && languages.contains(language)) {
-                languageHandler.setLanguage(language);
-                log.info("Language is set: " + language);
+            if (language != null && !language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice TODO <- Remove
+                Boolean wasSet = languageHandler.setLanguage(language);
+                if (wasSet) {
+                    log.info("Language is set: " + language);
+                } else {
+                    log.severe("Language was not set for some reason, Please report.");
+                }
             } else {
                 languageHandler.setLanguage(Variables.DefaultLanguage);
-                String languageChoice = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages, null);
-                if (languageChoice != null && !languageChoice.isEmpty()) {
-                    languageHandler.setLanguage(languageChoice);
-                    ProgramSettingsController.setLanguage(languageChoice);
-                    log.info("Language is set: " + languageChoice);
+                String languageReadable = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages.values(), null);
+                if (languageReadable != null && !languageReadable.isEmpty()) {
+                    String internalName = Strings.EmptyString;
+                    for (String langKey : languages.keySet()) {
+                        if (languages.get(langKey).matches(languageReadable)) {
+                            internalName = langKey;
+                            break;
+                        }
+                    }
+                    Boolean wasSet = languageHandler.setLanguage(internalName);
+                    if (wasSet) {
+                        ProgramSettingsController.setLanguage(internalName);
+                        log.info("Language is set: " + languageReadable);
+                    } else {
+                        log.severe("Language was not set for some reason, Please report.");
+                    }
                 } else getLanguage();
             }
         }

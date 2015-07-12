@@ -65,7 +65,7 @@ public class CheckShowFiles {
             ProgramSettingsController.getDirectories().forEach(directory -> ProgramSettingsController.isDirectoryCurrentlyActive(new File(directory)));
             currentlyCheckingDirectories = false;
             ProgramSettingsController.getDirectoriesIndexes().forEach(aIndex -> {
-                Map<String, Show> showsMap = ShowInfoController.getDirectoryHashMap(aIndex);
+                Map<String, Show> showsMap = ShowInfoController.getDirectoryMap(aIndex);
                 double percentagePerShow = percentagePerDirectory[0] / (UserInfoController.getActiveShows().size() + 2);
                 File folderLocation = ProgramSettingsController.getDirectory(aIndex);
                 log.info("Directory currently being rechecked: \"" + folderLocation + "\".");
@@ -87,7 +87,7 @@ public class CheckShowFiles {
                         ShowInfoController.loadShowsFile();
                         removedShows.forEach(aShow -> {
                             log.info(aShow + " is no longer found in \"" + folderLocation + "\".");
-                            boolean doesShowExistElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, ShowInfoController.getDirectoriesHashMaps(aIndex));
+                            boolean doesShowExistElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, ShowInfoController.getDirectoriesMaps(aIndex));
                             if (!doesShowExistElsewhere) {
                                 UserInfoController.setIgnoredStatus(aShow, true);
                             }
@@ -189,7 +189,7 @@ public class CheckShowFiles {
         }
     }
 
-    // This compares the given showsFile HashMap episodes for any new episodes found in the shows folder. Adds anything new it finds to a ArrayList and returns.
+    // This compares the given showsFile Map episodes for any new episodes found in the shows folder. Adds anything new it finds to a ArrayList and returns.
     @SuppressWarnings("unchecked")
     private ArrayList<Integer> hasEpisodesChanged(String aShow, Integer aSeason, File folderLocation, Map<String, Show> showsFile) {
         Set<Integer> oldEpisodeList = showsFile.get(aShow).getSeason(aSeason).getEpisodes().keySet();
@@ -233,7 +233,7 @@ public class CheckShowFiles {
         return ChangedSeasons;
     }
 
-    // Scans the folder for any changes between it and the given showsFile, and for new shows it finds (that aren't empty) it gets all seasons & episodes for it, adds them to a HashMap and returns that.
+    // Scans the folder for any changes between it and the given showsFile, and for new shows it finds (that aren't empty) it gets all seasons & episodes for it, adds them to a Map and returns that.
     private Map<String, Show> hasShowsChanged(File folderLocation, Map<String, Show> showsFile, boolean forceRun) {
         Map<String, Show> newShows = new HashMap<>();
         Set<String> oldShows = showsFile.keySet();
@@ -244,7 +244,6 @@ public class CheckShowFiles {
             }
             if (Main.programFullyRunning && !oldShows.contains(aShow) && !emptyShows.contains(aShow)) {
                 log.info("Currently checking if new & valid: " + aShow);
-                // Integer = Season Number -- HashMap = Episodes in that season from episodeNumEpisode
                 Map<Integer, Season> seasonEpisode = new HashMap<>(0);
                 FindShows.findSeasons(folderLocation, aShow).forEach(aSeason -> {
                     // First String = Episode Number -- Second String = Episode Location
