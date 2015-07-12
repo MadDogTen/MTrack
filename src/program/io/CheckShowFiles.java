@@ -72,15 +72,9 @@ public class CheckShowFiles {
                 if (ProgramSettingsController.isDirectoryCurrentlyActive(folderLocation)) {
                     ArrayList<String> removedShows = new ArrayList<>();
                     // Check if any shows were removed.
-                    UserInfoController.getActiveShows().stream().filter(showsMap::containsKey).forEach(aShow -> {
-                        Collection<Show> temp = showsMap.values();
-                        for (Show show : temp) {
-                            if (show.getName().matches(aShow)) {
-                                showsMap.remove(show.getName());
-                                removedShows.add(aShow);
-                                break;
-                            }
-                        }
+                    UserInfoController.getActiveShows().stream().filter(aShow -> (showsMap.containsKey(aShow) && !fileManager.checkFolderExists(folderLocation + Strings.FileSeparator + aShow))).forEach(aShow -> { // TODO Change this to search inactive shows as well.
+                        showsMap.remove(aShow);
+                        removedShows.add(aShow);
                     });
                     if (!removedShows.isEmpty()) {
                         ShowInfoController.saveShowsArrayListFile(showsMap, aIndex);
