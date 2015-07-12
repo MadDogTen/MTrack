@@ -1,22 +1,23 @@
 package program.util;
 
 import program.information.ChangeReporter;
+import program.information.Show;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class FindChangedShows {
     private final Logger log = Logger.getLogger(FindChangedShows.class.getName());
 
-    private HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile;
+    private final Map<String, Show> showsFile;
 
-    public void findChangedShows(HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile) {
+    public FindChangedShows(Map<String, Show> showsFile) {
         this.showsFile = showsFile;
         log.info("ShowsFile has been set.");
     }
 
-    public void findShowFileDifferences(HashMap<String, HashMap<Integer, HashMap<String, String>>> oldShowsFile) {
+    public void findShowFileDifferences(Map<String, Show> oldShowsFile) {
         log.info("findShowFileDifferences running...");
         final boolean[] hasChanged = {false};
         ArrayList<String> showsFound = new ArrayList<>();
@@ -31,8 +32,8 @@ public class FindChangedShows {
         });
         showsFound.forEach(aShowFound -> {
             ArrayList<Integer> seasonsFound = new ArrayList<>();
-            showsFile.get(aShowFound).forEach((aSeason, aIntegerHashMap) -> {
-                if (oldShowsFile.get(aShowFound).containsKey(aSeason)) {
+            showsFile.get(aShowFound).getSeasons().forEach((aSeason, aIntegerHashMap) -> {
+                if (oldShowsFile.get(aShowFound).getSeasons().containsKey(aSeason)) {
                     seasonsFound.add(aSeason);
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Removed");
@@ -40,8 +41,8 @@ public class FindChangedShows {
                     hasChanged[0] = true;
                 }
             });
-            seasonsFound.forEach(aSeasonFound -> showsFile.get(aShowFound).get(aSeasonFound).forEach((aEpisode, StringString) -> {
-                if (!oldShowsFile.get(aShowFound).get(aSeasonFound).containsKey(aEpisode)) {
+            seasonsFound.forEach(aSeasonFound -> showsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().forEach((aEpisode, episodeMap) -> {
+                if (!oldShowsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Removed");
                     ChangeReporter.addChange(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " was removed");
                     hasChanged[0] = true;
@@ -61,8 +62,8 @@ public class FindChangedShows {
         });
         showsFoundOld.forEach(aShowFound -> {
             ArrayList<Integer> seasonsFoundOld = new ArrayList<>();
-            oldShowsFile.get(aShowFound).forEach((aSeason, aIntegerHashMap) -> {
-                if (showsFile.get(aShowFound).containsKey(aSeason)) {
+            oldShowsFile.get(aShowFound).getSeasons().forEach((aSeason, aIntegerHashMap) -> {
+                if (showsFile.get(aShowFound).getSeasons().containsKey(aSeason)) {
                     seasonsFoundOld.add(aSeason);
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Added");
@@ -70,8 +71,8 @@ public class FindChangedShows {
                     hasChanged[0] = true;
                 }
             });
-            seasonsFoundOld.forEach(aSeasonFound -> oldShowsFile.get(aShowFound).get(aSeasonFound).forEach((aEpisode, StringString) -> {
-                if (!showsFile.get(aShowFound).get(aSeasonFound).containsKey(aEpisode)) {
+            seasonsFoundOld.forEach(aSeasonFound -> oldShowsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().forEach((aEpisode, StringString) -> {
+                if (!showsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Added");
                     ChangeReporter.addChange(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " was added.");
                     hasChanged[0] = true;

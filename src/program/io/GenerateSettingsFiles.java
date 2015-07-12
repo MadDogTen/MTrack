@@ -86,8 +86,8 @@ public class GenerateSettingsFiles {
                     temp.put("isIgnored", "false");
                     temp.put("isHidden", "false");
                 temp.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(aShow)));
-                Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp.get("CurrentSeason")));
-                temp.put("CurrentEpisode", ShowInfoController.findLowestEpisode(episodes));
+                Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp.get("CurrentSeason")));
+                temp.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes))); //Verify it doesn't contain double episodes with +
                 tempPut.put(aShow, temp);
                 }
 

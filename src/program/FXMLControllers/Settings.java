@@ -12,6 +12,7 @@ import program.Controller;
 import program.Main;
 import program.gui.*;
 import program.information.ProgramSettingsController;
+import program.information.Show;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
 import program.io.FileManager;
@@ -26,10 +27,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -189,7 +187,7 @@ public class Settings implements Initializable {
                     }
                 }
                 ShowInfoController.loadShowsFile();
-                HashMap<String, HashMap<Integer, HashMap<String, String>>> showsFile = ShowInfoController.getDirectoryHashMap(index);
+                Map<String, Show> showsFile = ShowInfoController.getDirectoryHashMap(index);
                 showsFile.keySet().forEach(aShow -> {
                     UserInfoController.addNewShow(aShow);
                     Controller.updateShowField(aShow, true);
@@ -377,15 +375,15 @@ public class Settings implements Initializable {
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToClear + directoryToClear + Strings.QuestionMark), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
                         int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
-                        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
+                        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
                         ShowInfoController.getDirectoryHashMap(index).keySet().forEach(aShow -> {
                             boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                             if (!showExistsElsewhere) {
                                 UserInfoController.setIgnoredStatus(aShow, true);
                             }
                         });
-                        HashMap<String, HashMap<Integer, HashMap<String, String>>> blankHashMap = new HashMap<>();
-                        ShowInfoController.saveShowsHashMapFile(blankHashMap, index);
+                        Map<String, Show> blankHashMap = new HashMap<>();
+                        ShowInfoController.saveShowsArrayListFile(blankHashMap, index);
                         ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
                     }
                 }

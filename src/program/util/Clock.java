@@ -11,6 +11,7 @@ public class Clock {
         return System.nanoTime();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static long getTimeMilliSeconds() {
         log.finest("getTimeMilliSeconds has been ran.");
         return (System.nanoTime() / 1000000);

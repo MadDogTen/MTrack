@@ -132,7 +132,7 @@ public class UpdateManager {
                         temp2.put("isIgnored", "false");
                         temp2.put("isHidden", "false");
                         temp2.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(aShow)));
-                        Set<String> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp2.get("CurrentSeason")));
+                        Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp2.get("CurrentSeason")));
                         temp2.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
                         userSettingsFile.get("ShowSettings").put(aShow, temp2);
                     }

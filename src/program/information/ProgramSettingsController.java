@@ -8,6 +8,7 @@ import program.util.Variables;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -117,7 +118,7 @@ public class ProgramSettingsController {
     public static void removeDirectory(String aDirectory) {
         log.info("Currently processing removal of: " + aDirectory);
         int index = getDirectoryIndex(aDirectory);
-        ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
+        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesHashMaps(index);
         Set<String> hashMapShows = ShowInfoController.getDirectoryHashMap(index).keySet();
         hashMapShows.forEach(aShow -> {
             log.info("Currently checking: " + aShow);

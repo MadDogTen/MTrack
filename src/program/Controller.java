@@ -199,10 +199,10 @@ public class Controller implements Initializable {
                     setSeasonEpisode.setOnAction(e -> {
                         log.info("\"Set Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), pane.getScene().getWindow());
-                        if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), pane.getScene().getWindow());
+                        if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
-                            UserInfoController.setSeasonEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
+                            UserInfoController.setSeasonEpisode(show, seasonEpisode[0], String.valueOf(seasonEpisode[1]));
                             updateShowField(row.getItem().getShow(), true);
                             tableView.getSelectionModel().clearSelection();
                         } else {
@@ -214,10 +214,10 @@ public class Controller implements Initializable {
                     playSeasonEpisode.setOnAction(e -> {
                         log.info("\"Play Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        String[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), pane.getScene().getWindow());
-                        if (!seasonEpisode[0].contains("-1") && !seasonEpisode[1].contains("-1")) {
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), pane.getScene().getWindow());
+                        if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
-                            UserInfoController.playAnyEpisode(show, Integer.parseInt(seasonEpisode[0]), seasonEpisode[1]);
+                            UserInfoController.playAnyEpisode(show, seasonEpisode[0], seasonEpisode[1]);
                         } else {
                             log.info("Season & Episode weren't valid.");
                         }
@@ -297,11 +297,11 @@ public class Controller implements Initializable {
                     MenuItem playPreviousEpisode = new MenuItem(Strings.PlayPreviousEpisode);
                     playPreviousEpisode.setOnAction(e -> {
                         log.info("Attempting to play previous episode...");
-                        String[] seasonEpisode = UserInfoController.getPreviousEpisodeIfExists(row.getItem().getShow());
-                        if (seasonEpisode[0].contains("-2") || seasonEpisode[0].contains("-3")) {
+                        int[] seasonEpisode = UserInfoController.getPreviousEpisodeIfExists(row.getItem().getShow());
+                        if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3) {
                             new MessageBox().display(Strings.NoDirectlyPrecedingEpisodesFound, tabPane.getScene().getWindow());
                         } else {
-                            UserInfoController.playAnyEpisode(row.getItem().getShow(), Integer.parseInt(seasonEpisode[0]), String.valueOf(seasonEpisode[1]));
+                            UserInfoController.playAnyEpisode(row.getItem().getShow(), seasonEpisode[0], seasonEpisode[1]);
                         }
                         log.info("Finished attempting to play previous episode.");
                     });
@@ -330,7 +330,7 @@ public class Controller implements Initializable {
                             while (keepPlaying) {
                                 int fileExists = UserInfoController.doesEpisodeExists(aShow);
                                 if (fileExists == 1 || fileExists == 2) {
-                                    UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow));
+                                    UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), Integer.parseInt(UserInfoController.getCurrentEpisode(aShow)));
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
                                     int userChoice = showConfirmBox.display(Strings.HaveYouWatchedTheShow, pane.getScene().getWindow());
                                     if (userChoice == 1) {
