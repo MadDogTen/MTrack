@@ -36,6 +36,9 @@ public class template {
         Strings.Developers = "";
         Strings.Reset = "";
         Strings.About = "";
+        Strings.Season = "";
+        Strings.Episode = "";
+
         // Button Text
         Strings.SetSeasonEpisode = "";
         Strings.PlaySeasonEpisode = "";
@@ -68,11 +71,13 @@ public class template {
         Strings.DirectoryVersionPlus1 = "";
         Strings.ClearFile = "";
         Strings.ResetProgram = "";
+
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "";
         Strings.CurrentlyRechecking = "";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "";
         Strings.WarningUnrecoverable = "";
+
         // Other Text
         Strings.AddNewUsername = "";
         Strings.PleaseEnterUsername = "";

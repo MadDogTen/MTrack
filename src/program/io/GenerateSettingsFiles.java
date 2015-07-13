@@ -51,6 +51,30 @@ public class GenerateSettingsFiles {
             temp = new ArrayList<>();
             settingsFile.put("Directories", temp);
 
+            // --Gui Number Settings-- \\
+            temp = new ArrayList<>();
+            // Index 0 : Shows column width
+            temp.add(0, "239");
+            // Index 1 : Remaining column width
+            temp.add(1, "29");
+            // Index 2 : Season column width
+            temp.add(2, "48");
+            // Index 3 : Episode column width
+            temp.add(3, "50");
+            settingsFile.put("GuiNumberSettings", temp);
+
+            // --Gui boolean Settings-- \\
+            temp = new ArrayList<>();
+            // Index 0 : Shows column visibility
+            temp.add(0, "true");
+            // Index 2 : Remaining column visibility
+            temp.add(1, "true");
+            // Index 2 : Season column visibility
+            temp.add(2, "false");
+            // Index 3 : Episode column visibility
+            temp.add(3, "false");
+            settingsFile.put("GuiBooleanSettings", temp);
+
             fileManager.save(settingsFile, Strings.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
         }
     }

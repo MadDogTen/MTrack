@@ -35,6 +35,9 @@ public class en_US {
         Strings.Developers = "Developer";
         Strings.Reset = "Reset";
         Strings.About = "About";
+        Strings.Season = "Season";
+        Strings.Episode = "Episode";
+
         // Button Text
         Strings.SetSeasonEpisode = "Set Season + Episode";
         Strings.PlaySeasonEpisode = "Play Season + Episode";
@@ -67,11 +70,13 @@ public class en_US {
         Strings.DirectoryVersionPlus1 = "Directory Version +1";
         Strings.ClearFile = "Clear File";
         Strings.ResetProgram = "Reset Program";
+
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "Show/Hide shows with 0 episode left.";
         Strings.CurrentlyRechecking = "Currently Rechecking...";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "Delete Users. Note: Can't delete current user!";
         Strings.WarningUnrecoverable = "Warning, Unrecoverable!";
+
         // Other Text
         Strings.AddNewUsername = "Add New Username";
         Strings.PleaseEnterUsername = "Please enter your username: ";

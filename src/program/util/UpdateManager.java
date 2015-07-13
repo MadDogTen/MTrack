@@ -101,6 +101,21 @@ public class UpdateManager {
             case 1006:
                 programSettingsFile.get("ProgramVersions").add(2, "-2");
                 log.info("Program has been updated from version 1006.");
+            case 1007:
+                ArrayList<String> temp2 = new ArrayList<>();
+                temp2.add(0, "239");
+                temp2.add(1, "29");
+                temp2.add(2, "48");
+                temp2.add(3, "50");
+                programSettingsFile.put("GuiNumberSettings", temp2);
+                //noinspection ReuseOfLocalVariable
+                temp2 = new ArrayList<>();
+                temp2.add(0, "true");
+                temp2.add(1, "true");
+                temp2.add(2, "false");
+                temp2.add(3, "false");
+                programSettingsFile.put("GuiBooleanSettings", temp2);
+                log.info("Program has been updated from version 1007.");
                 updated = true;
         }
 
@@ -172,7 +187,6 @@ public class UpdateManager {
     }
 
     private void convertShowFile(int oldVersion, int newVersion) {
-        HashMap<String, ArrayList<String>> programSettingsFile = ProgramSettingsController.getSettingsFile();
         boolean updated = false;
         switch (oldVersion) {
             case -2:
@@ -220,10 +234,7 @@ public class UpdateManager {
 
         if (updated) {
             // Update Program Settings File Version
-            programSettingsFile.get("ProgramVersions").set(2, String.valueOf(newVersion));
-
-            ProgramSettingsController.setSettingsFile(programSettingsFile);
-            ProgramSettingsController.saveSettingsFile();
+            ProgramSettingsController.setShowFileVersion(newVersion);
             log.info("Show file was successfully updated to version " + newVersion + '.');
         } else log.info("Show file was not updated. This is an error, please report.");
     }

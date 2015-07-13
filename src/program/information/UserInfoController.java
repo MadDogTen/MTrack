@@ -272,8 +272,8 @@ public class UserInfoController {
         return Integer.parseInt(userSettingsFile.get("ShowSettings").get(aShow).get("CurrentSeason"));
     }
 
-    public static String getCurrentEpisode(String aShow) {
-        return userSettingsFile.get("ShowSettings").get(aShow).get("CurrentEpisode");
+    public static int getCurrentEpisode(String aShow) {
+        return Integer.parseInt(userSettingsFile.get("ShowSettings").get(aShow).get("CurrentEpisode"));
     }
 
     public static int getRemainingNumberOfEpisodes(String aShow) {

@@ -36,6 +36,9 @@ public class lipsum {
         Strings.Developers = "fermentum";
         Strings.Reset = "massa";
         Strings.About = "eget";
+        Strings.Season = "vertamis";
+        Strings.Episode = "medutu";
+
         // Button Text
         Strings.SetSeasonEpisode = "malesuada";
         Strings.PlaySeasonEpisode = "vestibulum";
@@ -68,11 +71,13 @@ public class lipsum {
         Strings.DirectoryVersionPlus1 = "sagittis";
         Strings.ClearFile = "vehicula";
         Strings.ResetProgram = "enim";
+
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "sollicitudin";
         Strings.CurrentlyRechecking = "nisi";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "Nulla";
         Strings.WarningUnrecoverable = "vitae";
+
         // Other Text
         Strings.AddNewUsername = "porta";
         Strings.PleaseEnterUsername = "aliquet";

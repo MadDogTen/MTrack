@@ -63,6 +63,10 @@ public class Controller implements Initializable {
     @FXML
     private TableColumn<DisplayShows, Integer> remaining;
     @FXML
+    private TableColumn<DisplayShows, Integer> season;
+    @FXML
+    private TableColumn<DisplayShows, Integer> episode;
+    @FXML
     private TextField textField;
     @FXML
     private MenuButton menuButton;
@@ -87,11 +91,11 @@ public class Controller implements Initializable {
                 showList.forEach(aShow -> {
                     int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
                     if (remaining != 0) {
-                        list.add(new DisplayShows(aShow, remaining));
+                        list.add(new DisplayShows(aShow, remaining, UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow)));
                     }
                 });
             } else
-                list.addAll(showList.stream().map(aShow -> new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow))).collect(Collectors.toList()));
+                list.addAll(showList.stream().map(aShow -> new DisplayShows(aShow, UserInfoController.getRemainingNumberOfEpisodes(aShow), UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow))).collect(Collectors.toList()));
         }
         return list;
     }
@@ -128,11 +132,11 @@ public class Controller implements Initializable {
             removeShowField(index);
         }
         if (!remove) {
-            int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow);
+            int remaining = UserInfoController.getRemainingNumberOfEpisodes(aShow), season = UserInfoController.getCurrentSeason(aShow), episode = UserInfoController.getCurrentEpisode(aShow);
             if ((show0Remaining || remaining != 0) && index != -2) {
-                tableViewFields.add(index, new DisplayShows(aShow, remaining));
+                tableViewFields.add(index, new DisplayShows(aShow, remaining, season, episode));
             } else if (index == -2 && show0Remaining || index == -2 && remaining != 0) {
-                tableViewFields.add(new DisplayShows(aShow, remaining));
+                tableViewFields.add(new DisplayShows(aShow, remaining, season, episode));
             }
         }
     }
@@ -174,6 +178,7 @@ public class Controller implements Initializable {
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         log.info("MainController Running...");
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
+        tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
         mainRun.startBackend();
         showsTab.setText(Strings.Shows);
@@ -182,8 +187,20 @@ public class Controller implements Initializable {
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         shows.setSortType(TableColumn.SortType.ASCENDING);
         shows.setText(Strings.Shows);
+        shows.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("ShowsColumn"));
+        shows.setVisible(ProgramSettingsController.getGuiBooleanSettings("ShowsColumn"));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
         remaining.setText(Strings.Left);
+        remaining.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("RemainingColumn"));
+        remaining.setVisible(ProgramSettingsController.getGuiBooleanSettings("RemainingColumn"));
+        season.setCellValueFactory(new PropertyValueFactory<>("season"));
+        season.setText(Strings.Season);
+        season.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("SeasonColumn"));
+        season.setVisible(ProgramSettingsController.getGuiBooleanSettings("SeasonColumn"));
+        episode.setCellValueFactory(new PropertyValueFactory<>("episode"));
+        episode.setText(Strings.Episode);
+        episode.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("EpisodeColumn"));
+        episode.setVisible(ProgramSettingsController.getGuiBooleanSettings("EpisodeColumn"));
         setTableView();
         tableView.getItems();
 
@@ -330,7 +347,7 @@ public class Controller implements Initializable {
                             while (keepPlaying) {
                                 int fileExists = UserInfoController.doesEpisodeExists(aShow);
                                 if (fileExists == 1 || fileExists == 2) {
-                                    UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), Integer.parseInt(UserInfoController.getCurrentEpisode(aShow)));
+                                    UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow));
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
                                     int userChoice = showConfirmBox.display(Strings.HaveYouWatchedTheShow, pane.getScene().getWindow());
                                     if (userChoice == 1) {
@@ -471,6 +488,16 @@ public class Controller implements Initializable {
                             Double temp = checkShowFiles.getRecheckShowFilePercentage();
                             isCurrentlyRechecking.setProgress(temp);
                         });
+
+                        // Saving all the settings - I will make this done during shutdown instead soon.
+                        ProgramSettingsController.setGuiNumberSettings("ShowsColumn", shows.getWidth());
+                        ProgramSettingsController.setGuiNumberSettings("RemainingColumn", remaining.getWidth());
+                        ProgramSettingsController.setGuiNumberSettings("SeasonColumn", season.getWidth());
+                        ProgramSettingsController.setGuiNumberSettings("EpisodeColumn", episode.getWidth());
+                        ProgramSettingsController.setGuiBooleanSettings("ShowsColumn", shows.isVisible());
+                        ProgramSettingsController.setGuiBooleanSettings("RemainingColumn", remaining.isVisible());
+                        ProgramSettingsController.setGuiBooleanSettings("SeasonColumn", season.isVisible());
+                        ProgramSettingsController.setGuiBooleanSettings("EpisodeColumn", episode.isVisible());
                     }
                     isChangesListPopulated();
                     if (currentlyRechecking) {

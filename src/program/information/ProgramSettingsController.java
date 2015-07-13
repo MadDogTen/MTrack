@@ -119,6 +119,56 @@ public class ProgramSettingsController {
         settingsFile.get("ProgramVersions").set(2, String.valueOf(version));
     }
 
+    public static double getGuiNumberSettings(String toGet) { // Will be changing the structure of the settings file soon to remove this stupid way of doing it without cluttering up this class.
+        if (toGet.matches("ShowsColumn")) {
+            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(0));
+        } else if (toGet.matches("RemainingColumn")) {
+            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(1));
+        } else if (toGet.matches("SeasonColumn")) {
+            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(2));
+        } else if (toGet.matches("EpisodeColumn")) {
+            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(3));
+        }
+        return -1;
+    }
+
+    public static void setGuiNumberSettings(String toSet, double newNumber) {
+        if (toSet.matches("ShowsColumn")) {
+            settingsFile.get("GuiNumberSettings").set(0, String.valueOf(newNumber));
+        } else if (toSet.matches("RemainingColumn")) {
+            settingsFile.get("GuiNumberSettings").set(1, String.valueOf(newNumber));
+        } else if (toSet.matches("SeasonColumn")) {
+            settingsFile.get("GuiNumberSettings").set(2, String.valueOf(newNumber));
+        } else if (toSet.matches("EpisodeColumn")) {
+            settingsFile.get("GuiNumberSettings").set(3, String.valueOf(newNumber));
+        }
+    }
+
+    public static boolean getGuiBooleanSettings(String toGet) {
+        if (toGet.matches("ShowsColumn")) {
+            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(0));
+        } else if (toGet.matches("RemainingColumn")) {
+            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(1));
+        } else if (toGet.matches("SeasonColumn")) {
+            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(2));
+        } else if (toGet.matches("EpisodeColumn")) {
+            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(3));
+        }
+        return true;
+    }
+
+    public static void setGuiBooleanSettings(String toSet, boolean newBoolean) {
+        if (toSet.matches("ShowsColumn")) {
+            settingsFile.get("GuiBooleanSettings").set(0, String.valueOf(newBoolean));
+        } else if (toSet.matches("RemainingColumn")) {
+            settingsFile.get("GuiBooleanSettings").set(1, String.valueOf(newBoolean));
+        } else if (toSet.matches("SeasonColumn")) {
+            settingsFile.get("GuiBooleanSettings").set(2, String.valueOf(newBoolean));
+        } else if (toSet.matches("EpisodeColumn")) {
+            settingsFile.get("GuiBooleanSettings").set(3, String.valueOf(newBoolean));
+        }
+    }
+
     public static boolean isDirectoryCurrentlyActive(File directory) {
         return directory.isDirectory();
     }

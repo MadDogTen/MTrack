@@ -7,10 +7,14 @@ import javafx.beans.property.SimpleStringProperty;
 public class DisplayShows {
     private SimpleStringProperty show;
     private SimpleIntegerProperty remaining;
+    private SimpleIntegerProperty season;
+    private SimpleIntegerProperty episode;
 
-    public DisplayShows(String show, int remaining) {
+    public DisplayShows(String show, int remaining, int season, int episode) {
         this.show = new SimpleStringProperty(show);
         this.remaining = new SimpleIntegerProperty(remaining);
+        this.season = new SimpleIntegerProperty(season);
+        this.episode = new SimpleIntegerProperty(episode);
     }
 
     public SimpleStringProperty showProperty() {
@@ -35,5 +39,29 @@ public class DisplayShows {
 
     public void setRemaining(Integer remaining) {
         this.remaining = new SimpleIntegerProperty(remaining);
+    }
+
+    public SimpleIntegerProperty seasonProperty() {
+        return this.season;
+    }
+
+    public Integer getSeason() {
+        return season.get();
+    }
+
+    public void setSeason(Integer season) {
+        this.season = new SimpleIntegerProperty(season);
+    }
+
+    public SimpleIntegerProperty episodeProperty() {
+        return this.episode;
+    }
+
+    public Integer getEpisode() {
+        return episode.get();
+    }
+
+    public void setEpisode(Integer episode) {
+        this.episode = new SimpleIntegerProperty(episode);
     }
 }

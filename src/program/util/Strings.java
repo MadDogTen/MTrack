@@ -46,6 +46,8 @@ public class Strings {
     public static String Developers;
     public static String Reset;
     public static String About;
+    public static String Season;
+    public static String Episode;
     // Button Text
     public static String SetSeasonEpisode;
     public static String PlaySeasonEpisode;
