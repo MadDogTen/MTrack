@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Logger;
 
-@SuppressWarnings("WeakerAccess")
 public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
     public boolean firstRun = false;
@@ -70,11 +69,12 @@ public class MainRun {
     public void tick() {
         if (!hasRan) {
             log.info("MainRun Running...");
+            timer = Clock.getTimeSeconds();
             hasRan = true;
         }
         boolean isShowCurrentlyPlaying = Controller.getIsShowCurrentlyPlaying();
         //noinspection PointlessBooleanExpression,ConstantConditions
-        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) && !isShowCurrentlyPlaying || isShowCurrentlyPlaying && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
+        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || !isShowCurrentlyPlaying && (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) || isShowCurrentlyPlaying && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             final boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")

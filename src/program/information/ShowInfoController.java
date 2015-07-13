@@ -17,22 +17,17 @@ public class ShowInfoController {
 
     private static Map<String, Show> showsFile;
 
-    @SuppressWarnings({"unchecked", "UseOfSystemOutOrSystemErr"})
     public static void loadShowsFile() {
         if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
             long timer = Clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();
             ArrayList<Map<String, Show>> showsFileArray = getDirectoriesMaps(-1);
             HashSet<String> allShows = new HashSet<>();
-            showsFileArray.forEach(showsHashSet -> showsHashSet.forEach((aShow, Show) -> allShows.add(aShow)));
+            showsFileArray.stream().filter(aMap -> aMap != null).forEach(showsHashSet -> showsHashSet.forEach((aShow, Show) -> allShows.add(aShow)));
             allShows.forEach(aShow -> {
                 Map<Integer, Season> fullSeasons = new HashMap<>();
                 HashSet<Integer> seasons = new HashSet<>();
-                showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow)).forEach(aHashMap -> {
-                    if (aHashMap.containsKey(aShow)) {
-                        aHashMap.get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason));
-                    }
-                });
+                showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow)).forEach(aHashMap -> aHashMap.get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
                 seasons.forEach(aSeason -> {
                     Map<Integer, Episode> episodes = new HashMap<>();
                     showsFileArray.stream().filter(aHashMap -> (aHashMap.containsKey(aShow) && aHashMap.get(aShow).getSeasons().containsKey(aSeason))).forEach(aHashMap -> aHashMap.get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
@@ -43,7 +38,8 @@ public class ShowInfoController {
             log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
         } else {
             FileManager fileManager = new FileManager();
-            ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (HashMap<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+            //noinspection unchecked
+            ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
         }
     }
 
@@ -51,7 +47,6 @@ public class ShowInfoController {
         return showsFile;
     }
 
-    @SuppressWarnings("unchecked")
     public static ArrayList<Map<String, Show>> getDirectoriesMaps(int skip) {
         // ArrayList = Shows list from all added Directories
         ArrayList<Map<String, Show>> showsFileArray = new ArrayList<>();
@@ -60,7 +55,8 @@ public class ShowInfoController {
         files.forEach(aString -> {
             int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
             if (skip != place) {
-                showsFileArray.add((HashMap<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+                //noinspection unchecked
+                showsFileArray.add((Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
             }
         });
         return showsFileArray;
@@ -144,10 +140,8 @@ public class ShowInfoController {
         final int[] highestEpisode = {-1};
         if (episodes != null) {
             episodes.forEach(aEpisode -> {
-                int episode;
-                episode = aEpisode;
-                if (highestEpisode[0] == -1 || episode > highestEpisode[0]) {
-                    highestEpisode[0] = episode;
+                if (highestEpisode[0] == -1 || aEpisode > highestEpisode[0]) {
+                    highestEpisode[0] = aEpisode;
                 }
             });
         }
@@ -193,18 +187,17 @@ public class ShowInfoController {
                     log.info(Arrays.toString(episodes));
                 });
                 numberOfShows[0]++;
-                log.info("\n\n");
             });
             log.info("Total Number of Shows: " + numberOfShows[0]);
         } else {
             log.info("No shows.");
         }
-        log.info("Finished printing out all Shows and Episodes.\n\n\n\n");
+        log.info("Finished printing out all Shows and Episodes.");
     }
 
     // To get the Season and Episode Number
-    public static int[] getEpisodeSeasonInfo(String aEpisode) {
-        int[] bothInt = new int[2];
+    public static int[] getEpisodeInfo(String aEpisode) {
+        int[] bothInt = new int[1];
         Pattern MainP = Pattern.compile("s\\d{1,4}e\\d{1,4}");
         Matcher MainM = MainP.matcher(aEpisode.toLowerCase());
         if (MainM.find()) {
@@ -222,6 +215,7 @@ public class ShowInfoController {
             splitResult = splitResult.toLowerCase().replaceFirst("e", " ");
 
             if (isDouble) {
+                bothInt = new int[2];
                 if (splitResult.contains("-")) {
                     splitResult = splitResult.replaceFirst("-", " ");
                 } else if (splitResult.contains("e")) {
@@ -238,6 +232,7 @@ public class ShowInfoController {
         Pattern MainP2 = Pattern.compile("\\d{1,4}x\\d{1,4}");
         Matcher MainM2 = MainP2.matcher(aEpisode.toLowerCase());
         if (MainM2.find()) {
+            bothInt = new int[2];
             String info = MainM2.group();
             String splitResult = info.toLowerCase().replaceFirst("x", " ");
             String[] bothString = splitResult.split(" ");

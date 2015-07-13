@@ -21,18 +21,18 @@ public class UpdateShowFiles {
     public void checkForNewOrRemovedSeasons(File folderLocation, String aShow, ArrayList<Integer> changedSeasons, Map<String, Show> showsFile, int hashMapIndex) {
         Show seasonEpisode = showsFile.get(aShow);
         changedSeasons.forEach(aSeason -> {
-            HashMap<Integer, Episode> episodeNum = new HashMap<>(0);
+            Map<Integer, Episode> episodeNum = new HashMap<>(0);
             ArrayList<String> episodesFullList = FindShows.findEpisodes(folderLocation, aShow, aSeason);
             if (episodesFullList.isEmpty()) seasonEpisode.removeSeason(aSeason);
             else {
                 episodesFullList.forEach(aEpisode -> {
-                    int[] episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
+                    int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
                     if (episode != null) {
-                        if (episode.length == 2) {
+                        if (episode.length == 1) {
+                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode));
+                        } else if (episode.length == 2) {
+                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode));
                             episodeNum.put(episode[1], new Episode(episode[1], aEpisode));
-                        } else if (episode.length == 3) {
-                            episodeNum.put(episode[1], new Episode(episode[1], aEpisode));
-                            episodeNum.put(episode[2], new Episode(episode[2], aEpisode));
                         } else {
                             log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
                         }
@@ -49,17 +49,17 @@ public class UpdateShowFiles {
 
     public void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, Map<String, Show> showsFile, int hashMapIndex) {
         Show seasonEpisode = showsFile.get(aShow);
-        HashMap<Integer, Episode> episodeNum = new HashMap<>();
+        Map<Integer, Episode> episodeNum = new HashMap<>();
         ArrayList<String> episodesFullList = FindShows.findEpisodes(folderLocation, aShow, aSeason);
         if (!episodesFullList.isEmpty()) {
             episodesFullList.forEach(aEpisode -> {
-                int[] episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
+                int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
                 if (episode != null) {
-                    if (episode.length == 2) {
+                    if (episode.length == 1) {
+                        episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
+                    } else if (episode.length == 2) {
+                        episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                         episodeNum.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
-                    } else if (episode.length == 3) {
-                        episodeNum.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
-                        episodeNum.put(episode[2], new Episode(episode[2], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                     } else {
                         log.warning("Error 2 if at this point!" + " + " + Arrays.toString(episode));
                     }

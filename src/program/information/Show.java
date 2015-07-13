@@ -22,10 +22,6 @@ public class Show implements Serializable {
         return seasons;
     }
 
-    public void setSeasons(Map<Integer, Season> seasons) {
-        this.seasons = seasons;
-    }
-
     public Season getSeason(int season) {
         return seasons.get(season);
     }

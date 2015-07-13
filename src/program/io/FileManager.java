@@ -32,7 +32,7 @@ public class FileManager {
     // Deserialize
     @SuppressWarnings("unchecked")
     public Object loadFile(String folder, String theFile, String extension) {
-        Object loadedFile = new Object();
+        Object loadedFile = null;
         if (checkFileExists(folder, theFile, extension)) {
             try {
                 FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));
@@ -45,7 +45,8 @@ public class FileManager {
             return loadedFile;
         }
         log.info("File doesn't exist - " + (Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));
-        return loadedFile;
+        //noinspection ReturnOfNull
+        return null;
     }
 
     public boolean checkFileExists(String folder, String filename, String extension) {

@@ -32,11 +32,11 @@ public class GenerateNewShowFiles {
                     ArrayList<String> episodesFull = FindShows.findEpisodes(folderLocation, aShow, aSeason);
                     episodesFull.forEach(aEpisode -> {
                         log.info("Episode: " + aEpisode);
-                        int[] episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
+                        int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
                         if (episode != null && episode.length > 0) {
                             episodes.put(episode[0], new Episode(episode[0], aEpisode));
                             if (episode.length == 2) {
-                                episodes.put(episode[1], new Episode(episode[0], aEpisode));
+                                episodes.put(episode[1], new Episode(episode[1], aEpisode));
                             } else if (episode.length >= 3) {
                                 log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
                             }

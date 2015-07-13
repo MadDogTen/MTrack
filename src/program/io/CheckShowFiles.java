@@ -50,7 +50,6 @@ public class CheckShowFiles {
         // timer - Used purely for log purposes to see how long the run takes.
         int timer = Clock.getTimeSeconds();
         FindChangedShows findChangedShows = new FindChangedShows(ShowInfoController.getShowsFile());
-        //findChangedShows.findChangedShows(ShowInfoController.getShowsFile());
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             log.info("Started rechecking shows...");
             recheckShowFileRunning = true;
@@ -195,13 +194,13 @@ public class CheckShowFiles {
         }
         if (newEpisodesList != null) {
             newEpisodesList.forEach(aNewEpisode -> {
-                int[] EpisodeInfo = ShowInfoController.getEpisodeSeasonInfo(aNewEpisode);
+                int[] EpisodeInfo = ShowInfoController.getEpisodeInfo(aNewEpisode);
                 if (EpisodeInfo != null) {
-                    if (EpisodeInfo.length == 2) {
+                    if (EpisodeInfo.length == 1) {
+                        newEpisodesListFixed.add(EpisodeInfo[0]);
+                    } else if (EpisodeInfo.length == 2) {
+                        newEpisodesListFixed.add(EpisodeInfo[0]);
                         newEpisodesListFixed.add(EpisodeInfo[1]);
-                    } else if (EpisodeInfo.length == 3) {
-                        newEpisodesListFixed.add(EpisodeInfo[1]);
-                        newEpisodesListFixed.add(EpisodeInfo[2]);
                     }
                 }
             });
@@ -245,13 +244,13 @@ public class CheckShowFiles {
                     ArrayList<String> episodesFull = FindShows.findEpisodes(folderLocation, aShow, aSeason);
                     if (!episodesFull.isEmpty()) {
                         episodesFull.forEach(aEpisode -> {
-                            int[] episode = ShowInfoController.getEpisodeSeasonInfo(aEpisode);
+                            int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
                             if (episode != null) {
-                                if (episode.length == 2) {
-                                    episodeNumEpisode.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
-                                } else if (episode.length == 3) {
-                                    episodeNumEpisode.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
-                                    episodeNumEpisode.put(episode[2], new Episode(episode[2], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
+                                if (episode.length == 1) {
+                                    episodeNumEpisode.put(episode[0], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
+                                } else if (episode.length == 2) {
+                                    episodeNumEpisode.put(episode[0], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
+                                    episodeNumEpisode.put(episode[1], new Episode(episode[2], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
                                 } else {
                                     log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
                                 }
@@ -274,7 +273,7 @@ public class CheckShowFiles {
         final boolean[] answer = {true};
         if (!episodesFull.isEmpty()) {
             episodesFull.forEach(aEpisode -> {
-                if (ShowInfoController.getEpisodeSeasonInfo(aEpisode) != null) {
+                if (ShowInfoController.getEpisodeInfo(aEpisode) != null) {
                     answer[0] = false;
                 }
             });

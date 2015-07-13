@@ -21,7 +21,7 @@ public class Variables {
     public static final int ProgramSettingsFileVersion = 1006;
     public static final int UserSettingsFileVersion = 1001;
 
-    public static final boolean devMode = false;
+    public static final boolean devMode = true;
     public static final boolean startFresh = false; // Won't work unless devMode is true.
 
     public static final Integer defaultUpdateSpeed = 12;

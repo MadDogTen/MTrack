@@ -7,7 +7,7 @@ import java.util.Map;
 public class Season implements Serializable {
 
     private final int season;
-    private Map<Integer, Episode> episodes;
+    private final Map<Integer, Episode> episodes;
 
     public Season(int season, Map<Integer, Episode> episodes) {
         this.season = season;
@@ -22,26 +22,8 @@ public class Season implements Serializable {
         return episodes;
     }
 
-    public void setEpisodes(Map<Integer, Episode> episodes) {
-        this.episodes = episodes;
-    }
-
     public String getEpisode(int episode) {
         return episodes.get(episode).getEpisodeFilename();
-    }
-
-    public void addOrReplaceEpisode(int episodeInt, Episode episode) {
-        if (episodes.containsKey(episodeInt)) {
-            episodes.replace(episodeInt, episode);
-        } else {
-            episodes.put(episodeInt, episode);
-        }
-    }
-
-    public void removeEpisode(int episodeInt) {
-        if (episodes.containsKey(episodeInt)) {
-            episodes.remove(episodeInt);
-        }
     }
 
 }
