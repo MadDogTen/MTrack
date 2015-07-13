@@ -8,6 +8,11 @@ public class Variables {
     //---------- Main Variables ----------\\
     public static final int SIZE_WIDTH = 282;
     public static final int SIZE_HEIGHT = 454;
+    public static final int SHOWS_COLUMN_WIDTH = 239;
+    public static final int REMAINING_COLUMN_WIDTH = 29;
+    public static final int SEASONS_COLUMN_WIDTH = 48;
+    public static final int EPISODE_COLUMN_WIDTH = 50;
+
     // Base Directories
     public static final String ProgramRootFolder = "/MTrack";
     public static final String DirectoriesFolder = "/Directories";
@@ -22,10 +27,10 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1001;
     public static final int ShowFileVersion = 1000;
 
-    public static final boolean devMode = false;
+    public static final boolean devMode = true;
     public static final boolean startFresh = false; // Won't work unless devMode is true.
 
-    public static final Integer defaultUpdateSpeed = 12;
+    public static final Integer defaultUpdateSpeed = 120;
     public static final String Logo = "/image/MTrackLogo.png";
     public static Integer updateSpeed;
     public static String dataFolder;

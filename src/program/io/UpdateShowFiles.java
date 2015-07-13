@@ -1,9 +1,9 @@
 package program.io;
 
-import program.information.Episode;
-import program.information.Season;
-import program.information.Show;
 import program.information.ShowInfoController;
+import program.information.show.Episode;
+import program.information.show.Season;
+import program.information.show.Show;
 import program.util.FindShows;
 import program.util.Strings;
 

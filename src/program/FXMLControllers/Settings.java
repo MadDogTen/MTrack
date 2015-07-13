@@ -12,12 +12,13 @@ import program.Controller;
 import program.Main;
 import program.gui.*;
 import program.information.ProgramSettingsController;
-import program.information.Show;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
+import program.information.settings.UserSettings;
+import program.information.settings.UserShowSettings;
+import program.information.show.Show;
 import program.io.FileManager;
 import program.io.GenerateNewShowFiles;
-import program.io.GenerateSettingsFiles;
 import program.io.MoveWindow;
 import program.util.LanguageHandler;
 import program.util.Strings;
@@ -127,15 +128,20 @@ public class Settings implements Initializable {
             ArrayList<String> Users = UserInfoController.getAllUsers();
             String defaultUsername = listSelectBox.defaultUser(Strings.PleaseChooseADefaultUser, Users, tabPane.getScene().getWindow());
             if (defaultUsername != null && !defaultUsername.isEmpty()) {
-                ProgramSettingsController.setDefaultUsername(defaultUsername, 1);
+                ProgramSettingsController.setDefaultUsername(defaultUsername, false);
             }
         });
         clearDefaultUsername.setText(Strings.Reset);
-        clearDefaultUsername.setOnAction(e -> ProgramSettingsController.setDefaultUsername(Strings.EmptyString, 0));
+        clearDefaultUsername.setOnAction(e -> ProgramSettingsController.setDefaultUsername(Strings.EmptyString, true));
         addUser.setText(Strings.AddUser);
         addUser.setOnAction(e -> {
             String userName = new TextBox().display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, tabPane.getScene().getWindow());
-            new GenerateSettingsFiles().generateUserSettingsFile(userName);
+            Map<String, UserShowSettings> showSettings = new HashMap<>();
+            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            for (String aShow : showsList) {
+                showSettings.put(aShow, new UserShowSettings(aShow));
+            }
+            new FileManager().save(new UserSettings(userName, showSettings), Variables.UsersFolder, userName, Variables.UsersExtension, false);
         });
         deleteUser.setText(Strings.DeleteUser);
         deleteUser.setOnAction(e -> {
@@ -360,7 +366,7 @@ public class Settings implements Initializable {
 
         // Dev 2
         printProgramSettingsFileVersion.setText(Strings.PrintPSFV);
-        printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(ProgramSettingsController.getProgramSettingsVersion())));
+        printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(ProgramSettingsController.getProgramSettingsFileVersion())));
         printUserSettingsFileVersion.setText(Strings.PrintUSFV);
         printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(UserInfoController.getUserSettingsVersion())));
         printAllUserInfo.setText(Strings.PrintAllUserInfo);

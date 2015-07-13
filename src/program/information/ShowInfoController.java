@@ -1,5 +1,8 @@
 package program.information;
 
+import program.information.show.Episode;
+import program.information.show.Season;
+import program.information.show.Show;
 import program.io.FileManager;
 import program.util.Clock;
 import program.util.Strings;

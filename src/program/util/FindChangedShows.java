@@ -1,7 +1,7 @@
 package program.util;
 
 import program.information.ChangeReporter;
-import program.information.Show;
+import program.information.show.Show;
 
 import java.util.ArrayList;
 import java.util.Map;

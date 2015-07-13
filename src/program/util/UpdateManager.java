@@ -1,6 +1,15 @@
 package program.util;
 
-import program.information.*;
+import program.information.ChangeReporter;
+import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
+import program.information.UserInfoController;
+import program.information.settings.ProgramSettings;
+import program.information.settings.UserSettings;
+import program.information.settings.UserShowSettings;
+import program.information.show.Episode;
+import program.information.show.Season;
+import program.information.show.Show;
 import program.io.FileManager;
 
 import java.util.ArrayList;
@@ -16,7 +25,7 @@ public class UpdateManager {
 
     // These both compare the version defined in Variables (Latest Version) with the version the files are currently at (Old Version), and if they don't match, converts the files to the latest version.
     public void updateProgramSettingsFile() {
-        int newVersion = Variables.ProgramSettingsFileVersion, currentVersion = ProgramSettingsController.getProgramSettingsVersion();
+        int newVersion = Variables.ProgramSettingsFileVersion, currentVersion = ProgramSettingsController.getProgramSettingsFileVersion();
         if (Variables.ProgramSettingsFileVersion == currentVersion) {
             log.info("Program settings file versions matched.");
         } else {
@@ -59,128 +68,165 @@ public class UpdateManager {
     // These are ran if the versions didn't match, and updates the file with the latest information. It uses the oldVersion to find where it last updated, and runs through all the cases at and below it to catch it up, than updates the file to the latest version if it ran successfully.
     @SuppressWarnings("SameParameterValue")
     private void convertProgramSettingsFile(int oldVersion, int newVersion) {
-        HashMap<String, ArrayList<String>> programSettingsFile = ProgramSettingsController.getSettingsFile();
+        ProgramSettings programSettings = ProgramSettingsController.getSettingsFile();
         boolean updated = false;
-        switch (oldVersion) {
-            case -2:
-                ArrayList<String> temp = new ArrayList<>();
-                temp.add(0, String.valueOf(Variables.ProgramSettingsFileVersion));
-                programSettingsFile.put("ProgramVersions", temp);
-                log.info("Program settings file has been updated from version -2.");
-            case 1:
-                programSettingsFile.get("General").add(1, Variables.dataFolder);
-                log.info("Program has been updated from version 1.");
-            case 2:
-                log.info("Program has been updated from version 2.");
-            case 1001:
-                programSettingsFile.get("General").remove(1);
-                log.info("Program has been updated from version 1001.");
-            case 1002:
-                log.info("Converting directories...");
-                if (programSettingsFile.containsKey("Directories")) {
-                    ArrayList<String> directories = programSettingsFile.get("Directories");
-                    ArrayList<String> directoriesFixed = new ArrayList<>();
-                    directories.forEach(aDirectory -> {
-                        int index = directories.indexOf(aDirectory);
-                        directoriesFixed.add(index + ">" + aDirectory);
-                        log.info("Converted " + aDirectory + " to " + index + '>' + aDirectory);
-                    });
-                    programSettingsFile.replace("Directories", directoriesFixed);
-                } else log.info("Program settings file contains no directories, Nothing was converted.");
-                log.info("Finished converting directories");
-                log.info("Program has been updated from version 1002.");
-            case 1003:
-                programSettingsFile.get("ProgramVersions").add(1, "1");
-                log.info("Program has been updated from version 1003.");
-            case 1004:
-                programSettingsFile.get("General").add(1, "false");
-                log.info("Program has been updated from version 1004.");
-            case 1005:
-                programSettingsFile.get("General").add(2, Strings.EmptyString);
-                log.info("Program has been updated from version 1005.");
-            case 1006:
-                programSettingsFile.get("ProgramVersions").add(2, "-2");
-                log.info("Program has been updated from version 1006.");
-            case 1007:
-                ArrayList<String> temp2 = new ArrayList<>();
-                temp2.add(0, "239");
-                temp2.add(1, "29");
-                temp2.add(2, "48");
-                temp2.add(3, "50");
-                programSettingsFile.put("GuiNumberSettings", temp2);
-                //noinspection ReuseOfLocalVariable
-                temp2 = new ArrayList<>();
-                temp2.add(0, "true");
-                temp2.add(1, "true");
-                temp2.add(2, "false");
-                temp2.add(3, "false");
-                programSettingsFile.put("GuiBooleanSettings", temp2);
-                log.info("Program has been updated from version 1007.");
-                updated = true;
-        }
+        if (oldVersion <= 1008) {
+            @SuppressWarnings("unchecked") HashMap<String, ArrayList<String>> oldProgramSettingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
+            switch (oldVersion) {
+                case -2:
+                    ArrayList<String> temp = new ArrayList<>();
+                    temp.add(0, String.valueOf(Variables.ProgramSettingsFileVersion));
+                    oldProgramSettingsFile.put("ProgramVersions", temp);
+                    log.info("Program settings file has been updated from version -2.");
+                case 1:
+                    oldProgramSettingsFile.get("General").add(1, Variables.dataFolder);
+                    log.info("Program has been updated from version 1.");
+                case 2:
+                    log.info("Program has been updated from version 2.");
+                case 1001:
+                    oldProgramSettingsFile.get("General").remove(1);
+                    log.info("Program has been updated from version 1001.");
+                case 1002:
+                    log.info("Converting directories...");
+                    if (oldProgramSettingsFile.containsKey("Directories")) {
+                        ArrayList<String> directories = oldProgramSettingsFile.get("Directories");
+                        ArrayList<String> directoriesFixed = new ArrayList<>();
+                        directories.forEach(aDirectory -> {
+                            int index = directories.indexOf(aDirectory);
+                            directoriesFixed.add(index + ">" + aDirectory);
+                            log.info("Converted " + aDirectory + " to " + index + '>' + aDirectory);
+                        });
+                        oldProgramSettingsFile.replace("Directories", directoriesFixed);
+                    } else log.info("Program settings file contains no directories, Nothing was converted.");
+                    log.info("Finished converting directories");
+                    log.info("Program has been updated from version 1002.");
+                case 1003:
+                    oldProgramSettingsFile.get("ProgramVersions").add(1, "1");
+                    log.info("Program has been updated from version 1003.");
+                case 1004:
+                    oldProgramSettingsFile.get("General").add(1, "false");
+                    log.info("Program has been updated from version 1004.");
+                case 1005:
+                    oldProgramSettingsFile.get("General").add(2, Strings.EmptyString);
+                    log.info("Program has been updated from version 1005.");
+                case 1006:
+                    oldProgramSettingsFile.get("ProgramVersions").add(2, "-2");
+                    log.info("Program has been updated from version 1006.");
+                case 1007:
+                    ArrayList<String> temp2 = new ArrayList<>();
+                    temp2.add(0, "239");
+                    temp2.add(1, "29");
+                    temp2.add(2, "48");
+                    temp2.add(3, "50");
+                    oldProgramSettingsFile.put("GuiNumberSettings", temp2);
+                    //noinspection ReuseOfLocalVariable
+                    temp2 = new ArrayList<>();
+                    temp2.add(0, "true");
+                    temp2.add(1, "true");
+                    temp2.add(2, "false");
+                    temp2.add(3, "false");
+                    oldProgramSettingsFile.put("GuiBooleanSettings", temp2);
+                    log.info("Program has been updated from version 1007.");
+                case 1008:
+                    programSettings = new ProgramSettings(newVersion,
+                            Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(1)),
+                            Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(2)),
+                            Integer.parseInt(oldProgramSettingsFile.get("General").get(0)),
+                            Boolean.parseBoolean(oldProgramSettingsFile.get("General").get(1)),
+                            oldProgramSettingsFile.get("General").get(2),
+                            Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)),
+                            oldProgramSettingsFile.get("DefaultUser").get(1),
+                            oldProgramSettingsFile.get("Directories"),
+                            Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(0)),
+                            Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(1)),
+                            Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(2)),
+                            Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(3)),
+                            Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(0)),
+                            Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(1)),
+                            Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(2)),
+                            Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(3))
+                    );
+                    updated = true;
+
+            }
+        } /*else if (oldVersion < 1008) {
+
+        }*/
 
         if (updated) {
             // Update Program Settings File Version
-            programSettingsFile.get("ProgramVersions").set(0, String.valueOf(newVersion));
+            programSettings.setProgramSettingsFileVersion(newVersion);
 
-            ProgramSettingsController.setSettingsFile(programSettingsFile);
+            ProgramSettingsController.setSettingsFile(programSettings);
             ProgramSettingsController.saveSettingsFile();
             log.info("Program settings file was successfully updated to version " + newVersion + '.');
         } else log.info("Program settings file was not updated. This is an error, please report.");
     }
 
+
     @SuppressWarnings("SameParameterValue")
     private void convertUserSettingsFile(int oldVersion, int newVersion) {
-        HashMap<String, HashMap<String, HashMap<String, String>>> userSettingsFile = UserInfoController.getUserSettingsFile();
+        UserSettings userSettings = UserInfoController.getUserSettings();
         boolean updated = false;
-        switch (oldVersion) {
-            case -2:
-                HashMap<String, HashMap<String, String>> tempPut;
-                HashMap<String, String> temp;
-                tempPut = new HashMap<>();
-                temp = new HashMap<>();
-                temp.put("0", String.valueOf(Variables.UserSettingsFileVersion));
-                tempPut.put("UserVersions", temp);
-                userSettingsFile.put("UserSettings", tempPut);
-                log.info("User settings file has been updated from version -2.");
-            case 1:
-                HashMap<String, HashMap<String, String>> shows = userSettingsFile.get("ShowSettings");
-                if (shows != null) {
-                    shows.keySet().forEach(aShow -> shows.get(aShow).put("isHidden", "false"));
-                }
-                log.info("User settings file has been updated from version 1.");
-            case 2:
-                ShowInfoController.getShowsList().forEach(aShow -> {
-                    if (!userSettingsFile.containsKey("ShowSettings")) {
-                        userSettingsFile.put("ShowSettings", new HashMap<>());
+        if (oldVersion <= 1001) {
+            @SuppressWarnings("unchecked") HashMap<String, HashMap<String, HashMap<String, String>>> oldUserSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+            switch (oldVersion) {
+                case -2:
+                    HashMap<String, HashMap<String, String>> tempPut;
+                    HashMap<String, String> temp;
+                    tempPut = new HashMap<>();
+                    temp = new HashMap<>();
+                    temp.put("0", String.valueOf(Variables.UserSettingsFileVersion));
+                    tempPut.put("UserVersions", temp);
+                    oldUserSettingsFile.put("UserSettings", tempPut);
+                    log.info("User settings file has been updated from version -2.");
+                case 1:
+                    HashMap<String, HashMap<String, String>> shows = oldUserSettingsFile.get("ShowSettings");
+                    if (shows != null) {
+                        shows.keySet().forEach(aShow -> shows.get(aShow).put("isHidden", "false"));
                     }
-                    if (!userSettingsFile.get("ShowSettings").keySet().contains(aShow)) {
-                        log.info("Adding " + aShow + " to user settings file.");
-                        HashMap<String, String> temp2 = new HashMap<>();
-                        temp2.put("isActive", "false");
-                        temp2.put("isIgnored", "false");
-                        temp2.put("isHidden", "false");
-                        temp2.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(aShow)));
-                        Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp2.get("CurrentSeason")));
-                        temp2.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
-                        userSettingsFile.get("ShowSettings").put(aShow, temp2);
+                    log.info("User settings file has been updated from version 1.");
+                case 2:
+                    final HashMap<String, HashMap<String, HashMap<String, String>>> finalOldUserSettingsFile = oldUserSettingsFile;
+                    ShowInfoController.getShowsList().forEach(aShow -> {
+                        if (!finalOldUserSettingsFile.containsKey("ShowSettings")) {
+                            finalOldUserSettingsFile.put("ShowSettings", new HashMap<>());
+                        }
+                        if (!finalOldUserSettingsFile.get("ShowSettings").keySet().contains(aShow)) {
+                            log.info("Adding " + aShow + " to user settings file.");
+                            HashMap<String, String> temp2 = new HashMap<>();
+                            temp2.put("isActive", "false");
+                            temp2.put("isIgnored", "false");
+                            temp2.put("isHidden", "false");
+                            temp2.put("CurrentSeason", String.valueOf(ShowInfoController.findLowestSeason(aShow)));
+                            Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(temp2.get("CurrentSeason")));
+                            temp2.put("CurrentEpisode", String.valueOf(ShowInfoController.findLowestEpisode(episodes)));
+                            finalOldUserSettingsFile.get("ShowSettings").put(aShow, temp2);
+                        }
+                    });
+                    log.info("User settings file has been updated from version 2.");
+                case 1000:
+                    if (!oldUserSettingsFile.containsKey("ShowSettings")) {
+                        oldUserSettingsFile.put("ShowSettings", new HashMap<>());
                     }
-                });
-                log.info("User settings file has been updated from version 2.");
-            case 1000:
-                if (!userSettingsFile.containsKey("ShowSettings")) {
-                    userSettingsFile.put("ShowSettings", new HashMap<>());
-                }
-                userSettingsFile.get("UserSettings").get("UserVersions").put("1", "0");
-                log.info("User settings file has been updated from version 1000.");
-                updated = true;
-        }
+                    oldUserSettingsFile.get("UserSettings").get("UserVersions").put("1", "0");
+                    log.info("User settings file has been updated from version 1000.");
+                case 1001:
+                    Map<String, UserShowSettings> showsConverted = new HashMap<>();
+                    oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
+                    userSettings = new UserSettings(Strings.UserName, showsConverted);
+                    UserInfoController.setUserSettings(userSettings);
+                    UserInfoController.saveUserSettingsFile();
+                    updated = true;
+            }
+        } /*else if (oldVersion > 1001) {
+        }*/
+
 
         if (updated) {
             // Update User Settings File Version
-            userSettingsFile.get("UserSettings").get("UserVersions").replace("0", String.valueOf(newVersion));
-
-            UserInfoController.setUserSettingsFile(userSettingsFile);
+            userSettings.setUserSettingsFileVersion(newVersion);
+            UserInfoController.setUserSettings(userSettings);
             UserInfoController.saveUserSettingsFile();
             log.info("User settings file was successfully updated to version " + newVersion + '.');
         } else log.info("User settings file was not updated. This is an error, please report.");

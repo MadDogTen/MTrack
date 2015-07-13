@@ -2,7 +2,12 @@ package program.io;
 
 import program.Controller;
 import program.Main;
-import program.information.*;
+import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
+import program.information.UserInfoController;
+import program.information.show.Episode;
+import program.information.show.Season;
+import program.information.show.Show;
 import program.util.Clock;
 import program.util.FindChangedShows;
 import program.util.FindShows;

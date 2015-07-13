@@ -2,7 +2,6 @@
 
 <!--suppress JavaFxDefaultTag -->
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
@@ -64,7 +63,4 @@
         <Circle fx:id="pingingDirectory" fill="#2deb30" layoutX="173.0" layoutY="14.0" radius="8.0" stroke="BLACK"
                 strokeType="INSIDE" strokeWidth="0.3" visible="false"/>
     </children>
-    <padding>
-        <Insets bottom="1.0" left="1.0" right="1.0" top="1.0"/>
-    </padding>
 </Pane>

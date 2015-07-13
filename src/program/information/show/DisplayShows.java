@@ -1,4 +1,4 @@
-package program.information;
+package program.information.show;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;

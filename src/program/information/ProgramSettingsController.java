@@ -1,13 +1,14 @@
 package program.information;
 
 import program.Controller;
+import program.information.settings.ProgramSettings;
+import program.information.show.Show;
 import program.io.FileManager;
 import program.util.Strings;
 import program.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -16,91 +17,82 @@ import java.util.stream.Collectors;
 public class ProgramSettingsController {
     private static final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
 
-    private static HashMap<String, ArrayList<String>> settingsFile;
+    private static ProgramSettings settingsFile;
     private static boolean mainDirectoryVersionAlreadyChanged = false;
 
     @SuppressWarnings("unchecked")
     public static void loadProgramSettingsFile() {
-        settingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
+        settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
     }
 
     public static int getUpdateSpeed() {
-        return Integer.parseInt(settingsFile.get("General").get(0));
+        return settingsFile.getUpdateSpeed();
     }
 
     public static void setUpdateSpeed(int updateSpeed) {
-        settingsFile.get("General").set(0, String.valueOf(updateSpeed));
+        settingsFile.setUpdateSpeed(updateSpeed);
         Variables.setUpdateSpeed();
     }
 
     public static boolean getShow0Remaining() {
-        return Boolean.valueOf(settingsFile.get("General").get(1));
+        return settingsFile.isShow0Remaining();
     }
 
     public static void setShow0Remaining(boolean show0Remaining) {
-        settingsFile.get("General").set(1, String.valueOf(show0Remaining));
+        settingsFile.setShow0Remaining(show0Remaining);
     }
 
     public static String getLanguage() {
-        return settingsFile.get("General").get(2);
+        return settingsFile.getLanguage();
     }
 
     public static void setLanguage(String language) {
-        settingsFile.get("General").set(2, language);
+        settingsFile.setLanguage(language);
     }
 
     public static boolean isDefaultUsername() {
-        ArrayList<String> defaultUser = settingsFile.get("DefaultUser");
-        return Boolean.parseBoolean(defaultUser.get(0));
+        return settingsFile.isUseDefaultUser();
     }
 
     public static String getDefaultUsername() {
-        ArrayList<String> defaultUser = settingsFile.get("DefaultUser");
-        return defaultUser.get(1);
+        return settingsFile.getDefaultUser();
     }
 
-    public static void setDefaultUsername(String userName, int option) {
+    public static void setDefaultUsername(String userName, boolean disableDefaultUser) {
         log.info("ProgramSettingsController- DefaultUsername is being set...");
-        ArrayList<String> defaultUsername = settingsFile.get("DefaultUser");
-        if (option == 0) {
-            defaultUsername.set(0, "false");
-            defaultUsername.set(1, Strings.EmptyString);
-        } else if (option == 1) {
-            defaultUsername.set(0, "true");
-            defaultUsername.set(1, userName);
-        }
-        settingsFile.replace("DefaultUser", defaultUsername);
+        settingsFile.setUseDefaultUser(disableDefaultUser);
+        settingsFile.setDefaultUser(userName);
     }
 
     public static ArrayList<String> getDirectories() {
         ArrayList<String> directories = new ArrayList<>();
-        if (settingsFile.containsKey("Directories")) {
-            directories.addAll(settingsFile.get("Directories").stream().map(aDirectory -> aDirectory.split(">")[1]).collect(Collectors.toList()));
+        if (settingsFile.getDirectories() != null) {
+            directories.addAll(settingsFile.getDirectories().stream().map(aDirectory -> aDirectory.split(">")[1]).collect(Collectors.toList()));
         }
         return directories;
     }
 
     public static ArrayList<Integer> getDirectoriesIndexes() {
         ArrayList<Integer> directoriesIndexes = new ArrayList<>();
-        if (settingsFile.containsKey("Directories")) {
-            getDirectories().forEach(aDirectory -> directoriesIndexes.add(getDirectoryIndex(aDirectory)));
+        if (settingsFile.getDirectories() != null) {
+            getDirectories().forEach(aDirectory -> directoriesIndexes.add(getDirectoryIndex(String.valueOf(aDirectory))));
         }
         return directoriesIndexes;
     }
 
-    public static int getProgramSettingsVersion() {
-        return Integer.parseInt(settingsFile.get("ProgramVersions").get(0));
+    public static int getProgramSettingsFileVersion() {
+        return settingsFile.getProgramSettingsFileVersion();
     }
 
     public static int getMainDirectoryVersion() {
-        return Integer.parseInt(settingsFile.get("ProgramVersions").get(1));
+        return settingsFile.getMainDirectoryVersion();
     }
 
     public static void setMainDirectoryVersion(int version) {
         if (mainDirectoryVersionAlreadyChanged) {
             log.info("Already changed main directory version this run, no further change needed.");
         } else {
-            settingsFile.get("ProgramVersions").set(1, String.valueOf(version));
+            settingsFile.setMainDirectoryVersion(version);
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
             if (!Controller.mainRun.firstRun) {
                 UserInfoController.setUserDirectoryVersion(version);
@@ -112,61 +104,11 @@ public class ProgramSettingsController {
     }
 
     public static int getShowFileVersion() {
-        return Integer.parseInt(settingsFile.get("ProgramVersions").get(2));
+        return settingsFile.getShowFileVersion();
     }
 
     public static void setShowFileVersion(int version) {
-        settingsFile.get("ProgramVersions").set(2, String.valueOf(version));
-    }
-
-    public static double getGuiNumberSettings(String toGet) { // Will be changing the structure of the settings file soon to remove this stupid way of doing it without cluttering up this class.
-        if (toGet.matches("ShowsColumn")) {
-            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(0));
-        } else if (toGet.matches("RemainingColumn")) {
-            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(1));
-        } else if (toGet.matches("SeasonColumn")) {
-            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(2));
-        } else if (toGet.matches("EpisodeColumn")) {
-            return Double.parseDouble(settingsFile.get("GuiNumberSettings").get(3));
-        }
-        return -1;
-    }
-
-    public static void setGuiNumberSettings(String toSet, double newNumber) {
-        if (toSet.matches("ShowsColumn")) {
-            settingsFile.get("GuiNumberSettings").set(0, String.valueOf(newNumber));
-        } else if (toSet.matches("RemainingColumn")) {
-            settingsFile.get("GuiNumberSettings").set(1, String.valueOf(newNumber));
-        } else if (toSet.matches("SeasonColumn")) {
-            settingsFile.get("GuiNumberSettings").set(2, String.valueOf(newNumber));
-        } else if (toSet.matches("EpisodeColumn")) {
-            settingsFile.get("GuiNumberSettings").set(3, String.valueOf(newNumber));
-        }
-    }
-
-    public static boolean getGuiBooleanSettings(String toGet) {
-        if (toGet.matches("ShowsColumn")) {
-            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(0));
-        } else if (toGet.matches("RemainingColumn")) {
-            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(1));
-        } else if (toGet.matches("SeasonColumn")) {
-            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(2));
-        } else if (toGet.matches("EpisodeColumn")) {
-            return Boolean.parseBoolean(settingsFile.get("GuiBooleanSettings").get(3));
-        }
-        return true;
-    }
-
-    public static void setGuiBooleanSettings(String toSet, boolean newBoolean) {
-        if (toSet.matches("ShowsColumn")) {
-            settingsFile.get("GuiBooleanSettings").set(0, String.valueOf(newBoolean));
-        } else if (toSet.matches("RemainingColumn")) {
-            settingsFile.get("GuiBooleanSettings").set(1, String.valueOf(newBoolean));
-        } else if (toSet.matches("SeasonColumn")) {
-            settingsFile.get("GuiBooleanSettings").set(2, String.valueOf(newBoolean));
-        } else if (toSet.matches("EpisodeColumn")) {
-            settingsFile.get("GuiBooleanSettings").set(3, String.valueOf(newBoolean));
-        }
+        settingsFile.setShowFileVersion(version);
     }
 
     public static boolean isDirectoryCurrentlyActive(File directory) {
@@ -187,7 +129,7 @@ public class ProgramSettingsController {
             Controller.updateShowField(aShow, showExistsElsewhere);
         });
         new FileManager().deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
-        settingsFile.get("Directories").remove(index + ">" + aDirectory);
+        settingsFile.getDirectories().remove(index + ">" + aDirectory);
         log.info("Finished processing removal of the directory.");
     }
 
@@ -200,7 +142,7 @@ public class ProgramSettingsController {
     }
 
     public static int getDirectoryIndex(String aDirectory) {
-        for (String directory : settingsFile.get("Directories")) {
+        for (String directory : settingsFile.getDirectories()) {
             if (directory.contains(aDirectory)) {
                 return Integer.parseInt(directory.split(">")[0]);
             }
@@ -210,7 +152,7 @@ public class ProgramSettingsController {
     }
 
     public static ArrayList<String> getDirectoriesNames() {
-        ArrayList<String> directories = settingsFile.get("Directories");
+        ArrayList<String> directories = settingsFile.getDirectories();
         ArrayList<String> directoriesNames = new ArrayList<>();
         directories.forEach(aDirectory -> {
             int index = Integer.parseInt(aDirectory.split(">")[0]);
@@ -220,7 +162,7 @@ public class ProgramSettingsController {
     }
 
     public static File getDirectory(int index) {
-        ArrayList<String> directories = settingsFile.get("Directories");
+        ArrayList<String> directories = settingsFile.getDirectories();
         for (String aDirectory : directories) {
             String[] split = aDirectory.split(">");
             if (split[0].matches(String.valueOf(index))) {
@@ -232,13 +174,16 @@ public class ProgramSettingsController {
     }
 
     public static boolean[] addDirectory(int index, File directory) {
-        ArrayList<String> directories = settingsFile.get("Directories");
+        ArrayList<String> directories = settingsFile.getDirectories();
         boolean[] answer = {false, false};
+        if (directories == null) {
+            directories = new ArrayList<>();
+        }
         if (!directory.toString().isEmpty() && !directories.contains(String.valueOf(directory))) {
             log.info("Added Directory");
             directories.add(index + ">" + String.valueOf(directory));
             log.info(index + ">" + String.valueOf(directory));
-            settingsFile.replace("Directories", directories);
+            settingsFile.setDirectories(directories);
             answer[0] = true;
         } else if (directory.toString().isEmpty()) {
             answer[1] = true;
@@ -248,7 +193,7 @@ public class ProgramSettingsController {
 
     public static int getLowestFreeDirectoryIndex() {
         final int[] lowestFreeIndex = {0};
-        settingsFile.get("Directories").forEach(aDirectory -> {
+        settingsFile.getDirectories().forEach(aDirectory -> {
             int currentInt = Integer.parseInt(aDirectory.split(">")[0]);
             if (lowestFreeIndex[0] == currentInt) {
                 lowestFreeIndex[0]++;
@@ -257,11 +202,11 @@ public class ProgramSettingsController {
         return lowestFreeIndex[0];
     }
 
-    public static HashMap<String, ArrayList<String>> getSettingsFile() {
+    public static ProgramSettings getSettingsFile() {
         return settingsFile;
     }
 
-    public static void setSettingsFile(HashMap<String, ArrayList<String>> settingsFile) {
+    public static void setSettingsFile(ProgramSettings settingsFile) {
         ProgramSettingsController.settingsFile = settingsFile;
     }
 

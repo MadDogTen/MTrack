@@ -8,13 +8,16 @@ import program.gui.TextBox;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.information.UserInfoController;
+import program.information.settings.ProgramSettings;
+import program.information.settings.UserSettings;
+import program.information.settings.UserShowSettings;
 import program.io.FileManager;
 import program.io.GenerateNewShowFiles;
-import program.io.GenerateSettingsFiles;
 import program.util.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -45,6 +48,7 @@ public class MainRun {
             getLanguage();
             Strings.UserName = getUser();
             ShowInfoController.loadShowsFile();
+            updateManager.updateUserSettingsFile();
             UserInfoController.loadUserInfo();
             // If those both exists, then it starts normally.
         } else {
@@ -54,6 +58,7 @@ public class MainRun {
             getLanguage();
             Strings.UserName = getUser();
             ShowInfoController.loadShowsFile();
+            updateManager.updateUserSettingsFile();
             UserInfoController.loadUserInfo();
         }
 
@@ -61,8 +66,8 @@ public class MainRun {
             generateUserSettingsFile(Strings.UserName);
             UserInfoController.loadUserInfo();
         }
+
         log.info("Username is set: " + Strings.UserName);
-        updateManager.updateUserSettingsFile();
         updateManager.updateMainDirectoryVersion();
         Variables.setUpdateSpeed();
         Controller.setTableViewFields("active");
@@ -133,7 +138,7 @@ public class MainRun {
         };
         new Thread(task).start();
         TextBox textBox = new TextBox();
-        Strings.UserName = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, Main.stage);
+        Strings.UserName = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, null);
         while (taskRunning[0]) {
             try {
                 Thread.sleep(500);
@@ -211,7 +216,7 @@ public class MainRun {
     // Generates the program settings file.
     private void generateProgramSettingsFile() {
         log.info("Attempting to generate program settings file.");
-        new GenerateSettingsFiles().generateProgramSettingsFile();
+        new FileManager().save(new ProgramSettings(), Strings.EmptyString, program.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
     }
 
     // Generates the ShowFiles (If a directory is added, otherwise this is skipped).
@@ -229,7 +234,12 @@ public class MainRun {
 
     // Generates a user settings file for the given username.
     private void generateUserSettingsFile(String userName) {
-        log.info("Attempting to generate settings file for " + userName + '.' );
-        new GenerateSettingsFiles().generateUserSettingsFile(Strings.UserName);
+        log.info("Attempting to generate settings file for " + userName + '.');
+        Map<String, UserShowSettings> showSettings = new HashMap<>();
+        ArrayList<String> showsList = ShowInfoController.getShowsList();
+        for (String aShow : showsList) {
+            showSettings.put(aShow, new UserShowSettings(aShow));
+        }
+        new FileManager().save(new UserSettings(userName, showSettings), Variables.UsersFolder, userName, Variables.UsersExtension, false);
     }
 }

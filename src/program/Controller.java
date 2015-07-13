@@ -16,7 +16,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import program.gui.*;
-import program.information.*;
+import program.information.ChangeReporter;
+import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
+import program.information.UserInfoController;
+import program.information.show.DisplayShows;
 import program.io.CheckShowFiles;
 import program.io.FileManager;
 import program.io.MoveWindow;
@@ -187,20 +191,20 @@ public class Controller implements Initializable {
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         shows.setSortType(TableColumn.SortType.ASCENDING);
         shows.setText(Strings.Shows);
-        shows.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("ShowsColumn"));
-        shows.setVisible(ProgramSettingsController.getGuiBooleanSettings("ShowsColumn"));
+        shows.setPrefWidth(ProgramSettingsController.getSettingsFile().getShowColumnWidth());
+        shows.setVisible(ProgramSettingsController.getSettingsFile().isShowColumnVisibility());
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
         remaining.setText(Strings.Left);
-        remaining.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("RemainingColumn"));
-        remaining.setVisible(ProgramSettingsController.getGuiBooleanSettings("RemainingColumn"));
+        remaining.setPrefWidth(ProgramSettingsController.getSettingsFile().getRemainingColumnWidth());
+        remaining.setVisible(ProgramSettingsController.getSettingsFile().isRemainingColumnVisibility());
         season.setCellValueFactory(new PropertyValueFactory<>("season"));
         season.setText(Strings.Season);
-        season.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("SeasonColumn"));
-        season.setVisible(ProgramSettingsController.getGuiBooleanSettings("SeasonColumn"));
+        season.setPrefWidth(ProgramSettingsController.getSettingsFile().getSeasonColumnWidth());
+        season.setVisible(ProgramSettingsController.getSettingsFile().isSeasonColumnVisibility());
         episode.setCellValueFactory(new PropertyValueFactory<>("episode"));
         episode.setText(Strings.Episode);
-        episode.setPrefWidth(ProgramSettingsController.getGuiNumberSettings("EpisodeColumn"));
-        episode.setVisible(ProgramSettingsController.getGuiBooleanSettings("EpisodeColumn"));
+        episode.setPrefWidth(ProgramSettingsController.getSettingsFile().getEpisodeColumnWidth());
+        episode.setVisible(ProgramSettingsController.getSettingsFile().isEpisodeColumnVisibility());
         setTableView();
         tableView.getItems();
 
@@ -219,7 +223,7 @@ public class Controller implements Initializable {
                         int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, ShowInfoController.getSeasonsList(show), pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
-                            UserInfoController.setSeasonEpisode(show, seasonEpisode[0], String.valueOf(seasonEpisode[1]));
+                            UserInfoController.setSeasonEpisode(show, seasonEpisode[0], seasonEpisode[1]);
                             updateShowField(row.getItem().getShow(), true);
                             tableView.getSelectionModel().clearSelection();
                         } else {
@@ -345,8 +349,8 @@ public class Controller implements Initializable {
                             boolean keepPlaying = true;
                             isShowCurrentlyPlaying = true;
                             while (keepPlaying) {
-                                int fileExists = UserInfoController.doesEpisodeExists(aShow);
-                                if (fileExists == 1 || fileExists == 2) {
+                                Boolean fileExists = UserInfoController.doesEpisodeExists(aShow);
+                                if (fileExists) {
                                     UserInfoController.playAnyEpisode(aShow, UserInfoController.getCurrentSeason(aShow), UserInfoController.getCurrentEpisode(aShow));
                                     ShowConfirmBox showConfirmBox = new ShowConfirmBox();
                                     int userChoice = showConfirmBox.display(Strings.HaveYouWatchedTheShow, pane.getScene().getWindow());
@@ -490,14 +494,14 @@ public class Controller implements Initializable {
                         });
 
                         // Saving all the settings - I will make this done during shutdown instead soon.
-                        ProgramSettingsController.setGuiNumberSettings("ShowsColumn", shows.getWidth());
-                        ProgramSettingsController.setGuiNumberSettings("RemainingColumn", remaining.getWidth());
-                        ProgramSettingsController.setGuiNumberSettings("SeasonColumn", season.getWidth());
-                        ProgramSettingsController.setGuiNumberSettings("EpisodeColumn", episode.getWidth());
-                        ProgramSettingsController.setGuiBooleanSettings("ShowsColumn", shows.isVisible());
-                        ProgramSettingsController.setGuiBooleanSettings("RemainingColumn", remaining.isVisible());
-                        ProgramSettingsController.setGuiBooleanSettings("SeasonColumn", season.isVisible());
-                        ProgramSettingsController.setGuiBooleanSettings("EpisodeColumn", episode.isVisible());
+                        ProgramSettingsController.getSettingsFile().setShowColumnWidth(shows.getWidth());
+                        ProgramSettingsController.getSettingsFile().setRemainingColumnWidth(remaining.getWidth());
+                        ProgramSettingsController.getSettingsFile().setSeasonColumnWidth(season.getWidth());
+                        ProgramSettingsController.getSettingsFile().setEpisodeColumnWidth(episode.getWidth());
+                        ProgramSettingsController.getSettingsFile().setShowColumnVisibility(shows.isVisible());
+                        ProgramSettingsController.getSettingsFile().setRemainingColumnVisibility(remaining.isVisible());
+                        ProgramSettingsController.getSettingsFile().setSeasonColumnVisibility(season.isVisible());
+                        ProgramSettingsController.getSettingsFile().setEpisodeColumnVisibility(episode.isVisible());
                     }
                     isChangesListPopulated();
                     if (currentlyRechecking) {

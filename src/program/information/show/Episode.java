@@ -1,4 +1,4 @@
-package program.information;
+package program.information.show;
 
 import java.io.Serializable;
 
