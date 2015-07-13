@@ -138,11 +138,11 @@ public class UserInfoController {
     public static void changeEpisode(String aShow, int episode, boolean fileExists) {
         HashMap<String, String> aShowSettings = userSettingsFile.get("ShowSettings").get(aShow);
         if (fileExists && episode == -2) {
-            String currentEpisodeString = aShowSettings.get("CurrentEpisode");
-            int currentEpisode;
-            if (currentEpisodeString.contains("+")) {
-                currentEpisode = Integer.parseInt(currentEpisodeString.split("[+]")[1]);
-            } else currentEpisode = Integer.parseInt(currentEpisodeString);
+            int currentEpisode = Integer.parseInt(aShowSettings.get("CurrentEpisode"));
+            Boolean isDoubleEpisode = ShowInfoController.isDoubleEpisode(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")), currentEpisode);
+            if (isDoubleEpisode) {
+                currentEpisode++;
+            }
             String isAnotherEpisode = isAnotherEpisode(aShow, Integer.parseInt(aShowSettings.get("CurrentSeason")), currentEpisode);
             if (!isAnotherEpisode.contains("-3")) {
                 aShowSettings.replace("CurrentEpisode", isAnotherEpisode);

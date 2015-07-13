@@ -1,12 +1,11 @@
 package program.util;
 
-import program.information.ChangeReporter;
-import program.information.ProgramSettingsController;
-import program.information.ShowInfoController;
-import program.information.UserInfoController;
+import program.information.*;
+import program.io.FileManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -33,6 +32,16 @@ public class UpdateManager {
         } else {
             log.info("User settings file versions didn't match " + newVersion + " - " + oldVersion + ", Updating...");
             convertUserSettingsFile(oldVersion, newVersion);
+        }
+    }
+
+    public void updateShowFile() {
+        int newVersion = Variables.ShowFileVersion, oldVersion = ProgramSettingsController.getShowFileVersion();
+        if (newVersion == oldVersion) {
+            log.info("Show file versions matched.");
+        } else {
+            log.info("Show file versions didn't match " + newVersion + " - " + oldVersion + ", Updating...");
+            convertShowFile(oldVersion, newVersion);
         }
     }
 
@@ -85,8 +94,13 @@ public class UpdateManager {
                 log.info("Program has been updated from version 1003.");
             case 1004:
                 programSettingsFile.get("General").add(1, "false");
+                log.info("Program has been updated from version 1004.");
             case 1005:
                 programSettingsFile.get("General").add(2, Strings.EmptyString);
+                log.info("Program has been updated from version 1005.");
+            case 1006:
+                programSettingsFile.get("ProgramVersions").add(2, "-2");
+                log.info("Program has been updated from version 1006.");
                 updated = true;
         }
 
@@ -155,6 +169,63 @@ public class UpdateManager {
             UserInfoController.saveUserSettingsFile();
             log.info("User settings file was successfully updated to version " + newVersion + '.');
         } else log.info("User settings file was not updated. This is an error, please report.");
+    }
+
+    private void convertShowFile(int oldVersion, int newVersion) {
+        HashMap<String, ArrayList<String>> programSettingsFile = ProgramSettingsController.getSettingsFile();
+        boolean updated = false;
+        switch (oldVersion) {
+            case -2:
+                ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
+                ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
+                FileManager fileManager = new FileManager();
+                files.forEach(aString -> {
+                    int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
+                    //noinspection unchecked
+                    showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+                });
+                showsFileArray.forEach(aHashMap -> {
+                    int index = showsFileArray.indexOf(aHashMap);
+                    Map<String, Show> showsMap = new HashMap<>();
+                    aHashMap.forEach((showName, showHashMap) -> {
+                        Map<Integer, Season> seasonsMap = new HashMap<>();
+                        showHashMap.forEach((season, seasonHashMap) -> {
+                            Map<Integer, Episode> episodesMap = new HashMap<>();
+                            seasonHashMap.forEach((episode, episodeFileName) -> {
+                                int[] episodes;
+                                if (episode.contains("+")) {
+                                    episodes = new int[2];
+                                    episodes[0] = Integer.parseInt(episode.split("[+]")[0]);
+                                    episodes[1] = Integer.parseInt(episode.split("[+]")[1]);
+                                } else {
+                                    episodes = new int[1];
+                                    episodes[0] = Integer.parseInt(episode);
+                                }
+                                if (episodes.length == 1) {
+                                    episodesMap.put(episodes[0], new Episode(episodes[0], episodeFileName, false));
+                                } else if (episodes.length == 2) {
+                                    episodesMap.put(episodes[0], new Episode(episodes[0], episodeFileName, true));
+                                    episodesMap.put(episodes[1], new Episode(episodes[1], episodeFileName, true));
+                                }
+                            });
+                            seasonsMap.put(season, new Season(season, episodesMap));
+                        });
+                        showsMap.put(showName, new Show(showName, seasonsMap));
+                    });
+                    ShowInfoController.saveShowsMapFile(showsMap, index);
+                });
+                log.info("Show file has been updated from version -2.");
+                updated = true;
+        }
+
+        if (updated) {
+            // Update Program Settings File Version
+            programSettingsFile.get("ProgramVersions").set(2, String.valueOf(newVersion));
+
+            ProgramSettingsController.setSettingsFile(programSettingsFile);
+            ProgramSettingsController.saveSettingsFile();
+            log.info("Show file was successfully updated to version " + newVersion + '.');
+        } else log.info("Show file was not updated. This is an error, please report.");
     }
 
     // This finds what shows have been added / remove if another user has ran the program (and found updated information) since you last ran your profile.

@@ -41,6 +41,7 @@ public class MainRun {
         } else if (!fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingsExtension)) {
             generateProgramSettingsFile();
             ProgramSettingsController.loadProgramSettingsFile();
+            updateManager.updateShowFile();
             getLanguage();
             Strings.UserName = getUser();
             ShowInfoController.loadShowsFile();
@@ -49,6 +50,7 @@ public class MainRun {
         } else {
             ProgramSettingsController.loadProgramSettingsFile();
             updateManager.updateProgramSettingsFile();
+            updateManager.updateShowFile();
             getLanguage();
             Strings.UserName = getUser();
             ShowInfoController.loadShowsFile();

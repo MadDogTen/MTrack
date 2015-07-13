@@ -26,6 +26,8 @@ public class GenerateSettingsFiles {
             // Index 1 : Main Directory Version
             temp.add(1, "0");
             settingsFile.put("ProgramVersions", temp);
+            // Index 2 : Show File Version
+            temp.add(2, String.valueOf(Variables.ShowFileVersion));
 
             // --General Settings-- \\
             temp = new ArrayList<>();

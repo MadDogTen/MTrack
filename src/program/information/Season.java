@@ -22,8 +22,4 @@ public class Season implements Serializable {
         return episodes;
     }
 
-    public String getEpisode(int episode) {
-        return episodes.get(episode).getEpisodeFilename();
-    }
-
 }

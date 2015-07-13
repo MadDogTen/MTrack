@@ -93,11 +93,20 @@ public class ShowInfoController {
     }
 
     public static String getEpisode(String show, int season, int episode) {
-        if (showsFile.get(show).getSeason(season).getEpisode(episode) != null) {
-            return showsFile.get(show).getSeason(season).getEpisode(episode);
+        if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode)) {
+            return showsFile.get(show).getSeason(season).getEpisodes().get(episode).getEpisodeFilename();
         } else {
-            log.warning("Error 1");
+            log.warning("Error, Please report.");
             return null;
+        }
+    }
+
+    public static boolean isDoubleEpisode(String show, int season, int episode) {
+        if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode)) {
+            return showsFile.get(show).getSeason(season).getEpisodes().get(episode).getPartOfDoubleEpisode();
+        } else {
+            log.warning("Error, Please report.");
+            return false;
         }
     }
 
@@ -243,8 +252,7 @@ public class ShowInfoController {
         return bothInt;
     }
 
-    public static void saveShowsArrayListFile(Map<String, Show> arrayList, int hashMapIndex) {
-        new FileManager().save((Serializable) arrayList, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(hashMapIndex)), Variables.ShowsExtension, true);
-        loadShowsFile();
+    public static void saveShowsMapFile(Map<String, Show> arrayList, int mapIndex) {
+        new FileManager().save((Serializable) arrayList, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(mapIndex)), Variables.ShowsExtension, true);
     }
 }

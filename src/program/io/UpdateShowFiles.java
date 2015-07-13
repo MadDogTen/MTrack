@@ -29,10 +29,10 @@ public class UpdateShowFiles {
                     int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
                     if (episode != null) {
                         if (episode.length == 1) {
-                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode));
+                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode, false));
                         } else if (episode.length == 2) {
-                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode));
-                            episodeNum.put(episode[1], new Episode(episode[1], aEpisode));
+                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode, true));
+                            episodeNum.put(episode[1], new Episode(episode[1], aEpisode, true));
                         } else {
                             log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
                         }
@@ -44,7 +44,8 @@ public class UpdateShowFiles {
             }
         });
         showsFile.replace(aShow, seasonEpisode);
-        ShowInfoController.saveShowsArrayListFile(showsFile, hashMapIndex);
+        ShowInfoController.saveShowsMapFile(showsFile, hashMapIndex);
+        ShowInfoController.loadShowsFile();
     }
 
     public void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, Map<String, Show> showsFile, int hashMapIndex) {
@@ -56,10 +57,10 @@ public class UpdateShowFiles {
                 int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
                 if (episode != null) {
                     if (episode.length == 1) {
-                        episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
+                        episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, false));
                     } else if (episode.length == 2) {
-                        episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
-                        episodeNum.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode));
+                        episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, true));
+                        episodeNum.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, true));
                     } else {
                         log.warning("Error 2 if at this point!" + " + " + Arrays.toString(episode));
                     }
@@ -68,6 +69,7 @@ public class UpdateShowFiles {
         }
         seasonEpisode.addOrReplaceSeason(aSeason, new Season(aSeason, episodeNum));
         showsFile.replace(aShow, seasonEpisode);
-        ShowInfoController.saveShowsArrayListFile(showsFile, hashMapIndex);
+        ShowInfoController.saveShowsMapFile(showsFile, hashMapIndex);
+        ShowInfoController.loadShowsFile();
     }
 }

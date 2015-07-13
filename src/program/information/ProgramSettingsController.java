@@ -111,6 +111,14 @@ public class ProgramSettingsController {
         }
     }
 
+    public static int getShowFileVersion() {
+        return Integer.parseInt(settingsFile.get("ProgramVersions").get(2));
+    }
+
+    public static void setShowFileVersion(int version) {
+        settingsFile.get("ProgramVersions").set(2, String.valueOf(version));
+    }
+
     public static boolean isDirectoryCurrentlyActive(File directory) {
         return directory.isDirectory();
     }

@@ -390,7 +390,8 @@ public class Settings implements Initializable {
                             }
                         });
                         Map<String, Show> blankMap = new HashMap<>();
-                        ShowInfoController.saveShowsArrayListFile(blankMap, index);
+                        ShowInfoController.saveShowsMapFile(blankMap, index);
+                        ShowInfoController.loadShowsFile();
                         ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
                     }
                 }

@@ -2,6 +2,7 @@ package program.io;
 
 import program.information.*;
 import program.util.FindShows;
+import program.util.Strings;
 import program.util.Variables;
 
 import java.io.File;
@@ -34,9 +35,11 @@ public class GenerateNewShowFiles {
                         log.info("Episode: " + aEpisode);
                         int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
                         if (episode != null && episode.length > 0) {
-                            episodes.put(episode[0], new Episode(episode[0], aEpisode));
-                            if (episode.length == 2) {
-                                episodes.put(episode[1], new Episode(episode[1], aEpisode));
+                            if (episode.length == 1) {
+                                episodes.put(episode[0], new Episode(episode[0], (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
+                            } else if (episode.length == 2) {
+                                episodes.put(episode[0], new Episode(episode[0], (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
+                                episodes.put(episode[1], new Episode(episode[1], (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
                             } else if (episode.length >= 3) {
                                 log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
                             }
