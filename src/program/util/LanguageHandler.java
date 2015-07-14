@@ -8,17 +8,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class LanguageHandler {
+    // This file is a temporary solution, and will be changing.
     private final Logger log = Logger.getLogger(LanguageHandler.class.getName());
 
     private final Map<String, String> languages = new HashMap<>();
 
-    private final en_US en_us = new en_US();
-    private final lipsum lipsum = new lipsum();
-
-
     public LanguageHandler() {
-        languages.put("en_US", en_us.LanguageName);
-        languages.put("lipsum", lipsum.LanguageName); // Only temporary, For demonstration purposes. TODO Remove
+        languages.put("en_US", "English US");
+        languages.put("lipsum", "Lipsum"); // Only temporary, For demonstration purposes. TODO Remove
     }
 
     public Map<String, String> getLanguageNames() {
@@ -30,10 +27,10 @@ public class LanguageHandler {
         if (languages.containsKey(name)) {
             switch (name) {
                 case "en_US":
-                    en_us.setAllStrings();
+                    new en_US().setAllStrings();
                     return true;
                 case "lipsum":
-                    lipsum.setAllStrings();
+                    new lipsum().setAllStrings();
                     return true;
             }
         }
