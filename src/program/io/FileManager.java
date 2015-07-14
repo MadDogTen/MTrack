@@ -1,5 +1,6 @@
 package program.io;
 
+import program.util.OperatingSystem;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -58,19 +59,22 @@ public class FileManager {
     }
 
     @SuppressWarnings("AccessOfSystemProperties")
-    private String getOS() {
+    private OperatingSystem getOS() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) {
-            return "windows";
+            return OperatingSystem.windows;
         } else if (os.contains("mac")) {
-            return "mac";
+            return OperatingSystem.mac;
         } else if (os.contains("nix")) {
-            return "nix";
+            return OperatingSystem.nix;
         } else if (os.contains("nux")) {
-            return "nux";
+            return OperatingSystem.nux;
         } else if (os.contains("aix")) {
-            return "aix";
-        } else return "unknown";
+            return OperatingSystem.aix;
+        } else {
+            log.severe("Your operating system is unknown, Assuming linux based, Using nix...");
+            return OperatingSystem.nix;
+        }
     }
 
     public void createFolder(String folder) {
@@ -83,12 +87,12 @@ public class FileManager {
     @SuppressWarnings("AccessOfSystemProperties")
     public String getDataFolder() {
         String home = System.getProperty("user.home");
-        String os = getOS();
-        if (os.contains("windows")) {
+        OperatingSystem os = getOS();
+        if (os == OperatingSystem.windows) {
             home = System.getenv("appdata");
-        } else if (os.contains("mac")) {
+        } else if (os == OperatingSystem.mac) {
             home += "~/Library/Application Support";
-        } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+        } else if (os == OperatingSystem.nix || os == OperatingSystem.nux || os == OperatingSystem.aix) {
             home += "";
         }
         File dir = new File(home, Variables.ProgramRootFolder);
@@ -139,13 +143,13 @@ public class FileManager {
     }
 
     public void open(File file) {
-        String os = getOS();
+        OperatingSystem os = getOS();
         try {
-            if (os.contains("windows")) {
+            if (os == OperatingSystem.windows) {
                 Runtime.getRuntime().exec(new String[]{
                         "rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()
                 });
-            } else if (os.contains("mac") || os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+            } else if (os == OperatingSystem.mac || os == OperatingSystem.nix || os == OperatingSystem.nux || os == OperatingSystem.aix) {
                 Runtime.getRuntime().exec(new String[]{
                         "/usr/bin/open", file.getAbsolutePath()
                 });
