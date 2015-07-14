@@ -1,5 +1,6 @@
 package program.util;
 
+import program.Main;
 import program.information.ChangeReporter;
 import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
@@ -25,22 +26,89 @@ public class UpdateManager {
 
     // These both compare the version defined in Variables (Latest Version) with the version the files are currently at (Old Version), and if they don't match, converts the files to the latest version.
     public void updateProgramSettingsFile() {
-        int newVersion = Variables.ProgramSettingsFileVersion, currentVersion = ProgramSettingsController.getProgramSettingsFileVersion();
-        if (Variables.ProgramSettingsFileVersion == currentVersion) {
-            log.info("Program settings file versions matched.");
+        ProgramSettings programSettings = null;
+        int newVersion = Variables.ProgramSettingsFileVersion;
+        try {
+            programSettings = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
+        } catch (ClassCastException e) {
+            log.info("Program file was unable to be loaded.");
+        }
+        if (programSettings == null) {
+            HashMap<String, ArrayList<String>> oldProgramSettingsFile = null;
+            try {
+                //noinspection unchecked
+                oldProgramSettingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
+            } catch (ClassCastException e) {
+                log.info("Old Program file was unable to be loaded.");
+            }
+            if (oldProgramSettingsFile != null) {
+                int currentVersion = Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(0));
+                if (Variables.ProgramSettingsFileVersion == currentVersion) {
+                    log.info("Program settings file versions matched.");
+                } else {
+                    log.info("Program settings file versions didn't match " + newVersion + " - " + currentVersion + ", Updating...");
+                    convertProgramSettingsFile(currentVersion, newVersion);
+                }
+            } else {
+                log.severe("Was unable to load program file, Shutting down.");
+                Main.stop(null, true, false);
+            }
         } else {
-            log.info("Program settings file versions didn't match " + newVersion + " - " + currentVersion + ", Updating...");
-            convertProgramSettingsFile(currentVersion, newVersion);
+            int currentVersion = programSettings.getProgramSettingsFileVersion();
+            if (Variables.ProgramSettingsFileVersion == currentVersion) {
+                log.info("Program settings file versions matched.");
+            } else {
+                log.info("Program settings file versions didn't match " + newVersion + " - " + currentVersion + ", Updating...");
+                convertProgramSettingsFile(currentVersion, newVersion);
+            }
         }
     }
 
     public void updateUserSettingsFile() {
-        int newVersion = Variables.UserSettingsFileVersion, oldVersion = UserInfoController.getUserSettingsVersion();
-        if (newVersion == oldVersion) {
-            log.info("User settings file versions matched.");
+        UserSettings userSettings = null;
+        int newVersion = Variables.UserSettingsFileVersion;
+        if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
+            log.info("Attempting to generate settings file for " + Strings.UserName + '.');
+            Map<String, UserShowSettings> showSettings = new HashMap<>();
+            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            for (String aShow : showsList) {
+                showSettings.put(aShow, new UserShowSettings(aShow));
+            }
+            new FileManager().save(new UserSettings(Strings.UserName, showSettings), Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, false);
+        }
+        try {
+            userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+        } catch (ClassCastException e) {
+            log.info("User file was unable to be loaded, Lets attempt to load it as an older one...");
+        }
+        if (userSettings == null) {
+            HashMap<String, HashMap<String, HashMap<String, String>>> oldUserSettingsFile = null;
+            try {
+                //noinspection unchecked
+                oldUserSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+            } catch (ClassCastException e) {
+                log.info("Old User file was unable to be loaded.");
+            }
+            if (oldUserSettingsFile != null) {
+                int oldVersion = Integer.parseInt(oldUserSettingsFile.get("UserSettings").get("UserVersions").get("0"));
+                if (newVersion == oldVersion) {
+                    log.info("User settings file versions matched.");
+                } else {
+                    log.info("User settings file versions didn't match " + newVersion + " - " + oldVersion + ", Updating...");
+                    convertUserSettingsFile(oldVersion, newVersion);
+                }
+            } else {
+                log.severe("Was unable to load user file, Shutting down.");
+                Main.stop(null, true, false);
+            }
         } else {
-            log.info("User settings file versions didn't match " + newVersion + " - " + oldVersion + ", Updating...");
-            convertUserSettingsFile(oldVersion, newVersion);
+            int oldVersion = userSettings.getUserSettingsFileVersion();
+            if (newVersion == oldVersion) {
+                log.info("User settings file versions matched.");
+            } else {
+                log.info("User settings file versions didn't match " + newVersion + " - " + oldVersion + ", Updating...");
+                convertUserSettingsFile(oldVersion, newVersion);
+            }
         }
     }
 
@@ -146,19 +214,17 @@ public class UpdateManager {
                             Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(2)),
                             Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(3))
                     );
+                    ProgramSettingsController.setSettingsFile(programSettings);
                     updated = true;
 
             }
         } /*else if (oldVersion < 1008) {
 
         }*/
-
         if (updated) {
             // Update Program Settings File Version
             programSettings.setProgramSettingsFileVersion(newVersion);
-
-            ProgramSettingsController.setSettingsFile(programSettings);
-            ProgramSettingsController.saveSettingsFile();
+            new FileManager().save(programSettings, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
             log.info("Program settings file was successfully updated to version " + newVersion + '.');
         } else log.info("Program settings file was not updated. This is an error, please report.");
     }
@@ -215,8 +281,7 @@ public class UpdateManager {
                     Map<String, UserShowSettings> showsConverted = new HashMap<>();
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
                     userSettings = new UserSettings(Strings.UserName, showsConverted);
-                    UserInfoController.setUserSettings(userSettings);
-                    UserInfoController.saveUserSettingsFile();
+                    log.info("User settings file has been updated from version 1001.");
                     updated = true;
             }
         } /*else if (oldVersion > 1001) {
@@ -226,8 +291,7 @@ public class UpdateManager {
         if (updated) {
             // Update User Settings File Version
             userSettings.setUserSettingsFileVersion(newVersion);
-            UserInfoController.setUserSettings(userSettings);
-            UserInfoController.saveUserSettingsFile();
+            new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
             log.info("User settings file was successfully updated to version " + newVersion + '.');
         } else log.info("User settings file was not updated. This is an error, please report.");
     }
@@ -240,7 +304,6 @@ public class UpdateManager {
                 ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
                 FileManager fileManager = new FileManager();
                 files.forEach(aString -> {
-                    int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
                     //noinspection unchecked
                     showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
                 });

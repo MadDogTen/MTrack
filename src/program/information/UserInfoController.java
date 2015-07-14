@@ -111,7 +111,7 @@ public class UserInfoController {
     }
 
     public static void setUserDirectoryVersion(int version) {
-        userSettings.setUserSettingsFileVersion(version);
+        userSettings.setUserDirectoryVersion(version);
     }
 
     public static void playAnyEpisode(String aShow, int season, int episode) { //Todo Find proper place for this

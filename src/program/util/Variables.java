@@ -23,11 +23,11 @@ public class Variables {
     public static final String SettingsExtension = ".settings";
     public static final String DefaultLanguage = "en_US";
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- TODO Set back to 1 for release. \\
-    public static final int ProgramSettingsFileVersion = 1008;
-    public static final int UserSettingsFileVersion = 1001;
+    public static final int ProgramSettingsFileVersion = 1009;
+    public static final int UserSettingsFileVersion = 1002;
     public static final int ShowFileVersion = 1000;
 
-    public static final boolean devMode = true;
+    public static final boolean devMode = false;
     public static final boolean startFresh = false; // Won't work unless devMode is true.
 
     public static final Integer defaultUpdateSpeed = 120;

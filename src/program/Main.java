@@ -36,6 +36,7 @@ public class Main extends Application implements Runnable {
         if (!forceStop) {
             answer = confirmBox.display(Strings.AreYouSure, stage.getScene().getWindow());
         }
+
         if (answer) {
             if (saveSettings) {
                 ProgramSettingsController.saveSettingsFile();
@@ -55,7 +56,9 @@ public class Main extends Application implements Runnable {
 
             if (SettingsWindow.getStage() != null)
                 SettingsWindow.getStage().close();
-            stage.close();
+            if (stage != null) {
+                stage.close();
+            }
             try {
                 thread.join();
             } catch (InterruptedException e) {

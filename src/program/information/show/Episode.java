@@ -23,7 +23,7 @@ public class Episode implements Serializable {
         return episodeFilename;
     }
 
-    public Boolean getPartOfDoubleEpisode() {
+    public Boolean isPartOfDoubleEpisode() {
         return partOfDoubleEpisode;
     }
 }

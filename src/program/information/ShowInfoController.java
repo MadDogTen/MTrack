@@ -105,12 +105,9 @@ public class ShowInfoController {
     }
 
     public static boolean isDoubleEpisode(String show, int season, int episode) {
-        if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode)) {
-            return showsFile.get(show).getSeason(season).getEpisodes().get(episode).getPartOfDoubleEpisode();
-        } else {
-            log.warning("Error, Please report.");
-            return false;
-        }
+        if (showsFile.get(show).getSeason(season).containsEpisode(episode)) {
+            return showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
+        } else return false;
     }
 
     public static int findLowestSeason(String aShow) {

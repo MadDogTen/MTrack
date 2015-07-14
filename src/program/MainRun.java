@@ -52,8 +52,8 @@ public class MainRun {
             UserInfoController.loadUserInfo();
             // If those both exists, then it starts normally.
         } else {
-            ProgramSettingsController.loadProgramSettingsFile();
             updateManager.updateProgramSettingsFile();
+            ProgramSettingsController.loadProgramSettingsFile();
             updateManager.updateShowFile();
             getLanguage();
             Strings.UserName = getUser();

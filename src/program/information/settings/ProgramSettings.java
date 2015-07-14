@@ -1,5 +1,6 @@
 package program.information.settings;
 
+import program.util.Strings;
 import program.util.Variables;
 
 import java.io.Serializable;
@@ -45,13 +46,15 @@ public class ProgramSettings implements Serializable {
         this.mainDirectoryVersion = 0;
         this.showFileVersion = Variables.ShowFileVersion;
         this.updateSpeed = Variables.defaultUpdateSpeed;
+        this.show0Remaining = false;
         this.language = "None";
+        this.useDefaultUser = false;
+        this.defaultUser = Strings.EmptyString;
+        this.directories = new ArrayList<>();
         this.showColumnWidth = Variables.SHOWS_COLUMN_WIDTH;
         this.remainingColumnWidth = Variables.REMAINING_COLUMN_WIDTH;
         this.seasonColumnWidth = Variables.SEASONS_COLUMN_WIDTH;
         this.episodeColumnWidth = Variables.EPISODE_COLUMN_WIDTH;
-        this.show0Remaining = false;
-        this.useDefaultUser = false;
         showColumnVisibility = true;
         remainingColumnVisibility = true;
         seasonColumnVisibility = false;

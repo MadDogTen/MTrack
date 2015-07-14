@@ -18,6 +18,14 @@ public class Season implements Serializable {
         return season;
     }
 
+    public Episode getEpisode(int episode) {
+        return episodes.get(episode);
+    }
+
+    public boolean containsEpisode(int episode) {
+        return episodes.containsKey(episode);
+    }
+
     public Map<Integer, Episode> getEpisodes() {
         return episodes;
     }
