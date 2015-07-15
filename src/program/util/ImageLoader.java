@@ -3,17 +3,10 @@ package program.util;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
-
+@SuppressWarnings("ClassWithoutLogger")
 public class ImageLoader {
-    private static final Logger log = Logger.getLogger(ImageLoader.class.getName());
 
-    private static ImageIcon imageIcon;
+    /*private static ImageIcon imageIcon;
     private static BufferedImage bufferedImage;
 
     private static void bufferImageToIcon(String path) {
@@ -30,7 +23,7 @@ public class ImageLoader {
     public static ImageIcon getIcon(String path) {
         bufferImageToIcon(path);
         return imageIcon;
-    }
+    }*/
 
     @SuppressWarnings("SameParameterValue")
     public static Image getImage(String directory) {
