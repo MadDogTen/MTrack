@@ -6,6 +6,7 @@ import java.util.Map;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class Season implements Serializable {
 
+    private static final long serialVersionUID = 8378503544871079547L;
     private final int season;
     private final Map<Integer, Episode> episodes;
 

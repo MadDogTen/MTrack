@@ -14,16 +14,21 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 public class UserInfoController {
-    private static final Logger log = Logger.getLogger(UserInfoController.class.getName());
+    private final Logger log = Logger.getLogger(UserInfoController.class.getName());
 
-    private static UserSettings userSettings;
+    private UserSettings userSettings;
+    private ShowInfoController showInfoController;
 
-    @SuppressWarnings("unchecked")
-    public static void loadUserInfo() {
-        userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+    public UserInfoController(ShowInfoController showInfoController) {
+        this.showInfoController = showInfoController;
     }
 
-    public static ArrayList<String> getAllUsers() {
+    @SuppressWarnings("unchecked")
+    public void loadUserInfo() {
+        this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+    }
+
+    public ArrayList<String> getAllUsers() {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
         ArrayList<String> users = new ArrayList<>();
         if (new FileManager().checkFolderExists(String.valueOf(folder))) {
@@ -34,12 +39,12 @@ public class UserInfoController {
         return usersCleaned;
     }
 
-    public static void setIgnoredStatus(String aShow, boolean ignored) {
+    public void setIgnoredStatus(String aShow, boolean ignored) {
         log.info(aShow + " ignore status is: " + ignored);
         userSettings.getAShowSettings(aShow).setIgnored(ignored);
     }
 
-    public static ArrayList<String> getIgnoredShows() {
+    public ArrayList<String> getIgnoredShows() {
         ArrayList<String> ignoredShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (showSettings.isIgnored()) {
@@ -49,15 +54,15 @@ public class UserInfoController {
         return ignoredShows;
     }
 
-    public static void setActiveStatus(String aShow, boolean active) {
+    public void setActiveStatus(String aShow, boolean active) {
         userSettings.getAShowSettings(aShow).setActive(active);
     }
 
-    public static boolean isShowActive(String aShow) {
+    public boolean isShowActive(String aShow) {
         return userSettings.getAShowSettings(aShow).isActive();
     }
 
-    public static ArrayList<String> getActiveShows() {
+    public ArrayList<String> getActiveShows() {
         ArrayList<String> activeShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden()) {
@@ -67,7 +72,7 @@ public class UserInfoController {
         return activeShows;
     }
 
-    public static ArrayList<String> getInactiveShows() {
+    public ArrayList<String> getInactiveShows() {
         ArrayList<String> inActiveShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (!showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden()) {
@@ -77,7 +82,7 @@ public class UserInfoController {
         return inActiveShows;
     }
 
-    public static ArrayList<String> getAllNonIgnoredShows() {
+    public ArrayList<String> getAllNonIgnoredShows() {
         ArrayList<String> nonIgnoredShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (!showSettings.isIgnored()) {
@@ -87,12 +92,12 @@ public class UserInfoController {
         return nonIgnoredShows;
     }
 
-    public static void setHiddenStatus(String aShow, boolean isHidden) {
+    public void setHiddenStatus(String aShow, boolean isHidden) {
         log.info(aShow + " hidden status is: " + isHidden);
         userSettings.getAShowSettings(aShow).setHidden(isHidden);
     }
 
-    public static ArrayList<String> getHiddenShows() {
+    public ArrayList<String> getHiddenShows() {
         ArrayList<String> hiddenShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (showSettings.isHidden() && !showSettings.isIgnored()) {
@@ -102,21 +107,21 @@ public class UserInfoController {
         return hiddenShows;
     }
 
-    public static int getUserSettingsVersion() {
+    public int getUserSettingsVersion() {
         return userSettings.getUserSettingsFileVersion();
     }
 
-    public static int getUserDirectoryVersion() {
+    public int getUserDirectoryVersion() {
         return userSettings.getUserDirectoryVersion();
     }
 
-    public static void setUserDirectoryVersion(int version) {
+    public void setUserDirectoryVersion(int version) {
         userSettings.setUserDirectoryVersion(version);
     }
 
-    public static void playAnyEpisode(String aShow, int season, int episode) { //Todo Find proper place for this
+    public void playAnyEpisode(String aShow, int season, int episode) { //Todo Find proper place for this
         log.info("Attempting to play " + aShow + " Season: " + season + " - Episode: " + episode);
-        String showLocation = ShowInfoController.getEpisode(aShow, season, episode);
+        String showLocation = showInfoController.getEpisode(aShow, season, episode);
         log.info(showLocation);
         if (showLocation != null) {
             File file = new File(showLocation);
@@ -126,11 +131,11 @@ public class UserInfoController {
         } else log.warning("File doesn't exists!");
     }
 
-    public static void changeEpisode(String aShow, int episode, boolean fileExists) {
+    public void changeEpisode(String aShow, int episode, boolean fileExists) {
         if (fileExists && episode == -2) {
             int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason();
             int currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
-            Boolean isDoubleEpisode = ShowInfoController.isDoubleEpisode(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode);
+            Boolean isDoubleEpisode = showInfoController.isDoubleEpisode(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode);
             if (isDoubleEpisode) {
                 currentEpisode++;
             }
@@ -158,20 +163,20 @@ public class UserInfoController {
         }
     }
 
-    public static void setSeasonEpisode(String aShow, int season, int episode) {
+    public void setSeasonEpisode(String aShow, int season, int episode) {
         userSettings.getAShowSettings(aShow).setCurrentSeason(season);
         userSettings.getAShowSettings(aShow).setCurrentEpisode(episode);
         log.info(aShow + " is now set to Season: " + season + " - Episode: " + episode);
     }
 
-    private static boolean isAnotherSeason(String aShow, int season) {
-        Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
+    private boolean isAnotherSeason(String aShow, int season) {
+        Set<Integer> seasons = showInfoController.getSeasonsList(aShow);
         season++;
         return seasons.contains(season);
     }
 
-    private static boolean isAnotherEpisode(String aShow, int aSeason, int episode) {
-        Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, aSeason);
+    private boolean isAnotherEpisode(String aShow, int aSeason, int episode) {
+        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, aSeason);
         int newEpisode = episode + 1;
         if (!episodes.isEmpty()) {
             if (episodes.contains(newEpisode)) {
@@ -181,32 +186,32 @@ public class UserInfoController {
         return false;
     }
 
-    public static void setToBeginning(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(ShowInfoController.findLowestSeason(aShow));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(ShowInfoController.findLowestEpisode(ShowInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
+    public void setToBeginning(String aShow) {
+        userSettings.getAShowSettings(aShow).setCurrentSeason(showInfoController.findLowestSeason(aShow));
+        userSettings.getAShowSettings(aShow).setCurrentEpisode(showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
         log.info("UserInfoController- " + aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
-    public static void setToEnd(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(ShowInfoController.findHighestSeason(aShow));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(ShowInfoController.findHighestEpisode(ShowInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
+    public void setToEnd(String aShow) {
+        userSettings.getAShowSettings(aShow).setCurrentSeason(showInfoController.findHighestSeason(aShow));
+        userSettings.getAShowSettings(aShow).setCurrentEpisode(showInfoController.findHighestEpisode(showInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
         log.info("UserInfoController- " + aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
-    private static boolean doesEpisodeExist(String aShow, int season, int episode) {
-        Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(season)));
+    private boolean doesEpisodeExist(String aShow, int season, int episode) {
+        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(season)));
         return !episodes.isEmpty() && episodes.contains(episode);
     }
 
-    public static boolean doesEpisodeExists(String aShow) {
+    public boolean doesEpisodeExists(String aShow) {
         return userSettings.getShowSettings().containsKey(aShow);
     }
 
-    public static int[] getPreviousEpisodeIfExists(String aShow) {
+    public int[] getPreviousEpisodeIfExists(String aShow) {
         int[] seasonEpisodeReturn = new int[2];
         int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason();
         seasonEpisodeReturn[0] = currentSeason;
-        Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, currentSeason);
+        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, currentSeason);
         int episode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
         episode -= 1;
         for (int aEpisode : episodes) {
@@ -217,15 +222,15 @@ public class UserInfoController {
         }
         if (episode == 0) {
             log.info(String.valueOf(episode));
-            Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
+            Set<Integer> seasons = showInfoController.getSeasonsList(aShow);
             int season = currentSeason;
             season -= 1;
             if (seasons.contains(season)) {
                 seasonEpisodeReturn[0] = season;
-                if (!ShowInfoController.getEpisodesList(aShow, season).isEmpty()) {
-                    Set<Integer> episodesPreviousSeason = ShowInfoController.getEpisodesList(aShow, season);
+                if (!showInfoController.getEpisodesList(aShow, season).isEmpty()) {
+                    Set<Integer> episodesPreviousSeason = showInfoController.getEpisodesList(aShow, season);
                     log.info(String.valueOf(episodesPreviousSeason));
-                    int episode1 = ShowInfoController.findHighestEpisode(episodesPreviousSeason);
+                    int episode1 = showInfoController.findHighestEpisode(episodesPreviousSeason);
                     if (episodesPreviousSeason.contains(episode1)) {
                         seasonEpisodeReturn[1] = episode1;
                         return seasonEpisodeReturn;
@@ -241,17 +246,17 @@ public class UserInfoController {
         return seasonEpisodeReturn;
     }
 
-    public static int getCurrentSeason(String aShow) {
+    public int getCurrentSeason(String aShow) {
         return userSettings.getAShowSettings(aShow).getCurrentSeason();
     }
 
-    public static int getCurrentEpisode(String aShow) {
+    public int getCurrentEpisode(String aShow) {
         return userSettings.getAShowSettings(aShow).getCurrentEpisode();
     }
 
-    public static int getRemainingNumberOfEpisodes(String aShow) {
+    public int getRemainingNumberOfEpisodes(String aShow, ShowInfoController showInfoController) {
         int remaining = 0, currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
-        Set<Integer> allSeasons = ShowInfoController.getSeasonsList(aShow);
+        Set<Integer> allSeasons = showInfoController.getSeasonsList(aShow);
         ArrayList<Integer> allSeasonAllowed = new ArrayList<>();
         allSeasons.forEach(aSeason -> {
             if (aSeason >= currentSeason) {
@@ -259,7 +264,7 @@ public class UserInfoController {
             }
         });
         if (!allSeasonAllowed.isEmpty()) {
-            if (ShowInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) {
+            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) {
                 currentEpisode++;
             }
             for (int aSeason : allSeasonAllowed) {
@@ -267,7 +272,7 @@ public class UserInfoController {
                 if (aSeason == currentSeason) {
                     episode = currentEpisode;
                 }
-                Set<Integer> episodes = ShowInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
+                Set<Integer> episodes = showInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                 if (!episodes.isEmpty()) {
                     ArrayList<Integer> episodesArray = new ArrayList<>();
                     episodes.forEach(episodesArray::add);
@@ -303,29 +308,30 @@ public class UserInfoController {
         return remaining;
     }
 
-    public static void addNewShow(String aShow) {
+    public void addNewShow(String aShow) {
         if (!userSettings.getShowSettings().containsKey(aShow)) {
             log.info("Adding " + aShow + " to user settings file.");
-            userSettings.addShowSettings(new UserShowSettings(aShow));
+            int lowestSeason = showInfoController.findLowestSeason(aShow);
+            userSettings.addShowSettings(new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
         }
     }
 
-    public static UserSettings getUserSettings() {
+    public UserSettings getUserSettings() {
         return userSettings;
     }
 
-    public static void setUserSettings(UserSettings userSettings) {
-        UserInfoController.userSettings = userSettings;
+    public void setUserSettings(UserSettings userSettings) {
+        this.userSettings = userSettings;
     }
 
-    public static void printAllUserInfo() {
+    public void printAllUserInfo() {
         log.info("Printing all user info for " + Strings.UserName + "...");
         log.info(String.valueOf(userSettings.getUserSettingsFileVersion()) + " - " + String.valueOf(userSettings.getUserDirectoryVersion()));
         userSettings.getShowSettings().values().forEach(aShowSettings -> log.info(aShowSettings.getShowName() + " - " + aShowSettings.isActive() + ", " + aShowSettings.isIgnored() + ", " + aShowSettings.isHidden() + " - Season: " + aShowSettings.getCurrentSeason() + " | Episode: " + aShowSettings.getCurrentEpisode()));
         log.info("Finished printing all user info.");
     }
 
-    public static void saveUserSettingsFile() {
+    public void saveUserSettingsFile() {
         if (userSettings != null) {
             new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
             log.info("UserInfoController- userSettingsFile has been saved!");

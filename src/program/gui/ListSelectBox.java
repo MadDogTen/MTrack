@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import program.Controller;
-import program.information.ProgramSettingsController;
 import program.information.ShowInfoController;
 import program.io.MoveWindow;
 import program.util.ImageLoader;
@@ -60,7 +59,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue().contentEquals(Strings.AddNewUsername)) {
                 TextBox textBox = new TextBox();
-                userName[0] = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, window);
+                userName[0] = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, users, window);
                 window.close();
             } else if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 userName[0] = comboBox.getValue();
@@ -92,7 +91,7 @@ public class ListSelectBox {
         return userName[0];
     }
 
-    public String defaultUser(String message, ArrayList<String> users, Window oldWindow) {
+    public String defaultUser(String message, ArrayList<String> users, String currentDefaultUser, Window oldWindow) {
         final String[] userName = new String[1];
         userName[0] = Strings.EmptyString;
 
@@ -109,7 +108,6 @@ public class ListSelectBox {
         ObservableList<String> usersList = FXCollections.observableArrayList(users);
         usersList.sorted();
         ComboBox<String> comboBox = new ComboBox<>(usersList);
-        String currentDefaultUser = ProgramSettingsController.getDefaultUsername();
         if (currentDefaultUser != null && !currentDefaultUser.isEmpty()) {
             comboBox.setValue(currentDefaultUser);
         }
@@ -213,7 +211,7 @@ public class ListSelectBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public int[] pickSeasonEpisode(String message, String aShow, Set<Integer> seasons, Window oldWindow) {
+    public int[] pickSeasonEpisode(String message, String aShow, Set<Integer> seasons, ShowInfoController showInfoController, Window oldWindow) {
         final int[] choice = new int[2];
 
         Stage window = new Stage();
@@ -238,7 +236,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null && !comboBox.getValue().isEmpty() && comboBox.getValue().matches("[0-9]*")) {
                 choice[0] = Integer.parseInt(comboBox.getValue());
-                choice[1] = pickEpisode(Strings.PickTheEpisode, ShowInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
+                choice[1] = pickEpisode(Strings.PickTheEpisode, showInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
                 window.close();
             } else new MessageBox().display(Strings.YouHaveToPickASeason, window);
         });

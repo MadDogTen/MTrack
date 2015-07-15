@@ -12,8 +12,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import program.information.ProgramSettingsController;
-import program.information.UserInfoController;
 import program.io.FileManager;
 import program.io.MoveWindow;
 import program.util.ImageLoader;
@@ -29,7 +27,7 @@ public class TextBox {
     private static final Logger log = Logger.getLogger(TextBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public String display(String message, String messageIfNameFieldIsBlank, String defaultValue, Window oldWindow) {
+    public String display(String message, String messageIfNameFieldIsBlank, String defaultValue, ArrayList<String> allUsers, Window oldWindow) {
         log.finest("TextBox display has been opened.");
         Stage window = new Stage();
         window.getIcons().add(ImageLoader.getImage(Variables.Logo));
@@ -46,7 +44,7 @@ public class TextBox {
 
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(event -> {
-            if (isValid(messageIfNameFieldIsBlank, textField.getText(), window)) {
+            if (isValid(messageIfNameFieldIsBlank, textField.getText(), allUsers, window)) {
                 userName[0] = textField.getText();
                 window.close();
             } else {
@@ -75,7 +73,7 @@ public class TextBox {
         } else return userName[0];
     }
 
-    private boolean isValid(String messageIfBlank, String message, Window oldWindow) {
+    private boolean isValid(String messageIfBlank, String message, ArrayList<String> allUsers, Window oldWindow) {
         log.finest("isValid has been called.");
         if (message.isEmpty()) {
             ConfirmBox confirmBox = new ConfirmBox();
@@ -84,7 +82,7 @@ public class TextBox {
             MessageBox messageBox = new MessageBox();
             messageBox.display(Strings.UsernameIsntValid, oldWindow);
             return false;
-        } else if (UserInfoController.getAllUsers().contains(message)) {
+        } else if (allUsers.contains(message)) {
             MessageBox messageBox = new MessageBox();
             messageBox.display(Strings.UsernameAlreadyTaken, oldWindow);
             return false;
@@ -169,7 +167,7 @@ public class TextBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public int updateSpeed(String message, String messageFieldIsBlank, int defaultValue, Window oldWindow) {
+    public int updateSpeed(String message, String messageFieldIsBlank, int defaultValue, int currentUpdateSpeed, Window oldWindow) {
         log.finest("TextBox updateSpeed has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
@@ -183,7 +181,7 @@ public class TextBox {
         label.setText(message);
 
         TextField textField = new TextField();
-        textField.setText(String.valueOf(ProgramSettingsController.getUpdateSpeed()));
+        textField.setText(String.valueOf(currentUpdateSpeed));
 
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(event -> {

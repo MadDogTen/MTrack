@@ -10,15 +10,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FindShows {
-    private static final Logger log = Logger.getLogger(FindShows.class.getName());
+    private final Logger log = Logger.getLogger(FindShows.class.getName());
 
-    public static ArrayList<String> findShows(File dir) {
+    public ArrayList<String> findShows(File dir) {
         ArrayList<String> result = new ArrayList<>();
         Collections.addAll(result, dir.list());
         return result;
     }
 
-    public static ArrayList<Integer> findSeasons(File dir, String show) {
+    public ArrayList<Integer> findSeasons(File dir, String show) {
         log.finest("Searching for seasons...");
         File folder = new File(dir + Strings.FileSeparator + show);
         ArrayList<String> showFolder = new ArrayList<>();
@@ -37,7 +37,7 @@ public class FindShows {
         return seasonNumber;
     }
 
-    public static ArrayList<String> findEpisodes(File dir, String ShowName, Integer Season) {
+    public ArrayList<String> findEpisodes(File dir, String ShowName, Integer Season) {
         log.finest("Searching for episodes...");
         ArrayList<String> episodes = new ArrayList<>();
         File folder = new File(dir + Strings.FileSeparator + ShowName + "/Season" + ' ' + Season);

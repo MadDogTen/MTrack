@@ -1,6 +1,5 @@
 package program.information;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class ChangeReporter {
@@ -11,18 +10,10 @@ public class ChangeReporter {
 
     public static void addChange(String newInfo) {
         log.info("Adding new change...");
-        ArrayList<String> newList = new ArrayList<>();
-        newList.add(0, newInfo);
-        int currentPlace = 1;
-        for (String aString : changes) {
-            newList.add(currentPlace, aString);
-            currentPlace++;
-        }
-        changes = new String[newList.size()];
-        for (int i = 0; i < currentPlace; i++) {
-            changes[i] = newList.get(i);
-        }
-        isChanges = true;
+        String[] currentList = changes;
+        String[] newList = new String[currentList.length + 1];
+        newList[changes.length + 1] = newInfo;
+        changes = newList;
         log.info("Finished adding new change.");
     }
 

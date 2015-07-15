@@ -17,9 +17,10 @@ import program.information.UserInfoController;
 import program.information.settings.UserSettings;
 import program.information.settings.UserShowSettings;
 import program.information.show.Show;
+import program.io.CheckShowFiles;
 import program.io.FileManager;
-import program.io.GenerateNewShowFiles;
 import program.io.MoveWindow;
+import program.util.FirstRun;
 import program.util.LanguageHandler;
 import program.util.Strings;
 import program.util.Variables;
@@ -35,6 +36,11 @@ import java.util.stream.Collectors;
 @SuppressWarnings("WeakerAccess")
 public class Settings implements Initializable {
     private static final Logger log = Logger.getLogger(Settings.class.getName());
+
+    private ProgramSettingsController programSettingsController;
+    private ShowInfoController showInfoController;
+    private UserInfoController userInfoController;
+    private CheckShowFiles checkShowFiles;
 
     @SuppressWarnings("unused")
     @FXML
@@ -107,6 +113,10 @@ public class Settings implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.programSettingsController = Controller.getProgramSettingsController();
+        this.showInfoController = Controller.getShowInfoController();
+        this.userInfoController = Controller.getUserInfoController();
+        this.checkShowFiles = Controller.getCheckShowFiles();
         mainTab.setText(Strings.Main);
         usersTab.setText(Strings.Users);
         otherTab.setText(Strings.Other);
@@ -125,34 +135,35 @@ public class Settings implements Initializable {
         setDefaultUsername.setText(Strings.SetDefaultUser);
         setDefaultUsername.setOnAction(e -> {
             ListSelectBox listSelectBox = new ListSelectBox();
-            ArrayList<String> Users = UserInfoController.getAllUsers();
-            String defaultUsername = listSelectBox.defaultUser(Strings.PleaseChooseADefaultUser, Users, tabPane.getScene().getWindow());
+            ArrayList<String> Users = userInfoController.getAllUsers();
+            String defaultUsername = listSelectBox.defaultUser(Strings.PleaseChooseADefaultUser, Users, programSettingsController.getDefaultUsername(), tabPane.getScene().getWindow());
             if (defaultUsername != null && !defaultUsername.isEmpty()) {
-                ProgramSettingsController.setDefaultUsername(defaultUsername, false);
+                programSettingsController.setDefaultUsername(defaultUsername, false);
             }
         });
         clearDefaultUsername.setText(Strings.Reset);
-        clearDefaultUsername.setOnAction(e -> ProgramSettingsController.setDefaultUsername(Strings.EmptyString, true));
+        clearDefaultUsername.setOnAction(e -> programSettingsController.setDefaultUsername(Strings.EmptyString, true));
         addUser.setText(Strings.AddUser);
         addUser.setOnAction(e -> {
-            String userName = new TextBox().display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, tabPane.getScene().getWindow());
+            String userName = new TextBox().display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, userInfoController.getAllUsers(), tabPane.getScene().getWindow());
             Map<String, UserShowSettings> showSettings = new HashMap<>();
-            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            ArrayList<String> showsList = showInfoController.getShowsList();
             for (String aShow : showsList) {
-                showSettings.put(aShow, new UserShowSettings(aShow));
+                int lowestSeason = showInfoController.findLowestSeason(aShow);
+                showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
             }
             new FileManager().save(new UserSettings(userName, showSettings), Variables.UsersFolder, userName, Variables.UsersExtension, false);
         });
         deleteUser.setText(Strings.DeleteUser);
         deleteUser.setOnAction(e -> {
-            ArrayList<String> users = UserInfoController.getAllUsers();
+            ArrayList<String> users = userInfoController.getAllUsers();
             users.remove(Strings.UserName);
             if (users.isEmpty()) {
                 MessageBox messageBox = new MessageBox();
                 messageBox.display(Strings.ThereAreNoOtherUsersToDelete, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
-                String userToDelete = listSelectBox.defaultUser(Strings.UserToDelete, users, tabPane.getScene().getWindow());
+                String userToDelete = listSelectBox.defaultUser(Strings.UserToDelete, users, programSettingsController.getDefaultUsername(), tabPane.getScene().getWindow());
                 if (userToDelete != null) {
                     ConfirmBox confirmBox = new ConfirmBox();
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + userToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
@@ -166,20 +177,20 @@ public class Settings implements Initializable {
 
         // Other
         changeUpdateSpeed.setText(Strings.ChangeUpdateTime);
-        changeUpdateSpeed.setOnAction(e -> ProgramSettingsController.setUpdateSpeed(new TextBox().updateSpeed(Strings.EnterHowFastYouWantItToScanTheShowsFolders, Strings.LeaveItAsIs, Variables.defaultUpdateSpeed, tabPane.getScene().getWindow())));
+        changeUpdateSpeed.setOnAction(e -> programSettingsController.setUpdateSpeed(new TextBox().updateSpeed(Strings.EnterHowFastYouWantItToScanTheShowsFolders, Strings.LeaveItAsIs, Variables.defaultUpdateSpeed, programSettingsController.getUpdateSpeed(), tabPane.getScene().getWindow())));
         addDirectory.setText(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
-            int index = ProgramSettingsController.getLowestFreeDirectoryIndex();
-            boolean[] wasAdded = ProgramSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, ProgramSettingsController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, tabPane.getScene().getWindow()));
+            int index = programSettingsController.getLowestFreeDirectoryIndex();
+            boolean[] wasAdded = programSettingsController.addDirectory(index, new TextBox().addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, programSettingsController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
-                File directory = ProgramSettingsController.getDirectory(index);
+                File directory = programSettingsController.getDirectory(index);
                 final boolean[] taskRunning = {true};
                 Task<Void> task = new Task<Void>() {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
-                        new GenerateNewShowFiles().generateShowsFile(index, directory);
+                        new FirstRun(programSettingsController, showInfoController, userInfoController).generateShowsFile(index, directory);
                         taskRunning[0] = false;
                         return null;
                     }
@@ -192,20 +203,20 @@ public class Settings implements Initializable {
                         log.severe(e1.toString());
                     }
                 }
-                ShowInfoController.loadShowsFile();
-                Map<String, Show> showsFile = ShowInfoController.getDirectoryMap(index);
+                showInfoController.loadShowsFile();
+                Map<String, Show> showsFile = showInfoController.getDirectoryMap(index);
                 showsFile.keySet().forEach(aShow -> {
-                    UserInfoController.addNewShow(aShow);
+                    userInfoController.addNewShow(aShow);
                     Controller.updateShowField(aShow, true);
                 });
-                ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
+                programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
             } else log.info("Directory wasn't added.");
         });
         removeDirectory.setText(Strings.RemoveDirectory);
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
             ArrayList<File> directories = new ArrayList<>();
-            directories.addAll(ProgramSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
+            directories.addAll(programSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
                 MessageBox messageBox = new MessageBox();
@@ -218,8 +229,8 @@ public class Settings implements Initializable {
                     ConfirmBox confirmBox = new ConfirmBox();
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + directoryToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
                     if (confirm && !directoryToDelete.isEmpty()) {
-                        ProgramSettingsController.removeDirectory(directoryToDelete);
-                        ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
+                        programSettingsController.removeDirectory(directoryToDelete);
+                        programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
                         log.info("Directory has been deleted!");
                     } else log.info("No directory has been deleted.");
                 }
@@ -230,8 +241,8 @@ public class Settings implements Initializable {
         changeLanguage.setOnAction(e -> {
             LanguageHandler languageHandler = new LanguageHandler();
             Map<String, String> languages = languageHandler.getLanguageNames();
-            if (languages.containsKey(ProgramSettingsController.getLanguage())) {
-                languages.remove(ProgramSettingsController.getLanguage());
+            if (languages.containsKey(programSettingsController.getLanguage())) {
+                languages.remove(programSettingsController.getLanguage());
             }
             String languageReadable = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages.values(), tabPane.getScene().getWindow());
             if (!languageReadable.contains("-1")) {
@@ -242,7 +253,7 @@ public class Settings implements Initializable {
                         break;
                     }
                 }
-                ProgramSettingsController.setLanguage(internalName);
+                programSettingsController.setLanguage(internalName);
                 new MessageBox().display(Strings.RestartTheProgramForTheNewLanguageToTakeEffect, tabPane.getScene().getWindow());
             }
         });
@@ -252,7 +263,7 @@ public class Settings implements Initializable {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
-                    Controller.checkShowFiles.recheckShowFile(true);
+                    checkShowFiles.recheckShowFile(true);
                     return null;
                 }
             };
@@ -273,7 +284,7 @@ public class Settings implements Initializable {
             try {
                 aboutBox.display(tabPane.getScene().getWindow());
             } catch (Exception e1) {
-                log.severe(e1.toString());
+                log.info(Arrays.toString(e1.getStackTrace()));
             }
         });
 
@@ -285,18 +296,18 @@ public class Settings implements Initializable {
 
         // Developer
         printAllShows.setText(Strings.PrintAllShowInfo);
-        printAllShows.setOnAction(e -> ShowInfoController.printOutAllShowsAndEpisodes());
+        printAllShows.setOnAction(e -> showInfoController.printOutAllShowsAndEpisodes());
         printAllDirectories.setText(Strings.PrintAllDirectories);
-        printAllDirectories.setOnAction(e -> ProgramSettingsController.printAllDirectories());
+        printAllDirectories.setOnAction(e -> programSettingsController.printAllDirectories());
         printEmptyShowFolders.setText(Strings.PrintEmptyShows);
         printEmptyShowFolders.setOnAction(e -> {
-            ArrayList<String> emptyShows = Controller.checkShowFiles.getEmptyShows();
+            ArrayList<String> emptyShows = checkShowFiles.getEmptyShows();
             log.info("Printing empty shows:");
             if (emptyShows.isEmpty()) log.info("No empty shows");
             else {
-                ArrayList<String> directories = ProgramSettingsController.getDirectories();
+                ArrayList<String> directories = programSettingsController.getDirectories();
                 directories.forEach(aDirectory -> {
-                    Set<String> shows = ShowInfoController.getDirectoryMap(ProgramSettingsController.getDirectoryIndex(aDirectory)).keySet();
+                    Set<String> shows = showInfoController.getDirectoryMap(programSettingsController.getDirectoryIndex(aDirectory)).keySet();
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     emptyShows.forEach(aShow -> {
                         String fileString = (aDirectory + Strings.FileSeparator + aShow);
@@ -312,7 +323,7 @@ public class Settings implements Initializable {
         printIgnoredShows.setText(Strings.PrintIgnoredShows);
         printIgnoredShows.setOnAction(e -> {
             log.info("Printing ignored shows:");
-            ArrayList<String> ignoredShows = UserInfoController.getIgnoredShows();
+            ArrayList<String> ignoredShows = userInfoController.getIgnoredShows();
             if (ignoredShows.isEmpty()) log.info("No ignored shows.");
             else ignoredShows.forEach(log::info);
             log.info("Finished printing ignored shows.");
@@ -320,7 +331,7 @@ public class Settings implements Initializable {
         printHiddenShows.setText(Strings.PrintHiddenShows);
         printHiddenShows.setOnAction(e -> {
             log.info("Printing hidden shows:");
-            ArrayList<String> hiddenShows = UserInfoController.getHiddenShows();
+            ArrayList<String> hiddenShows = userInfoController.getHiddenShows();
             if (hiddenShows.isEmpty()) log.info("No hidden shows.");
             else hiddenShows.forEach(log::info);
 
@@ -329,23 +340,23 @@ public class Settings implements Initializable {
         unHideAll.setText(Strings.UnHideAll);
         unHideAll.setOnAction(e -> {
             log.info("Un-hiding all shows...");
-            ArrayList<String> ignoredShows = UserInfoController.getHiddenShows();
+            ArrayList<String> ignoredShows = userInfoController.getHiddenShows();
             if (ignoredShows.isEmpty()) log.info("No shows to un-hide.");
             else {
                 ignoredShows.forEach(aShow -> {
                     log.info(aShow + " is no longer hidden.");
-                    UserInfoController.setHiddenStatus(aShow, false);
+                    userInfoController.setHiddenStatus(aShow, false);
                 });
             }
             log.info("Finished un-hiding all shows.");
         });
         setAllActive.setText(Strings.SetAllActive);
         setAllActive.setOnAction(e -> {
-            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            ArrayList<String> showsList = showInfoController.getShowsList();
             if (showsList.isEmpty()) log.info("No shows to change.");
             else {
                 showsList.forEach(aShow -> {
-                    UserInfoController.setActiveStatus(aShow, true);
+                    userInfoController.setActiveStatus(aShow, true);
                     Controller.updateShowField(aShow, true);
                 });
                 log.info("Set all shows active.");
@@ -353,11 +364,11 @@ public class Settings implements Initializable {
         });
         setAllInactive.setText(Strings.SetAllInactive);
         setAllInactive.setOnAction(e -> {
-            ArrayList<String> showsList = ShowInfoController.getShowsList();
+            ArrayList<String> showsList = showInfoController.getShowsList();
             if (showsList.isEmpty()) log.info("No shows to change.");
             else {
                 showsList.forEach(aShow -> {
-                    UserInfoController.setActiveStatus(aShow, false);
+                    userInfoController.setActiveStatus(aShow, false);
                     Controller.updateShowField(aShow, true);
                 });
                 log.info("Set all shows inactive.");
@@ -366,17 +377,17 @@ public class Settings implements Initializable {
 
         // Dev 2
         printProgramSettingsFileVersion.setText(Strings.PrintPSFV);
-        printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(ProgramSettingsController.getProgramSettingsFileVersion())));
+        printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(programSettingsController.getProgramSettingsFileVersion())));
         printUserSettingsFileVersion.setText(Strings.PrintUSFV);
-        printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(UserInfoController.getUserSettingsVersion())));
+        printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(userInfoController.getUserSettingsVersion())));
         printAllUserInfo.setText(Strings.PrintAllUserInfo);
-        printAllUserInfo.setOnAction(e -> UserInfoController.printAllUserInfo());
+        printAllUserInfo.setOnAction(e -> userInfoController.printAllUserInfo());
         add1ToDirectoryVersion.setText(Strings.DirectoryVersionPlus1);
-        add1ToDirectoryVersion.setOnAction(e -> ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1));
+        add1ToDirectoryVersion.setOnAction(e -> programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1));
         clearFile.setText(Strings.ClearFile);
         clearFile.setOnAction(e -> {
             ArrayList<File> directories = new ArrayList<>();
-            directories.addAll(ProgramSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
+            directories.addAll(programSettingsController.getDirectories().stream().map(File::new).collect(Collectors.toList()));
             if (directories.isEmpty()) {
                 MessageBox messageBox = new MessageBox();
                 messageBox.display(Strings.ThereAreNoDirectoriesToClear, tabPane.getScene().getWindow());
@@ -387,18 +398,18 @@ public class Settings implements Initializable {
                     ConfirmBox confirmBox = new ConfirmBox();
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToClear + directoryToClear + Strings.QuestionMark), tabPane.getScene().getWindow());
                     if (confirm && !directoryToClear.isEmpty()) {
-                        int index = ProgramSettingsController.getDirectories().indexOf(directoryToClear);
-                        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesMaps(index);
-                        ShowInfoController.getDirectoryMap(index).keySet().forEach(aShow -> {
-                            boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
+                        int index = programSettingsController.getDirectories().indexOf(directoryToClear);
+                        ArrayList<Map<String, Show>> showsFileArray = showInfoController.getDirectoriesMaps(index);
+                        showInfoController.getDirectoryMap(index).keySet().forEach(aShow -> {
+                            boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                             if (!showExistsElsewhere) {
-                                UserInfoController.setIgnoredStatus(aShow, true);
+                                userInfoController.setIgnoredStatus(aShow, true);
                             }
                         });
                         Map<String, Show> blankMap = new HashMap<>();
-                        ShowInfoController.saveShowsMapFile(blankMap, index);
-                        ShowInfoController.loadShowsFile();
-                        ProgramSettingsController.setMainDirectoryVersion(ProgramSettingsController.getMainDirectoryVersion() + 1);
+                        showInfoController.saveShowsMapFile(blankMap, index);
+                        showInfoController.loadShowsFile();
+                        programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
                     }
                 }
             }

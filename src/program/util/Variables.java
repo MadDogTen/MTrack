@@ -1,6 +1,5 @@
 package program.util;
 
-import program.information.ProgramSettingsController;
 import program.io.FileManager;
 
 @SuppressWarnings("ClassWithoutLogger")
@@ -37,8 +36,8 @@ public class Variables {
 
     //---------- Other Variables ----------\\
 
-    public static void setUpdateSpeed() {
-        updateSpeed = ProgramSettingsController.getUpdateSpeed();
+    public static void setUpdateSpeed(int updateSpeed) {
+        Variables.updateSpeed = updateSpeed;
     }
 
     public static void setDataFolder(FileManager fileManager) {

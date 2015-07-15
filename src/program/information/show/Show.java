@@ -6,6 +6,7 @@ import java.util.Map;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class Show implements Serializable {
 
+    private static final long serialVersionUID = 3665902196971811148L;
     private final String name;
     private Map<Integer, Season> seasons;
 
@@ -24,6 +25,10 @@ public class Show implements Serializable {
 
     public Season getSeason(int season) {
         return seasons.get(season);
+    }
+
+    public boolean containsSeason(int season) {
+        return seasons.containsKey(season);
     }
 
     public void addOrReplaceSeason(int seasonInt, Season season) {

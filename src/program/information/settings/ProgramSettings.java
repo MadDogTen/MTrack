@@ -9,6 +9,7 @@ import java.util.ArrayList;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class ProgramSettings implements Serializable {
 
+    private static final long serialVersionUID = 3699693145859359106L;
     // Versions
     private int programSettingsFileVersion;
     private int mainDirectoryVersion;

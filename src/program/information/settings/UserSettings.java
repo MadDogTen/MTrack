@@ -8,6 +8,7 @@ import java.util.Map;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class UserSettings implements Serializable {
 
+    private static final long serialVersionUID = 349723488242111763L;
     private String userName;
 
     // Versions

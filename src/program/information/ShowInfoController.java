@@ -1,10 +1,10 @@
 package program.information;
 
+import program.Main;
 import program.information.show.Episode;
 import program.information.show.Season;
 import program.information.show.Show;
 import program.io.FileManager;
-import program.util.Clock;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -16,13 +16,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ShowInfoController {
-    private static final Logger log = Logger.getLogger(ShowInfoController.class.getName());
+    private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
 
-    private static Map<String, Show> showsFile;
+    private Map<String, Show> showsFile;
+    private ProgramSettingsController programSettingsController;
 
-    public static void loadShowsFile() {
-        if (ProgramSettingsController.getDirectoriesNames().size() > 1) {
-            long timer = Clock.getTimeMilliSeconds();
+    public ShowInfoController(ProgramSettingsController programSettingsController) {
+        this.programSettingsController = programSettingsController;
+    }
+
+    public void loadShowsFile() {
+        if (programSettingsController.getDirectoriesNames().size() > 1) {
+            long timer = Main.clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();
             ArrayList<Map<String, Show>> showsFileArray = getDirectoriesMaps(-1);
             HashSet<String> allShows = new HashSet<>();
@@ -38,22 +43,22 @@ public class ShowInfoController {
                 });
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
             });
-            log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
+            log.info("ShowInfoController- It took " + Main.clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
         } else {
             FileManager fileManager = new FileManager();
             //noinspection unchecked
-            ProgramSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+            programSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
         }
     }
 
-    public static Map<String, Show> getShowsFile() {
+    public Map<String, Show> getShowsFile() {
         return showsFile;
     }
 
-    public static ArrayList<Map<String, Show>> getDirectoriesMaps(int skip) {
+    public ArrayList<Map<String, Show>> getDirectoriesMaps(int skip) {
         // ArrayList = Shows list from all added Directories
         ArrayList<Map<String, Show>> showsFileArray = new ArrayList<>();
-        ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
+        ArrayList<String> files = programSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
         files.forEach(aString -> {
             int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
@@ -66,9 +71,9 @@ public class ShowInfoController {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Show> getDirectoryMap(int index) {
+    public Map<String, Show> getDirectoryMap(int index) {
         Map<String, Show> showsFile = new HashMap<>();
-        ArrayList<String> files = ProgramSettingsController.getDirectoriesNames();
+        ArrayList<String> files = programSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
         for (String aFile : files) {
             if (aFile.split("\\-|\\.")[1].matches(String.valueOf(index))) {
@@ -79,7 +84,7 @@ public class ShowInfoController {
         return showsFile;
     }
 
-    public static ArrayList<String> getShowsList() {
+    public ArrayList<String> getShowsList() {
         ArrayList<String> showsList = new ArrayList<>();
         if (showsFile != null) {
             showsList.addAll(showsFile.keySet().stream().collect(Collectors.toList()));
@@ -87,32 +92,35 @@ public class ShowInfoController {
         return showsList;
     }
 
-    public static Set<Integer> getSeasonsList(String show) {
+    public Set<Integer> getSeasonsList(String show) {
         return showsFile.get(show).getSeasons().keySet();
     }
 
-    public static Set<Integer> getEpisodesList(String show, int season) {
-        return showsFile.get(show).getSeason(season).getEpisodes().keySet();
+    public Set<Integer> getEpisodesList(String show, int season) {
+        if (showsFile.containsKey(show)) {
+            return showsFile.get(show).getSeason(season).getEpisodes().keySet();
+        } else return new HashSet<>();
     }
 
-    public static String getEpisode(String show, int season, int episode) {
+    public String getEpisode(String show, int season, int episode) {
         if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode)) {
             return showsFile.get(show).getSeason(season).getEpisodes().get(episode).getEpisodeFilename();
         } else {
             log.warning("Error, Please report.");
+            //noinspection ReturnOfNull
             return null;
         }
     }
 
-    public static boolean isDoubleEpisode(String show, int season, int episode) {
-        if (showsFile.get(show).getSeason(season).containsEpisode(episode)) {
+    public boolean isDoubleEpisode(String show, int season, int episode) {
+        if (showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode)) {
             return showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
         } else return false;
     }
 
-    public static int findLowestSeason(String aShow) {
+    public int findLowestSeason(String aShow) {
         final int[] lowestSeason = {-1};
-        ShowInfoController.getSeasonsList(aShow).forEach(aSeason -> {
+        getSeasonsList(aShow).forEach(aSeason -> {
             if (lowestSeason[0] == -1 || aSeason < lowestSeason[0]) {
                 lowestSeason[0] = aSeason;
             }
@@ -120,9 +128,9 @@ public class ShowInfoController {
         return lowestSeason[0];
     }
 
-    public static int findHighestSeason(String aShow) {
+    public int findHighestSeason(String aShow) {
         final int[] highestSeason = {-1};
-        Set<Integer> seasons = ShowInfoController.getSeasonsList(aShow);
+        Set<Integer> seasons = getSeasonsList(aShow);
         seasons.forEach(aSeason -> {
             if (highestSeason[0] == -1 || aSeason > highestSeason[0]) {
                 highestSeason[0] = aSeason;
@@ -131,7 +139,7 @@ public class ShowInfoController {
         return highestSeason[0];
     }
 
-    public static int findLowestEpisode(Set<Integer> episodes) {
+    public int findLowestEpisode(Set<Integer> episodes) {
         final int[] lowestEpisodeString = new int[1];
         final int[] lowestEpisodeInt = {-1};
         if (episodes != null) {
@@ -145,7 +153,7 @@ public class ShowInfoController {
         return lowestEpisodeString[0];
     }
 
-    public static int findHighestEpisode(Set<Integer> episodes) {
+    public int findHighestEpisode(Set<Integer> episodes) {
         final int[] highestEpisode = {-1};
         if (episodes != null) {
             episodes.forEach(aEpisode -> {
@@ -157,7 +165,7 @@ public class ShowInfoController {
         return highestEpisode[0];
     }
 
-    public static boolean doesShowExistElsewhere(String aShow, ArrayList<Map<String, Show>> showsFileArray) {
+    public boolean doesShowExistElsewhere(String aShow, ArrayList<Map<String, Show>> showsFileArray) {
         final boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
             showsFileArray.forEach(aHashMap -> {
@@ -175,7 +183,7 @@ public class ShowInfoController {
     }
 
 
-    public static void printOutAllShowsAndEpisodes() {
+    public void printOutAllShowsAndEpisodes() {
         log.info("Printing out all Shows and Episodes:");
         if (showsFile != null) {
             final int[] numberOfShows = {0};
@@ -205,7 +213,7 @@ public class ShowInfoController {
     }
 
     // To get the Season and Episode Number
-    public static int[] getEpisodeInfo(String aEpisode) {
+    public int[] getEpisodeInfo(String aEpisode) {
         int[] bothInt = new int[1];
         Pattern MainP = Pattern.compile("s\\d{1,4}e\\d{1,4}");
         Matcher MainM = MainP.matcher(aEpisode.toLowerCase());
@@ -252,7 +260,7 @@ public class ShowInfoController {
         return bothInt;
     }
 
-    public static void saveShowsMapFile(Map<String, Show> arrayList, int mapIndex) {
+    public void saveShowsMapFile(Map<String, Show> arrayList, int mapIndex) {
         new FileManager().save((Serializable) arrayList, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(mapIndex)), Variables.ShowsExtension, true);
     }
 }

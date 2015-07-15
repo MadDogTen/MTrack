@@ -31,7 +31,7 @@ public class ChangesBox {
         return window;
     }
 
-    public Object[] display(Window oldWindow) {
+    public Object[] display(Window oldWindow, String[] changes) {
         log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
             window.toFront();
@@ -48,8 +48,15 @@ public class ChangesBox {
         ListView<String> listView = new ListView<>();
         listView.setEditable(false);
 
+        String[] convertedList = new String[changes.length];
+        int iterator = 0;
+        for (int x = changes.length; x >= 0; x--) {
+            convertedList[iterator] = changes[x];
+            iterator++;
+        }
+
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        observableList.addAll(ChangeReporter.getChanges());
+        observableList.addAll(convertedList);
 
         listView.setItems(observableList);
         listView.setMaxHeight(Variables.SIZE_HEIGHT);

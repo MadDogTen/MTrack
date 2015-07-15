@@ -15,56 +15,58 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ProgramSettingsController {
-    private static final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
+    private final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
 
-    private static ProgramSettings settingsFile;
-    private static boolean mainDirectoryVersionAlreadyChanged = false;
+    private ProgramSettings settingsFile;
+    private boolean mainDirectoryVersionAlreadyChanged = false;
+    private ShowInfoController showInfoController;
+    private UserInfoController userInfoController;
 
     @SuppressWarnings("unchecked")
-    public static void loadProgramSettingsFile() {
-        settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
+    public void loadProgramSettingsFile() {
+        this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
     }
 
-    public static int getUpdateSpeed() {
+    public int getUpdateSpeed() {
         return settingsFile.getUpdateSpeed();
     }
 
-    public static void setUpdateSpeed(int updateSpeed) {
+    public void setUpdateSpeed(int updateSpeed) {
         settingsFile.setUpdateSpeed(updateSpeed);
-        Variables.setUpdateSpeed();
+        Variables.setUpdateSpeed(updateSpeed);
     }
 
-    public static boolean getShow0Remaining() {
+    public boolean getShow0Remaining() {
         return settingsFile.isShow0Remaining();
     }
 
-    public static void setShow0Remaining(boolean show0Remaining) {
+    public void setShow0Remaining(boolean show0Remaining) {
         settingsFile.setShow0Remaining(show0Remaining);
     }
 
-    public static String getLanguage() {
+    public String getLanguage() {
         return settingsFile.getLanguage();
     }
 
-    public static void setLanguage(String language) {
+    public void setLanguage(String language) {
         settingsFile.setLanguage(language);
     }
 
-    public static boolean isDefaultUsername() {
+    public boolean isDefaultUsername() {
         return settingsFile.isUseDefaultUser();
     }
 
-    public static String getDefaultUsername() {
+    public String getDefaultUsername() {
         return settingsFile.getDefaultUser();
     }
 
-    public static void setDefaultUsername(String userName, boolean disableDefaultUser) {
-        log.info("ProgramSettingsController- DefaultUsername is being set...");
+    public void setDefaultUsername(String userName, boolean disableDefaultUser) {
+        log.info("MainRun.programSettingsController- DefaultUsername is being set...");
         settingsFile.setUseDefaultUser(disableDefaultUser);
         settingsFile.setDefaultUser(userName);
     }
 
-    public static ArrayList<String> getDirectories() {
+    public ArrayList<String> getDirectories() {
         ArrayList<String> directories = new ArrayList<>();
         if (settingsFile.getDirectories() != null) {
             directories.addAll(settingsFile.getDirectories().stream().map(aDirectory -> aDirectory.split(">")[1]).collect(Collectors.toList()));
@@ -72,7 +74,7 @@ public class ProgramSettingsController {
         return directories;
     }
 
-    public static ArrayList<Integer> getDirectoriesIndexes() {
+    public ArrayList<Integer> getDirectoriesIndexes() {
         ArrayList<Integer> directoriesIndexes = new ArrayList<>();
         if (settingsFile.getDirectories() != null) {
             getDirectories().forEach(aDirectory -> directoriesIndexes.add(getDirectoryIndex(String.valueOf(aDirectory))));
@@ -80,51 +82,52 @@ public class ProgramSettingsController {
         return directoriesIndexes;
     }
 
-    public static int getProgramSettingsFileVersion() {
+    public int getProgramSettingsFileVersion() {
         return settingsFile.getProgramSettingsFileVersion();
     }
 
-    public static int getMainDirectoryVersion() {
+    public int getMainDirectoryVersion() {
         return settingsFile.getMainDirectoryVersion();
     }
 
-    public static void setMainDirectoryVersion(int version) {
+    public void setMainDirectoryVersion(int version) {
         if (mainDirectoryVersionAlreadyChanged) {
             log.info("Already changed main directory version this run, no further change needed.");
         } else {
             settingsFile.setMainDirectoryVersion(version);
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
             if (!Controller.mainRun.firstRun) {
-                UserInfoController.setUserDirectoryVersion(version);
+                userInfoController.setUserDirectoryVersion(version);
             }
+
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;
         }
     }
 
-    public static int getShowFileVersion() {
+    public int getShowFileVersion() {
         return settingsFile.getShowFileVersion();
     }
 
-    public static void setShowFileVersion(int version) {
+    public void setShowFileVersion(int version) {
         settingsFile.setShowFileVersion(version);
     }
 
-    public static boolean isDirectoryCurrentlyActive(File directory) {
+    public boolean isDirectoryCurrentlyActive(File directory) {
         return directory.isDirectory();
     }
 
-    public static void removeDirectory(String aDirectory) {
+    public void removeDirectory(String aDirectory) {
         log.info("Currently processing removal of: " + aDirectory);
         int index = getDirectoryIndex(aDirectory);
-        ArrayList<Map<String, Show>> showsFileArray = ShowInfoController.getDirectoriesMaps(index);
-        Set<String> hashMapShows = ShowInfoController.getDirectoryMap(index).keySet();
+        ArrayList<Map<String, Show>> showsFileArray = showInfoController.getDirectoriesMaps(index);
+        Set<String> hashMapShows = showInfoController.getDirectoryMap(index).keySet();
         hashMapShows.forEach(aShow -> {
             log.info("Currently checking: " + aShow);
-            boolean showExistsElsewhere = ShowInfoController.doesShowExistElsewhere(aShow, showsFileArray);
+            boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, showsFileArray);
             if (!showExistsElsewhere) {
-                UserInfoController.setIgnoredStatus(aShow, true);
+                userInfoController.setIgnoredStatus(aShow, true);
             }
             Controller.updateShowField(aShow, showExistsElsewhere);
         });
@@ -133,7 +136,7 @@ public class ProgramSettingsController {
         log.info("Finished processing removal of the directory.");
     }
 
-    public static void printAllDirectories() {
+    public void printAllDirectories() {
         log.info("Printing out all directories:");
         if (getDirectories().isEmpty()) {
             log.info("No directories.");
@@ -141,7 +144,7 @@ public class ProgramSettingsController {
         log.info("Finished printing out all directories:");
     }
 
-    public static int getDirectoryIndex(String aDirectory) {
+    public int getDirectoryIndex(String aDirectory) {
         for (String directory : settingsFile.getDirectories()) {
             if (directory.contains(aDirectory)) {
                 return Integer.parseInt(directory.split(">")[0]);
@@ -151,7 +154,7 @@ public class ProgramSettingsController {
         return -3;
     }
 
-    public static ArrayList<String> getDirectoriesNames() {
+    public ArrayList<String> getDirectoriesNames() {
         ArrayList<String> directories = settingsFile.getDirectories();
         ArrayList<String> directoriesNames = new ArrayList<>();
         directories.forEach(aDirectory -> {
@@ -161,7 +164,7 @@ public class ProgramSettingsController {
         return directoriesNames;
     }
 
-    public static File getDirectory(int index) {
+    public File getDirectory(int index) {
         ArrayList<String> directories = settingsFile.getDirectories();
         for (String aDirectory : directories) {
             String[] split = aDirectory.split(">");
@@ -173,7 +176,7 @@ public class ProgramSettingsController {
         return new File(Strings.EmptyString);
     }
 
-    public static boolean[] addDirectory(int index, File directory) {
+    public boolean[] addDirectory(int index, File directory) {
         ArrayList<String> directories = settingsFile.getDirectories();
         boolean[] answer = {false, false};
         if (directories == null) {
@@ -191,7 +194,7 @@ public class ProgramSettingsController {
         return answer;
     }
 
-    public static int getLowestFreeDirectoryIndex() {
+    public int getLowestFreeDirectoryIndex() {
         final int[] lowestFreeIndex = {0};
         settingsFile.getDirectories().forEach(aDirectory -> {
             int currentInt = Integer.parseInt(aDirectory.split(">")[0]);
@@ -202,19 +205,27 @@ public class ProgramSettingsController {
         return lowestFreeIndex[0];
     }
 
-    public static ProgramSettings getSettingsFile() {
+    public ProgramSettings getSettingsFile() {
         return settingsFile;
     }
 
-    public static void setSettingsFile(ProgramSettings settingsFile) {
-        ProgramSettingsController.settingsFile = settingsFile;
+    public void setSettingsFile(ProgramSettings settingsFile) {
+        this.settingsFile = settingsFile;
+    }
+
+    public void setShowInfoController(ShowInfoController showInfoController) {
+        this.showInfoController = showInfoController;
+    }
+
+    public void setUserInfoController(UserInfoController userInfoController) {
+        this.userInfoController = userInfoController;
     }
 
     // Save the file
-    public static void saveSettingsFile() {
+    public void saveSettingsFile() {
         if (settingsFile != null) {
             new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
-            log.info("ProgramSettingsController- settingsFile has been saved!");
+            log.info("MainRun.programSettingsController- settingsFile has been saved!");
         }
     }
 }

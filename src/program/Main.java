@@ -21,10 +21,13 @@ import java.util.logging.Logger;
 
 public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
-    private final static int timer = Clock.getTimeSeconds();
+    public static Clock clock = new Clock();
+    private final static int timer = clock.getTimeSeconds();
     public static boolean programRunning = true, programFullyRunning = false;
     public static Stage stage;
     private static Thread thread;
+    private static ProgramSettingsController programSettingsController;
+    private static UserInfoController userInfoController;
 
     public static void main(String args[]) {
         launch(args);
@@ -39,13 +42,13 @@ public class Main extends Application implements Runnable {
 
         if (answer) {
             if (saveSettings) {
-                ProgramSettingsController.saveSettingsFile();
-                UserInfoController.saveUserSettingsFile();
+                programSettingsController.saveSettingsFile();
+                userInfoController.saveUserSettingsFile();
             }
             programFullyRunning = false;
             programRunning = false;
 
-            int timeRan = Clock.timeTakenSeconds(timer);
+            int timeRan = clock.timeTakenSeconds(timer);
             if (timeRan > 60) {
                 log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             } else log.info("The program has been running for " + timeRan + " Seconds.");
@@ -59,12 +62,22 @@ public class Main extends Application implements Runnable {
             if (stage != null) {
                 stage.close();
             }
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                log.severe(e.toString());
+            if (thread != null) {
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    log.severe(e.toString());
+                }
             }
         }
+    }
+
+    public static void setProgramSettingsController(ProgramSettingsController programSettingsController) {
+        Main.programSettingsController = programSettingsController;
+    }
+
+    public static void setUserInfoController(UserInfoController userInfoController) {
+        Main.userInfoController = userInfoController;
     }
 
     @Override

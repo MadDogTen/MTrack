@@ -5,6 +5,7 @@ import java.io.Serializable;
 @SuppressWarnings({"ClassWithoutLogger", "SerializableClassInSecureContext", "DeserializableClassInSecureContext"})
 public class Episode implements Serializable {
 
+    private static final long serialVersionUID = -6747075762839786092L;
     private final int episode;
     private final String episodeFilename;
     private final Boolean partOfDoubleEpisode;

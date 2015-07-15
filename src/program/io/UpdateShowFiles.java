@@ -17,16 +17,22 @@ import java.util.logging.Logger;
 @SuppressWarnings("WeakerAccess")
 public class UpdateShowFiles {
     private final Logger log = Logger.getLogger(UpdateShowFiles.class.getName());
+    FindShows findShows = new FindShows();
+    ShowInfoController showInfoController;
+
+    public UpdateShowFiles(ShowInfoController showInfoController) {
+        this.showInfoController = showInfoController;
+    }
 
     public void checkForNewOrRemovedSeasons(File folderLocation, String aShow, ArrayList<Integer> changedSeasons, Map<String, Show> showsFile, int hashMapIndex) {
         Show seasonEpisode = showsFile.get(aShow);
         changedSeasons.forEach(aSeason -> {
             Map<Integer, Episode> episodeNum = new HashMap<>(0);
-            ArrayList<String> episodesFullList = FindShows.findEpisodes(folderLocation, aShow, aSeason);
+            ArrayList<String> episodesFullList = findShows.findEpisodes(folderLocation, aShow, aSeason);
             if (episodesFullList.isEmpty()) seasonEpisode.removeSeason(aSeason);
             else {
                 episodesFullList.forEach(aEpisode -> {
-                    int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
+                    int[] episode = showInfoController.getEpisodeInfo(aEpisode);
                     if (episode != null) {
                         if (episode.length == 1) {
                             episodeNum.put(episode[0], new Episode(episode[0], aEpisode, false));
@@ -44,17 +50,17 @@ public class UpdateShowFiles {
             }
         });
         showsFile.replace(aShow, seasonEpisode);
-        ShowInfoController.saveShowsMapFile(showsFile, hashMapIndex);
-        ShowInfoController.loadShowsFile();
+        showInfoController.saveShowsMapFile(showsFile, hashMapIndex);
+        showInfoController.loadShowsFile();
     }
 
     public void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, Map<String, Show> showsFile, int hashMapIndex) {
         Show seasonEpisode = showsFile.get(aShow);
         Map<Integer, Episode> episodeNum = new HashMap<>();
-        ArrayList<String> episodesFullList = FindShows.findEpisodes(folderLocation, aShow, aSeason);
+        ArrayList<String> episodesFullList = findShows.findEpisodes(folderLocation, aShow, aSeason);
         if (!episodesFullList.isEmpty()) {
             episodesFullList.forEach(aEpisode -> {
-                int[] episode = ShowInfoController.getEpisodeInfo(aEpisode);
+                int[] episode = showInfoController.getEpisodeInfo(aEpisode);
                 if (episode != null) {
                     if (episode.length == 1) {
                         episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, false));
@@ -69,7 +75,7 @@ public class UpdateShowFiles {
         }
         seasonEpisode.addOrReplaceSeason(aSeason, new Season(aSeason, episodeNum));
         showsFile.replace(aShow, seasonEpisode);
-        ShowInfoController.saveShowsMapFile(showsFile, hashMapIndex);
-        ShowInfoController.loadShowsFile();
+        showInfoController.saveShowsMapFile(showsFile, hashMapIndex);
+        showInfoController.loadShowsFile();
     }
 }

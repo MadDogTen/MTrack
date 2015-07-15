@@ -1,12 +1,11 @@
 package program.information.settings;
 
-import program.information.ShowInfoController;
-
 import java.io.Serializable;
 
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class UserShowSettings implements Serializable {
 
+    private static final long serialVersionUID = -1596102571442125890L;
     private String showName;
 
     // Booleans
@@ -18,13 +17,13 @@ public class UserShowSettings implements Serializable {
     private int currentSeason;
     private int currentEpisode;
 
-    public UserShowSettings(String showName) {
+    public UserShowSettings(String showName, int currentSeason, int currentEpisode) {
         this.showName = showName;
         active = false;
         ignored = false;
         hidden = false;
-        currentSeason = ShowInfoController.findLowestSeason(showName);
-        currentEpisode = ShowInfoController.findLowestEpisode(ShowInfoController.getEpisodesList(showName, currentSeason));
+        this.currentSeason = currentSeason;
+        this.currentEpisode = currentEpisode;
     }
 
     public UserShowSettings(String showName, boolean active, boolean ignored, boolean hidden, int currentSeason, int currentEpisode) {
