@@ -62,18 +62,18 @@ public class FileManager {
     private OperatingSystem getOS() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("windows")) {
-            return OperatingSystem.windows;
+            return OperatingSystem.WINDOWS;
         } else if (os.contains("mac")) {
-            return OperatingSystem.mac;
+            return OperatingSystem.MAC;
         } else if (os.contains("nix")) {
-            return OperatingSystem.nix;
+            return OperatingSystem.NIX;
         } else if (os.contains("nux")) {
-            return OperatingSystem.nux;
+            return OperatingSystem.NUX;
         } else if (os.contains("aix")) {
-            return OperatingSystem.aix;
+            return OperatingSystem.AIX;
         } else {
             log.severe("Your operating system is unknown, Assuming linux based, Using nix...");
-            return OperatingSystem.nix;
+            return OperatingSystem.NIX;
         }
     }
 
@@ -88,11 +88,11 @@ public class FileManager {
     public String getDataFolder() {
         String home = System.getProperty("user.home");
         OperatingSystem os = getOS();
-        if (os == OperatingSystem.windows) {
+        if (os == OperatingSystem.WINDOWS) {
             home = System.getenv("appdata");
-        } else if (os == OperatingSystem.mac) {
+        } else if (os == OperatingSystem.MAC) {
             home += "~/Library/Application Support";
-        } else if (os == OperatingSystem.nix || os == OperatingSystem.nux || os == OperatingSystem.aix) {
+        } else if (os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) {
             home += "";
         }
         File dir = new File(home, Variables.ProgramRootFolder);
@@ -145,11 +145,11 @@ public class FileManager {
     public void open(File file) {
         OperatingSystem os = getOS();
         try {
-            if (os == OperatingSystem.windows) {
+            if (os == OperatingSystem.WINDOWS) {
                 Runtime.getRuntime().exec(new String[]{
                         "rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()
                 });
-            } else if (os == OperatingSystem.mac || os == OperatingSystem.nix || os == OperatingSystem.nux || os == OperatingSystem.aix) {
+            } else if (os == OperatingSystem.MAC || os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) {
                 Runtime.getRuntime().exec(new String[]{
                         "/usr/bin/open", file.getAbsolutePath()
                 });

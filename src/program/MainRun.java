@@ -62,11 +62,6 @@ public class MainRun {
             UserInfoController.loadUserInfo();
         }
 
-        if (!UserInfoController.getAllUsers().contains(Strings.UserName)) {
-            generateUserSettingsFile(Strings.UserName);
-            UserInfoController.loadUserInfo();
-        }
-
         log.info("Username is set: " + Strings.UserName);
         updateManager.updateMainDirectoryVersion();
         Variables.setUpdateSpeed();
