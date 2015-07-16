@@ -11,6 +11,7 @@ public class en_US extends Language {
         LanguageName = "English US";
     }
 
+    @Override
     public void setAllStrings() {
         log.info("Setting language to " + LanguageName + "...");
 

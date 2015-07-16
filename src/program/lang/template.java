@@ -12,6 +12,7 @@ public class template extends Language {
         LanguageName = "Blank Template";
     }
 
+    @Override
     public final void setAllStrings() {
         log.info("Setting language to " + LanguageName + "...");
 

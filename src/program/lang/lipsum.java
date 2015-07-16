@@ -12,6 +12,7 @@ public class lipsum extends Language {
         LanguageName = "Lipsum";
     }
 
+    @Override
     public final void setAllStrings() {
         log.info("Setting language to " + LanguageName + "...");
 
