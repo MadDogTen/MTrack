@@ -42,6 +42,14 @@ public class Main extends Application implements Runnable {
 
         if (answer) {
             if (saveSettings) {
+                programSettingsController.getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
+                programSettingsController.getSettingsFile().setShowColumnVisibility(Controller.getShowColumnVisibility());
+                programSettingsController.getSettingsFile().setRemainingColumnWidth(Controller.getRemainingColumnWidth());
+                programSettingsController.getSettingsFile().setRemainingColumnVisibility(Controller.getRemainingColumnVisibility());
+                programSettingsController.getSettingsFile().setSeasonColumnWidth(Controller.getSeasonColumnWidth());
+                programSettingsController.getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
+                programSettingsController.getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
+                programSettingsController.getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
                 programSettingsController.saveSettingsFile();
                 userInfoController.saveUserSettingsFile();
             }

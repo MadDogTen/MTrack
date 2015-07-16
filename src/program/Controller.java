@@ -37,12 +37,13 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class Controller implements Initializable {
+    private static final Logger log = Logger.getLogger(Controller.class.getName());
     private final static ProgramSettingsController programSettingsController = new ProgramSettingsController();
     private final static ShowInfoController showInfoController = new ShowInfoController(programSettingsController);
     private final static UserInfoController userInfoController = new UserInfoController(showInfoController);
     private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController);
     public final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles);
-    private static final Logger log = Logger.getLogger(Controller.class.getName());
+    private static Controller controller;
     // This is the list that is currently showing in the tableView. Currently can only be "active" or "inactive".
     private static String currentList = "active";
     private static ObservableList<DisplayShows> tableViewFields;
@@ -173,6 +174,38 @@ public class Controller implements Initializable {
         return checkShowFiles;
     }
 
+    public static double getShowColumnWidth() {
+        return controller.shows.getWidth();
+    }
+
+    public static double getRemainingColumnWidth() {
+        return controller.remaining.getWidth();
+    }
+
+    public static double getSeasonColumnWidth() {
+        return controller.season.getWidth();
+    }
+
+    public static double getEpisodeColumnWidth() {
+        return controller.episode.getWidth();
+    }
+
+    public static boolean getShowColumnVisibility() {
+        return controller.shows.isVisible();
+    }
+
+    public static boolean getRemainingColumnVisibility() {
+        return controller.remaining.isVisible();
+    }
+
+    public static boolean getSeasonColumnVisibility() {
+        return controller.season.isVisible();
+    }
+
+    public static boolean getEpisodeColumnVisibility() {
+        return controller.episode.isVisible();
+    }
+
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
@@ -200,6 +233,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         log.info("MainController Running...");
+        setController();
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
@@ -515,16 +549,6 @@ public class Controller implements Initializable {
                             Double temp = checkShowFiles.getRecheckShowFilePercentage();
                             isCurrentlyRechecking.setProgress(temp);
                         });
-
-                        // Saving all the settings - I will make this done during shutdown instead soon.
-                        programSettingsController.getSettingsFile().setShowColumnWidth(shows.getWidth());
-                        programSettingsController.getSettingsFile().setRemainingColumnWidth(remaining.getWidth());
-                        programSettingsController.getSettingsFile().setSeasonColumnWidth(season.getWidth());
-                        programSettingsController.getSettingsFile().setEpisodeColumnWidth(episode.getWidth());
-                        programSettingsController.getSettingsFile().setShowColumnVisibility(shows.isVisible());
-                        programSettingsController.getSettingsFile().setRemainingColumnVisibility(remaining.isVisible());
-                        programSettingsController.getSettingsFile().setSeasonColumnVisibility(season.isVisible());
-                        programSettingsController.getSettingsFile().setEpisodeColumnVisibility(episode.isVisible());
                     }
                     isChangesListPopulated();
                     if (currentlyRechecking) {
@@ -575,5 +599,9 @@ public class Controller implements Initializable {
         } else if (changesAlert.isVisible()) {
             changesAlert.setVisible(false);
         }
+    }
+
+    private void setController() {
+        controller = this;
     }
 }
