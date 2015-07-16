@@ -74,12 +74,10 @@ public class CheckShowFiles {
             if (!programSettingsController.getDirectories().isEmpty()) {
                 percentagePerDirectory[0] = 100 / programSettingsController.getDirectories().size();
             }
-
             // Just so the user knows when it is a directory that is delaying the search, and it's not hanging.
             currentlyCheckingDirectories = true;
             programSettingsController.getDirectories().forEach(directory -> programSettingsController.isDirectoryCurrentlyActive(new File(directory)));
             currentlyCheckingDirectories = false;
-
             programSettingsController.getDirectoriesIndexes().forEach(aIndex -> {
                 Map<String, Show> showsMap = showInfoController.getDirectoryMap(aIndex);
                 double percentagePerShow = percentagePerDirectory[0] / (userInfoController.getActiveShows().size() + 12);
@@ -105,7 +103,6 @@ public class CheckShowFiles {
                         });
                         hasChanged[0] = true;
                     }
-
                     for (String aShow : userInfoController.getActiveShows()) {
                         log.info("Currently rechecking " + aShow);
                         int currentSeason = userInfoController.getCurrentSeason(aShow);

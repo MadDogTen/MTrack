@@ -60,10 +60,11 @@ public class ProgramSettingsController {
         return settingsFile.getDefaultUser();
     }
 
-    public void setDefaultUsername(String userName, boolean disableDefaultUser) {
-        log.info("MainRun.programSettingsController- DefaultUsername is being set...");
-        settingsFile.setUseDefaultUser(disableDefaultUser);
+    public void setDefaultUsername(String userName, boolean useDefaultUser) {
+        log.info("DefaultUsername is being set...");
+        settingsFile.setUseDefaultUser(useDefaultUser);
         settingsFile.setDefaultUser(userName);
+        log.info("DefaultUsername is set.");
     }
 
     public ArrayList<String> getDirectories() {

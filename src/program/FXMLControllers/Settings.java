@@ -138,11 +138,11 @@ public class Settings implements Initializable {
             ArrayList<String> Users = userInfoController.getAllUsers();
             String defaultUsername = listSelectBox.defaultUser(Strings.PleaseChooseADefaultUser, Users, programSettingsController.getDefaultUsername(), tabPane.getScene().getWindow());
             if (defaultUsername != null && !defaultUsername.isEmpty()) {
-                programSettingsController.setDefaultUsername(defaultUsername, false);
+                programSettingsController.setDefaultUsername(defaultUsername, true);
             }
         });
         clearDefaultUsername.setText(Strings.Reset);
-        clearDefaultUsername.setOnAction(e -> programSettingsController.setDefaultUsername(Strings.EmptyString, true));
+        clearDefaultUsername.setOnAction(e -> programSettingsController.setDefaultUsername(Strings.EmptyString, false));
         addUser.setText(Strings.AddUser);
         addUser.setOnAction(e -> {
             String userName = new TextBox().display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, userInfoController.getAllUsers(), tabPane.getScene().getWindow());

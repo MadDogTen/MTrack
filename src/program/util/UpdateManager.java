@@ -223,6 +223,7 @@ public class UpdateManager {
                             Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(3))
                     );
                     programSettingsController.setSettingsFile(programSettings);
+                    log.info("Program has been updated from version 1008.");
                     updated = true;
 
             }
@@ -323,20 +324,12 @@ public class UpdateManager {
                         showHashMap.forEach((season, seasonHashMap) -> {
                             Map<Integer, Episode> episodesMap = new HashMap<>();
                             seasonHashMap.forEach((episode, episodeFileName) -> {
-                                int[] episodes;
                                 if (episode.contains("+")) {
-                                    episodes = new int[2];
-                                    episodes[0] = Integer.parseInt(episode.split("[+]")[0]);
-                                    episodes[1] = Integer.parseInt(episode.split("[+]")[1]);
+                                    for (String episodes : episode.split("[+]")) {
+                                        episodesMap.put(Integer.parseInt(episodes), new Episode(Integer.parseInt(episodes), episodeFileName, true));
+                                    }
                                 } else {
-                                    episodes = new int[1];
-                                    episodes[0] = Integer.parseInt(episode);
-                                }
-                                if (episodes.length == 1) {
-                                    episodesMap.put(episodes[0], new Episode(episodes[0], episodeFileName, false));
-                                } else if (episodes.length == 2) {
-                                    episodesMap.put(episodes[0], new Episode(episodes[0], episodeFileName, true));
-                                    episodesMap.put(episodes[1], new Episode(episodes[1], episodeFileName, true));
+                                    episodesMap.put(Integer.parseInt(episode), new Episode(Integer.parseInt(episode), episodeFileName, false));
                                 }
                             });
                             seasonsMap.put(season, new Season(season, episodesMap));
@@ -352,6 +345,7 @@ public class UpdateManager {
         if (updated) {
             // Update Program Settings File Version
             programSettingsController.setShowFileVersion(newVersion);
+            programSettingsController.saveSettingsFile();
             log.info("Show file was successfully updated to version " + newVersion + '.');
         } else log.info("Show file was not updated. This is an error, please report.");
     }

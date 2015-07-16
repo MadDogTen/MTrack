@@ -43,7 +43,9 @@ public class MainRun {
         UpdateManager updateManager = new UpdateManager(programSettingsController, showInfoController, userInfoController);
         // First it checks if the MTrack folder currently exists, if not, creates it.
         if (!fileManager.checkFolderExists(Variables.dataFolder)) {
+            firstRun = true;
             new FirstRun(programSettingsController, showInfoController, userInfoController).programFirstRun();
+            firstRun = false;
             // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         } else if (!fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingsExtension)) {
             new FirstRun(programSettingsController, showInfoController, userInfoController).generateProgramSettingsFile();
