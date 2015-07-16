@@ -21,9 +21,7 @@ public class LanguageHandler {
 
     public Map<String, String> getLanguageNames() {
         Map<String, String> languageNames = new HashMap<>();
-        languages.forEach((internalName, languages) -> {
-            languageNames.put(internalName, languages.getName());
-        });
+        languages.forEach((internalName, languages) -> languageNames.put(internalName, languages.getName()));
         return languageNames;
     }
 
