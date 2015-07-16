@@ -11,9 +11,14 @@ public class ChangeReporter {
     public static void addChange(String newInfo) {
         log.info("Adding new change...");
         String[] currentList = changes;
-        String[] newList = new String[currentList.length + 1];
-        newList[changes.length + 1] = newInfo;
-        changes = newList;
+        changes = new String[currentList.length + 1];
+        changes[0] = newInfo;
+        int iterator = 1;
+        for (String aString : currentList) {
+            changes[iterator] = aString;
+            iterator++;
+        }
+        isChanges = true;
         log.info("Finished adding new change.");
     }
 

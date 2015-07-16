@@ -310,14 +310,11 @@ public class UpdateManager {
         switch (oldVersion) {
             case -2:
                 ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
-                ArrayList<String> files = programSettingsController.getDirectoriesNames();
-                FileManager fileManager = new FileManager();
-                files.forEach(aString -> {
+                programSettingsController.getDirectoriesNames().forEach(aString -> {
                     //noinspection unchecked
-                    showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+                    showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) new FileManager().loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
                 });
                 showsFileArray.forEach(aHashMap -> {
-                    int index = showsFileArray.indexOf(aHashMap);
                     Map<String, Show> showsMap = new HashMap<>();
                     aHashMap.forEach((showName, showHashMap) -> {
                         Map<Integer, Season> seasonsMap = new HashMap<>();
@@ -336,7 +333,7 @@ public class UpdateManager {
                         });
                         showsMap.put(showName, new Show(showName, seasonsMap));
                     });
-                    showInfoController.saveShowsMapFile(showsMap, index);
+                    showInfoController.saveShowsMapFile(showsMap, showsFileArray.indexOf(aHashMap));
                 });
                 log.info("Show file has been updated from version -2.");
                 updated = true;
