@@ -110,6 +110,8 @@ public class Settings implements Initializable {
     private Button add1ToDirectoryVersion;
     @FXML
     private Button changeLanguage;
+    @FXML
+    private Button toggleDevMode;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -177,7 +179,10 @@ public class Settings implements Initializable {
 
         // Other
         changeUpdateSpeed.setText(Strings.ChangeUpdateTime);
-        changeUpdateSpeed.setOnAction(e -> programSettingsController.setUpdateSpeed(new TextBox().updateSpeed(Strings.EnterHowFastYouWantItToScanTheShowsFolders, Strings.LeaveItAsIs, Variables.defaultUpdateSpeed, programSettingsController.getUpdateSpeed(), tabPane.getScene().getWindow())));
+        changeUpdateSpeed.setOnAction(e -> {
+            log.info("Change update speed started:");
+            programSettingsController.setUpdateSpeed(new TextBox().updateSpeed(Strings.EnterHowFastYouWantItToScanTheShowsFolders, Strings.LeaveItAsIs, Variables.defaultUpdateSpeed, programSettingsController.getUpdateSpeed(), tabPane.getScene().getWindow()));
+        });
         addDirectory.setText(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
             int index = programSettingsController.getLowestFreeDirectoryIndex();
@@ -269,11 +274,14 @@ public class Settings implements Initializable {
             };
             new Thread(task).start();
         });
+        if (Variables.showOptionToToggleDevMode) {
+            toggleDevMode.setText(Strings.ToggleDevMode);
+            toggleDevMode.setOnAction(e -> Variables.devMode = !Variables.devMode);
+        } else toggleDevMode.setDisable(true);
         openProgramFolder.setText(Strings.OpenSettingsFolder);
         openProgramFolder.setOnAction(e -> {
-            File file = new File(Variables.dataFolder);
             try {
-                Desktop.getDesktop().open(file);
+                Desktop.getDesktop().open(Variables.dataFolder);
             } catch (IOException e1) {
                 log.severe(e1.toString());
             }
@@ -310,8 +318,7 @@ public class Settings implements Initializable {
                     Set<String> shows = showInfoController.getDirectoryMap(programSettingsController.getDirectoryIndex(aDirectory)).keySet();
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     emptyShows.forEach(aShow -> {
-                        String fileString = (aDirectory + Strings.FileSeparator + aShow);
-                        if (new FileManager().checkFolderExists(fileString) && !shows.contains(aShow)) {
+                        if (new FileManager().checkFolderExists(new File(aDirectory + Strings.FileSeparator + aShow)) && !shows.contains(aShow)) {
                             emptyShowsDir.add(aShow);
                         }
                     });
@@ -407,8 +414,7 @@ public class Settings implements Initializable {
                             }
                         });
                         Map<String, Show> blankMap = new HashMap<>();
-                        showInfoController.saveShowsMapFile(blankMap, index);
-                        showInfoController.loadShowsFile();
+                        showInfoController.saveShowsMapFile(blankMap, index, true);
                         programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
                     }
                 }
@@ -420,7 +426,7 @@ public class Settings implements Initializable {
             if (confirmBox.display(Strings.AreYouSureThisWillDeleteEverything, tabPane.getScene().getWindow())) {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
-                new FileManager().deleteFolder(new File(Variables.dataFolder));
+                new FileManager().deleteFolder(Variables.dataFolder);
                 program.Main.stop(Main.stage, true, false);
             }
         });

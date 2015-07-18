@@ -52,7 +52,11 @@ public class ChangesBox {
         observableList.addAll(changes);
 
         listView.setItems(observableList);
-        listView.setMaxHeight(Variables.SIZE_HEIGHT);
+        if (changes.length >= 17) {
+            listView.setMaxHeight(Variables.SIZE_HEIGHT);
+        } else {
+            listView.setMaxHeight(25 * changes.length);
+        }
 
         Button clear = new Button(Strings.Clear);
         Button refresh = new Button(Strings.Refresh);

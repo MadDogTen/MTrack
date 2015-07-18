@@ -75,6 +75,9 @@ public class lipsum extends Language {
         Strings.DirectoryVersionPlus1 = "sagittis";
         Strings.ClearFile = "vehicula";
         Strings.ResetProgram = "enim";
+        Strings.ToggleDevMode = "gulamina";
+        Strings.InAppData = "burgula";
+        Strings.WithTheJar = "zemberna";
 
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "sollicitudin";
@@ -130,5 +133,7 @@ public class lipsum extends Language {
         Strings.PleaseChooseYourLanguage = "hibuatu";
         Strings.ChangeLanguage = "Gibula";
         Strings.RestartTheProgramForTheNewLanguageToTakeEffect = "veralib";
+        Strings.WhereWouldYouLikeTheProgramFilesToBeStored = "abbera";
+        Strings.HoverOverAButtonForThePath = "mezua";
     }
 }

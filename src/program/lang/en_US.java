@@ -74,6 +74,9 @@ public class en_US extends Language {
         Strings.DirectoryVersionPlus1 = "Directory Version +1";
         Strings.ClearFile = "Clear File";
         Strings.ResetProgram = "Reset Program";
+        Strings.ToggleDevMode = "Toggle Dev";
+        Strings.InAppData = "In Appdata";
+        Strings.WithTheJar = "With the Jar";
 
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "Show/Hide shows with 0 episode left.";
@@ -95,7 +98,7 @@ public class en_US extends Language {
         Strings.UsernameAlreadyTaken = "Username already taken.";
         Strings.UsernameIsTooLong = "Username is too long.";
         Strings.DirectoryIsAlreadyAdded = "Directory is already added.";
-        Strings.MustBeANumberGreaterThanOrEqualTo10 = "Must be a number greater than or equal to 10";
+        Strings.MustBeANumberGreaterThanOrEqualTo10 = "Cannot be set to less than 10 seconds.";
         Strings.ChooseYourUsername = "Choose your Username:";
         Strings.DirectoryWasADuplicate = "Directory was a duplicate!";
         Strings.AddAnotherDirectory = "Add another directory?";
@@ -129,5 +132,7 @@ public class en_US extends Language {
         Strings.PleaseChooseYourLanguage = "Please choose your language: ";
         Strings.ChangeLanguage = "Change Language";
         Strings.RestartTheProgramForTheNewLanguageToTakeEffect = "Restart the program for the new language to take effect.";
+        Strings.WhereWouldYouLikeTheProgramFilesToBeStored = "Where would you like the program files to be stored?";
+        Strings.HoverOverAButtonForThePath = "(Hover over a button for the path)";
     }
 }

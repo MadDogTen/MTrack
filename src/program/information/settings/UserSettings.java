@@ -31,6 +31,10 @@ public class UserSettings implements Serializable {
 
     // Basic Getters and Setters
 
+    public String getUserName() {
+        return userName;
+    }
+
     public int getUserSettingsFileVersion() {
         return userSettingsFileVersion;
     }

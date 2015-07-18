@@ -6,6 +6,7 @@ import program.util.Variables;
 
 import java.awt.*;
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.logging.Logger;
 
 public class FileManager {
@@ -54,8 +55,8 @@ public class FileManager {
         return new File(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension).isFile();
     }
 
-    public boolean checkFolderExists(String aFolder) {
-        return new File(aFolder).isDirectory();
+    public boolean checkFolderExists(File aFolder) {
+        return aFolder.isDirectory();
     }
 
     @SuppressWarnings("AccessOfSystemProperties")
@@ -85,7 +86,7 @@ public class FileManager {
     }
 
     @SuppressWarnings("AccessOfSystemProperties")
-    public String getDataFolder() {
+    public File getAppDataFolder() {
         String home = System.getProperty("user.home");
         OperatingSystem os = getOS();
         if (os == OperatingSystem.WINDOWS) {
@@ -96,7 +97,11 @@ public class FileManager {
             home += "";
         }
         File dir = new File(home, Variables.ProgramRootFolder);
-        return dir.getAbsolutePath();
+        return new File(dir.getAbsolutePath());
+    }
+
+    public File getJarLocationFolder() throws UnsupportedEncodingException {
+        return new File(URLDecoder.decode(FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
     }
 
     public void deleteFile(String folder, String filename, String extension) {
@@ -113,7 +118,7 @@ public class FileManager {
     }
 
     public void deleteFolder(File toDeleteFolder) {
-        if (!checkFolderExists(String.valueOf(toDeleteFolder))) {
+        if (!checkFolderExists(toDeleteFolder)) {
             log.warning(toDeleteFolder + " does not exist!");
         }
         if (toDeleteFolder.canWrite()) {

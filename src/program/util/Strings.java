@@ -48,6 +48,7 @@ public class Strings {
     public static String About;
     public static String Season;
     public static String Episode;
+
     // Button Text
     public static String SetSeasonEpisode;
     public static String PlaySeasonEpisode;
@@ -80,11 +81,16 @@ public class Strings {
     public static String DirectoryVersionPlus1;
     public static String ClearFile;
     public static String ResetProgram;
+    public static String ToggleDevMode;
+    public static String InAppData;
+    public static String WithTheJar;
+
     // Tooltip Text
     public static String ShowHideShowsWith0EpisodeLeft;
     public static String CurrentlyRechecking;
     public static String DeleteUsersNoteCantDeleteCurrentUser;
     public static String WarningUnrecoverable;
+
     // Other Text
     public static String AddNewUsername;
     public static String PleaseEnterUsername;
@@ -133,6 +139,8 @@ public class Strings {
     public static String PleaseChooseYourLanguage;
     public static String ChangeLanguage;
     public static String RestartTheProgramForTheNewLanguageToTakeEffect;
+    public static String WhereWouldYouLikeTheProgramFilesToBeStored;
+    public static String HoverOverAButtonForThePath;
 
     // Strings set by program
     public static String UserName;

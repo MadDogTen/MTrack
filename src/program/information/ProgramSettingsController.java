@@ -1,6 +1,7 @@
 package program.information;
 
 import program.Controller;
+import program.Main;
 import program.information.settings.ProgramSettings;
 import program.information.show.Show;
 import program.io.FileManager;
@@ -34,6 +35,7 @@ public class ProgramSettingsController {
     public void setUpdateSpeed(int updateSpeed) {
         settingsFile.setUpdateSpeed(updateSpeed);
         Variables.setUpdateSpeed(updateSpeed);
+        log.info("Update speed is now set too: ");
     }
 
     public boolean getShow0Remaining() {
@@ -97,7 +99,7 @@ public class ProgramSettingsController {
         } else {
             settingsFile.setMainDirectoryVersion(version);
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
-            if (!Controller.mainRun.firstRun) {
+            if (!Main.getMainRun().firstRun) {
                 userInfoController.setUserDirectoryVersion(version);
             }
 

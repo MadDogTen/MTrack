@@ -1,9 +1,9 @@
 package program.util;
 
 import javafx.concurrent.Task;
-import program.Controller;
 import program.Main;
 import program.gui.ConfirmBox;
+import program.gui.DualChoiceButtons;
 import program.gui.MessageBox;
 import program.gui.TextBox;
 import program.information.ProgramSettingsController;
@@ -19,6 +19,7 @@ import program.io.FileManager;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,9 +29,9 @@ import java.util.logging.Logger;
 public class FirstRun {
     private final Logger log = Logger.getLogger(FirstRun.class.getName());
 
-    ProgramSettingsController programSettingsController;
-    ShowInfoController showInfoController;
-    UserInfoController userInfoController;
+    private final ProgramSettingsController programSettingsController;
+    private final ShowInfoController showInfoController;
+    private final UserInfoController userInfoController;
 
     public FirstRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController) {
         this.programSettingsController = programSettingsController;
@@ -40,10 +41,25 @@ public class FirstRun {
 
     public void programFirstRun() {
         log.info("First Run, Generating Files...");
-        new FileManager().createFolder(Strings.EmptyString);
+        Main.getMainRun().getLanguage();
+        FileManager fileManager = new FileManager();
+        File jarLocation = null;
+        try {
+            jarLocation = fileManager.getJarLocationFolder();
+        } catch (UnsupportedEncodingException e) {
+            log.severe(Arrays.toString(e.getStackTrace()));
+        }
+        File appData = fileManager.getAppDataFolder();
+        String answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, String.valueOf(appData), String.valueOf(jarLocation), null);
+        if (answer.matches(Strings.InAppData)) {
+            Variables.setDataFolder(appData);
+        } else if (answer.matches(Strings.WithTheJar)) {
+            Variables.setDataFolder(jarLocation);
+        }
+        fileManager.createFolder(Strings.EmptyString);
         generateProgramSettingsFile();
         programSettingsController.loadProgramSettingsFile();
-        Controller.mainRun.getLanguage();
+        programSettingsController.setLanguage(Variables.language);
         addDirectories();
 
         final boolean[] taskRunning = {true};

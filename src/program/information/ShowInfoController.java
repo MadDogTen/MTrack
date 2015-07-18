@@ -17,9 +17,8 @@ import java.util.stream.Collectors;
 
 public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
-
+    private final ProgramSettingsController programSettingsController;
     private Map<String, Show> showsFile;
-    private ProgramSettingsController programSettingsController;
 
     public ShowInfoController(ProgramSettingsController programSettingsController) {
         this.programSettingsController = programSettingsController;
@@ -260,7 +259,10 @@ public class ShowInfoController {
         return bothInt;
     }
 
-    public void saveShowsMapFile(Map<String, Show> arrayList, int mapIndex) {
+    public void saveShowsMapFile(Map<String, Show> arrayList, int mapIndex, Boolean loadMap) {
         new FileManager().save((Serializable) arrayList, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(mapIndex)), Variables.ShowsExtension, true);
+        if (loadMap) {
+            loadShowsFile();
+        }
     }
 }

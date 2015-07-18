@@ -21,9 +21,9 @@ import java.util.logging.Logger;
 public class UpdateManager {
     private final Logger log = Logger.getLogger(UpdateManager.class.getName());
 
-    private ProgramSettingsController programSettingsController;
-    private ShowInfoController showInfoController;
-    private UserInfoController userInfoController;
+    private final ProgramSettingsController programSettingsController;
+    private final ShowInfoController showInfoController;
+    private final UserInfoController userInfoController;
 
     public UpdateManager(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController) {
         this.programSettingsController = programSettingsController;
@@ -155,7 +155,7 @@ public class UpdateManager {
                     oldProgramSettingsFile.put("ProgramVersions", temp);
                     log.info("Program settings file has been updated from version -2.");
                 case 1:
-                    oldProgramSettingsFile.get("General").add(1, Variables.dataFolder);
+                    oldProgramSettingsFile.get("General").add(1, String.valueOf(Variables.dataFolder));
                     log.info("Program has been updated from version 1.");
                 case 2:
                     log.info("Program has been updated from version 2.");
@@ -333,7 +333,7 @@ public class UpdateManager {
                         });
                         showsMap.put(showName, new Show(showName, seasonsMap));
                     });
-                    showInfoController.saveShowsMapFile(showsMap, showsFileArray.indexOf(aHashMap));
+                    showInfoController.saveShowsMapFile(showsMap, showsFileArray.indexOf(aHashMap), false);
                 });
                 log.info("Show file has been updated from version -2.");
                 updated = true;

@@ -75,6 +75,9 @@ public class template extends Language {
         Strings.DirectoryVersionPlus1 = "";
         Strings.ClearFile = "";
         Strings.ResetProgram = "";
+        Strings.ToggleDevMode = "";
+        Strings.InAppData = "";
+        Strings.WithTheJar = "";
 
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "";
@@ -130,5 +133,7 @@ public class template extends Language {
         Strings.PleaseChooseYourLanguage = "";
         Strings.ChangeLanguage = "";
         Strings.RestartTheProgramForTheNewLanguageToTakeEffect = "";
+        Strings.WhereWouldYouLikeTheProgramFilesToBeStored = "";
+        Strings.HoverOverAButtonForThePath = "";
     }
 }

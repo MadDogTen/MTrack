@@ -11,7 +11,9 @@ import program.gui.ChangesBox;
 import program.gui.ConfirmBox;
 import program.gui.SettingsWindow;
 import program.information.ProgramSettingsController;
+import program.information.ShowInfoController;
 import program.information.UserInfoController;
+import program.io.CheckShowFiles;
 import program.util.Clock;
 import program.util.ImageLoader;
 import program.util.Strings;
@@ -21,13 +23,16 @@ import java.util.logging.Logger;
 
 public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
+    private final static ProgramSettingsController programSettingsController = new ProgramSettingsController();
+    private final static ShowInfoController showInfoController = new ShowInfoController(programSettingsController);
+    private final static UserInfoController userInfoController = new UserInfoController(showInfoController);
+    private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController);
+    private final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles);
     public static Clock clock = new Clock();
     private final static int timer = clock.getTimeSeconds();
     public static boolean programRunning = true, programFullyRunning = false;
     public static Stage stage;
     private static Thread thread;
-    private static ProgramSettingsController programSettingsController;
-    private static UserInfoController userInfoController;
 
     public static void main(String args[]) {
         launch(args);
@@ -80,40 +85,56 @@ public class Main extends Application implements Runnable {
         }
     }
 
-    public static void setProgramSettingsController(ProgramSettingsController programSettingsController) {
-        Main.programSettingsController = programSettingsController;
+    public static ProgramSettingsController getProgramSettingsController() {
+        return programSettingsController;
     }
 
-    public static void setUserInfoController(UserInfoController userInfoController) {
-        Main.userInfoController = userInfoController;
+    public static ShowInfoController getShowInfoController() {
+        return showInfoController;
+    }
+
+    public static UserInfoController getUserInfoController() {
+        return userInfoController;
+    }
+
+    public static CheckShowFiles getCheckShowFiles() {
+        return checkShowFiles;
+    }
+
+    public static MainRun getMainRun() {
+        return mainRun;
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        programSettingsController.setShowInfoController(showInfoController);
+        programSettingsController.setUserInfoController(userInfoController);
+        boolean continueStarting = mainRun.startBackend();
+        if (continueStarting) {
+            stage = primaryStage;
+            ImageLoader.setIcon(stage);
+            stage.initStyle(StageStyle.UNDECORATED);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/MainGui.fxml"));
+            Parent root = fxmlLoader.load();
 
-        stage = primaryStage;
-        ImageLoader.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/MainGui.fxml"));
-        Parent root = fxmlLoader.load();
+            stage.setWidth(Variables.SIZE_WIDTH);
+            stage.setHeight(Variables.SIZE_HEIGHT);
 
-        stage.setWidth(Variables.SIZE_WIDTH);
-        stage.setHeight(Variables.SIZE_HEIGHT);
+            Scene scene = new Scene(root);
 
-        Scene scene = new Scene(root);
+            scene.setFill(Color.WHITESMOKE);
 
-        scene.setFill(Color.WHITESMOKE);
+            stage.setOnCloseRequest(e -> {
+                e.consume();
+                stop(stage, true, true);
+            });
 
-        stage.setOnCloseRequest(e -> {
-            e.consume();
-            stop(stage, true, true);
-        });
+            stage.setResizable(true);
+            stage.setScene(scene);
+            stage.show();
 
-        stage.setResizable(true);
-        stage.setScene(scene);
-        stage.show();
-
-        start();
+            start();
+        } else stop(null, true, false);
     }
 
     private synchronized void start() {
@@ -127,7 +148,7 @@ public class Main extends Application implements Runnable {
     @Override
     public void run() {
         while (programFullyRunning) {
-            Controller.mainRun.tick();
+            mainRun.tick();
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {

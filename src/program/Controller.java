@@ -38,11 +38,10 @@ import java.util.stream.Collectors;
 @SuppressWarnings("WeakerAccess")
 public class Controller implements Initializable {
     private static final Logger log = Logger.getLogger(Controller.class.getName());
-    private final static ProgramSettingsController programSettingsController = new ProgramSettingsController();
-    private final static ShowInfoController showInfoController = new ShowInfoController(programSettingsController);
-    private final static UserInfoController userInfoController = new UserInfoController(showInfoController);
-    private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController);
-    public final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles);
+    private static ProgramSettingsController programSettingsController;
+    private static ShowInfoController showInfoController;
+    private static UserInfoController userInfoController;
+    private static CheckShowFiles checkShowFiles;
     private static Controller controller;
     // This is the list that is currently showing in the tableView. Currently can only be "active" or "inactive".
     private static String currentList = "active";
@@ -234,14 +233,13 @@ public class Controller implements Initializable {
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         log.info("MainController Running...");
         setController();
+        programSettingsController = Main.getProgramSettingsController();
+        showInfoController = Main.getShowInfoController();
+        userInfoController = Main.getUserInfoController();
+        checkShowFiles = Main.getCheckShowFiles();
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
-        mainRun.startBackend();
-        Main.setProgramSettingsController(programSettingsController);
-        Main.setUserInfoController(userInfoController);
-        programSettingsController.setShowInfoController(showInfoController);
-        programSettingsController.setUserInfoController(userInfoController);
         showsTab.setText(Strings.Shows);
         settingsTab.setText(Strings.Settings);
         show0Remaining = programSettingsController.getShow0Remaining();
@@ -262,6 +260,7 @@ public class Controller implements Initializable {
         episode.setText(Strings.Episode);
         episode.setPrefWidth(programSettingsController.getSettingsFile().getEpisodeColumnWidth());
         episode.setVisible(programSettingsController.getSettingsFile().isEpisodeColumnVisibility());
+        Controller.setTableViewFields("active");
         setTableView();
         tableView.getItems();
 
@@ -349,7 +348,7 @@ public class Controller implements Initializable {
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
                             String fileString = (aDirectory + Strings.FileSeparator + row.getItem().getShow());
-                            if (fileManager.checkFolderExists(fileString)) {
+                            if (fileManager.checkFolderExists(new File(fileString))) {
                                 folders.add(new File(fileString));
                             }
                         });

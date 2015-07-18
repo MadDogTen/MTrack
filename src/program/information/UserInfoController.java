@@ -15,9 +15,8 @@ import java.util.logging.Logger;
 
 public class UserInfoController {
     private final Logger log = Logger.getLogger(UserInfoController.class.getName());
-
+    private final ShowInfoController showInfoController;
     private UserSettings userSettings;
-    private ShowInfoController showInfoController;
 
     public UserInfoController(ShowInfoController showInfoController) {
         this.showInfoController = showInfoController;
@@ -31,7 +30,7 @@ public class UserInfoController {
     public ArrayList<String> getAllUsers() {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
         ArrayList<String> users = new ArrayList<>();
-        if (new FileManager().checkFolderExists(String.valueOf(folder))) {
+        if (new FileManager().checkFolderExists(folder)) {
             Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UsersExtension) && !name.toLowerCase().matches("Program"))));
         }
         ArrayList<String> usersCleaned = new ArrayList<>();

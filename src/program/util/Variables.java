@@ -1,6 +1,6 @@
 package program.util;
 
-import program.io.FileManager;
+import java.io.File;
 
 @SuppressWarnings("ClassWithoutLogger")
 public class Variables {
@@ -26,13 +26,14 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1002;
     public static final int ShowFileVersion = 1000;
 
-    public static final boolean devMode = true;
+    public static final boolean showOptionToToggleDevMode = true;
     public static final boolean startFresh = false; // Won't work unless devMode is true.
-
     public static final Integer defaultUpdateSpeed = 120;
     public static final String Logo = "/image/MTrackLogo.png";
+    public static boolean devMode = false;
     public static Integer updateSpeed;
-    public static String dataFolder;
+    public static File dataFolder;
+    public static String language;
 
     //---------- Other Variables ----------\\
 
@@ -40,8 +41,8 @@ public class Variables {
         Variables.updateSpeed = updateSpeed;
     }
 
-    public static void setDataFolder(FileManager fileManager) {
-        dataFolder = fileManager.getDataFolder();
+    public static void setDataFolder(File file) {
+        dataFolder = file;
     }
 
     //---------- Temp Variables ----------\\

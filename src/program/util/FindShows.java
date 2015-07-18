@@ -41,7 +41,7 @@ public class FindShows {
         log.finest("Searching for episodes...");
         ArrayList<String> episodes = new ArrayList<>();
         File folder = new File(dir + Strings.FileSeparator + ShowName + "/Season" + ' ' + Season);
-        if (new FileManager().checkFolderExists(String.valueOf(folder)) && new File(String.valueOf(folder)).list().length > 0) {
+        if (new FileManager().checkFolderExists(folder) && new File(String.valueOf(folder)).list().length > 0) {
             Collections.addAll(episodes, folder.list((dir1, name) -> name.toLowerCase().endsWith(".mkv") || name.toLowerCase().endsWith(".avi") || name.toLowerCase().endsWith(".mp4") || name.toLowerCase().endsWith(".ts")));
             return episodes;
         }

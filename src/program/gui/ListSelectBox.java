@@ -15,7 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import program.Controller;
+import program.Main;
 import program.information.ShowInfoController;
 import program.io.MoveWindow;
 import program.util.ImageLoader;
@@ -380,7 +380,7 @@ public class ListSelectBox {
 
         HBox buttonLayout = new HBox();
 
-        if (Controller.mainRun.firstRun) {
+        if (Main.getMainRun().firstRun) {
             buttonLayout.getChildren().addAll(submit);
         } else {
             Button exit = new Button(Strings.ExitButtonText);

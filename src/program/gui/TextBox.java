@@ -153,7 +153,7 @@ public class TextBox {
         if (currentDirectories.contains(message)) {
             new MessageBox().display(Strings.DirectoryIsAlreadyAdded, oldWindow);
             return false;
-        } else if (new FileManager().checkFolderExists(message)) {
+        } else if (new FileManager().checkFolderExists(new File(message))) {
             return true;
         } else if (!message.isEmpty()) {
             MessageBox messageBox = new MessageBox();
