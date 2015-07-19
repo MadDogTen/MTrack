@@ -1,8 +1,11 @@
 # MTrack
-A Program to track Shows you have Stored on your own Network.
+A Program to track Shows you have stored on your network for additions and removals, and help you keep track where you are in watching them.
 
-Coded using IntelliJ IDEA 14.1 Windows Edition.
+Coded using IntelliJ IDEA 14.1.4 Windows Edition.
 
-Works on Windows 10, Should would on other Windows versions. May work on other Operating Systems, But is untested (I wouldn't expect it too).
+Works on Windows 10, Might work on other Windows versions. Eventual support of other operating systems is planned (Ubuntu may or many not currently work).
 
-I made this to learn Java, As before this I knew nothing about coding in general. I expect to have done a lot of things terribly, But that's to be expected. Feel free to tell me if there are better ways to do something.
+Notice- I'm making this to learn Java. Before this project I had 0 experience in coding (or .1 if you could very basic HTML).
+I expect to have done a lot of things wrong, But with your help I can hopefully get better and make this a usable program.
+
+Shout-out to the helpful people at /r/Javahelp (https://www.reddit.com/r/Javahelp) for helping me significantly improve the code, and my coding ability with it.

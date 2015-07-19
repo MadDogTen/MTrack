@@ -17,7 +17,7 @@ public class en_US extends Language {
 
         // All Other Text
         Strings.DefaultUsername = "Default User";
-        Strings.TextMissing = "This text is missing, Please report.";
+        Strings.TextMissing = "Text is missing, Please report.";
 
         // Single Words
         Strings.Submit = "Submit";

@@ -1,9 +1,24 @@
 Changes:
 
-Pre-Alpha 0.9.9 -
-No changelog/further version changes until release to master.
+Alpha 0.1 - || Running changelog, Nothing finalized + Things may be missing. The development branch is constantly being updated which may break things, So make sure to backup you settings if you want to try it out.
+General Fixes.
+Changed Shows file storage to a much better storage format. Makes everything cleaner / better. Old files will convert to the new one.
+Changed Settings file storage to a much better storage format. Old files will convert to the new one.
+Episodes Number are no longer stored as a string, double episodes are stored as each being a single episode.
+Lipsum cannot be permanently set as your language (Next time you start the application it will ask you to pick a language).
+Added options to display which Season / Episode your on in a Column.
+All Column's width & visibility settings are saved.
+Changed most files not static, Controller now handles most of them.
+Pulled FirstRun from MainRun into a FirstRun class.
+Further refinements on the percentage on the progress indicator.
+Made an Abstract Language class and use that in LanguageHandler to load the languages.
+Added Option to have the files stored in AppData or at the location of the Jar.
+ChangesBox length is now based on how many entry's it has, Up to a maximum length of 17 until you have to scroll to see the rest.
+Added option (Programmer option, Will default to true until Beta) to Toggle DevMode for that run.
+ChangeBox will automatically refresh when new changes are added. (Checks once a second).
+Finished up multilingual support. Added some missing strings. Added check if any strings are missing after being set, and if any are missing, set them to TextMissing.
 
-DO NOT USE, Everything is broken, as it is meant to be. This will not work in any way, shape, or form.
+Note- Version bumped to Alpha 0.1. This is no longer considered pre-alpha.
 
 Pre-Alpha 0.9.8 -
 Added comments. Still tons more to add.

@@ -7,7 +7,7 @@ public class Strings {
     // Program Info
     public static final String ProgramTitle = "MTrack";
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Pre-Alpha 0.9.8";
+    public static final String MTrackVersion = "Alpha 0.1";
     public static final String CodedBy = "MadDogTen";
     public static final String CodedUsing = "Using: Intellij IDEA 14.1.4";
     public static final String codedWith = "Java";
@@ -153,7 +153,7 @@ public class Strings {
 
     public static void addMissingTextForAllMissingStrings() {
         log.info("Checking for missing Strings...");
-        if (TextMissing == null) TextMissing = "This text is missing, Please report.";
+        if (TextMissing == null) TextMissing = "Text is missing, Please report.";
 
         if (Submit == null) Submit = TextMissing;
         if (Clear == null) Clear = TextMissing;
