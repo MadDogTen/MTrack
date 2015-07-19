@@ -131,6 +131,7 @@ public class ProgramSettingsController {
             boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, showsFileArray);
             if (!showExistsElsewhere) {
                 userInfoController.setIgnoredStatus(aShow, true);
+                ChangeReporter.addChange(aShow + Strings.WasRemoved);
             }
             Controller.updateShowField(aShow, showExistsElsewhere);
         });
@@ -228,7 +229,7 @@ public class ProgramSettingsController {
     public void saveSettingsFile() {
         if (settingsFile != null) {
             new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
-            log.info("MainRun.programSettingsController- settingsFile has been saved!");
+            log.info("settingsFile has been saved!");
         }
     }
 }

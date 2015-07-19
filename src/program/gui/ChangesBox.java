@@ -3,6 +3,7 @@ package program.gui;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,10 +25,10 @@ import java.util.logging.Logger;
 public class ChangesBox {
     private static final Logger log = Logger.getLogger(ChangesBox.class.getName());
 
-    private static boolean currentlyOpen = false;
-    private static Stage window;
+    private boolean currentlyOpen = false;
+    private Stage window;
 
-    public static Stage getStage() {
+    public Stage getStage() {
         return window;
     }
 
@@ -59,7 +60,7 @@ public class ChangesBox {
         }
 
         Button clear = new Button(Strings.Clear);
-        Button refresh = new Button(Strings.Refresh);
+        /*Button refresh = new Button(Strings.Refresh);*/
         Button close = new Button(Strings.Close);
 
         final boolean[] answerBoolean = {false};
@@ -72,11 +73,11 @@ public class ChangesBox {
             window.close();
         });
 
-        refresh.setOnAction(e -> {
+        /*refresh.setOnAction(e -> {
             answerBoolean[0] = true;
             thisWindow[0] = window;
             window.close();
-        });
+        });*/
 
         close.setOnAction(e -> {
             answerBoolean[0] = false;
@@ -84,7 +85,7 @@ public class ChangesBox {
         });
 
         HBox hBox = new HBox();
-        hBox.getChildren().addAll(clear, refresh, close);
+        hBox.getChildren().addAll(clear, /*refresh,*/ close);
         hBox.setAlignment(Pos.CENTER);
         hBox.setPadding(new Insets(12, 12, 12, 12));
 
@@ -103,6 +104,21 @@ public class ChangesBox {
             window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
             window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
             new MoveWindow().moveWindow(window, null);
+            Task<Void> task = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception { //TODO Finish automatic refreshing
+                    while (window != null) {
+                        if (ChangeReporter.getNumberOfChanges() != changes.length) {
+                            answerBoolean[0] = true;
+                            window.close();
+                        }
+                        Thread.sleep(1000);
+                    }
+                    //noinspection ReturnOfNull
+                    return null;
+                }
+            };
+            new Thread(task);
         });
         window.showAndWait();
 

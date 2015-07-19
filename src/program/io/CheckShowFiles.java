@@ -8,6 +8,7 @@ import program.information.UserInfoController;
 import program.information.show.Episode;
 import program.information.show.Season;
 import program.information.show.Show;
+import program.util.Clock;
 import program.util.FindChangedShows;
 import program.util.FindShows;
 import program.util.Strings;
@@ -63,7 +64,7 @@ public class CheckShowFiles {
             // hasChanged - If anything is found differently, this will be set to true. Used at the end to determine if it should reload the showInfoController showsFile and scan for changes.
             final boolean[] hasChanged = {false};
             // timer - Used purely for log purposes to see how long the run takes.
-            int timer = Main.clock.getTimeSeconds();
+            int timer = Clock.getTimeSeconds();
             log.info("Started rechecking shows...");
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
@@ -159,10 +160,10 @@ public class CheckShowFiles {
                     showInfoController.loadShowsFile();
                     findChangedShows.findShowFileDifferences(showInfoController.getShowsFile());
                     log.info("Some shows have been updated.");
-                    log.info("Finished Rechecking Shows! - It took " + Main.clock.timeTakenSeconds(timer) + " seconds.");
+                    log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
                 } else if (Main.programFullyRunning) {
                     log.info("All shows were the same.");
-                    log.info("Finished Rechecking Shows! - It took " + Main.clock.timeTakenSeconds(timer) + " seconds.");
+                    log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
                 }
                 recheckShowFileRunning = false;
             }

@@ -50,6 +50,7 @@ public class Controller implements Initializable {
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
     private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
+    private ChangesBox changesBox;
     @FXML
     private Pane pane;
     @FXML
@@ -205,6 +206,14 @@ public class Controller implements Initializable {
         return controller.episode.isVisible();
     }
 
+    public static boolean isChangeBoxStageOpen() {
+        return controller.changesBox != null && controller.changesBox.getStage() != null;
+    }
+
+    public static void closeChangeBoxStage() {
+        controller.changesBox.getStage().close();
+    }
+
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
@@ -276,7 +285,7 @@ public class Controller implements Initializable {
                     setSeasonEpisode.setOnAction(e -> {
                         log.info("\"Set Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, showInfoController.getSeasonsList(show), showInfoController, pane.getScene().getWindow());
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(Strings.PickTheSeason, show, showInfoController.getSeasonsList(show), showInfoController, pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
                             userInfoController.setSeasonEpisode(show, seasonEpisode[0], seasonEpisode[1]);
@@ -291,7 +300,7 @@ public class Controller implements Initializable {
                     playSeasonEpisode.setOnAction(e -> {
                         log.info("\"Play Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode("Pick the Season", show, showInfoController.getSeasonsList(show), showInfoController, pane.getScene().getWindow());
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(Strings.PickTheSeason, show, showInfoController.getSeasonsList(show), showInfoController, pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
                             userInfoController.playAnyEpisode(show, seasonEpisode[0], seasonEpisode[1]);
@@ -370,7 +379,7 @@ public class Controller implements Initializable {
                         log.info("Finished opening show directory...");
                     });
                     MenuItem getRemaining = new MenuItem(Strings.GetRemaining);
-                    getRemaining.setOnAction(e -> log.info("Controller - There are " + userInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow(), showInfoController) + " episode(s) remaining."));
+                    getRemaining.setOnAction(e -> log.info("There are " + userInfoController.getRemainingNumberOfEpisodes(row.getItem().getShow(), showInfoController) + " episode(s) remaining."));
                     MenuItem playPreviousEpisode = new MenuItem(Strings.PlayPreviousEpisode);
                     playPreviousEpisode.setOnAction(e -> {
                         log.info("Attempting to play previous episode...");
@@ -428,7 +437,7 @@ public class Controller implements Initializable {
                             if (keepPlaying) {
                                 userInfoController.changeEpisode(aShow, -2, false);
                                 MessageBox messageBox = new MessageBox();
-                                messageBox.display("You have reached the end!", pane.getScene().getWindow());
+                                messageBox.display(Strings.YouHaveReachedTheEnd, pane.getScene().getWindow());
                             }
                             isShowCurrentlyPlaying = false;
                         }
@@ -498,7 +507,7 @@ public class Controller implements Initializable {
         show0RemainingCheckBox.setTooltip(new Tooltip(Strings.ShowHideShowsWith0EpisodeLeft));
         Tooltip.install(
                 pingingDirectory,
-                new Tooltip("Pinging Directories..."));
+                new Tooltip(Strings.PingingDirectories));
 
         // || ~~~~ Settings Tab ~~~~ || \\
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
@@ -564,7 +573,10 @@ public class Controller implements Initializable {
     }
 
     private void openChangeBox() {
-        if (ChangesBox.getStage() == null) {
+        if (changesBox == null || changesBox.getStage() == null) {
+            if (changesBox == null) {
+                changesBox = new ChangesBox();
+            }
             boolean keepOpen;
             Object[] answer = null;
             do {
@@ -572,11 +584,12 @@ public class Controller implements Initializable {
                 if (answer != null && answer[1] != null) {
                     neededWindow = (Stage) answer[1];
                 }
-                answer = new ChangesBox().display(neededWindow, ChangeReporter.getChanges());
+                answer = changesBox.display(neededWindow, ChangeReporter.getChanges());
                 keepOpen = (boolean) answer[0];
             } while (keepOpen);
+            changesBox = null;
         } else {
-            new ChangesBox().display(pane.getScene().getWindow(), ChangeReporter.getChanges());
+            changesBox.display(pane.getScene().getWindow(), ChangeReporter.getChanges());
         }
     }
 

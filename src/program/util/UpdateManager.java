@@ -356,12 +356,12 @@ public class UpdateManager {
         shows.forEach(aShow -> {
             if (!userShows.contains(aShow) && !ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and added.");
-                ChangeReporter.addChange(aShow + " was added.");
+                ChangeReporter.addChange(aShow + Strings.WasAdded);
                 userInfoController.addNewShow(aShow);
                 changed[0] = true;
             } else if (ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and un-ignored.");
-                ChangeReporter.addChange(aShow + " was added.");
+                ChangeReporter.addChange(aShow + Strings.WasAdded);
                 userInfoController.setIgnoredStatus(aShow, false);
                 changed[0] = true;
             }
@@ -369,7 +369,7 @@ public class UpdateManager {
         userShows.forEach(aShow -> {
             if (!shows.contains(aShow)) {
                 log.info(aShow + " wasn't found during user shows update.");
-                ChangeReporter.addChange(aShow + " has been removed.");
+                ChangeReporter.addChange(aShow + Strings.WasRemoved);
                 userInfoController.setIgnoredStatus(aShow, true);
                 changed[0] = true;
             }

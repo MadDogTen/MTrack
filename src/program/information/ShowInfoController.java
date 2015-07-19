@@ -1,10 +1,10 @@
 package program.information;
 
-import program.Main;
 import program.information.show.Episode;
 import program.information.show.Season;
 import program.information.show.Show;
 import program.io.FileManager;
+import program.util.Clock;
 import program.util.Strings;
 import program.util.Variables;
 
@@ -26,7 +26,7 @@ public class ShowInfoController {
 
     public void loadShowsFile() {
         if (programSettingsController.getDirectoriesNames().size() > 1) {
-            long timer = Main.clock.getTimeMilliSeconds();
+            long timer = Clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();
             ArrayList<Map<String, Show>> showsFileArray = getDirectoriesMaps(-1);
             HashSet<String> allShows = new HashSet<>();
@@ -42,7 +42,7 @@ public class ShowInfoController {
                 });
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
             });
-            log.info("ShowInfoController- It took " + Main.clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
+            log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
         } else {
             FileManager fileManager = new FileManager();
             //noinspection unchecked

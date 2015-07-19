@@ -108,7 +108,7 @@ public class TextBox {
         label.setText(message);
 
         TextField textField = new TextField();
-        textField.setPromptText("/PathToDirectory/Shows");
+        textField.setPromptText(Strings.FileSeparator + Strings.PathToDirectory + Strings.FileSeparator + Strings.Shows);
 
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {

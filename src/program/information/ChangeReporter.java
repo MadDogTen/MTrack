@@ -35,4 +35,8 @@ public class ChangeReporter {
     public static boolean getIsChanges() {
         return isChanges;
     }
+
+    public static int getNumberOfChanges() {
+        return changes.length;
+    }
 }

@@ -25,7 +25,7 @@ public class MainRun {
     private final CheckShowFiles checkShowFiles;
     public boolean firstRun = false, continueStarting = true; //TODO Finish continueStarting.
     private boolean hasRan = false, forceRun = true;
-    private int timer = Main.clock.getTimeSeconds();
+    private int timer = Clock.getTimeSeconds();
 
     public MainRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, CheckShowFiles checkShowFiles) {
         this.programSettingsController = programSettingsController;
@@ -129,12 +129,12 @@ public class MainRun {
     public void tick() {
         if (!hasRan) {
             log.info("MainRun Running...");
-            timer = Main.clock.getTimeSeconds();
+            timer = Clock.getTimeSeconds();
             hasRan = true;
         }
         boolean isShowCurrentlyPlaying = Controller.getIsShowCurrentlyPlaying();
         //noinspection PointlessBooleanExpression,ConstantConditions
-        if (!Variables.devMode && (forceRun && Main.clock.timeTakenSeconds(timer) > 2 || !isShowCurrentlyPlaying && (Main.clock.timeTakenSeconds(timer) > Variables.updateSpeed) || isShowCurrentlyPlaying && Main.clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
+        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || !isShowCurrentlyPlaying && (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) || isShowCurrentlyPlaying && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             final boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
@@ -153,7 +153,7 @@ public class MainRun {
                     log.severe(e.toString());
                 }
             }
-            timer = Main.clock.getTimeSeconds();
+            timer = Clock.getTimeSeconds();
             forceRun = false;
         }
     }
@@ -163,7 +163,7 @@ public class MainRun {
         log.info("getUser Running...");
         ArrayList<String> Users = userInfoController.getAllUsers();
         if (programSettingsController.isDefaultUsername()) {
-            log.info("MainRun- Using default user.");
+            log.info("Using default user.");
             return programSettingsController.getDefaultUsername();
         } else {
             return new ListSelectBox().display(Strings.ChooseYourUsername, Users, null);
@@ -185,6 +185,8 @@ public class MainRun {
             if (language != null && !language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice TODO <- Remove
                 Boolean wasSet = languageHandler.setLanguage(language);
                 if (wasSet) {
+                    Variables.language = language;
+                    Strings.addMissingTextForAllMissingStrings();
                     log.info("Language is set: " + language);
                 } else {
                     log.severe("Language was not set for some reason, Please report.");
@@ -203,6 +205,7 @@ public class MainRun {
                     Boolean wasSet = languageHandler.setLanguage(internalName);
                     if (wasSet) {
                         Variables.language = internalName;
+                        Strings.addMissingTextForAllMissingStrings();
                         log.info("Language is set: " + languageReadable);
                     } else {
                         log.severe("Language was not set for some reason, Please report.");

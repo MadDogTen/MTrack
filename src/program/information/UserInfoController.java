@@ -140,21 +140,21 @@ public class UserInfoController {
             }
             if (isAnotherEpisode(aShow, currentSeason, currentEpisode)) {
                 userSettings.getAShowSettings(aShow).setCurrentEpisode(currentEpisode);
-                log.info("UserInfoController- " + aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
+                log.info(aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
             } else if (isAnotherSeason(aShow, currentSeason)) {
                 userSettings.getAShowSettings(aShow).setCurrentSeason(currentSeason++);
                 if (isAnotherEpisode(aShow, currentSeason, 0))
                     userSettings.getAShowSettings(aShow).setCurrentEpisode(0);
                 else {
                     userSettings.getAShowSettings(aShow).setCurrentEpisode(0);
-                    log.info("UserInfoController- " + aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
+                    log.info(aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
                 }
             } else {
                 currentEpisode++;
                 userSettings.getAShowSettings(aShow).setCurrentEpisode(currentEpisode);
             }
         } else if (!fileExists && episode == -2) {
-            log.info("UserInfoController- No further files!");
+            log.info("No further files!");
         } else {
             if (doesEpisodeExist(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), episode)) {
                 userSettings.getAShowSettings(aShow).setCurrentEpisode(episode);
@@ -188,13 +188,13 @@ public class UserInfoController {
     public void setToBeginning(String aShow) {
         userSettings.getAShowSettings(aShow).setCurrentSeason(showInfoController.findLowestSeason(aShow));
         userSettings.getAShowSettings(aShow).setCurrentEpisode(showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
-        log.info("UserInfoController- " + aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
+        log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
     public void setToEnd(String aShow) {
         userSettings.getAShowSettings(aShow).setCurrentSeason(showInfoController.findHighestSeason(aShow));
         userSettings.getAShowSettings(aShow).setCurrentEpisode(showInfoController.findHighestEpisode(showInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
-        log.info("UserInfoController- " + aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
+        log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
     private boolean doesEpisodeExist(String aShow, int season, int episode) {
@@ -333,7 +333,7 @@ public class UserInfoController {
     public void saveUserSettingsFile() {
         if (userSettings != null) {
             new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
-            log.info("UserInfoController- userSettingsFile has been saved!");
+            log.info("userSettingsFile has been saved!");
         }
     }
 }

@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import program.gui.ChangesBox;
 import program.gui.ConfirmBox;
 import program.gui.SettingsWindow;
 import program.information.ProgramSettingsController;
@@ -28,8 +27,7 @@ public class Main extends Application implements Runnable {
     private final static UserInfoController userInfoController = new UserInfoController(showInfoController);
     private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController);
     private final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles);
-    public static Clock clock = new Clock();
-    private final static int timer = clock.getTimeSeconds();
+    private final static int timer = Clock.getTimeSeconds();
     public static boolean programRunning = true, programFullyRunning = false;
     public static Stage stage;
     private static Thread thread;
@@ -61,14 +59,14 @@ public class Main extends Application implements Runnable {
             programFullyRunning = false;
             programRunning = false;
 
-            int timeRan = clock.timeTakenSeconds(timer);
+            int timeRan = Clock.timeTakenSeconds(timer);
             if (timeRan > 60) {
                 log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             } else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
 
-            if (ChangesBox.getStage() != null)
-                ChangesBox.getStage().close();
+            if (Controller.isChangeBoxStageOpen())
+                Controller.closeChangeBoxStage();
 
             if (SettingsWindow.getStage() != null)
                 SettingsWindow.getStage().close();

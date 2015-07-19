@@ -127,7 +127,7 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = programSettingsController.addDirectory(index, textBox.addDirectoriesDisplay("Please enter show directory", programSettingsController.getDirectories(), "You need to enter a directory.", "Directory is invalid.", null));
+            boolean[] matched = programSettingsController.addDirectory(index, textBox.addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, programSettingsController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, null));
             index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();

@@ -17,7 +17,7 @@ public class en_US extends Language {
 
         // All Other Text
         Strings.DefaultUsername = "Default User";
-        Strings.TextMissing = "Error, Please report.";
+        Strings.TextMissing = "This text is missing, Please report.";
 
         // Single Words
         Strings.Submit = "Submit";
@@ -134,5 +134,13 @@ public class en_US extends Language {
         Strings.RestartTheProgramForTheNewLanguageToTakeEffect = "Restart the program for the new language to take effect.";
         Strings.WhereWouldYouLikeTheProgramFilesToBeStored = "Where would you like the program files to be stored?";
         Strings.HoverOverAButtonForThePath = "(Hover over a button for the path)";
+        Strings.WasAdded = " was added.";
+        Strings.WasRemoved = " was removed.";
+        Strings.DashSeason = " - Season ";
+        Strings.DashEpisode = " - Episode ";
+        Strings.PickTheSeason = "Pick the Season";
+        Strings.YouHaveReachedTheEnd = "You have reached the end!";
+        Strings.PingingDirectories = "Pinging Directories...";
+        Strings.PathToDirectory = "PathToDirectory";
     }
 }
