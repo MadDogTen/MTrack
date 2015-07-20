@@ -17,6 +17,7 @@ ChangesBox length is now based on how many entry's it has, Up to a maximum lengt
 Added option (Programmer option, Will default to true until Beta) to Toggle DevMode for that run.
 ChangeBox will automatically refresh when new changes are added. (Checks once a second).
 Finished up multilingual support. Added some missing strings. Added check if any strings are missing after being set, and if any are missing, set them to TextMissing.
+Converted to Maven build system.
 
 Note- Version bumped to Alpha 0.1. This is no longer considered pre-alpha.
 
