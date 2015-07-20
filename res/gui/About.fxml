@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="208.0" prefWidth="189.0"
-      xmlns="http://javafx.com/javafx/8" fx:controller="program.FXMLControllers.About">
+      xmlns="http://javafx.com/javafx/8" fx:controller="main.java.com.maddogten.mtrack.FXMLControllers.About">
     <children>
         <Label fx:id="programName" layoutX="47.0" layoutY="8.0" prefHeight="34.0" prefWidth="102.0" text="MTrack"
                textAlignment="CENTER">

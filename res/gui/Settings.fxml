@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-      fx:controller="program.FXMLControllers.Settings">
+      fx:controller="main.java.com.maddogten.mtrack.FXMLControllers.Settings">
     <children>
         <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
                  prefHeight="244.0" prefWidth="213.0" tabClosingPolicy="UNAVAILABLE">
