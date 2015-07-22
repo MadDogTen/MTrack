@@ -6,8 +6,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.maddogten.mtrack</groupId>
-    <artifactId>mtrack</artifactId>
-    <version>alpha-0.1</version>
+    <artifactId>MTrack</artifactId>
+    <version>Alpha_0.1</version>
     <packaging>jar</packaging>
 
     <name>MTrack</name>
@@ -18,7 +18,7 @@
     </properties>
 
     <build>
-        <finalName>${artifactId}-${version}${build.number}</finalName>
+        <finalName>${artifactId}-${version}#${build.number}</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
