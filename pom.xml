@@ -7,7 +7,7 @@
 
     <groupId>com.maddogten.mtrack</groupId>
     <artifactId>MTrack</artifactId>
-    <version>Alpha_0.1</version>
+    <version>Alpha|0.1</version>
     <packaging>jar</packaging>
 
     <name>MTrack</name>
@@ -18,7 +18,7 @@
     </properties>
 
     <build>
-        <finalName>${artifactId}-${version}#${build.number}</finalName>
+        <finalName>${artifactId}_${version}${build.number}#</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
