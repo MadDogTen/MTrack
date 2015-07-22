@@ -32,8 +32,9 @@
                             </manifest>
                         </archive>
                         <descriptorRefs>
-                            <descriptorRef>runnable</descriptorRef>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
                         </descriptorRefs>
+                        <appendAssemblyId>false</appendAssemblyId>
                     </configuration>
                 </plugin>
             </plugins>
