@@ -1,21 +1,21 @@
-package main.java.com.maddogten.mtrack.util;
+package com.maddogten.mtrack.util;
 
+import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.gui.ConfirmBox;
+import com.maddogten.mtrack.gui.DualChoiceButtons;
+import com.maddogten.mtrack.gui.MessageBox;
+import com.maddogten.mtrack.gui.TextBox;
+import com.maddogten.mtrack.information.ProgramSettingsController;
+import com.maddogten.mtrack.information.ShowInfoController;
+import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.settings.ProgramSettings;
+import com.maddogten.mtrack.information.settings.UserSettings;
+import com.maddogten.mtrack.information.settings.UserShowSettings;
+import com.maddogten.mtrack.information.show.Episode;
+import com.maddogten.mtrack.information.show.Season;
+import com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.io.FileManager;
 import javafx.concurrent.Task;
-import main.java.com.maddogten.mtrack.Main;
-import main.java.com.maddogten.mtrack.gui.ConfirmBox;
-import main.java.com.maddogten.mtrack.gui.DualChoiceButtons;
-import main.java.com.maddogten.mtrack.gui.MessageBox;
-import main.java.com.maddogten.mtrack.gui.TextBox;
-import main.java.com.maddogten.mtrack.information.ProgramSettingsController;
-import main.java.com.maddogten.mtrack.information.ShowInfoController;
-import main.java.com.maddogten.mtrack.information.UserInfoController;
-import main.java.com.maddogten.mtrack.information.settings.ProgramSettings;
-import main.java.com.maddogten.mtrack.information.settings.UserSettings;
-import main.java.com.maddogten.mtrack.information.settings.UserShowSettings;
-import main.java.com.maddogten.mtrack.information.show.Episode;
-import main.java.com.maddogten.mtrack.information.show.Season;
-import main.java.com.maddogten.mtrack.information.show.Show;
-import main.java.com.maddogten.mtrack.io.FileManager;
 
 import java.io.File;
 import java.io.Serializable;
@@ -92,7 +92,7 @@ public class FirstRun {
     // Generates the program settings file.
     public void generateProgramSettingsFile() {
         log.info("Attempting to generate program settings file.");
-        new FileManager().save(new ProgramSettings(), Strings.EmptyString, main.java.com.maddogten.mtrack.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
+        new FileManager().save(new ProgramSettings(), Strings.EmptyString, com.maddogten.mtrack.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
     }
 
     // Generates the ShowFiles (If a directory is added, otherwise this is skipped).

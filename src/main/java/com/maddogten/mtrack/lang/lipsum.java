@@ -1,6 +1,6 @@
-package main.java.com.maddogten.mtrack.lang;
+package com.maddogten.mtrack.lang;
 
-import main.java.com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Strings;
 
 import java.util.logging.Logger;
 

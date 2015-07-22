@@ -1,4 +1,4 @@
-package main.java.com.maddogten.mtrack.io;
+package com.maddogten.mtrack.io;
 
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;

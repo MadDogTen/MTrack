@@ -1,17 +1,17 @@
-package main.java.com.maddogten.mtrack.io;
+package com.maddogten.mtrack.io;
 
-import main.java.com.maddogten.mtrack.Controller;
-import main.java.com.maddogten.mtrack.Main;
-import main.java.com.maddogten.mtrack.information.ProgramSettingsController;
-import main.java.com.maddogten.mtrack.information.ShowInfoController;
-import main.java.com.maddogten.mtrack.information.UserInfoController;
-import main.java.com.maddogten.mtrack.information.show.Episode;
-import main.java.com.maddogten.mtrack.information.show.Season;
-import main.java.com.maddogten.mtrack.information.show.Show;
-import main.java.com.maddogten.mtrack.util.Clock;
-import main.java.com.maddogten.mtrack.util.FindChangedShows;
-import main.java.com.maddogten.mtrack.util.FindShows;
-import main.java.com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.information.ProgramSettingsController;
+import com.maddogten.mtrack.information.ShowInfoController;
+import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.show.Episode;
+import com.maddogten.mtrack.information.show.Season;
+import com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.util.Clock;
+import com.maddogten.mtrack.util.FindChangedShows;
+import com.maddogten.mtrack.util.FindShows;
+import com.maddogten.mtrack.util.Strings;
 
 import java.io.File;
 import java.util.*;

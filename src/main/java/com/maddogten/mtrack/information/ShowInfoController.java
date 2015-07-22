@@ -1,12 +1,12 @@
-package main.java.com.maddogten.mtrack.information;
+package com.maddogten.mtrack.information;
 
-import main.java.com.maddogten.mtrack.information.show.Episode;
-import main.java.com.maddogten.mtrack.information.show.Season;
-import main.java.com.maddogten.mtrack.information.show.Show;
-import main.java.com.maddogten.mtrack.io.FileManager;
-import main.java.com.maddogten.mtrack.util.Clock;
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.information.show.Episode;
+import com.maddogten.mtrack.information.show.Season;
+import com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.Clock;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.io.Serializable;
 import java.util.*;

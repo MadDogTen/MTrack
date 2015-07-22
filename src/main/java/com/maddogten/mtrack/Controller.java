@@ -1,5 +1,16 @@
-package main.java.com.maddogten.mtrack;
+package com.maddogten.mtrack;
 
+import com.maddogten.mtrack.gui.*;
+import com.maddogten.mtrack.information.ChangeReporter;
+import com.maddogten.mtrack.information.ProgramSettingsController;
+import com.maddogten.mtrack.information.ShowInfoController;
+import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.show.DisplayShows;
+import com.maddogten.mtrack.io.CheckShowFiles;
+import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -15,17 +26,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import main.java.com.maddogten.mtrack.gui.*;
-import main.java.com.maddogten.mtrack.information.ChangeReporter;
-import main.java.com.maddogten.mtrack.information.ProgramSettingsController;
-import main.java.com.maddogten.mtrack.information.ShowInfoController;
-import main.java.com.maddogten.mtrack.information.UserInfoController;
-import main.java.com.maddogten.mtrack.information.show.DisplayShows;
-import main.java.com.maddogten.mtrack.io.CheckShowFiles;
-import main.java.com.maddogten.mtrack.io.FileManager;
-import main.java.com.maddogten.mtrack.io.MoveWindow;
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
 import java.net.URL;

@@ -1,4 +1,4 @@
-package main.java.com.maddogten.mtrack.util;
+package com.maddogten.mtrack.util;
 
 import javafx.scene.image.Image;
 import javafx.stage.Stage;

@@ -1,13 +1,13 @@
-package main.java.com.maddogten.mtrack;
+package com.maddogten.mtrack;
 
+import com.maddogten.mtrack.gui.ListSelectBox;
+import com.maddogten.mtrack.information.ProgramSettingsController;
+import com.maddogten.mtrack.information.ShowInfoController;
+import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.io.CheckShowFiles;
+import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.*;
 import javafx.concurrent.Task;
-import main.java.com.maddogten.mtrack.gui.ListSelectBox;
-import main.java.com.maddogten.mtrack.information.ProgramSettingsController;
-import main.java.com.maddogten.mtrack.information.ShowInfoController;
-import main.java.com.maddogten.mtrack.information.UserInfoController;
-import main.java.com.maddogten.mtrack.io.CheckShowFiles;
-import main.java.com.maddogten.mtrack.io.FileManager;
-import main.java.com.maddogten.mtrack.util.*;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;

@@ -1,10 +1,10 @@
-package main.java.com.maddogten.mtrack.information;
+package com.maddogten.mtrack.information;
 
-import main.java.com.maddogten.mtrack.information.settings.UserSettings;
-import main.java.com.maddogten.mtrack.information.settings.UserShowSettings;
-import main.java.com.maddogten.mtrack.io.FileManager;
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.information.settings.UserSettings;
+import com.maddogten.mtrack.information.settings.UserShowSettings;
+import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
-package main.java.com.maddogten.mtrack.util;
+package com.maddogten.mtrack.util;
 
-import main.java.com.maddogten.mtrack.lang.Language;
-import main.java.com.maddogten.mtrack.lang.en_US;
-import main.java.com.maddogten.mtrack.lang.lipsum;
+import com.maddogten.mtrack.lang.Language;
+import com.maddogten.mtrack.lang.en_US;
+import com.maddogten.mtrack.lang.lipsum;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,5 +1,10 @@
-package main.java.com.maddogten.mtrack.gui;
+package com.maddogten.mtrack.gui;
 
+import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,11 +17,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import main.java.com.maddogten.mtrack.io.FileManager;
-import main.java.com.maddogten.mtrack.io.MoveWindow;
-import main.java.com.maddogten.mtrack.util.ImageLoader;
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;

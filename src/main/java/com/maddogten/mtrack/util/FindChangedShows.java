@@ -1,7 +1,7 @@
-package main.java.com.maddogten.mtrack.util;
+package com.maddogten.mtrack.util;
 
-import main.java.com.maddogten.mtrack.information.ChangeReporter;
-import main.java.com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.information.ChangeReporter;
+import com.maddogten.mtrack.information.show.Show;
 
 import java.util.ArrayList;
 import java.util.Map;

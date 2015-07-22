@@ -1,5 +1,7 @@
-package main.java.com.maddogten.mtrack.gui;
+package com.maddogten.mtrack.gui;
 
+import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.util.ImageLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,8 +10,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import main.java.com.maddogten.mtrack.Main;
-import main.java.com.maddogten.mtrack.util.ImageLoader;
 
 import java.util.logging.Logger;
 

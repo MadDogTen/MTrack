@@ -1,4 +1,4 @@
-package main.java.com.maddogten.mtrack.information.show;
+package com.maddogten.mtrack.information.show;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;

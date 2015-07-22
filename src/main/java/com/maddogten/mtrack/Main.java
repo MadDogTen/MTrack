@@ -1,5 +1,15 @@
-package main.java.com.maddogten.mtrack;
+package com.maddogten.mtrack;
 
+import com.maddogten.mtrack.gui.ConfirmBox;
+import com.maddogten.mtrack.gui.SettingsWindow;
+import com.maddogten.mtrack.information.ProgramSettingsController;
+import com.maddogten.mtrack.information.ShowInfoController;
+import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.io.CheckShowFiles;
+import com.maddogten.mtrack.util.Clock;
+import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,16 +17,6 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import main.java.com.maddogten.mtrack.gui.ConfirmBox;
-import main.java.com.maddogten.mtrack.gui.SettingsWindow;
-import main.java.com.maddogten.mtrack.information.ProgramSettingsController;
-import main.java.com.maddogten.mtrack.information.ShowInfoController;
-import main.java.com.maddogten.mtrack.information.UserInfoController;
-import main.java.com.maddogten.mtrack.io.CheckShowFiles;
-import main.java.com.maddogten.mtrack.util.Clock;
-import main.java.com.maddogten.mtrack.util.ImageLoader;
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
 
 import java.util.logging.Logger;
 

@@ -1,4 +1,4 @@
-package main.java.com.maddogten.mtrack.information;
+package com.maddogten.mtrack.information;
 
 import java.util.logging.Logger;
 

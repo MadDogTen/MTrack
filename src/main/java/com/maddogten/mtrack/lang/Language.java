@@ -1,4 +1,4 @@
-package main.java.com.maddogten.mtrack.lang;
+package com.maddogten.mtrack.lang;
 
 @SuppressWarnings("ClassWithoutLogger")
 public abstract class Language {

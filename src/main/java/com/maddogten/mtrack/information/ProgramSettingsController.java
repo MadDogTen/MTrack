@@ -1,12 +1,12 @@
-package main.java.com.maddogten.mtrack.information;
+package com.maddogten.mtrack.information;
 
-import main.java.com.maddogten.mtrack.Controller;
-import main.java.com.maddogten.mtrack.Main;
-import main.java.com.maddogten.mtrack.information.settings.ProgramSettings;
-import main.java.com.maddogten.mtrack.information.show.Show;
-import main.java.com.maddogten.mtrack.io.FileManager;
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.information.settings.ProgramSettings;
+import com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class ProgramSettingsController {
     public void setUpdateSpeed(int updateSpeed) {
         settingsFile.setUpdateSpeed(updateSpeed);
         Variables.setUpdateSpeed(updateSpeed);
-        log.info("Update speed is now set too: ");
+        log.info("Update speed is now set to: " + updateSpeed);
     }
 
     public boolean getShow0Remaining() {

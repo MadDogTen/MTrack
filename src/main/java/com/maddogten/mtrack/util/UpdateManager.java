@@ -1,16 +1,16 @@
-package main.java.com.maddogten.mtrack.util;
+package com.maddogten.mtrack.util;
 
-import main.java.com.maddogten.mtrack.information.ChangeReporter;
-import main.java.com.maddogten.mtrack.information.ProgramSettingsController;
-import main.java.com.maddogten.mtrack.information.ShowInfoController;
-import main.java.com.maddogten.mtrack.information.UserInfoController;
-import main.java.com.maddogten.mtrack.information.settings.ProgramSettings;
-import main.java.com.maddogten.mtrack.information.settings.UserSettings;
-import main.java.com.maddogten.mtrack.information.settings.UserShowSettings;
-import main.java.com.maddogten.mtrack.information.show.Episode;
-import main.java.com.maddogten.mtrack.information.show.Season;
-import main.java.com.maddogten.mtrack.information.show.Show;
-import main.java.com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.information.ChangeReporter;
+import com.maddogten.mtrack.information.ProgramSettingsController;
+import com.maddogten.mtrack.information.ShowInfoController;
+import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.settings.ProgramSettings;
+import com.maddogten.mtrack.information.settings.UserSettings;
+import com.maddogten.mtrack.information.settings.UserShowSettings;
+import com.maddogten.mtrack.information.show.Episode;
+import com.maddogten.mtrack.information.show.Season;
+import com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.io.FileManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;

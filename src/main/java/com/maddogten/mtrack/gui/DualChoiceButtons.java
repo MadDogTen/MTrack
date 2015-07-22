@@ -1,5 +1,7 @@
-package main.java.com.maddogten.mtrack.gui;
+package com.maddogten.mtrack.gui;
 
+import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.util.ImageLoader;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,8 +15,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import main.java.com.maddogten.mtrack.io.MoveWindow;
-import main.java.com.maddogten.mtrack.util.ImageLoader;
 
 import java.util.logging.Logger;
 

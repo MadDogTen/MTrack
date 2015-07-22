@@ -1,6 +1,6 @@
-package main.java.com.maddogten.mtrack.util;
+package com.maddogten.mtrack.util;
 
-import main.java.com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.io.FileManager;
 
 import java.io.File;
 import java.util.ArrayList;

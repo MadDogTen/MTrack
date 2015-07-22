@@ -1,7 +1,7 @@
-package main.java.com.maddogten.mtrack.information.settings;
+package com.maddogten.mtrack.information.settings;
 
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.io.Serializable;
 import java.util.ArrayList;

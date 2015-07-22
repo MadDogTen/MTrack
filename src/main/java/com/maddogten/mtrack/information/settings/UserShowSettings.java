@@ -1,4 +1,4 @@
-package main.java.com.maddogten.mtrack.information.settings;
+package com.maddogten.mtrack.information.settings;
 
 import java.io.Serializable;
 

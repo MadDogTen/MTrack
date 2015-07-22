@@ -1,5 +1,7 @@
-package main.java.com.maddogten.mtrack.FXMLControllers;
+package com.maddogten.mtrack.FXMLControllers;
 
+import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.util.Strings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -7,8 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import main.java.com.maddogten.mtrack.io.MoveWindow;
-import main.java.com.maddogten.mtrack.util.Strings;
 
 import java.net.URL;
 import java.util.ResourceBundle;

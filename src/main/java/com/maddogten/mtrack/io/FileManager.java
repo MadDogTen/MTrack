@@ -1,8 +1,8 @@
-package main.java.com.maddogten.mtrack.io;
+package com.maddogten.mtrack.io;
 
-import main.java.com.maddogten.mtrack.util.OperatingSystem;
-import main.java.com.maddogten.mtrack.util.Strings;
-import main.java.com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.util.OperatingSystem;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.awt.*;
 import java.io.*;
