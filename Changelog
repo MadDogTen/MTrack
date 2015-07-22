@@ -19,7 +19,7 @@ ChangeBox will automatically refresh when new changes are added. (Checks once a 
 Finished up multilingual support. Added some missing strings. Added check if any strings are missing after being set, and if any are missing, set them to TextMissing.
 Converted to Maven build system.
 
-Note- Version bumped to Alpha 0.1. This is no longer considered pre-alpha.
+Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently have one up, but it is planned).
 
 Pre-Alpha 0.9.8 -
 Added comments. Still tons more to add.
