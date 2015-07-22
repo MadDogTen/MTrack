@@ -45,7 +45,10 @@ public class MainRun {
             File[] files = path.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    String[] splitFile = file.toString().split("\\\\");
+                    String[] splitFile;
+                    if (Strings.FileSeparator.matches("\\\\")) {
+                        splitFile = String.valueOf(file).split("\\\\");
+                    } else splitFile = String.valueOf(file).split(Strings.FileSeparator);
                     if (splitFile[splitFile.length - 1].matches(Strings.SettingsFileName + Variables.SettingsExtension)) {
                         Variables.setDataFolder(path);
                         folderFound = true;
@@ -93,6 +96,8 @@ public class MainRun {
             runFinished = true;
         }
 
+        if (!continueStarting) return false;
+
         UpdateManager updateManager = new UpdateManager(programSettingsController, showInfoController, userInfoController);
 
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
@@ -102,7 +107,12 @@ public class MainRun {
                 programSettingsController.loadProgramSettingsFile();
                 updateManager.updateShowFile();
                 getLanguage();
+                if (!continueStarting) return false;
                 Strings.UserName = getUser();
+                if (!continueStarting) return false;
+                if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
+                    new FirstRun(programSettingsController, showInfoController, userInfoController).generateUserSettingsFile(Strings.UserName);
+                }
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();
                 userInfoController.loadUserInfo();
@@ -111,14 +121,18 @@ public class MainRun {
                 programSettingsController.loadProgramSettingsFile();
                 updateManager.updateShowFile();
                 getLanguage();
+                if (!continueStarting) return false;
                 Strings.UserName = getUser();
+                if (!continueStarting) return false;
+                if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
+                    new FirstRun(programSettingsController, showInfoController, userInfoController).generateUserSettingsFile(Strings.UserName);
+                }
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();
                 userInfoController.loadUserInfo();
                 // If those both exists, then it starts normally.
             }
         }
-
         log.info("Username is set: " + Strings.UserName);
         updateManager.updateMainDirectoryVersion();
         Variables.setUpdateSpeed(programSettingsController.getUpdateSpeed());
@@ -166,7 +180,11 @@ public class MainRun {
             log.info("Using default user.");
             return programSettingsController.getDefaultUsername();
         } else {
-            return new ListSelectBox().display(Strings.ChooseYourUsername, Users, null);
+            String result = new ListSelectBox().display(Strings.ChooseYourUsername, Users, null);
+            if (result.matches(Strings.AddNewUsername)) {
+                continueStarting = false;
+            }
+            return result;
         }
     }
 
@@ -186,7 +204,7 @@ public class MainRun {
                 Boolean wasSet = languageHandler.setLanguage(language);
                 if (wasSet) {
                     Variables.language = language;
-                    Strings.addMissingTextForAllMissingStrings();
+                    languageHandler.addMissingTextForAllMissingStrings();
                     log.info("Language is set: " + language);
                 } else {
                     log.severe("Language was not set for some reason, Please report.");
@@ -194,7 +212,8 @@ public class MainRun {
             } else {
                 languageHandler.setLanguage(Variables.DefaultLanguage);
                 String languageReadable = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages.values(), null);
-                if (languageReadable != null && !languageReadable.isEmpty()) {
+                if (languageReadable.matches("-2")) continueStarting = false;
+                else {
                     String internalName = Strings.EmptyString;
                     for (String langKey : languages.keySet()) {
                         if (languages.get(langKey).matches(languageReadable)) {
@@ -205,12 +224,12 @@ public class MainRun {
                     Boolean wasSet = languageHandler.setLanguage(internalName);
                     if (wasSet) {
                         Variables.language = internalName;
-                        Strings.addMissingTextForAllMissingStrings();
+                        languageHandler.addMissingTextForAllMissingStrings();
                         log.info("Language is set: " + languageReadable);
                     } else {
                         log.severe("Language was not set for some reason, Please report.");
                     }
-                } else getLanguage();
+                }
             }
         }
     }

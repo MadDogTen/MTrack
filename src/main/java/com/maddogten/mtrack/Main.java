@@ -65,7 +65,7 @@ public class Main extends Application implements Runnable {
             } else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
 
-            if (Controller.isChangeBoxStageOpen())
+            if (programFullyRunning && Controller.isChangeBoxStageOpen())
                 Controller.closeChangeBoxStage();
 
             if (SettingsWindow.getStage() != null)

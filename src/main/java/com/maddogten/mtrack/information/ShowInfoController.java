@@ -96,7 +96,7 @@ public class ShowInfoController {
     }
 
     public Set<Integer> getEpisodesList(String show, int season) {
-        if (showsFile.containsKey(show)) {
+        if (showsFile.containsKey(show) && showsFile.get(show).getSeasons().containsKey(season)) {
             return showsFile.get(show).getSeason(season).getEpisodes().keySet();
         } else return new HashSet<>();
     }

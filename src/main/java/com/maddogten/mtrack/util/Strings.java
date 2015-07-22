@@ -1,8 +1,8 @@
 package com.maddogten.mtrack.util;
 
 import java.io.File;
-import java.util.logging.Logger;
 
+@SuppressWarnings("ClassWithoutLogger")
 public class Strings {
     // Program Info
     public static final String ProgramTitle = "MTrack";
@@ -18,7 +18,7 @@ public class Strings {
     public static final String EmptyString = "";
     public static final String FileSeparator = File.separator;
     public static final String ExitButtonText = "X";
-    private static final Logger log = Logger.getLogger(Strings.class.getName());
+
     // All Other Text
     public static String DefaultUsername;
     @SuppressWarnings("unused")
@@ -150,130 +150,4 @@ public class Strings {
 
     // Strings set by program
     public static String UserName;
-
-    public static void addMissingTextForAllMissingStrings() {
-        log.info("Checking for missing Strings...");
-        if (TextMissing == null) TextMissing = "Text is missing, Please report.";
-
-        if (Submit == null) Submit = TextMissing;
-        if (Clear == null) Clear = TextMissing;
-        if (Refresh == null) Refresh = TextMissing;
-        if (Close == null) Close = TextMissing;
-        if (Yes == null) Yes = TextMissing;
-        if (No == null) No = TextMissing;
-        if (Beginning == null) Beginning = TextMissing;
-        if (End == null) End = TextMissing;
-        if (QuestionMark == null) QuestionMark = TextMissing;
-        if (Shows == null) Shows = TextMissing;
-        if (Left == null) Left = TextMissing;
-        if (Settings == null) Settings = TextMissing;
-        if (Options == null) Options = TextMissing;
-        if (Main == null) Main = TextMissing;
-        if (Users == null) Users = TextMissing;
-        if (Other == null) Other = TextMissing;
-        if (Developers == null) Developers = TextMissing;
-        if (Reset == null) Reset = TextMissing;
-        if (About == null) About = TextMissing;
-        if (Season == null) Season = TextMissing;
-        if (Episode == null) Episode = TextMissing;
-        if (SetSeasonEpisode == null) SetSeasonEpisode = TextMissing;
-        if (PlaySeasonEpisode == null) PlaySeasonEpisode = TextMissing;
-        if (HideShow == null) HideShow = TextMissing;
-        if (ResetTo == null) ResetTo = TextMissing;
-        if (OpenFileLocation == null) OpenFileLocation = TextMissing;
-        if (GetRemaining == null) GetRemaining = TextMissing;
-        if (PlayPreviousEpisode == null) PlayPreviousEpisode = TextMissing;
-        if (SetInactive == null) SetInactive = TextMissing;
-        if (SetActive == null) SetActive = TextMissing;
-        if (SwitchBetweenActiveInactiveList == null) SwitchBetweenActiveInactiveList = TextMissing;
-        if (AddUser == null) AddUser = TextMissing;
-        if (DeleteUser == null) DeleteUser = TextMissing;
-        if (ChangeUpdateTime == null) ChangeUpdateTime = TextMissing;
-        if (ForceRecheckShows == null) ForceRecheckShows = TextMissing;
-        if (AddDirectory == null) AddDirectory = TextMissing;
-        if (RemoveDirectory == null) RemoveDirectory = TextMissing;
-        if (OpenSettingsFolder == null) OpenSettingsFolder = TextMissing;
-        if (PrintAllShowInfo == null) PrintAllShowInfo = TextMissing;
-        if (PrintAllDirectories == null) PrintAllDirectories = TextMissing;
-        if (PrintEmptyShows == null) PrintEmptyShows = TextMissing;
-        if (PrintIgnoredShows == null) PrintIgnoredShows = TextMissing;
-        if (PrintHiddenShows == null) PrintHiddenShows = TextMissing;
-        if (UnHideAll == null) UnHideAll = TextMissing;
-        if (SetAllActive == null) SetAllActive = TextMissing;
-        if (SetAllInactive == null) SetAllInactive = TextMissing;
-        if (PrintPSFV == null) PrintPSFV = TextMissing;
-        if (PrintUSFV == null) PrintUSFV = TextMissing;
-        if (PrintAllUserInfo == null) PrintAllUserInfo = TextMissing;
-        if (DirectoryVersionPlus1 == null) DirectoryVersionPlus1 = TextMissing;
-        if (ClearFile == null) ClearFile = TextMissing;
-        if (ResetProgram == null) ResetProgram = TextMissing;
-        if (ToggleDevMode == null) ToggleDevMode = TextMissing;
-        if (InAppData == null) InAppData = TextMissing;
-        if (WithTheJar == null) WithTheJar = TextMissing;
-        if (ShowHideShowsWith0EpisodeLeft == null) ShowHideShowsWith0EpisodeLeft = TextMissing;
-        if (CurrentlyRechecking == null) CurrentlyRechecking = TextMissing;
-        if (DeleteUsersNoteCantDeleteCurrentUser == null) DeleteUsersNoteCantDeleteCurrentUser = TextMissing;
-        if (WarningUnrecoverable == null) WarningUnrecoverable = TextMissing;
-        if (AddNewUsername == null) AddNewUsername = TextMissing;
-        if (PleaseEnterUsername == null) PleaseEnterUsername = TextMissing;
-        if (UseDefaultUsername == null) UseDefaultUsername = TextMissing;
-        if (DefaultUserNotSet == null) DefaultUserNotSet = TextMissing;
-        if (PleaseChooseAFolder == null) PleaseChooseAFolder = TextMissing;
-        if (PickTheEpisode == null) PickTheEpisode = TextMissing;
-        if (YouHaveToPickASeason == null) YouHaveToPickASeason = TextMissing;
-        if (YouHaveToPickAEpisode == null) YouHaveToPickAEpisode = TextMissing;
-        if (NextEpisode == null) NextEpisode = TextMissing;
-        if (UsernameIsntValid == null) UsernameIsntValid = TextMissing;
-        if (UsernameAlreadyTaken == null) UsernameAlreadyTaken = TextMissing;
-        if (UsernameIsTooLong == null) UsernameIsTooLong = TextMissing;
-        if (DirectoryIsAlreadyAdded == null) DirectoryIsAlreadyAdded = TextMissing;
-        if (MustBeANumberGreaterThanOrEqualTo10 == null) MustBeANumberGreaterThanOrEqualTo10 = TextMissing;
-        if (ChooseYourUsername == null) ChooseYourUsername = TextMissing;
-        if (DirectoryWasADuplicate == null) DirectoryWasADuplicate = TextMissing;
-        if (AddAnotherDirectory == null) AddAnotherDirectory = TextMissing;
-        if (WhatShould == null) WhatShould = TextMissing;
-        if (BeResetTo == null) BeResetTo = TextMissing;
-        if (ShowIsResetToThe == null) ShowIsResetToThe = TextMissing;
-        if (DoYouWantToOpenAllAssociatedFolders == null) DoYouWantToOpenAllAssociatedFolders = TextMissing;
-        if (PickTheFolderYouWantToOpen == null) PickTheFolderYouWantToOpen = TextMissing;
-        if (NoDirectlyPrecedingEpisodesFound == null) NoDirectlyPrecedingEpisodesFound = TextMissing;
-        if (HaveYouWatchedTheShow == null) HaveYouWatchedTheShow = TextMissing;
-        if (AreYouSure == null) AreYouSure = TextMissing;
-        if (PleaseChooseADefaultUser == null) PleaseChooseADefaultUser = TextMissing;
-        if (ThereAreNoOtherUsersToDelete == null) ThereAreNoOtherUsersToDelete = TextMissing;
-        if (UserToDelete == null) UserToDelete = TextMissing;
-        if (AreYouSureToWantToDelete == null) AreYouSureToWantToDelete = TextMissing;
-        if (EnterHowFastYouWantItToScanTheShowsFolders == null)
-            EnterHowFastYouWantItToScanTheShowsFolders = TextMissing;
-        if (LeaveItAsIs == null) LeaveItAsIs = TextMissing;
-        if (PleaseEnterShowsDirectory == null) PleaseEnterShowsDirectory = TextMissing;
-        if (YouNeedToEnterADirectory == null) YouNeedToEnterADirectory = TextMissing;
-        if (DirectoryIsInvalid == null) DirectoryIsInvalid = TextMissing;
-        if (ThereAreNoDirectoriesToDelete == null) ThereAreNoDirectoriesToDelete = TextMissing;
-        if (ThereAreNoDirectoriesToClear == null) ThereAreNoDirectoriesToClear = TextMissing;
-        if (DirectoryToClear == null) DirectoryToClear = TextMissing;
-        if (AreYouSureToWantToClear == null) AreYouSureToWantToClear = TextMissing;
-        if (AreYouSureThisWillDeleteEverything == null) AreYouSureThisWillDeleteEverything = TextMissing;
-        if (OpenChangesWindow == null) OpenChangesWindow = TextMissing;
-        if (Dev1 == null) Dev1 = TextMissing;
-        if (Dev2 == null) Dev2 = TextMissing;
-        if (SetDefaultUser == null) SetDefaultUser = TextMissing;
-        if (DirectoryToDelete == null) DirectoryToDelete = TextMissing;
-        if (PleaseChooseYourLanguage == null) PleaseChooseYourLanguage = TextMissing;
-        if (ChangeLanguage == null) ChangeLanguage = TextMissing;
-        if (RestartTheProgramForTheNewLanguageToTakeEffect == null)
-            RestartTheProgramForTheNewLanguageToTakeEffect = TextMissing;
-        if (WhereWouldYouLikeTheProgramFilesToBeStored == null)
-            WhereWouldYouLikeTheProgramFilesToBeStored = TextMissing;
-        if (HoverOverAButtonForThePath == null) HoverOverAButtonForThePath = TextMissing;
-        if (WasAdded == null) WasAdded = TextMissing;
-        if (WasRemoved == null) WasRemoved = TextMissing;
-        if (DashSeason == null) DashSeason = TextMissing;
-        if (DashEpisode == null) DashEpisode = TextMissing;
-        if (PickTheSeason == null) PickTheSeason = TextMissing;
-        if (YouHaveReachedTheEnd == null) YouHaveReachedTheEnd = TextMissing;
-        if (PingingDirectories == null) PingingDirectories = TextMissing;
-        if (PathToDirectory == null) PathToDirectory = TextMissing;
-        log.info("Finished checking for missing Strings.");
-    }
 }

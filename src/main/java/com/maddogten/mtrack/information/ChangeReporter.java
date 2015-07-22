@@ -19,7 +19,6 @@ public class ChangeReporter {
             iterator++;
         }
         isChanges = true;
-        log.info("Finished adding new change.");
     }
 
     public static void resetChanges() {

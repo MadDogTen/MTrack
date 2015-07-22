@@ -49,7 +49,10 @@ public class UpdateManager {
                 log.info("Old Program file was unable to be loaded.");
             }
             if (oldProgramSettingsFile != null) {
-                int currentVersion = Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(0));
+                int currentVersion;
+                if (oldProgramSettingsFile.containsKey("ProgramVersions")) {
+                    currentVersion = Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(0));
+                } else currentVersion = -2;
                 if (Variables.ProgramSettingsFileVersion == currentVersion) {
                     log.info("Program settings file versions matched.");
                 } else {
@@ -98,7 +101,10 @@ public class UpdateManager {
                 log.info("Old User file was unable to be loaded.");
             }
             if (oldUserSettingsFile != null) {
-                int oldVersion = Integer.parseInt(oldUserSettingsFile.get("UserSettings").get("UserVersions").get("0"));
+                int oldVersion;
+                if (oldUserSettingsFile.containsKey("UserSettings")) {
+                    oldVersion = Integer.parseInt(oldUserSettingsFile.get("UserSettings").get("UserVersions").get("0"));
+                } else oldVersion = -2;
                 if (newVersion == oldVersion) {
                     log.info("User settings file versions matched.");
                 } else {

@@ -1,6 +1,5 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.information.ShowInfoController;
 import com.maddogten.mtrack.io.MoveWindow;
 import com.maddogten.mtrack.util.ImageLoader;
@@ -66,9 +65,14 @@ public class ListSelectBox {
                 window.close();
             }
         });
+        Button exit = new Button(Strings.ExitButtonText);
+        exit.setOnAction(e -> {
+            userName[0] = Strings.AddNewUsername;
+            window.close();
+        });
 
         HBox buttonLayout = new HBox();
-        buttonLayout.getChildren().addAll(submit);
+        buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
 
@@ -352,8 +356,7 @@ public class ListSelectBox {
     }
 
     public String pickLanguage(String message, Collection<String> languages, Window oldWindow) {
-        final String[] language = new String[1];
-        language[0] = Variables.DefaultLanguage;
+        final String[] language = {"-2"};
 
         Stage window = new Stage();
         window.getIcons().add(ImageLoader.getImage(Variables.Logo));
@@ -380,16 +383,9 @@ public class ListSelectBox {
 
         HBox buttonLayout = new HBox();
 
-        if (Main.getMainRun().firstRun) {
-            buttonLayout.getChildren().addAll(submit);
-        } else {
-            Button exit = new Button(Strings.ExitButtonText);
-            exit.setOnAction(e -> {
-                language[0] = "-1";
-                window.close();
-            });
-            buttonLayout.getChildren().addAll(submit, exit);
-        }
+        Button exit = new Button(Strings.ExitButtonText);
+        exit.setOnAction(e -> window.close());
+        buttonLayout.getChildren().addAll(submit, exit);
 
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));

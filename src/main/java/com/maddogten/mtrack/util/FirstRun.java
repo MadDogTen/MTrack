@@ -42,50 +42,52 @@ public class FirstRun {
     public void programFirstRun() {
         log.info("First Run, Generating Files...");
         Main.getMainRun().getLanguage();
-        FileManager fileManager = new FileManager();
-        File jarLocation = null;
-        try {
-            jarLocation = fileManager.getJarLocationFolder();
-        } catch (UnsupportedEncodingException e) {
-            log.severe(Arrays.toString(e.getStackTrace()));
-        }
-        File appData = fileManager.getAppDataFolder();
-        String answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, String.valueOf(appData), String.valueOf(jarLocation), null);
-        if (answer.matches(Strings.InAppData)) {
-            Variables.setDataFolder(appData);
-        } else if (answer.matches(Strings.WithTheJar)) {
-            Variables.setDataFolder(jarLocation);
-        }
-        fileManager.createFolder(Strings.EmptyString);
-        generateProgramSettingsFile();
-        programSettingsController.loadProgramSettingsFile();
-        programSettingsController.setLanguage(Variables.language);
-        addDirectories();
-
-        final boolean[] taskRunning = {true};
-        Task<Void> task = new Task<Void>() {
-            @SuppressWarnings("ReturnOfNull")
-            @Override
-            protected Void call() throws Exception {
-                generateShowFiles();
-                taskRunning[0] = false;
-                return null;
-            }
-        };
-        new Thread(task).start();
-        TextBox textBox = new TextBox();
-        Strings.UserName = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
-        while (taskRunning[0]) {
+        if (Main.getMainRun().continueStarting) {
+            FileManager fileManager = new FileManager();
+            File jarLocation = null;
             try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.severe(e.toString());
+                jarLocation = fileManager.getJarLocationFolder();
+            } catch (UnsupportedEncodingException e) {
+                log.severe(Arrays.toString(e.getStackTrace()));
             }
+            File appData = fileManager.getAppDataFolder();
+            String answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, String.valueOf(appData), String.valueOf(jarLocation), null);
+            if (answer.matches(Strings.InAppData)) {
+                Variables.setDataFolder(appData);
+            } else if (answer.matches(Strings.WithTheJar)) {
+                Variables.setDataFolder(jarLocation);
+            }
+            fileManager.createFolder(Strings.EmptyString);
+            generateProgramSettingsFile();
+            programSettingsController.loadProgramSettingsFile();
+            programSettingsController.setLanguage(Variables.language);
+            addDirectories();
+
+            final boolean[] taskRunning = {true};
+            Task<Void> task = new Task<Void>() {
+                @SuppressWarnings("ReturnOfNull")
+                @Override
+                protected Void call() throws Exception {
+                    generateShowFiles();
+                    taskRunning[0] = false;
+                    return null;
+                }
+            };
+            new Thread(task).start();
+            TextBox textBox = new TextBox();
+            Strings.UserName = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
+            while (taskRunning[0]) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    log.severe(e.toString());
+                }
+            }
+            log.info(Strings.UserName);
+            showInfoController.loadShowsFile();
+            generateUserSettingsFile(Strings.UserName);
+            userInfoController.loadUserInfo();
         }
-        log.info(Strings.UserName);
-        showInfoController.loadShowsFile();
-        generateUserSettingsFile(Strings.UserName);
-        userInfoController.loadUserInfo();
     }
 
     // File Generators
@@ -109,7 +111,7 @@ public class FirstRun {
     }
 
     // Generates a user settings file for the given username.
-    private void generateUserSettingsFile(String userName) {
+    public void generateUserSettingsFile(String userName) {
         log.info("Attempting to generate settings file for " + userName + '.');
         Map<String, UserShowSettings> showSettings = new HashMap<>();
         ArrayList<String> showsList = showInfoController.getShowsList();

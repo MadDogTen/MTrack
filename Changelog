@@ -16,10 +16,12 @@ Added Option to have the files stored in AppData or at the location of the Jar.
 ChangesBox length is now based on how many entry's it has, Up to a maximum length of 17 until you have to scroll to see the rest.
 Added option (Programmer option, Will default to true until Beta) to Toggle DevMode for that run.
 ChangeBox will automatically refresh when new changes are added. (Checks once a second).
-Finished up multilingual support. Added some missing strings. Added check if any strings are missing after being set, and if any are missing, set them to TextMissing.
-Converted to Maven build system.
+Finished up multilingual support. Added some missing strings. Added a method in LanguageHandler to check if any strings are missing after being set, and if any are missing, set them to TextMissing.
+Converted to Maven build structure.
+Added ability to close the program before it is fully started.
 
-Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently have one up, but it is planned).
+Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
+Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).
 
 Pre-Alpha 0.9.8 -
 Added comments. Still tons more to add.

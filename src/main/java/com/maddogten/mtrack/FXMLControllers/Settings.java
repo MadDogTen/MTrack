@@ -250,7 +250,7 @@ public class Settings implements Initializable {
                 languages.remove(programSettingsController.getLanguage());
             }
             String languageReadable = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages.values(), tabPane.getScene().getWindow());
-            if (!languageReadable.contains("-1")) {
+            if (!languageReadable.contains("-2")) {
                 String internalName = Strings.EmptyString;
                 for (String langKey : languages.keySet()) {
                     if (languages.get(langKey).matches(languageReadable)) {

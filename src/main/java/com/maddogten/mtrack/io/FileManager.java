@@ -101,7 +101,18 @@ public class FileManager {
     }
 
     public File getJarLocationFolder() throws UnsupportedEncodingException {
-        return new File(URLDecoder.decode(FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
+        File file = new File(URLDecoder.decode(FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
+        String converted = "";
+        String[] split;
+        if (Strings.FileSeparator.matches("\\\\")) { //TODO Find a better way to handle this
+            split = String.valueOf(file).split("\\\\");
+        } else split = String.valueOf(file).split(Strings.FileSeparator);
+        for (int x = 0; x <= split.length - 2; x++) {
+            if (x == 0) {
+                converted = split[x];
+            } else converted += Strings.FileSeparator + split[x];
+        }
+        return new File(converted);
     }
 
     public void deleteFile(String folder, String filename, String extension) {
