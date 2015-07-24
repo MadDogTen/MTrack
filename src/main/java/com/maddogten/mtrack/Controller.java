@@ -578,18 +578,14 @@ public class Controller implements Initializable {
                 changesBox = new ChangesBox();
             }
             boolean keepOpen;
-            Object[] answer = null;
+            Object[] answer = {false, pane.getScene().getWindow()};
             do {
-                Stage neededWindow = (Stage) pane.getScene().getWindow();
-                if (answer != null && answer[1] != null) {
-                    neededWindow = (Stage) answer[1];
-                }
-                answer = changesBox.display(neededWindow, ChangeReporter.getChanges());
+                answer = changesBox.openChanges((Stage) answer[1], ChangeReporter.getChanges());
                 keepOpen = (boolean) answer[0];
             } while (keepOpen);
             changesBox = null;
         } else {
-            changesBox.display(pane.getScene().getWindow(), ChangeReporter.getChanges());
+            changesBox.openChanges(pane.getScene().getWindow(), ChangeReporter.getChanges());
         }
     }
 

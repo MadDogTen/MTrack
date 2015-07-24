@@ -23,7 +23,7 @@ public class MainRun {
     private final ShowInfoController showInfoController;
     private final UserInfoController userInfoController;
     private final CheckShowFiles checkShowFiles;
-    public boolean firstRun = false, continueStarting = true; //TODO Finish continueStarting.
+    public boolean firstRun = false, continueStarting = true;
     private boolean hasRan = false, forceRun = true;
     private int timer = Clock.getTimeSeconds();
 
@@ -46,7 +46,7 @@ public class MainRun {
             if (files != null) {
                 for (File file : files) {
                     String[] splitFile;
-                    if (Strings.FileSeparator.matches("\\\\")) {
+                    if (Strings.FileSeparator.matches("\\\\")) { //TODO Find a better way to handle this
                         splitFile = String.valueOf(file).split("\\\\");
                     } else splitFile = String.valueOf(file).split(Strings.FileSeparator);
                     if (splitFile[splitFile.length - 1].matches(Strings.SettingsFileName + Variables.SettingsExtension)) {

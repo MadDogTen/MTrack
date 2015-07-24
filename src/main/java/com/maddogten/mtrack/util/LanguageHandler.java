@@ -34,6 +34,7 @@ public class LanguageHandler {
         return false;
     }
 
+    // This verifies that all the Strings have been set, and if any haven't been, sets it as TextMissing. If TextMissing happens to be missing, it uses a default english string.
     public void addMissingTextForAllMissingStrings() {
         log.info("Checking for missing Strings...");
         if (Strings.TextMissing == null) Strings.TextMissing = "Text is missing, Please report.";

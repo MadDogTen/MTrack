@@ -5,9 +5,11 @@ import java.util.logging.Logger;
 public class ChangeReporter {
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
 
+    // Stores all the changes that are added with addChange().
     private static String[] changes = new String[0];
     private static boolean isChanges = false;
 
+    // This first saves the current list, Reinitialize changes as the the old length + 1, Adds the newInfo to changes[0], then iterates thorough the rest adding them started at changes[1].
     public static void addChange(String newInfo) {
         log.info("Adding new change...");
         String[] currentList = changes;
@@ -21,6 +23,7 @@ public class ChangeReporter {
         isChanges = true;
     }
 
+    // This completely clears the changes String[] so it can start new.
     public static void resetChanges() {
         changes = new String[0];
         isChanges = false;

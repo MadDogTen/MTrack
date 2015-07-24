@@ -12,11 +12,13 @@ public class FindChangedShows {
 
     private final Map<String, Show> showsFile;
 
+    // This class is initialized with a unchanged showsFile.
     public FindChangedShows(Map<String, Show> showsFile) {
         this.showsFile = showsFile;
         log.info("ShowsFile has been set.");
     }
 
+    // This compares the showFile that is unchanged with the new updated showsFile and reports any changes found to the ChangeReporter.
     public void findShowFileDifferences(Map<String, Show> newShowsFile) {
         log.info("findShowFileDifferences running...");
         final boolean[] hasChanged = {false};

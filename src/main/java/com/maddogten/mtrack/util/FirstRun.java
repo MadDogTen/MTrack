@@ -143,6 +143,7 @@ public class FirstRun {
         }
     }
 
+    // This generates a new showsFile for the given folder, then saves it as "Directory-[index].[ShowsExtension].
     public void generateShowsFile(int index, File folderLocation) {
         FileManager fileManager = new FileManager();
         if (!fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {

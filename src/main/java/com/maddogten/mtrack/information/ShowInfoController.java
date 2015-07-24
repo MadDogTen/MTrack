@@ -24,11 +24,12 @@ public class ShowInfoController {
         this.programSettingsController = programSettingsController;
     }
 
+    // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile() {
         if (programSettingsController.getDirectoriesNames().size() > 1) {
             long timer = Clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();
-            ArrayList<Map<String, Show>> showsFileArray = getDirectoriesMaps(-1);
+            ArrayList<Map<String, Show>> showsFileArray = getDirectoriesMaps(-2);
             HashSet<String> allShows = new HashSet<>();
             showsFileArray.stream().filter(aMap -> aMap != null).forEach(showsHashSet -> showsHashSet.forEach((aShow, Show) -> allShows.add(aShow)));
             allShows.forEach(aShow -> {
@@ -54,21 +55,28 @@ public class ShowInfoController {
         return showsFile;
     }
 
+    // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
     public ArrayList<Map<String, Show>> getDirectoriesMaps(int skip) {
         // ArrayList = Shows list from all added Directories
         ArrayList<Map<String, Show>> showsFileArray = new ArrayList<>();
         ArrayList<String> files = programSettingsController.getDirectoriesNames();
         FileManager fileManager = new FileManager();
-        files.forEach(aString -> {
-            int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
-            if (skip != place) {
-                //noinspection unchecked
-                showsFileArray.add((Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
-            }
-        });
+        if (skip == -2)
+            //noinspection unchecked
+            files.forEach(aString -> showsFileArray.add((Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString)));
+        else {
+            files.forEach(aString -> {
+                int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
+                if (skip != place) {
+                    //noinspection unchecked
+                    showsFileArray.add((Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+                }
+            });
+        }
         return showsFileArray;
     }
 
+    // Gets a single directory map using the given index.
     @SuppressWarnings("unchecked")
     public Map<String, Show> getDirectoryMap(int index) {
         Map<String, Show> showsFile = new HashMap<>();
@@ -83,6 +91,7 @@ public class ShowInfoController {
         return showsFile;
     }
 
+    // Returns an arrayList of all shows.
     public ArrayList<String> getShowsList() {
         ArrayList<String> showsList = new ArrayList<>();
         if (showsFile != null) {
@@ -91,16 +100,19 @@ public class ShowInfoController {
         return showsList;
     }
 
+    // Returns a Set of all season in a given show.
     public Set<Integer> getSeasonsList(String show) {
         return showsFile.get(show).getSeasons().keySet();
     }
 
+    // Returns a Set of all episodes in a given shows season.
     public Set<Integer> getEpisodesList(String show, int season) {
         if (showsFile.containsKey(show) && showsFile.get(show).getSeasons().containsKey(season)) {
             return showsFile.get(show).getSeason(season).getEpisodes().keySet();
         } else return new HashSet<>();
     }
 
+    // Returns a given episode from a given season in a given show.
     public String getEpisode(String show, int season, int episode) {
         if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode)) {
             return showsFile.get(show).getSeason(season).getEpisodes().get(episode).getEpisodeFilename();
@@ -111,12 +123,14 @@ public class ShowInfoController {
         }
     }
 
+    // Returns whether or not an episode is part of a double episode.
     public boolean isDoubleEpisode(String show, int season, int episode) {
         if (showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode)) {
             return showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
         } else return false;
     }
 
+    // Returns the lowest found season in a show.
     public int findLowestSeason(String aShow) {
         final int[] lowestSeason = {-1};
         getSeasonsList(aShow).forEach(aSeason -> {
@@ -127,6 +141,7 @@ public class ShowInfoController {
         return lowestSeason[0];
     }
 
+    // Returns the highest found season in a show.
     public int findHighestSeason(String aShow) {
         final int[] highestSeason = {-1};
         Set<Integer> seasons = getSeasonsList(aShow);
@@ -138,6 +153,7 @@ public class ShowInfoController {
         return highestSeason[0];
     }
 
+    // Returns the lowest episode in the given set.
     public int findLowestEpisode(Set<Integer> episodes) {
         final int[] lowestEpisodeString = new int[1];
         final int[] lowestEpisodeInt = {-1};
@@ -152,6 +168,7 @@ public class ShowInfoController {
         return lowestEpisodeString[0];
     }
 
+    // Returns the highest episode in the given set.
     public int findHighestEpisode(Set<Integer> episodes) {
         final int[] highestEpisode = {-1};
         if (episodes != null) {
@@ -164,6 +181,7 @@ public class ShowInfoController {
         return highestEpisode[0];
     }
 
+    // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
     public boolean doesShowExistElsewhere(String aShow, ArrayList<Map<String, Show>> showsFileArray) {
         final boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
@@ -181,7 +199,7 @@ public class ShowInfoController {
         return showExistsElsewhere[0];
     }
 
-
+    // Debug tool to find out all found shows, the seasons in the shows, and the episodes in the seasons.
     public void printOutAllShowsAndEpisodes() {
         log.info("Printing out all Shows and Episodes:");
         if (showsFile != null) {
@@ -211,7 +229,7 @@ public class ShowInfoController {
         log.info("Finished printing out all Shows and Episodes.");
     }
 
-    // To get the Season and Episode Number
+    // Uses the given string (The full filename of an episode of a show) and returns the episode number.
     public int[] getEpisodeInfo(String aEpisode) {
         int[] bothInt = new int[1];
         Pattern MainP = Pattern.compile("s\\d{1,4}e\\d{1,4}");

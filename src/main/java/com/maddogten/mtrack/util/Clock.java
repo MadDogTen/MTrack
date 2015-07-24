@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 public class Clock {
     private static final Logger log = Logger.getLogger(Clock.class.getName());
 
+    // General Clock class to help with timing.
     @SuppressWarnings("WeakerAccess")
     public static long getTimeNano() {
         log.finest("getTimeNano has been ran.");

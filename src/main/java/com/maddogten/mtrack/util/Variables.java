@@ -30,7 +30,7 @@ public class Variables {
     public static final boolean startFresh = false; // Won't work unless devMode is true.
     public static final Integer defaultUpdateSpeed = 120;
     public static final String Logo = "/image/MTrackLogo.png";
-    public static boolean devMode = false;
+    public static boolean devMode = true;
     public static Integer updateSpeed;
     public static File dataFolder;
     public static String language;

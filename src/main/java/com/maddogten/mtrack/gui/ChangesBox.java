@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 public class ChangesBox {
     private static final Logger log = Logger.getLogger(ChangesBox.class.getName());
 
+    // This is true when the openChanges stage is open. If it open, then you are unable to open another instance of it.
     private boolean currentlyOpen = false;
     private Stage window;
 
@@ -32,7 +33,8 @@ public class ChangesBox {
         return window;
     }
 
-    public Object[] display(Window oldWindow, String[] changes) {
+    // Displays a window showing everything contained in the changes String[].
+    public Object[] openChanges(Window oldWindow, String[] changes) {
         log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
             window.toFront();
@@ -63,13 +65,12 @@ public class ChangesBox {
         /*Button refresh = new Button(Strings.Refresh);*/
         Button close = new Button(Strings.Close);
 
-        final boolean[] answerBoolean = {false};
-        final Stage[] thisWindow = new Stage[1];
+        Object[] answer = new Object[2];
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();
             listView.getItems().clear();
-            answerBoolean[0] = true;
-            thisWindow[0] = window;
+            answer[0] = true;
+            answer[1] = window;
             window.close();
         });
 
@@ -80,7 +81,7 @@ public class ChangesBox {
         });*/
 
         close.setOnAction(e -> {
-            answerBoolean[0] = false;
+            answer[0] = false;
             window.close();
         });
 
@@ -99,32 +100,32 @@ public class ChangesBox {
 
         Scene scene = new Scene(layout);
 
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception { //TODO Finish automatic refreshing
+                while (currentlyOpen) {
+                    Thread.sleep(1000);
+                    if (ChangeReporter.getNumberOfChanges() != changes.length) {
+                        answer[0] = true;
+                        answer[1] = window;
+                        window.close();
+                    }
+                    log.info("Ran");
+                }
+                //noinspection ReturnOfNull
+                return null;
+            }
+        };
+        new Thread(task);
+
         window.setScene(scene);
         Platform.runLater(() -> {
             window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
             window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
             new MoveWindow().moveWindow(window, null);
-            Task<Void> task = new Task<Void>() {
-                @Override
-                protected Void call() throws Exception { //TODO Finish automatic refreshing
-                    while (window != null) {
-                        if (ChangeReporter.getNumberOfChanges() != changes.length) {
-                            answerBoolean[0] = true;
-                            window.close();
-                        }
-                        Thread.sleep(1000);
-                    }
-                    //noinspection ReturnOfNull
-                    return null;
-                }
-            };
-            new Thread(task);
         });
         window.showAndWait();
 
-        Object[] answer = new Object[2];
-        answer[0] = answerBoolean[0];
-        answer[1] = thisWindow[0];
         currentlyOpen = false;
         window = null;
         return answer;

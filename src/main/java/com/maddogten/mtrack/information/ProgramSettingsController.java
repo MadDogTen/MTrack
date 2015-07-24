@@ -28,6 +28,8 @@ public class ProgramSettingsController {
         this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
     }
 
+
+    // The update speed is used for mainRun tick to only run after this set amount of time goes by. Saved in seconds.
     public int getUpdateSpeed() {
         return settingsFile.getUpdateSpeed();
     }
@@ -38,6 +40,7 @@ public class ProgramSettingsController {
         log.info("Update speed is now set to: " + updateSpeed);
     }
 
+    // Show0Remaining is used in the Controller to save the state of the checkbox at shutdown. Toggles whether or not the program has shows with 0 episode remaining visible.
     public boolean getShow0Remaining() {
         return settingsFile.isShow0Remaining();
     }
@@ -46,6 +49,7 @@ public class ProgramSettingsController {
         settingsFile.setShow0Remaining(show0Remaining);
     }
 
+    // Language saves which language the user chooses. Save the internal name, Not the user friendly name.
     public String getLanguage() {
         return settingsFile.getLanguage();
     }
@@ -54,6 +58,7 @@ public class ProgramSettingsController {
         settingsFile.setLanguage(language);
     }
 
+    // DefaultUsername save the user that was chosen to automatically start with. //TODO Save the default user as a boolean in the user file and not in the program.
     public boolean isDefaultUsername() {
         return settingsFile.isUseDefaultUser();
     }
@@ -69,7 +74,8 @@ public class ProgramSettingsController {
         log.info("DefaultUsername is set.");
     }
 
-    public ArrayList<String> getDirectories() {
+    // Saves all the directory paths that the program is currently set to check.
+    public ArrayList<String> getDirectories() { //TODO Change the format of directories. (File name + save structure)
         ArrayList<String> directories = new ArrayList<>();
         if (settingsFile.getDirectories() != null) {
             directories.addAll(settingsFile.getDirectories().stream().map(aDirectory -> aDirectory.split(">")[1]).collect(Collectors.toList()));
@@ -77,6 +83,7 @@ public class ProgramSettingsController {
         return directories;
     }
 
+    // Gets the index of the given directory.
     public ArrayList<Integer> getDirectoriesIndexes() {
         ArrayList<Integer> directoriesIndexes = new ArrayList<>();
         if (settingsFile.getDirectories() != null) {
@@ -85,6 +92,7 @@ public class ProgramSettingsController {
         return directoriesIndexes;
     }
 
+    // All versions are used in UpdateManager to update the files to the latest version if needed.
     public int getProgramSettingsFileVersion() {
         return settingsFile.getProgramSettingsFileVersion();
     }
@@ -117,16 +125,18 @@ public class ProgramSettingsController {
         settingsFile.setShowFileVersion(version);
     }
 
-    public boolean isDirectoryCurrentlyActive(File directory) {
+    // If it is able to find the directories, then it is found and returns true. If not found, returns false.
+    public boolean isDirectoryCurrentlyActive(File directory) { //TODO Find a better way of doing this.
         return directory.isDirectory();
     }
 
+    // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
     public void removeDirectory(String aDirectory) {
         log.info("Currently processing removal of: " + aDirectory);
         int index = getDirectoryIndex(aDirectory);
         ArrayList<Map<String, Show>> showsFileArray = showInfoController.getDirectoriesMaps(index);
-        Set<String> hashMapShows = showInfoController.getDirectoryMap(index).keySet();
-        hashMapShows.forEach(aShow -> {
+        Set<String> showsSet = showInfoController.getDirectoryMap(index).keySet();
+        showsSet.forEach(aShow -> {
             log.info("Currently checking: " + aShow);
             boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, showsFileArray);
             if (!showExistsElsewhere) {
@@ -140,6 +150,7 @@ public class ProgramSettingsController {
         log.info("Finished processing removal of the directory.");
     }
 
+    // Debugging tool - Prints all directories to console.
     public void printAllDirectories() {
         log.info("Printing out all directories:");
         if (getDirectories().isEmpty()) {
@@ -148,6 +159,7 @@ public class ProgramSettingsController {
         log.info("Finished printing out all directories:");
     }
 
+    // Returns the index of the given directory.
     public int getDirectoryIndex(String aDirectory) {
         for (String directory : settingsFile.getDirectories()) {
             if (directory.contains(aDirectory)) {
@@ -158,6 +170,7 @@ public class ProgramSettingsController {
         return -3;
     }
 
+    // Returns all the file names of the directories.
     public ArrayList<String> getDirectoriesNames() {
         ArrayList<String> directories = settingsFile.getDirectories();
         ArrayList<String> directoriesNames = new ArrayList<>();
@@ -168,6 +181,7 @@ public class ProgramSettingsController {
         return directoriesNames;
     }
 
+    // Returns a single directory.
     public File getDirectory(int index) {
         ArrayList<String> directories = settingsFile.getDirectories();
         for (String aDirectory : directories) {
@@ -180,6 +194,7 @@ public class ProgramSettingsController {
         return new File(Strings.EmptyString);
     }
 
+    // Add a new directory.
     public boolean[] addDirectory(int index, File directory) {
         ArrayList<String> directories = settingsFile.getDirectories();
         boolean[] answer = {false, false};
@@ -198,6 +213,7 @@ public class ProgramSettingsController {
         return answer;
     }
 
+    // Returns the lowest usable directory index. If directory is deleted this make the index reusable.
     public int getLowestFreeDirectoryIndex() {
         final int[] lowestFreeIndex = {0};
         settingsFile.getDirectories().forEach(aDirectory -> {
@@ -217,6 +233,7 @@ public class ProgramSettingsController {
         this.settingsFile = settingsFile;
     }
 
+    // Can't pass these in the constructor, as they also require ProgramSettingsController.
     public void setShowInfoController(ShowInfoController showInfoController) {
         this.showInfoController = showInfoController;
     }
