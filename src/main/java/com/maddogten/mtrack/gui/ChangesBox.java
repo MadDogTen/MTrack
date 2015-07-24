@@ -34,7 +34,7 @@ public class ChangesBox {
     }
 
     // Displays a window showing everything contained in the changes String[].
-    public Object[] openChanges(Window oldWindow, String[] changes) {
+    public Object[] openChanges(Window oldWindow, String[] changes) { //TODO Still have to finish the automatic refreshing.
         log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
             window.toFront();
