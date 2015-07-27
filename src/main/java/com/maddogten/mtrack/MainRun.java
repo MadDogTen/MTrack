@@ -1,6 +1,7 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ListSelectBox;
+import com.maddogten.mtrack.information.DirectoryController;
 import com.maddogten.mtrack.information.ProgramSettingsController;
 import com.maddogten.mtrack.information.ShowInfoController;
 import com.maddogten.mtrack.information.UserInfoController;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
@@ -23,15 +25,17 @@ public class MainRun {
     private final ShowInfoController showInfoController;
     private final UserInfoController userInfoController;
     private final CheckShowFiles checkShowFiles;
+    private final DirectoryController directoryController;
     public boolean firstRun = false, continueStarting = true;
     private boolean hasRan = false, forceRun = true;
     private int timer = Clock.getTimeSeconds();
 
-    public MainRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, CheckShowFiles checkShowFiles) {
+    public MainRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, CheckShowFiles checkShowFiles, DirectoryController directoryController) {
         this.programSettingsController = programSettingsController;
         this.showInfoController = showInfoController;
         this.userInfoController = userInfoController;
         this.checkShowFiles = checkShowFiles;
+        this.directoryController = directoryController;
     }
 
     public boolean startBackend() {
@@ -45,10 +49,7 @@ public class MainRun {
             File[] files = path.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    String[] splitFile;
-                    if (Strings.FileSeparator.matches("\\\\")) { //TODO Find a better way to handle this
-                        splitFile = String.valueOf(file).split("\\\\");
-                    } else splitFile = String.valueOf(file).split(Strings.FileSeparator);
+                    String[] splitFile = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
                     if (splitFile[splitFile.length - 1].matches(Strings.SettingsFileName + Variables.SettingsExtension)) {
                         Variables.setDataFolder(path);
                         folderFound = true;
@@ -70,35 +71,39 @@ public class MainRun {
 
         // If one above is found and both Variables devMode & StartFresh are true, It will Delete ALL Files each time the program is ran.
         //noinspection PointlessBooleanExpression,ConstantConditions
-        if (Variables.devMode && Variables.startFresh && Variables.dataFolder != null) {
+        if (Variables.devMode && Variables.startFresh && folderFound) {
             log.warning("Starting Fresh...");
-            if (Variables.dataFolder == fileManager.getAppDataFolder()) {
+            if (Variables.dataFolder.toString().matches(Pattern.quote(String.valueOf(fileManager.getAppDataFolder())))) {
+                log.info("Deleting " + Variables.dataFolder + " in AppData...");
                 fileManager.deleteFolder(Variables.dataFolder);
             } else {
+                log.info("Deleting appropriate files found in folder jar is contained in...");
                 File[] files = Variables.dataFolder.listFiles();
                 if (files != null) {
                     for (File file : files) {
-                        if (!file.toString().contains(".jar")) {
-                            if (file.isDirectory()) {
+                        if (!file.toString().contains(".jar") && (file.isDirectory() || file.toString().contains(Variables.SettingsExtension))) {
+                            if (file.isDirectory() && (file.toString().matches(Variables.DirectoriesFolder) || file.toString().matches(Variables.UsersFolder))) {
                                 fileManager.deleteFolder(file);
                             } else fileManager.deleteFile("", String.valueOf(file), "");
                         }
                     }
                 }
             }
+            folderFound = false;
         }
+
         boolean runFinished = false;
         // If both of those failed or it deleted the files,  Then it starts firstRun.
         if (!folderFound) {
             firstRun = true;
-            new FirstRun(programSettingsController, showInfoController, userInfoController).programFirstRun();
+            new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).programFirstRun();
             firstRun = false;
             runFinished = true;
         }
 
         if (!continueStarting) return false;
 
-        UpdateManager updateManager = new UpdateManager(programSettingsController, showInfoController, userInfoController);
+        UpdateManager updateManager = new UpdateManager(programSettingsController, showInfoController, userInfoController, directoryController);
 
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         if (!runFinished) {
@@ -111,13 +116,13 @@ public class MainRun {
                 Strings.UserName = getUser();
                 if (!continueStarting) return false;
                 if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
-                    new FirstRun(programSettingsController, showInfoController, userInfoController).generateUserSettingsFile(Strings.UserName);
+                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateUserSettingsFile(Strings.UserName);
                 }
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();
                 userInfoController.loadUserInfo();
             } else {
-                new FirstRun(programSettingsController, showInfoController, userInfoController).generateProgramSettingsFile();
+                new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateProgramSettingsFile();
                 programSettingsController.loadProgramSettingsFile();
                 updateManager.updateShowFile();
                 getLanguage();
@@ -125,7 +130,7 @@ public class MainRun {
                 Strings.UserName = getUser();
                 if (!continueStarting) return false;
                 if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
-                    new FirstRun(programSettingsController, showInfoController, userInfoController).generateUserSettingsFile(Strings.UserName);
+                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateUserSettingsFile(Strings.UserName);
                 }
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();
@@ -169,6 +174,9 @@ public class MainRun {
             }
             timer = Clock.getTimeSeconds();
             forceRun = false;
+        }
+        if (directoryController.reloadShowsFile) {
+            showInfoController.loadShowsFile();
         }
     }
 

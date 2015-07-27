@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.gui;
 
+import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveWindow;
 import com.maddogten.mtrack.util.ImageLoader;
@@ -94,7 +95,7 @@ public class TextBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public File addDirectoriesDisplay(String message, ArrayList<String> currentDirectories, String messageIfFieldIsBlank, String messageIfNotDirectory, Window oldWindow) {
+    public File addDirectoriesDisplay(String message, ArrayList<Directory> currentDirectories, String messageIfFieldIsBlank, String messageIfNotDirectory, Window oldWindow) {
         log.finest("TextBox addDirectoriesDisplay has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
@@ -110,9 +111,12 @@ public class TextBox {
         TextField textField = new TextField();
         textField.setPromptText(Strings.FileSeparator + Strings.PathToDirectory + Strings.FileSeparator + Strings.Shows);
 
+        ArrayList<String> directoryPaths = new ArrayList<>();
+        currentDirectories.forEach(aDirectory -> directoryPaths.add(String.valueOf(aDirectory.getDirectory())));
+
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
-            if (isDirectoryValid(currentDirectories, messageIfFieldIsBlank, messageIfNotDirectory, textField.getText(), window)) {
+            if (isDirectoryValid(directoryPaths, messageIfFieldIsBlank, messageIfNotDirectory, textField.getText(), window)) {
                 directories[0] = new File(textField.getText());
                 window.close();
             } else textField.clear();
@@ -155,13 +159,13 @@ public class TextBox {
             return false;
         } else if (new FileManager().checkFolderExists(new File(message))) {
             return true;
-        } else if (!message.isEmpty()) {
+        } else if (message.isEmpty()) {
             MessageBox messageBox = new MessageBox();
-            messageBox.display(messageIfNotDirectory, oldWindow);
+            messageBox.display(messageIfBlank, oldWindow);
             return false;
         } else {
             MessageBox messageBox = new MessageBox();
-            messageBox.display(messageIfBlank, oldWindow);
+            messageBox.display(messageIfNotDirectory, oldWindow);
             return false;
         }
     }

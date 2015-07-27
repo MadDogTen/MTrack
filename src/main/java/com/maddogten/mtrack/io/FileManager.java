@@ -8,6 +8,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class FileManager {
     private final Logger log = Logger.getLogger(FileManager.class.getName());
@@ -103,10 +104,7 @@ public class FileManager {
     public File getJarLocationFolder() throws UnsupportedEncodingException {
         File file = new File(URLDecoder.decode(FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
         String converted = "";
-        String[] split;
-        if (Strings.FileSeparator.matches("\\\\")) { //TODO Find a better way to handle this
-            split = String.valueOf(file).split("\\\\");
-        } else split = String.valueOf(file).split(Strings.FileSeparator);
+        String[] split = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
         for (int x = 0; x <= split.length - 2; x++) {
             if (x == 0) {
                 converted = split[x];
@@ -118,14 +116,14 @@ public class FileManager {
     public void deleteFile(String folder, String filename, String extension) {
         String file = (folder + Strings.FileSeparator + filename + extension);
         if (!checkFileExists(folder, filename, extension)) {
-            log.warning("File " + Variables.dataFolder + file + " does not exist!");
+            log.warning("File " + file + " does not exist!");
         }
-        File toDelete = new File(Variables.dataFolder + file);
+        File toDelete = new File(file);
         if (toDelete.canWrite()) {
             if (!toDelete.delete()) {
                 log.warning("Cannot delete: " + toDelete);
             }
-        } else log.warning("File " + Variables.dataFolder + file + " is write protected!");
+        } else log.warning("File " + file + " is write protected!");
     }
 
     public void deleteFolder(File toDeleteFolder) {
@@ -149,10 +147,10 @@ public class FileManager {
                         if (aFile.isDirectory()) {
                             deleteFolder(aFile);
                         }
-                        if (!toDeleteFolder.delete()) {
-                            log.warning("Cannot delete: " + toDeleteFolder);
-                        }
                     }
+                }
+                if (!toDeleteFolder.delete()) {
+                    log.warning("Cannot delete: " + toDeleteFolder);
                 }
             }
         } else log.warning(toDeleteFolder + " is write protected!");

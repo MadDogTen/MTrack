@@ -1,10 +1,8 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.*;
-import com.maddogten.mtrack.information.ChangeReporter;
-import com.maddogten.mtrack.information.ProgramSettingsController;
-import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.*;
+import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.DisplayShows;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.io.FileManager;
@@ -42,6 +40,7 @@ public class Controller implements Initializable {
     private static ShowInfoController showInfoController;
     private static UserInfoController userInfoController;
     private static CheckShowFiles checkShowFiles;
+    private static DirectoryController directoryController;
     private static Controller controller;
     // This is the list that is currently showing in the tableView. Currently can only be "active" or "inactive".
     private static String currentList = "active";
@@ -174,6 +173,10 @@ public class Controller implements Initializable {
         return checkShowFiles;
     }
 
+    public static DirectoryController getDirectoryController() {
+        return directoryController;
+    }
+
     public static double getShowColumnWidth() {
         return controller.shows.getWidth();
     }
@@ -246,6 +249,7 @@ public class Controller implements Initializable {
         showInfoController = Main.getShowInfoController();
         userInfoController = Main.getUserInfoController();
         checkShowFiles = Main.getCheckShowFiles();
+        directoryController = Main.getDirectoryController();
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
@@ -352,11 +356,11 @@ public class Controller implements Initializable {
                     MenuItem openDirectory = new MenuItem(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
-                        ArrayList<String> directories = programSettingsController.getDirectories();
+                        ArrayList<Directory> directories = directoryController.getDirectories();
                         ArrayList<File> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
-                            String fileString = (aDirectory + Strings.FileSeparator + row.getItem().getShow());
+                            String fileString = aDirectory.getFileName();
                             if (fileManager.checkFolderExists(new File(fileString))) {
                                 folders.add(new File(fileString));
                             }

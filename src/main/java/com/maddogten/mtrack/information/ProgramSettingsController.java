@@ -1,27 +1,22 @@
 package com.maddogten.mtrack.information;
 
-import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.information.settings.ProgramSettings;
-import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class ProgramSettingsController {
     private final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
-
+    private final UserInfoController userInfoController;
     private ProgramSettings settingsFile;
     private boolean mainDirectoryVersionAlreadyChanged = false;
-    private ShowInfoController showInfoController;
-    private UserInfoController userInfoController;
+
+    public ProgramSettingsController(UserInfoController userInfoController) {
+        this.userInfoController = userInfoController;
+    }
 
     @SuppressWarnings("unchecked")
     public void loadProgramSettingsFile() {
@@ -58,7 +53,7 @@ public class ProgramSettingsController {
         settingsFile.setLanguage(language);
     }
 
-    // DefaultUsername save the user that was chosen to automatically start with. //TODO Save the default user as a boolean in the user file and not in the program.
+    // DefaultUsername save the user that was chosen to automatically start with.
     public boolean isDefaultUsername() {
         return settingsFile.isUseDefaultUser();
     }
@@ -72,24 +67,6 @@ public class ProgramSettingsController {
         settingsFile.setUseDefaultUser(useDefaultUser);
         settingsFile.setDefaultUser(userName);
         log.info("DefaultUsername is set.");
-    }
-
-    // Saves all the directory paths that the program is currently set to check.
-    public ArrayList<String> getDirectories() { //TODO Change the format of directories. (File name + save structure)
-        ArrayList<String> directories = new ArrayList<>();
-        if (settingsFile.getDirectories() != null) {
-            directories.addAll(settingsFile.getDirectories().stream().map(aDirectory -> aDirectory.split(">")[1]).collect(Collectors.toList()));
-        }
-        return directories;
-    }
-
-    // Gets the index of the given directory.
-    public ArrayList<Integer> getDirectoriesIndexes() {
-        ArrayList<Integer> directoriesIndexes = new ArrayList<>();
-        if (settingsFile.getDirectories() != null) {
-            getDirectories().forEach(aDirectory -> directoriesIndexes.add(getDirectoryIndex(String.valueOf(aDirectory))));
-        }
-        return directoriesIndexes;
     }
 
     // All versions are used in UpdateManager to update the files to the latest version if needed.
@@ -117,6 +94,14 @@ public class ProgramSettingsController {
         }
     }
 
+    public int getNumberOfDirectories() {
+        return settingsFile.getNumberOfDirectories();
+    }
+
+    public void setNumberOfDirectories(int numberOfDirectories) {
+        settingsFile.setNumberOfDirectories(numberOfDirectories);
+    }
+
     public int getShowFileVersion() {
         return settingsFile.getShowFileVersion();
     }
@@ -125,104 +110,8 @@ public class ProgramSettingsController {
         settingsFile.setShowFileVersion(version);
     }
 
-    // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    public boolean isDirectoryCurrentlyActive(File directory) { //TODO Find a better way of doing this.
-        return directory.isDirectory();
-    }
-
-    // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
-    public void removeDirectory(String aDirectory) {
-        log.info("Currently processing removal of: " + aDirectory);
-        int index = getDirectoryIndex(aDirectory);
-        ArrayList<Map<String, Show>> showsFileArray = showInfoController.getDirectoriesMaps(index);
-        Set<String> showsSet = showInfoController.getDirectoryMap(index).keySet();
-        showsSet.forEach(aShow -> {
-            log.info("Currently checking: " + aShow);
-            boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, showsFileArray);
-            if (!showExistsElsewhere) {
-                userInfoController.setIgnoredStatus(aShow, true);
-                ChangeReporter.addChange(aShow + Strings.WasRemoved);
-            }
-            Controller.updateShowField(aShow, showExistsElsewhere);
-        });
-        new FileManager().deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
-        settingsFile.getDirectories().remove(index + ">" + aDirectory);
-        log.info("Finished processing removal of the directory.");
-    }
-
-    // Debugging tool - Prints all directories to console.
-    public void printAllDirectories() {
-        log.info("Printing out all directories:");
-        if (getDirectories().isEmpty()) {
-            log.info("No directories.");
-        } else getDirectories().forEach(log::info);
-        log.info("Finished printing out all directories:");
-    }
-
-    // Returns the index of the given directory.
-    public int getDirectoryIndex(String aDirectory) {
-        for (String directory : settingsFile.getDirectories()) {
-            if (directory.contains(aDirectory)) {
-                return Integer.parseInt(directory.split(">")[0]);
-            }
-        }
-        log.info("Error if this is reached, Please report.");
-        return -3;
-    }
-
-    // Returns all the file names of the directories.
-    public ArrayList<String> getDirectoriesNames() {
-        ArrayList<String> directories = settingsFile.getDirectories();
-        ArrayList<String> directoriesNames = new ArrayList<>();
-        directories.forEach(aDirectory -> {
-            int index = Integer.parseInt(aDirectory.split(">")[0]);
-            directoriesNames.add("Directory-" + index + Variables.ShowsExtension);
-        });
-        return directoriesNames;
-    }
-
-    // Returns a single directory.
-    public File getDirectory(int index) {
-        ArrayList<String> directories = settingsFile.getDirectories();
-        for (String aDirectory : directories) {
-            String[] split = aDirectory.split(">");
-            if (split[0].matches(String.valueOf(index))) {
-                return new File(split[1]);
-            }
-        }
-        log.info("Error if this is reached, Please report.");
-        return new File(Strings.EmptyString);
-    }
-
-    // Add a new directory.
-    public boolean[] addDirectory(int index, File directory) {
-        ArrayList<String> directories = settingsFile.getDirectories();
-        boolean[] answer = {false, false};
-        if (directories == null) {
-            directories = new ArrayList<>();
-        }
-        if (!directory.toString().isEmpty() && !directories.contains(String.valueOf(directory))) {
-            log.info("Added Directory");
-            directories.add(index + ">" + String.valueOf(directory));
-            log.info(index + ">" + String.valueOf(directory));
-            settingsFile.setDirectories(directories);
-            answer[0] = true;
-        } else if (directory.toString().isEmpty()) {
-            answer[1] = true;
-        }
-        return answer;
-    }
-
-    // Returns the lowest usable directory index. If directory is deleted this make the index reusable.
-    public int getLowestFreeDirectoryIndex() {
-        final int[] lowestFreeIndex = {0};
-        settingsFile.getDirectories().forEach(aDirectory -> {
-            int currentInt = Integer.parseInt(aDirectory.split(">")[0]);
-            if (lowestFreeIndex[0] == currentInt) {
-                lowestFreeIndex[0]++;
-            }
-        });
-        return lowestFreeIndex[0];
+    public long getProgramGeneratedID() {
+        return settingsFile.getProgramSettingsID();
     }
 
     public ProgramSettings getSettingsFile() {
@@ -231,15 +120,6 @@ public class ProgramSettingsController {
 
     public void setSettingsFile(ProgramSettings settingsFile) {
         this.settingsFile = settingsFile;
-    }
-
-    // Can't pass these in the constructor, as they also require ProgramSettingsController.
-    public void setShowInfoController(ShowInfoController showInfoController) {
-        this.showInfoController = showInfoController;
-    }
-
-    public void setUserInfoController(UserInfoController userInfoController) {
-        this.userInfoController = userInfoController;
     }
 
     // Save the file

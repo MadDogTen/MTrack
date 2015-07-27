@@ -20,6 +20,7 @@ Finished up multilingual support. Added some missing strings. Added a method in 
 Converted to Maven build structure.
 Added ability to close the program before it is fully started.
 Added comments to mostly everything.
+Directory information is no longer stored in the program settings file, They are instead gotten on program load from the folder. You can add or remove directories and it will properly handle it.
 
 Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).

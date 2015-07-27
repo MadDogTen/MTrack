@@ -4,12 +4,13 @@ import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Random;
 
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class ProgramSettings implements Serializable {
 
     private static final long serialVersionUID = 3699693145859359106L;
+    private final long programGeneratedID;
     // Versions
     private int programSettingsFileVersion;
     private int mainDirectoryVersion;
@@ -24,9 +25,7 @@ public class ProgramSettings implements Serializable {
     private boolean useDefaultUser;
     private String defaultUser;
 
-    // Directories
-    private ArrayList<String> directories;
-
+    private int numberOfDirectories;
 
     // ---- Gui Values ---- \\
 
@@ -43,6 +42,7 @@ public class ProgramSettings implements Serializable {
     private boolean episodeColumnVisibility;
 
     public ProgramSettings() {
+        this.programGeneratedID = new Random().nextLong();
         this.programSettingsFileVersion = Variables.ProgramSettingsFileVersion;
         this.mainDirectoryVersion = 0;
         this.showFileVersion = Variables.ShowFileVersion;
@@ -51,7 +51,6 @@ public class ProgramSettings implements Serializable {
         this.language = "None";
         this.useDefaultUser = false;
         this.defaultUser = Strings.EmptyString;
-        this.directories = new ArrayList<>();
         this.showColumnWidth = Variables.SHOWS_COLUMN_WIDTH;
         this.remainingColumnWidth = Variables.REMAINING_COLUMN_WIDTH;
         this.seasonColumnWidth = Variables.SEASONS_COLUMN_WIDTH;
@@ -60,9 +59,11 @@ public class ProgramSettings implements Serializable {
         remainingColumnVisibility = true;
         seasonColumnVisibility = false;
         episodeColumnVisibility = false;
+        this.numberOfDirectories = 0;
     }
 
-    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, boolean show0Remaining, String language, Boolean useDefaultUser, String defaultUser, ArrayList<String> directories, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
+    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, boolean show0Remaining, String language, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
+        this.programGeneratedID = new Random().nextLong();
         this.programSettingsFileVersion = programSettingsFileVersion;
         this.mainDirectoryVersion = mainDirectoryVersion;
         this.showFileVersion = showFileVersion;
@@ -71,7 +72,6 @@ public class ProgramSettings implements Serializable {
         this.language = language;
         this.useDefaultUser = useDefaultUser;
         this.defaultUser = defaultUser;
-        this.directories = directories;
         this.showColumnWidth = showColumnWidth;
         this.remainingColumnWidth = remainingColumnWidth;
         this.seasonColumnWidth = seasonColumnWidth;
@@ -80,17 +80,15 @@ public class ProgramSettings implements Serializable {
         this.remainingColumnVisibility = remainingColumnVisibility;
         this.seasonColumnVisibility = seasonColumnVisibility;
         this.episodeColumnVisibility = episodeColumnVisibility;
-    }
-
-    public String getDirectory(int index) {
-        return directories.get(index);
-    }
-
-    public void removeDirectory(String directory) {
-        directories.remove(directory);
+        this.numberOfDirectories = 0;
     }
 
     // Basic Getters and Setters
+
+
+    public long getProgramSettingsID() {
+        return programGeneratedID;
+    }
 
     public int getProgramSettingsFileVersion() {
         return programSettingsFileVersion;
@@ -156,14 +154,6 @@ public class ProgramSettings implements Serializable {
         this.defaultUser = defaultUser;
     }
 
-    public ArrayList<String> getDirectories() {
-        return directories;
-    }
-
-    public void setDirectories(ArrayList<String> directories) {
-        this.directories = directories;
-    }
-
     public double getShowColumnWidth() {
         return showColumnWidth;
     }
@@ -226,5 +216,13 @@ public class ProgramSettings implements Serializable {
 
     public void setEpisodeColumnVisibility(boolean episodeColumnVisibility) {
         this.episodeColumnVisibility = episodeColumnVisibility;
+    }
+
+    public int getNumberOfDirectories() {
+        return numberOfDirectories;
+    }
+
+    public void setNumberOfDirectories(int numberOfDirectories) {
+        this.numberOfDirectories = numberOfDirectories;
     }
 }

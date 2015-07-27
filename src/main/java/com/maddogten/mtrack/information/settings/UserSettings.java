@@ -18,11 +18,15 @@ public class UserSettings implements Serializable {
     // Show Settings
     private Map<String, UserShowSettings> showSettings;
 
-    public UserSettings(String userName, Map<String, UserShowSettings> showSettings) {
+    @SuppressWarnings("FieldCanBeLocal")
+    private long lastProgramID;
+
+    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, long lastProgramID) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
         this.showSettings = showSettings;
+        this.lastProgramID = lastProgramID;
     }
 
     public void addShowSettings(UserShowSettings userShowSettings) {
@@ -55,11 +59,15 @@ public class UserSettings implements Serializable {
         return showSettings;
     }
 
-    public void setShowSettings(Map<String, UserShowSettings> showSettings) {
-        this.showSettings = showSettings;
-    }
-
     public UserShowSettings getAShowSettings(String aShow) {
         return showSettings.get(aShow);
     }
+
+    /*public long getLastProgramID() { //TODO Implement using LastProgramID for UserSettings. Move defaultUser into here.
+        return lastProgramID;
+    }
+
+    public void setLastProgramID(long lastProgramID) {
+        this.lastProgramID = lastProgramID;
+    }*/
 }

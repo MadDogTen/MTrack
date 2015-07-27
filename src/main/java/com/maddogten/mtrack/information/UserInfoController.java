@@ -341,10 +341,6 @@ public class UserInfoController {
         return userSettings;
     }
 
-    public void setUserSettings(UserSettings userSettings) {
-        this.userSettings = userSettings;
-    }
-
     // Debug setting to print out all the current users settings.
     public void printAllUserInfo() {
         log.info("Printing all user info for " + Strings.UserName + "...");

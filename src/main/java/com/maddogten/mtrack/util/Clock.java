@@ -23,10 +23,10 @@ public class Clock {
         return (int) (System.nanoTime() / 1000000000);
     }
 
-    public static long timeTakenNano(long timer) {
+    /*public static long timeTakenNano(long timer) {
         log.finest("timeTakenNano has been ran.");
         return (getTimeNano() - timer);
-    }
+    }*/
 
     public static long timeTakenMilli(long timer) {
         log.finest("timeTakenMilli has been ran.");

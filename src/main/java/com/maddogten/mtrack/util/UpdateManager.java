@@ -1,22 +1,22 @@
 package com.maddogten.mtrack.util;
 
-import com.maddogten.mtrack.information.ChangeReporter;
-import com.maddogten.mtrack.information.ProgramSettingsController;
-import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.information.settings.ProgramSettings;
 import com.maddogten.mtrack.information.settings.UserSettings;
 import com.maddogten.mtrack.information.settings.UserShowSettings;
+import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.io.FileManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class UpdateManager {
     private final Logger log = Logger.getLogger(UpdateManager.class.getName());
@@ -24,11 +24,14 @@ public class UpdateManager {
     private final ProgramSettingsController programSettingsController;
     private final ShowInfoController showInfoController;
     private final UserInfoController userInfoController;
+    private final DirectoryController directoryController;
+    private Object[] neededObjects = new Object[0];
 
-    public UpdateManager(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController) {
+    public UpdateManager(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, DirectoryController directoryController) {
         this.programSettingsController = programSettingsController;
         this.showInfoController = showInfoController;
         this.userInfoController = userInfoController;
+        this.directoryController = directoryController;
     }
 
     // These both compare the version defined in Variables (Latest Version) with the version the files are currently at (Old Version), and if they don't match, converts the files to the latest version.
@@ -85,7 +88,7 @@ public class UpdateManager {
                 int lowestSeason = showInfoController.findLowestSeason(aShow);
                 showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
             }
-            new FileManager().save(new UserSettings(Strings.UserName, showSettings), Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, false);
+            new FileManager().save(new UserSettings(Strings.UserName, showSettings, programSettingsController.getProgramGeneratedID()), Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, false);
         }
         try {
             userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
@@ -139,9 +142,35 @@ public class UpdateManager {
     // This checks if the user has the latest show information, and if they don't, updates it to the latest.
     public void updateMainDirectoryVersion() {
         int mainDirectoryVersion = programSettingsController.getMainDirectoryVersion();
-        if (mainDirectoryVersion == userInfoController.getUserDirectoryVersion())
-            log.info("User directory version matched.");
-        else {
+        if (mainDirectoryVersion == userInfoController.getUserDirectoryVersion()) {
+            log.info("User directory version matched, Now checking if number of directories match...");
+            if (directoryController.getDirectories().size() == programSettingsController.getNumberOfDirectories()) {
+                log.info("Number of directories matched, Now checking if programID's match...");
+                boolean allMatched = true;
+                for (Directory directory : directoryController.getDirectories()) {
+                    if (directory.getLastProgramID() != programSettingsController.getProgramGeneratedID()) {
+                        log.info("programID's didn't match, updating...");
+                        allMatched = false;
+                        programSettingsController.setMainDirectoryVersion(mainDirectoryVersion + 1);
+                        updateUserShows(mainDirectoryVersion + 1);
+                        break;
+                    }
+                }
+                if (allMatched) log.info("programID's matched.");
+                else {
+                    directoryController.getDirectories().forEach(aDirectory -> {
+                        if (aDirectory.getLastProgramID() != programSettingsController.getProgramGeneratedID()) {
+                            aDirectory.setLastProgramID(programSettingsController.getProgramGeneratedID());
+                            directoryController.saveDirectory(aDirectory, aDirectory.getFileName(), false);
+                        }
+                    });
+                }
+            } else {
+                log.info("Number of directories didn't match, updating...");
+                programSettingsController.setMainDirectoryVersion(mainDirectoryVersion + 1);
+                updateUserShows(mainDirectoryVersion + 1);
+            }
+        } else {
             log.info("User directory version didn't match, Updating...");
             updateUserShows(mainDirectoryVersion);
         }
@@ -218,7 +247,6 @@ public class UpdateManager {
                             oldProgramSettingsFile.get("General").get(2),
                             Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)),
                             oldProgramSettingsFile.get("DefaultUser").get(1),
-                            oldProgramSettingsFile.get("Directories"),
                             Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(0)),
                             Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(1)),
                             Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(2)),
@@ -228,14 +256,16 @@ public class UpdateManager {
                             Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(2)),
                             Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(3))
                     );
-                    programSettingsController.setSettingsFile(programSettings);
+                    neededObjects = new Object[]{oldProgramSettingsFile.get("Directories")};
                     log.info("Program has been updated from version 1008.");
+                    programSettingsController.setSettingsFile(programSettings);
                     updated = true;
 
             }
-        } /*else if (oldVersion < 1008) {
+        }
 
-        }*/
+        //switch (oldVersion) {}
+
         if (updated) {
             // Update Program Settings File Version
             programSettings.setProgramSettingsFileVersion(newVersion);
@@ -295,11 +325,14 @@ public class UpdateManager {
                 case 1001:
                     Map<String, UserShowSettings> showsConverted = new HashMap<>();
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
-                    userSettings = new UserSettings(Strings.UserName, showsConverted);
+                    userSettings = new UserSettings(Strings.UserName, showsConverted, programSettingsController.getProgramGeneratedID());
                     log.info("User settings file has been updated from version 1001.");
                     updated = true;
             }
-        } /*else if (oldVersion > 1001) {
+        }
+
+        /*switch (oldVersion) {
+            case 1002:
         }*/
 
 
@@ -315,12 +348,18 @@ public class UpdateManager {
         boolean updated = false;
         switch (oldVersion) {
             case -2:
-                ArrayList<HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileArray = new ArrayList<>();
-                programSettingsController.getDirectoriesNames().forEach(aString -> {
+                //noinspection unchecked
+                HashMap<String, HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileHashMap = new HashMap();
+                //noinspection unchecked
+                ArrayList<String> directories = (ArrayList<String>) neededObjects[0];
+                directories.forEach(aString -> {
+                    String directoryFilename = "Directory-" + aString.split(">")[0];
+                    FileManager fileManager = new FileManager();
                     //noinspection unchecked
-                    showsFileArray.add((HashMap<String, HashMap<Integer, HashMap<String, String>>>) new FileManager().loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+                    showsFileHashMap.put(aString, (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowsExtension));
+                    fileManager.deleteFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowsExtension);
                 });
-                showsFileArray.forEach(aHashMap -> {
+                showsFileHashMap.forEach((directory, aHashMap) -> {
                     Map<String, Show> showsMap = new HashMap<>();
                     aHashMap.forEach((showName, showHashMap) -> {
                         Map<Integer, Season> seasonsMap = new HashMap<>();
@@ -339,9 +378,21 @@ public class UpdateManager {
                         });
                         showsMap.put(showName, new Show(showName, seasonsMap));
                     });
-                    showInfoController.saveShowsMapFile(showsMap, showsFileArray.indexOf(aHashMap), false);
+                    String[] splitResult = directory.split(">")[1].split(Pattern.quote(Strings.FileSeparator));
+                    String fileName = "";
+                    for (String singleSplit : splitResult) {
+                        if (singleSplit.contains(":")) {
+                            singleSplit = singleSplit.replace(":", "");
+                        }
+                        if (!singleSplit.isEmpty()) {
+                            if (fileName.isEmpty()) {
+                                fileName = singleSplit;
+                            } else fileName += '_' + singleSplit;
+                        }
+                    }
+                    directoryController.saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, Integer.parseInt(directory.split(">")[0]), -1, showsMap, programSettingsController.getProgramGeneratedID()), fileName, false);
                 });
-                log.info("Show file has been updated from version -2.");
+                log.info("Shows file has been updated from version -2.");
                 updated = true;
         }
 

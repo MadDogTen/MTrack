@@ -24,7 +24,7 @@ import javafx.stage.Window;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -228,18 +228,17 @@ public class ListSelectBox {
         Label label = new Label();
         label.setText(message);
 
-        ArrayList<String> seasonsString = new ArrayList<>();
-        seasonsString.addAll(seasons.stream().map(String::valueOf).collect(Collectors.toList()));
+        ArrayList<Integer> seasonsString = new ArrayList<>();
+        seasonsString.addAll(seasons.stream().collect(Collectors.toList()));
+        Collections.sort(seasonsString);
 
-        ObservableList<String> seasonsList = FXCollections.observableArrayList(seasonsString);
-        seasonsList.sorted();
-        ComboBox<String> comboBox = new ComboBox<>(seasonsList);
-
+        ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsString);
+        ComboBox<Integer> comboBox = new ComboBox<>(seasonsList);
 
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
-            if (comboBox.getValue() != null && !comboBox.getValue().isEmpty() && comboBox.getValue().matches("[0-9]*")) {
-                choice[0] = Integer.parseInt(comboBox.getValue());
+            if (comboBox.getValue() != null && !comboBox.getValue().toString().isEmpty() && comboBox.getValue().toString().matches("[0-9]*")) {
+                choice[0] = comboBox.getValue();
                 choice[1] = pickEpisode(Strings.PickTheEpisode, showInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
                 window.close();
             } else new MessageBox().display(Strings.YouHaveToPickASeason, window);
@@ -277,7 +276,7 @@ public class ListSelectBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private int pickEpisode(String message, Set<Integer> episodes, Double width, Double height, Window oldWindow) { //TODO Clean this up from the switch
+    private int pickEpisode(String message, Set<Integer> episodes, Double width, Double height, Window oldWindow) {
         final int[] choice = new int[1];
 
         Stage window = new Stage();
@@ -293,28 +292,9 @@ public class ListSelectBox {
 
         ArrayList<Integer> episodesArrayList = new ArrayList<>();
         episodesArrayList.addAll(episodes.stream().collect(Collectors.toList()));
+        Collections.sort(episodesArrayList);
 
-        log.info("Sorting the episodes before displaying...");
-        ArrayList<Integer> episodesSorted = new ArrayList<>();
-        while (!episodesArrayList.isEmpty()) {
-            Iterator<Integer> stringIterator = episodesArrayList.iterator();
-            int lowestEpisodeInt = -1;
-            int lowestEpisodeString = 0;
-            while (stringIterator.hasNext()) {
-                int episode = stringIterator.next();
-                int episodeInt;
-                episodeInt = episode;
-                if (lowestEpisodeInt == -1 || episodeInt < lowestEpisodeInt) {
-                    lowestEpisodeInt = episodeInt;
-                    lowestEpisodeString = episode;
-                }
-            }
-            episodesSorted.add(lowestEpisodeString);
-            episodesArrayList.remove(lowestEpisodeString);
-        }
-        log.info("Finished sorting the episodes.");
-
-        ObservableList<Integer> seasonsList = FXCollections.observableArrayList(episodesSorted);
+        ObservableList<Integer> seasonsList = FXCollections.observableArrayList(episodesArrayList);
         ComboBox<Integer> comboBox = new ComboBox<>(seasonsList);
 
         Button submit = new Button(Strings.Submit);

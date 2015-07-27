@@ -1,14 +1,12 @@
 package com.maddogten.mtrack.information;
 
+import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
-import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.Clock;
 import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -17,77 +15,40 @@ import java.util.stream.Collectors;
 
 public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
-    private final ProgramSettingsController programSettingsController;
+    private final DirectoryController directoryController;
     private Map<String, Show> showsFile;
 
-    public ShowInfoController(ProgramSettingsController programSettingsController) {
-        this.programSettingsController = programSettingsController;
+    public ShowInfoController(DirectoryController directoryController) {
+        this.directoryController = directoryController;
     }
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile() {
-        if (programSettingsController.getDirectoriesNames().size() > 1) {
+        if (directoryController.getDirectories().size() > 1) {
             long timer = Clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();
-            ArrayList<Map<String, Show>> showsFileArray = getDirectoriesMaps(-2);
+            ArrayList<Directory> showsFileArray = directoryController.getDirectories(-2);
             HashSet<String> allShows = new HashSet<>();
-            showsFileArray.stream().filter(aMap -> aMap != null).forEach(showsHashSet -> showsHashSet.forEach((aShow, Show) -> allShows.add(aShow)));
+            showsFileArray.stream().filter(aMap -> aMap != null).forEach(showsHashSet -> showsHashSet.getShows().forEach((aShow, Show) -> allShows.add(aShow)));
             allShows.forEach(aShow -> {
                 Map<Integer, Season> fullSeasons = new HashMap<>();
                 HashSet<Integer> seasons = new HashSet<>();
-                showsFileArray.stream().filter(aHashMap -> aHashMap.containsKey(aShow)).forEach(aHashMap -> aHashMap.get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
+                showsFileArray.stream().filter(aDirectory -> aDirectory.getShows().containsKey(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
                 seasons.forEach(aSeason -> {
                     Map<Integer, Episode> episodes = new HashMap<>();
-                    showsFileArray.stream().filter(aHashMap -> (aHashMap.containsKey(aShow) && aHashMap.get(aShow).getSeasons().containsKey(aSeason))).forEach(aHashMap -> aHashMap.get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
+                    showsFileArray.stream().filter(aDirectory -> (aDirectory.getShows().containsKey(aShow) && aDirectory.getShows().get(aShow).getSeasons().containsKey(aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
                     fullSeasons.put(aSeason, new Season(aSeason, episodes));
                 });
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
             });
             log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
         } else {
-            FileManager fileManager = new FileManager();
             //noinspection unchecked
-            programSettingsController.getDirectoriesNames().forEach(aString -> showsFile = (Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
+            directoryController.getDirectories().forEach(aDirectory -> showsFile = aDirectory.getShows());
         }
     }
 
     public Map<String, Show> getShowsFile() {
-        return showsFile;
-    }
-
-    // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
-    public ArrayList<Map<String, Show>> getDirectoriesMaps(int skip) {
-        // ArrayList = Shows list from all added Directories
-        ArrayList<Map<String, Show>> showsFileArray = new ArrayList<>();
-        ArrayList<String> files = programSettingsController.getDirectoriesNames();
-        FileManager fileManager = new FileManager();
-        if (skip == -2)
-            //noinspection unchecked
-            files.forEach(aString -> showsFileArray.add((Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString)));
-        else {
-            files.forEach(aString -> {
-                int place = Integer.parseInt(aString.split("\\-|\\.")[1]);
-                if (skip != place) {
-                    //noinspection unchecked
-                    showsFileArray.add((Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aString, Strings.EmptyString));
-                }
-            });
-        }
-        return showsFileArray;
-    }
-
-    // Gets a single directory map using the given index.
-    @SuppressWarnings("unchecked")
-    public Map<String, Show> getDirectoryMap(int index) {
-        Map<String, Show> showsFile = new HashMap<>();
-        ArrayList<String> files = programSettingsController.getDirectoriesNames();
-        FileManager fileManager = new FileManager();
-        for (String aFile : files) {
-            if (aFile.split("\\-|\\.")[1].matches(String.valueOf(index))) {
-                showsFile = (Map<String, Show>) fileManager.loadFile(Variables.DirectoriesFolder, aFile, Strings.EmptyString);
-                break;
-            }
-        }
         return showsFile;
     }
 
@@ -182,11 +143,11 @@ public class ShowInfoController {
     }
 
     // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
-    public boolean doesShowExistElsewhere(String aShow, ArrayList<Map<String, Show>> showsFileArray) {
+    public boolean doesShowExistElsewhere(String aShow, ArrayList<Directory> showsFileArray) {
         final boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
-            showsFileArray.forEach(aHashMap -> {
-                if (aHashMap.containsKey(aShow)) {
+            showsFileArray.forEach(aDirectory -> {
+                if (aDirectory.getShows().containsKey(aShow)) {
                     showExistsElsewhere[0] = true;
                 }
             });
@@ -275,12 +236,5 @@ public class ShowInfoController {
             return bothInt;
         }
         return bothInt;
-    }
-
-    public void saveShowsMapFile(Map<String, Show> arrayList, int mapIndex, Boolean loadMap) {
-        new FileManager().save((Serializable) arrayList, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(mapIndex)), Variables.ShowsExtension, true);
-        if (loadMap) {
-            loadShowsFile();
-        }
     }
 }

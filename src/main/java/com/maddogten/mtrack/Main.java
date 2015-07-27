@@ -2,6 +2,7 @@ package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.SettingsWindow;
+import com.maddogten.mtrack.information.DirectoryController;
 import com.maddogten.mtrack.information.ProgramSettingsController;
 import com.maddogten.mtrack.information.ShowInfoController;
 import com.maddogten.mtrack.information.UserInfoController;
@@ -22,11 +23,12 @@ import java.util.logging.Logger;
 
 public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
-    private final static ProgramSettingsController programSettingsController = new ProgramSettingsController();
-    private final static ShowInfoController showInfoController = new ShowInfoController(programSettingsController);
+    private final static DirectoryController directoryController = new DirectoryController();
+    private final static ShowInfoController showInfoController = new ShowInfoController(directoryController);
     private final static UserInfoController userInfoController = new UserInfoController(showInfoController);
-    private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController);
-    private final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles);
+    private final static ProgramSettingsController programSettingsController = new ProgramSettingsController(userInfoController);
+    private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController, directoryController);
+    private final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles, directoryController);
     private final static int timer = Clock.getTimeSeconds();
     public static boolean programRunning = true, programFullyRunning = false;
     public static Stage stage;
@@ -53,6 +55,7 @@ public class Main extends Application implements Runnable {
                 programSettingsController.getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
                 programSettingsController.getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
                 programSettingsController.getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
+                programSettingsController.setNumberOfDirectories(directoryController.getDirectories().size());
                 programSettingsController.saveSettingsFile();
                 userInfoController.saveUserSettingsFile();
             }
@@ -103,10 +106,12 @@ public class Main extends Application implements Runnable {
         return mainRun;
     }
 
+    public static DirectoryController getDirectoryController() {
+        return directoryController;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        programSettingsController.setShowInfoController(showInfoController);
-        programSettingsController.setUserInfoController(userInfoController);
         boolean continueStarting = mainRun.startBackend();
         if (continueStarting) {
             stage = primaryStage;

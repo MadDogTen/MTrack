@@ -6,7 +6,7 @@ import java.io.Serializable;
 public class UserShowSettings implements Serializable {
 
     private static final long serialVersionUID = -1596102571442125890L;
-    private String showName;
+    private final String showName;
 
     // Booleans
     private boolean active;
@@ -39,10 +39,6 @@ public class UserShowSettings implements Serializable {
 
     public String getShowName() {
         return showName;
-    }
-
-    public void setShowName(String showName) {
-        this.showName = showName;
     }
 
     public boolean isActive() {

@@ -5,12 +5,14 @@ import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.DualChoiceButtons;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.gui.TextBox;
+import com.maddogten.mtrack.information.DirectoryController;
 import com.maddogten.mtrack.information.ProgramSettingsController;
 import com.maddogten.mtrack.information.ShowInfoController;
 import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.information.settings.ProgramSettings;
 import com.maddogten.mtrack.information.settings.UserSettings;
 import com.maddogten.mtrack.information.settings.UserShowSettings;
+import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
@@ -18,7 +20,6 @@ import com.maddogten.mtrack.io.FileManager;
 import javafx.concurrent.Task;
 
 import java.io.File;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,11 +33,13 @@ public class FirstRun {
     private final ProgramSettingsController programSettingsController;
     private final ShowInfoController showInfoController;
     private final UserInfoController userInfoController;
+    private final DirectoryController directoryController;
 
-    public FirstRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController) {
+    public FirstRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, DirectoryController directoryController) {
         this.programSettingsController = programSettingsController;
         this.showInfoController = showInfoController;
         this.userInfoController = userInfoController;
+        this.directoryController = directoryController;
     }
 
     public void programFirstRun() {
@@ -100,12 +103,10 @@ public class FirstRun {
     // Generates the ShowFiles (If a directory is added, otherwise this is skipped).
     private void generateShowFiles() {
         log.info("Generating show files for first run...");
-        ArrayList<String> directories = programSettingsController.getDirectories();
+        ArrayList<Directory> directories = directoryController.getDirectories();
         directories.forEach(aDirectory -> {
-            log.info("Currently generating show files for: " + aDirectory);
-            int fileName = directories.indexOf(aDirectory);
-            File file = new File(aDirectory);
-            generateShowsFile(fileName, file);
+            log.info("Currently generating show files for: " + aDirectory.getDirectory());
+            generateShowsFile(aDirectory);
         });
         log.info("Finished generating show files.");
     }
@@ -119,7 +120,7 @@ public class FirstRun {
             int lowestSeason = showInfoController.findLowestSeason(aShow);
             showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
         }
-        new FileManager().save(new UserSettings(userName, showSettings), Variables.UsersFolder, userName, Variables.UsersExtension, false);
+        new FileManager().save(new UserSettings(userName, showSettings, programSettingsController.getProgramGeneratedID()), Variables.UsersFolder, userName, Variables.UsersExtension, false);
     }
 
     // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
@@ -129,46 +130,47 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = programSettingsController.addDirectory(index, textBox.addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, programSettingsController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, null));
+            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, null));
             index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display(Strings.DirectoryWasADuplicate, Main.stage);
+                messageBox.display(Strings.DirectoryWasADuplicate, null);
             } else if (matched[1]) {
                 break;
             }
-            if (!confirmBox.display(Strings.AddAnotherDirectory, Main.stage)) {
+            if (!confirmBox.display(Strings.AddAnotherDirectory, null)) {
                 addAnother = false;
             }
         }
     }
 
     // This generates a new showsFile for the given folder, then saves it as "Directory-[index].[ShowsExtension].
-    public void generateShowsFile(int index, File folderLocation) {
+    public void generateShowsFile(Directory directory) {
         FileManager fileManager = new FileManager();
-        if (!fileManager.checkFileExists(Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension)) {
-            log.info("Generating ShowsFile for: " + folderLocation);
+        String fileName = "";
+        if (!fileManager.checkFileExists(Variables.DirectoriesFolder, fileName, Variables.ShowsExtension)) {
+            log.info("Generating ShowsFile for: " + directory.getDirectory());
             FindShows findShows = new FindShows();
             Map<String, Show> shows = new HashMap<>();
             final ArrayList<String> ignoredShows;
             if (userInfoController.getAllUsers().isEmpty()) ignoredShows = new ArrayList<>();
             else ignoredShows = userInfoController.getIgnoredShows();
-            findShows.findShows(folderLocation).forEach(aShow -> {
+            findShows.findShows(directory.getDirectory()).forEach(aShow -> {
                 log.info("Currently Processing: " + aShow);
                 Map<Integer, Season> seasons = new HashMap<>();
-                findShows.findSeasons(folderLocation, aShow).forEach(aSeason -> {
+                findShows.findSeasons(directory.getDirectory(), aShow).forEach(aSeason -> {
                     log.info("Season: " + aSeason);
                     Map<Integer, Episode> episodes = new HashMap<>();
-                    ArrayList<String> episodesFull = findShows.findEpisodes(folderLocation, aShow, aSeason);
+                    ArrayList<String> episodesFull = findShows.findEpisodes(directory.getDirectory(), aShow, aSeason);
                     episodesFull.forEach(aEpisode -> {
                         log.info("Episode: " + aEpisode);
                         int[] episode = showInfoController.getEpisodeInfo(aEpisode);
                         if (episode != null && episode.length > 0) {
                             if (episode.length == 1) {
-                                episodes.put(episode[0], new Episode(episode[0], (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
+                                episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
                             } else if (episode.length == 2) {
-                                episodes.put(episode[0], new Episode(episode[0], (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
-                                episodes.put(episode[1], new Episode(episode[1], (folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
+                                episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
+                                episodes.put(episode[1], new Episode(episode[1], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
                             } else if (episode.length >= 3) {
                                 log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
                             }
@@ -185,8 +187,9 @@ public class FirstRun {
                     }
                 }
             });
+            directory.setShows(shows);
+            directoryController.saveDirectory(directory, directory.getFileName(), false);
             programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
-            fileManager.save((Serializable) shows, Variables.DirectoriesFolder, ("Directory-" + String.valueOf(index)), Variables.ShowsExtension, false);
         }
     }
 }
