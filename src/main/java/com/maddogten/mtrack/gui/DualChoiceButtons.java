@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class DualChoiceButtons {
     private static final Logger log = Logger.getLogger(DualChoiceButtons.class.getName());
 
+    @SuppressWarnings("SameParameterValue")
     public String display(String message, String message2, String choice1, String choice2, String tooltip1, String tooltip2, Window oldWindow) {
         log.finest("DualChoiceButtons has been ran.");
         Stage window = new Stage();

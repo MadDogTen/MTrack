@@ -9,7 +9,7 @@ import java.util.Map;
 public class UserSettings implements Serializable {
 
     private static final long serialVersionUID = 349723488242111763L;
-    private String userName;
+    private final String userName; // Final for now, May add the ability to change it later
 
     // Versions
     private int userSettingsFileVersion;
@@ -62,12 +62,4 @@ public class UserSettings implements Serializable {
     public UserShowSettings getAShowSettings(String aShow) {
         return showSettings.get(aShow);
     }
-
-    /*public long getLastProgramID() { //TODO Implement using LastProgramID for UserSettings. Move defaultUser into here.
-        return lastProgramID;
-    }
-
-    public void setLastProgramID(long lastProgramID) {
-        this.lastProgramID = lastProgramID;
-    }*/
 }

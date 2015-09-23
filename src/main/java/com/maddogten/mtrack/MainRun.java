@@ -30,6 +30,7 @@ public class MainRun {
     private boolean hasRan = false, forceRun = true;
     private int timer = Clock.getTimeSeconds();
 
+    @SuppressWarnings("SameParameterValue")
     public MainRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, CheckShowFiles checkShowFiles, DirectoryController directoryController) {
         this.programSettingsController = programSettingsController;
         this.showInfoController = showInfoController;
@@ -40,7 +41,6 @@ public class MainRun {
 
     public boolean startBackend() {
         FileManager fileManager = new FileManager();
-
 
         // First it checks if the folder that contains the jar has the settings file.
         boolean folderFound = false;
@@ -175,7 +175,7 @@ public class MainRun {
             timer = Clock.getTimeSeconds();
             forceRun = false;
         }
-        if (directoryController.reloadShowsFile) {
+        if (directoryController.isReloadShowsFile()) {
             showInfoController.loadShowsFile();
         }
     }

@@ -5,6 +5,7 @@ import com.maddogten.mtrack.io.FileManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,13 +13,20 @@ import java.util.regex.Pattern;
 public class FindShows {
     private final Logger log = Logger.getLogger(FindShows.class.getName());
 
-    public ArrayList<String> findShows(File dir) {
+    public final ArrayList<String> findShows(File dir) {
         ArrayList<String> result = new ArrayList<>();
         Collections.addAll(result, dir.list());
+        Iterator<String> stringIterator = result.iterator();
+        while (stringIterator.hasNext()) {
+            String next = stringIterator.next();
+            if (!new File(dir + Strings.FileSeparator + next).isDirectory()) {
+                stringIterator.remove();
+            }
+        }
         return result;
     }
 
-    public ArrayList<Integer> findSeasons(File dir, String show) {
+    public final ArrayList<Integer> findSeasons(File dir, String show) {
         log.finest("Searching for seasons...");
         File folder = new File(dir + Strings.FileSeparator + show);
         ArrayList<String> showFolder = new ArrayList<>();
@@ -37,7 +45,7 @@ public class FindShows {
         return seasonNumber;
     }
 
-    public ArrayList<String> findEpisodes(File dir, String ShowName, Integer Season) {
+    public final ArrayList<String> findEpisodes(File dir, String ShowName, Integer Season) {
         log.finest("Searching for episodes...");
         ArrayList<String> episodes = new ArrayList<>();
         File folder = new File(dir + Strings.FileSeparator + ShowName + "/Season" + ' ' + Season);

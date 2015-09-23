@@ -18,6 +18,7 @@ public class UserInfoController {
     private final ShowInfoController showInfoController;
     private UserSettings userSettings;
 
+    @SuppressWarnings("SameParameterValue")
     public UserInfoController(ShowInfoController showInfoController) {
         this.showInfoController = showInfoController;
     }

@@ -105,7 +105,7 @@ public class FirstRun {
         log.info("Generating show files for first run...");
         ArrayList<Directory> directories = directoryController.getDirectories();
         directories.forEach(aDirectory -> {
-            log.info("Currently generating show files for: " + aDirectory.getDirectory());
+            log.info("Currently generating show file for: " + aDirectory.getDirectory());
             generateShowsFile(aDirectory);
         });
         log.info("Finished generating show files.");
@@ -188,7 +188,7 @@ public class FirstRun {
                 }
             });
             directory.setShows(shows);
-            directoryController.saveDirectory(directory, directory.getFileName(), false);
+            directoryController.saveDirectory(directory, false);
             programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
         }
     }

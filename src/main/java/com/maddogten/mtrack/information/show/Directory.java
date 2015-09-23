@@ -11,7 +11,7 @@ public class Directory implements Serializable {
     private final File directory;
     private final String fileName;
     private final int index;
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal"})
     private int priority;
     private Map<String, Show> shows;
     private long lastProgramID;

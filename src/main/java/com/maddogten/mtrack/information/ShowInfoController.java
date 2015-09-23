@@ -18,12 +18,16 @@ public class ShowInfoController {
     private final DirectoryController directoryController;
     private Map<String, Show> showsFile;
 
+    @SuppressWarnings("SameParameterValue")
     public ShowInfoController(DirectoryController directoryController) {
         this.directoryController = directoryController;
     }
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile() {
+        if (directoryController.isReloadShowsFile()) {
+            directoryController.setReloadShowsFile(false);
+        }
         if (directoryController.getDirectories().size() > 1) {
             long timer = Clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();

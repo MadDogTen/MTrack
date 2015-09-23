@@ -161,7 +161,7 @@ public class UpdateManager {
                     directoryController.getDirectories().forEach(aDirectory -> {
                         if (aDirectory.getLastProgramID() != programSettingsController.getProgramGeneratedID()) {
                             aDirectory.setLastProgramID(programSettingsController.getProgramGeneratedID());
-                            directoryController.saveDirectory(aDirectory, aDirectory.getFileName(), false);
+                            directoryController.saveDirectory(aDirectory, false);
                         }
                     });
                 }
@@ -244,7 +244,7 @@ public class UpdateManager {
                             Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(2)),
                             Integer.parseInt(oldProgramSettingsFile.get("General").get(0)),
                             Boolean.parseBoolean(oldProgramSettingsFile.get("General").get(1)),
-                            oldProgramSettingsFile.get("General").get(2),
+                            Strings.EmptyString,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)),
                             oldProgramSettingsFile.get("DefaultUser").get(1),
                             Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(0)),
@@ -357,7 +357,7 @@ public class UpdateManager {
                     FileManager fileManager = new FileManager();
                     //noinspection unchecked
                     showsFileHashMap.put(aString, (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowsExtension));
-                    fileManager.deleteFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowsExtension);
+                    fileManager.deleteFile(Variables.dataFolder + Variables.DirectoriesFolder, directoryFilename, Variables.ShowsExtension);
                 });
                 showsFileHashMap.forEach((directory, aHashMap) -> {
                     Map<String, Show> showsMap = new HashMap<>();
@@ -390,7 +390,7 @@ public class UpdateManager {
                             } else fileName += '_' + singleSplit;
                         }
                     }
-                    directoryController.saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, Integer.parseInt(directory.split(">")[0]), -1, showsMap, programSettingsController.getProgramGeneratedID()), fileName, false);
+                    directoryController.saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, Integer.parseInt(directory.split(">")[0]), -1, showsMap, programSettingsController.getProgramGeneratedID()), false);
                 });
                 log.info("Shows file has been updated from version -2.");
                 updated = true;

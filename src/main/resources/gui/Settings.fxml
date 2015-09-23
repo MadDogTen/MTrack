@@ -52,8 +52,8 @@
                                         text="Remove Directory"/>
                                 <Button fx:id="changeLanguage" layoutX="41.0" layoutY="63.0" mnemonicParsing="false"
                                         text="Change Language"/>
-                                <Button fx:id="toggleDevMode" layoutX="69.0" layoutY="143.0" mnemonicParsing="false"
-                                        prefHeight="25.0" prefWidth="75.0" text="Toggle Dev"/>
+                                <Button fx:id="toggleDevMode" layoutX="65.0" layoutY="142.0" mnemonicParsing="false"
+                                        prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -74,8 +74,8 @@
                                                         <Button fx:id="printAllDirectories" layoutX="2.0" layoutY="29.0"
                                                                 mnemonicParsing="false" text="Print All Directories"/>
                                                         <Button fx:id="printEmptyShowFolders" layoutX="2.0"
-                                                                layoutY="56.0"
-                                                                mnemonicParsing="false" text="Print Empty Shows"/>
+                                                                layoutY="56.0" mnemonicParsing="false"
+                                                                text="Print Empty Shows"/>
                                                         <Button fx:id="setAllActive" layoutX="2.0" layoutY="159.0"
                                                                 mnemonicParsing="false" text="Set All Active"/>
                                                         <Button fx:id="setAllInactive" layoutX="90.0" layoutY="159.0"
@@ -86,8 +86,7 @@
                                                                 mnemonicParsing="false" text="Print Hidden Shows"/>
                                                         <Button fx:id="unHideAll" layoutX="124.0" layoutY="110.0"
                                                                 mnemonicParsing="false" prefHeight="25.0"
-                                                                prefWidth="73.0"
-                                                                text="UnHide All" wrapText="true"/>
+                                                                prefWidth="73.0" text="UnHide All" wrapText="true"/>
                                                     </children>
                                                 </AnchorPane>
                                             </content>
@@ -106,13 +105,13 @@
                                                         <Button fx:id="clearFile" layoutX="146.0" layoutY="112.0"
                                                                 mnemonicParsing="false" text="Clear File"/>
                                                         <Button fx:id="deleteEverythingAndClose" layoutX="117.0"
-                                                                layoutY="159.0"
-                                                                mnemonicParsing="false" text="Reset Program"/>
+                                                                layoutY="159.0" mnemonicParsing="false"
+                                                                text="Reset Program"/>
                                                         <Button fx:id="printAllUserInfo" layoutX="2.0" layoutY="58.0"
                                                                 mnemonicParsing="false" text="Print All User Info"/>
                                                         <Button fx:id="add1ToDirectoryVersion" layoutX="2.0"
-                                                                layoutY="112.0"
-                                                                mnemonicParsing="false" text="Directory Version +1"/>
+                                                                layoutY="112.0" mnemonicParsing="false"
+                                                                text="Directory Version +1"/>
                                                     </children>
                                                 </AnchorPane>
                                             </content>

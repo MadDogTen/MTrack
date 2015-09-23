@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public class DirectoryController {
     private final Logger log = Logger.getLogger(DirectoryController.class.getName());
-    public boolean reloadShowsFile = false;
+    private boolean reloadShowsFile = false;
 
     // Saves all the directory paths that the program is currently set to check.
     public ArrayList<Directory> getDirectories() {
@@ -34,14 +34,6 @@ public class DirectoryController {
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
     public boolean isDirectoryCurrentlyActive(File directory) { //TODO Find a better way of doing this.
         return directory.exists() && directory.isDirectory();
-    }
-
-    // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
-    public void removeDirectory(Directory aDirectory) {
-        log.info("Currently processing removal of: " + aDirectory);
-        int index = aDirectory.getIndex();
-        new FileManager().deleteFile(Variables.DirectoriesFolder, "Directory-" + index, Variables.ShowsExtension);
-        log.info("Finished processing removal of the directory.");
     }
 
     // Debugging tool - Prints all directories to console.
@@ -81,7 +73,7 @@ public class DirectoryController {
                     } else fileName += '_' + singleSplit;
                 }
             }
-            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), Main.getProgramSettingsController().getProgramGeneratedID()), fileName, false);
+            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), Main.getProgramSettingsController().getProgramGeneratedID()), false);
             answer[0] = true;
         } else if (directory.toString().isEmpty()) {
             answer[1] = true;
@@ -137,10 +129,26 @@ public class DirectoryController {
         return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>(), Main.getProgramSettingsController().getProgramGeneratedID());
     }
 
-    public void saveDirectory(Directory directory, String directoryName, Boolean loadMap) {
-        new FileManager().save(directory, Variables.DirectoriesFolder, directoryName, Variables.ShowsExtension, true);
+    public void saveDirectory(Directory directory, Boolean loadMap) {
+        new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowsExtension, true);
         if (loadMap) {
             reloadShowsFile = true;
         }
+    }
+
+    // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
+    public void removeDirectory(Directory aDirectory) {
+        log.info("Currently processing removal of: " + aDirectory.getFileName());
+        new FileManager().deleteFile(Variables.dataFolder + Variables.DirectoriesFolder, aDirectory.getFileName(), Variables.ShowsExtension);
+        log.info("Finished processing removal of the directory.");
+    }
+
+    public boolean isReloadShowsFile() {
+        return reloadShowsFile;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    public void setReloadShowsFile(boolean reloadShowsFile) {
+        this.reloadShowsFile = reloadShowsFile;
     }
 }

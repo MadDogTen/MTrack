@@ -7,12 +7,6 @@ public class Clock {
 
     // General Clock class to help with timing.
     @SuppressWarnings("WeakerAccess")
-    public static long getTimeNano() {
-        log.finest("getTimeNano has been ran.");
-        return System.nanoTime();
-    }
-
-    @SuppressWarnings("WeakerAccess")
     public static long getTimeMilliSeconds() {
         log.finest("getTimeMilliSeconds has been ran.");
         return (System.nanoTime() / 1000000);
@@ -22,11 +16,6 @@ public class Clock {
         log.finest("getTimeSeconds has been ran.");
         return (int) (System.nanoTime() / 1000000000);
     }
-
-    /*public static long timeTakenNano(long timer) {
-        log.finest("timeTakenNano has been ran.");
-        return (getTimeNano() - timer);
-    }*/
 
     public static long timeTakenMilli(long timer) {
         log.finest("timeTakenMilli has been ran.");

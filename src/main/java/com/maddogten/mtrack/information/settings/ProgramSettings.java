@@ -62,6 +62,7 @@ public class ProgramSettings implements Serializable {
         this.numberOfDirectories = 0;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, boolean show0Remaining, String language, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
         this.programGeneratedID = new Random().nextLong();
         this.programSettingsFileVersion = programSettingsFileVersion;

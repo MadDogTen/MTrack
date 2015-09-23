@@ -39,6 +39,7 @@ public class CheckShowFiles {
     // recheckShowFilePercentage - Is increased as recheckShowFile is running. The percentage is currently split between each directory, and then that is further split by each active show (Plus 2 shows worth is reserved when checking for new shows). Used by the controller.
     private double recheckShowFilePercentage;
 
+    @SuppressWarnings("SameParameterValue")
     public CheckShowFiles(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, DirectoryController directoryController) {
         this.programSettingsController = programSettingsController;
         this.showInfoController = showInfoController;
@@ -146,7 +147,7 @@ public class CheckShowFiles {
                                 recheckShowFilePercentage += percentagePer / changedShows.size();
                             });
                             aDirectory.setShows(showsMap);
-                            directoryController.saveDirectory(aDirectory, aDirectory.getFileName(), true);
+                            directoryController.saveDirectory(aDirectory, true);
                             changedShows.keySet().forEach(aShow -> {
                                 userInfoController.addNewShow(aShow);
                                 Controller.updateShowField(aShow, true);
@@ -308,7 +309,7 @@ public class CheckShowFiles {
             }
         });
         directory.getShows().replace(aShow, seasonEpisode);
-        directoryController.saveDirectory(directory, directory.getFileName(), true);
+        directoryController.saveDirectory(directory, true);
     }
 
     private void checkForNewOrRemovedEpisodes(File folderLocation, String aShow, Integer aSeason, Directory directory) {
@@ -332,7 +333,7 @@ public class CheckShowFiles {
         }
         seasonEpisode.addOrReplaceSeason(aSeason, new Season(aSeason, episodeNum));
         directory.getShows().replace(aShow, seasonEpisode);
-        directoryController.saveDirectory(directory, directory.getFileName(), true);
+        directoryController.saveDirectory(directory, true);
     }
 
     private ArrayList<Integer> removeLowerSeasons(int baseInt, Set<Integer> listToCheck) {
@@ -351,7 +352,7 @@ public class CheckShowFiles {
         boolean wereShowsRemoved = false;
         if (!removedShows.isEmpty()) {
             wereShowsRemoved = true;
-            directoryController.saveDirectory(directory, directory.getFileName(), true);
+            directoryController.saveDirectory(directory, true);
             removedShows.forEach(aShow -> {
                 log.info(aShow + " is no longer found in \"" + folder + "\".");
                 boolean doesShowExistElsewhere = showInfoController.doesShowExistElsewhere(aShow, directoryController.getDirectories(index));

@@ -226,14 +226,14 @@ public class Settings implements Initializable {
                 messageBox.display(Strings.ThereAreNoDirectoriesToDelete, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
-                String directoryToDelete = String.valueOf(listSelectBox.directories(Strings.DirectoryToDelete, directories, tabPane.getScene().getWindow()));
-                if (directoryToDelete != null && !directoryToDelete.isEmpty()) {
+                File directoryToDelete = listSelectBox.directories(Strings.DirectoryToDelete, directories, tabPane.getScene().getWindow());
+                if (directoryToDelete != null) {
                     log.info("Directory selected for deletion: " + directoryToDelete);
                     ConfirmBox confirmBox = new ConfirmBox();
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + directoryToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
-                    if (confirm && !directoryToDelete.isEmpty()) {
+                    if (confirm) {
                         for (Directory directory : directoryController.getDirectories()) {
-                            if (directory.getDirectory() == new File(directoryToDelete)) {
+                            if (directory.getDirectory().equals(directoryToDelete)) {
                                 int index = directory.getIndex();
                                 ArrayList<Directory> showsFileArray = directoryController.getDirectories(index);
                                 Set<String> showsSet = directoryController.getDirectory(index).getShows().keySet();
@@ -428,7 +428,7 @@ public class Settings implements Initializable {
                                     }
                                 });
                                 aDirectory.setShows(new HashMap<>());
-                                directoryController.saveDirectory(aDirectory, aDirectory.getFileName(), true);
+                                directoryController.saveDirectory(aDirectory, true);
                                 programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
                                 break;
                             }

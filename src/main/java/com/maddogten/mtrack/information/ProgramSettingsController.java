@@ -14,6 +14,7 @@ public class ProgramSettingsController {
     private ProgramSettings settingsFile;
     private boolean mainDirectoryVersionAlreadyChanged = false;
 
+    @SuppressWarnings("SameParameterValue")
     public ProgramSettingsController(UserInfoController userInfoController) {
         this.userInfoController = userInfoController;
     }

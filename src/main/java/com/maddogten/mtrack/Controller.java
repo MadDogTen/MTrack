@@ -360,9 +360,9 @@ public class Controller implements Initializable {
                         ArrayList<File> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
-                            String fileString = aDirectory.getFileName();
-                            if (fileManager.checkFolderExists(new File(fileString))) {
-                                folders.add(new File(fileString));
+                            File fileName = new File(aDirectory.getDirectory() + Strings.FileSeparator + row.getItem().getShow());
+                            if (fileName.exists()) {
+                                folders.add(fileName);
                             }
                         });
                         if (folders.size() == 1) {

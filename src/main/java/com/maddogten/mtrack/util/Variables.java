@@ -13,9 +13,9 @@ public class Variables {
     public static final int EPISODE_COLUMN_WIDTH = 50;
 
     // Base Directories
-    public static final String ProgramRootFolder = "/MTrack";
-    public static final String DirectoriesFolder = "/Directories";
-    public static final String UsersFolder = "/Users";
+    public static final String ProgramRootFolder = Strings.FileSeparator + "MTrack";
+    public static final String DirectoriesFolder = Strings.FileSeparator + "Directories";
+    public static final String UsersFolder = Strings.FileSeparator + "Users";
     // Extensions
     public static final String ShowsExtension = ".shows";
     public static final String UsersExtension = ".user";
