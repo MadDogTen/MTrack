@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 public class lipsum extends Language {
     private final Logger log = Logger.getLogger(lipsum.class.getName());
 
+    @SuppressWarnings("WeakerAccess")
     public lipsum() {
         LanguageName = "Lipsum";
     }
@@ -135,11 +136,9 @@ public class lipsum extends Language {
         Strings.RestartTheProgramForTheNewLanguageToTakeEffect = "veralib";
         Strings.WhereWouldYouLikeTheProgramFilesToBeStored = "abbera";
         Strings.HoverOverAButtonForThePath = "mezua";
-        Strings.WasAdded = " vertura";
-        Strings.WasRemoved = " blerta";
         Strings.DashSeason = " - megatu";
         Strings.DashEpisode = " - jesuma";
-        Strings.PickTheSeason = "vertuta";
+        Strings.PickTheSeasonAndEpisode = "vertuta";
         Strings.YouHaveReachedTheEnd = "galaminka";
         Strings.PingingDirectories = "vermuna";
         Strings.PathToDirectory = "mezera";

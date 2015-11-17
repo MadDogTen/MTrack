@@ -5,6 +5,7 @@ import java.io.Serializable;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class UserShowSettings implements Serializable {
 
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = -1596102571442125890L;
     private final String showName;
 

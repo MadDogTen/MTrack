@@ -63,7 +63,7 @@ public class MainRun {
         // If the above isn't the correct folder, it then checks if the Roaming Appdata folder is the correct one.
         if (!folderFound) {
             File path = fileManager.getAppDataFolder();
-            if (fileManager.checkFolderExists(path)) {
+            if (fileManager.checkFolderExistsAndReadable(path)) {
                 Variables.setDataFolder(path);
                 folderFound = true;
             }
@@ -151,32 +151,32 @@ public class MainRun {
             timer = Clock.getTimeSeconds();
             hasRan = true;
         }
-        boolean isShowCurrentlyPlaying = Controller.getIsShowCurrentlyPlaying();
+        if (directoryController.isReloadShowsFile()) {
+            showInfoController.loadShowsFile();
+        }
+        recheck();
+    }
+
+    private void recheck() {
         //noinspection PointlessBooleanExpression,ConstantConditions
-        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || !isShowCurrentlyPlaying && (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) || isShowCurrentlyPlaying && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
-            final boolean[] taskRunning = {true};
+        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     checkShowFiles.recheckShowFile(false);
-                    taskRunning[0] = false;
                     return null;
                 }
             };
-            new Thread(task).start();
-            while (taskRunning[0]) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    log.severe(e.toString());
-                }
+            Thread recheckThread = new Thread(task);
+            recheckThread.start();
+            try {
+                recheckThread.join();
+            } catch (InterruptedException e) {
+                log.severe(e.toString());
             }
             timer = Clock.getTimeSeconds();
             forceRun = false;
-        }
-        if (directoryController.isReloadShowsFile()) {
-            showInfoController.loadShowsFile();
         }
     }
 
@@ -195,7 +195,6 @@ public class MainRun {
             return result;
         }
     }
-
 
     // Prompts the user to choose which language to startup with. If there is only 1 language, then it will skip the prompt and start with it.
     public void getLanguage() {

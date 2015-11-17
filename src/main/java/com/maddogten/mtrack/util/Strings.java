@@ -7,11 +7,11 @@ public class Strings {
     // Program Info
     public static final String ProgramTitle = "MTrack";
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Alpha 0.1";
+    public static final String MTrackVersion = "Alpha 1.0.2";
     public static final String CodedBy = "MadDogTen";
-    public static final String CodedUsing = "Using: Intellij IDEA 14.1.4";
+    public static final String CodedUsing = "Using: Intellij IDEA 15";
     public static final String codedWith = "Java";
-    public static final String javaVersion = "Version: 1.8.0_45";
+    public static final String javaVersion = "Version: 1.8.0_60";
     //Other
     public static final String SettingsFileName = "Program";
     // Other
@@ -139,14 +139,13 @@ public class Strings {
     public static String RestartTheProgramForTheNewLanguageToTakeEffect;
     public static String WhereWouldYouLikeTheProgramFilesToBeStored;
     public static String HoverOverAButtonForThePath;
-    public static String WasAdded;
-    public static String WasRemoved;
     public static String DashSeason;
     public static String DashEpisode;
-    public static String PickTheSeason;
+    public static String PickTheSeasonAndEpisode;
     public static String YouHaveReachedTheEnd;
     public static String PingingDirectories;
     public static String PathToDirectory;
+    public static String PrintCurrentSeasonEpisode;
 
     // Strings set by program
     public static String UserName;

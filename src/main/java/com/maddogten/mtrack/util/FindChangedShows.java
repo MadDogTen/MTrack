@@ -28,7 +28,7 @@ public class FindChangedShows {
                 showsFound.add(aShow);
             } else {
                 log.info(aShow + " Removed");
-                ChangeReporter.addChange(aShow + Strings.WasRemoved);
+                ChangeReporter.addChange("- " + aShow);
                 hasChanged[0] = true;
             }
         });
@@ -39,26 +39,25 @@ public class FindChangedShows {
                     seasonsFound.add(aSeason);
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Removed");
-                    ChangeReporter.addChange(aShowFound + Strings.DashSeason + aSeason + Strings.WasRemoved);
+                    ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason + aSeason);
                     hasChanged[0] = true;
                 }
             });
             seasonsFound.forEach(aSeasonFound -> showsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().forEach((aEpisode, episodeMap) -> {
                 if (!newShowsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Removed");
-                    ChangeReporter.addChange(aShowFound + Strings.DashSeason + aSeasonFound + Strings.DashEpisode + aEpisode + Strings.WasRemoved);
+                    ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason + aSeasonFound + Strings.DashEpisode + aEpisode);
                     hasChanged[0] = true;
                 }
             }));
         });
-
         ArrayList<String> showsFoundOld = new ArrayList<>();
         newShowsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
             if (showsFile.containsKey(aShow)) {
                 showsFoundOld.add(aShow);
             } else {
                 log.info(aShow + " Added");
-                ChangeReporter.addChange(aShow + Strings.WasAdded);
+                ChangeReporter.addChange("+ " + aShow);
                 hasChanged[0] = true;
             }
         });
@@ -69,14 +68,14 @@ public class FindChangedShows {
                     seasonsFoundOld.add(aSeason);
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Added");
-                    ChangeReporter.addChange(aShowFound + Strings.DashSeason + aSeason + Strings.WasAdded);
+                    ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason + aSeason);
                     hasChanged[0] = true;
                 }
             });
             seasonsFoundOld.forEach(aSeasonFound -> newShowsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().forEach((aEpisode, StringString) -> {
                 if (!showsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Added");
-                    ChangeReporter.addChange(aShowFound + Strings.DashSeason + aSeasonFound + Strings.DashEpisode + aEpisode + Strings.WasAdded);
+                    ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason + aSeasonFound + Strings.DashEpisode + aEpisode);
                     hasChanged[0] = true;
                 }
             }));

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DirectoryController {
@@ -32,8 +33,30 @@ public class DirectoryController {
     }
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    public boolean isDirectoryCurrentlyActive(File directory) { //TODO Find a better way of doing this.
-        return directory.exists() && directory.isDirectory();
+    public boolean isDirectoryCurrentlyActive(File directory) { //TODO The must be a better way of doing this.
+        String bsR1 = "\\\\";
+        Pattern drivePattern = Pattern.compile("[A-Z]:" + bsR1);
+        Pattern networkFolderPattern = Pattern.compile(bsR1 + bsR1 + "[0-9A-Za-z-]+" + bsR1);
+        Matcher driveMatcher = drivePattern.matcher(directory.toString());
+        Matcher networkFolderMatcher = networkFolderPattern.matcher(directory.toString());
+        if (driveMatcher.find() || networkFolderMatcher.find()) {
+            String match = Strings.EmptyString;
+            if (driveMatcher.find()) {
+                match = driveMatcher.group();
+            } else if (networkFolderMatcher.find()) {
+                match = networkFolderMatcher.group();
+            }
+            File baseDirectory = new File(match);
+            return baseDirectory.exists() && baseDirectory.canRead() && directory.exists() && directory.canRead();
+        }
+
+        Pattern ipPattern = Pattern.compile(bsR1 + bsR1 + "[0-9a-z][0-9.a-z:]+[.|:][0-9.a-z:]+[0-9a-z]" + bsR1);
+        Matcher ipMatcher = ipPattern.matcher(directory.toString());
+        if (ipMatcher.find()) {
+            return directory.exists() && directory.canRead() && directory.getTotalSpace() > 0;
+        }
+        log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory);
+        return false;
     }
 
     // Debugging tool - Prints all directories to console.
@@ -78,7 +101,6 @@ public class DirectoryController {
         } else if (directory.toString().isEmpty()) {
             answer[1] = true;
         }
-
         return answer;
     }
 

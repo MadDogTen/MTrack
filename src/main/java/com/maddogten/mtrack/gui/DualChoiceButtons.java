@@ -27,7 +27,6 @@ public class DualChoiceButtons {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
@@ -40,7 +39,6 @@ public class DualChoiceButtons {
             answer[0] = choice1;
             window.close();
         });
-
         button2.setOnAction(e -> {
             answer[0] = choice2;
             window.close();
@@ -54,16 +52,13 @@ public class DualChoiceButtons {
         VBox button1Box = new VBox();
         button1Box.getChildren().add(button1);
         button1Box.setPadding(new Insets(0, 3, 0, 0));
-
         VBox button2Box = new VBox();
         button2Box.getChildren().add(button2);
         button2Box.setPadding(new Insets(0, 0, 0, 3));
-
         HBox layout = new HBox();
         layout.getChildren().addAll(button1Box, button2Box);
         layout.setAlignment(Pos.CENTER);
 
-        log.info(message2);
         VBox mainLayout = new VBox();
         if (message2.isEmpty()) mainLayout.getChildren().addAll(label, layout);
         else {
@@ -78,8 +73,8 @@ public class DualChoiceButtons {
         mainLayout.setPadding(new Insets(6, 6, 6, 6));
 
         Scene scene = new Scene(mainLayout);
-
         window.setScene(scene);
+
         Platform.runLater(() -> {
             if (oldWindow != null) {
                 window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));

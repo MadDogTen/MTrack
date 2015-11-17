@@ -45,10 +45,11 @@ public class ShowInfoController {
                 });
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
             });
-            log.info("ShowInfoController- It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
+            log.info("showsFile was loaded, It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
         } else {
             //noinspection unchecked
-            directoryController.getDirectories().forEach(aDirectory -> showsFile = aDirectory.getShows());
+            showsFile = directoryController.getDirectories().get(0).getShows();
+            log.info("showsFile was loaded, Only one Directory.");
         }
     }
 
@@ -80,9 +81,9 @@ public class ShowInfoController {
     // Returns a given episode from a given season in a given show.
     public String getEpisode(String show, int season, int episode) {
         if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode)) {
-            return showsFile.get(show).getSeason(season).getEpisodes().get(episode).getEpisodeFilename();
+            return showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename();
         } else {
-            log.warning("Error, Please report.");
+            log.warning("Error for: " + show + " - Season " + season + " - Episode " + episode + ", Please report.");
             //noinspection ReturnOfNull
             return null;
         }

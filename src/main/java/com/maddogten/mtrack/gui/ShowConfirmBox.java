@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.gui;
 
+import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.io.MoveWindow;
 import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
@@ -22,12 +23,12 @@ public class ShowConfirmBox {
     private static final Logger log = Logger.getLogger(ShowConfirmBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public int display(String message, Window oldWindow) {
+    public int display(String message, Window oldWindow, boolean disableNextEpisodeButton) {
         log.finest("ShowConfirmBox has been opened.");
         Stage window = new Stage();
+        window.initOwner(Main.stage); // TODO - Decide if I want to do it this way? Works for now.
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
@@ -53,26 +54,25 @@ public class ShowConfirmBox {
         HBox layout2 = new HBox();
         layout2.getChildren().addAll(yesButton, noButton);
         layout2.setAlignment(Pos.CENTER);
-
         layout2.setPadding(new Insets(4, 6, 6, 6));
 
         Button nextEpisode = new Button(Strings.NextEpisode);
         nextEpisode.setMinHeight(20);
         nextEpisode.setMinWidth(30);
-
         nextEpisode.setOnAction(e -> {
             answer[0] = 2;
             window.close();
         });
+        if (disableNextEpisodeButton) {
+            nextEpisode.setDisable(true);
+        }
 
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2, nextEpisode);
         layout.setAlignment(Pos.CENTER);
-
         layout.setPadding(new Insets(6, 0, 0, 0));
 
         Scene scene = new Scene(layout);
-
         window.setScene(scene);
         Platform.runLater(() -> {
             window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));

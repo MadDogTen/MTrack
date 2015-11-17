@@ -7,11 +7,12 @@ import java.util.Map;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class Directory implements Serializable {
 
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = 8211794325592517516L;
     private final File directory;
     private final String fileName;
     private final int index;
-    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal"})
+    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
     private int priority;
     private Map<String, Show> shows;
     private long lastProgramID;

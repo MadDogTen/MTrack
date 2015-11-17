@@ -27,7 +27,6 @@ public class SelectBox {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
@@ -58,13 +57,11 @@ public class SelectBox {
 
         layout2.getChildren().add(close);
         layout2.setAlignment(Pos.CENTER);
-
         layout2.setPadding(new Insets(4, 6, 6, 6));
 
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2);
         layout.setAlignment(Pos.CENTER);
-
         layout.setPadding(new Insets(6, 0, 0, 0));
 
         Scene scene = new Scene(layout);

@@ -135,11 +135,9 @@ public class template extends Language {
         Strings.RestartTheProgramForTheNewLanguageToTakeEffect = "";
         Strings.WhereWouldYouLikeTheProgramFilesToBeStored = "";
         Strings.HoverOverAButtonForThePath = "";
-        Strings.WasAdded = "";
-        Strings.WasRemoved = "";
         Strings.DashSeason = "";
         Strings.DashEpisode = "";
-        Strings.PickTheSeason = "";
+        Strings.PickTheSeasonAndEpisode = "";
         Strings.YouHaveReachedTheEnd = "";
         Strings.PingingDirectories = "";
         Strings.PathToDirectory = "";

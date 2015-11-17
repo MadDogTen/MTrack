@@ -65,26 +65,22 @@ public class FirstRun {
             programSettingsController.loadProgramSettingsFile();
             programSettingsController.setLanguage(Variables.language);
             addDirectories();
-
-            final boolean[] taskRunning = {true};
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     generateShowFiles();
-                    taskRunning[0] = false;
                     return null;
                 }
             };
-            new Thread(task).start();
+            Thread generateShowFilesThread = new Thread(task);
+            generateShowFilesThread.start();
             TextBox textBox = new TextBox();
             Strings.UserName = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
-            while (taskRunning[0]) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    log.severe(e.toString());
-                }
+            try {
+                generateShowFilesThread.join();
+            } catch (InterruptedException e) {
+                log.severe(e.toString());
             }
             log.info(Strings.UserName);
             showInfoController.loadShowsFile();

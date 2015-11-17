@@ -134,13 +134,12 @@ public class en_US extends Language {
         Strings.RestartTheProgramForTheNewLanguageToTakeEffect = "Restart the program for the new language to take effect.";
         Strings.WhereWouldYouLikeTheProgramFilesToBeStored = "Where would you like the program files to be stored?";
         Strings.HoverOverAButtonForThePath = "(Hover over a button for the path)";
-        Strings.WasAdded = " was added.";
-        Strings.WasRemoved = " was removed.";
         Strings.DashSeason = " - Season ";
         Strings.DashEpisode = " - Episode ";
-        Strings.PickTheSeason = "Pick the Season";
+        Strings.PickTheSeasonAndEpisode = "Pick the Season & Episode";
         Strings.YouHaveReachedTheEnd = "You have reached the end!";
         Strings.PingingDirectories = "Pinging Directories...";
         Strings.PathToDirectory = "PathToDirectory";
+        Strings.PrintCurrentSeasonEpisode = "Print Current Season & Episode";
     }
 }

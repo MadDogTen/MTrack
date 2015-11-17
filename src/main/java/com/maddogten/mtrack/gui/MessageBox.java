@@ -25,7 +25,6 @@ public class MessageBox {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
@@ -40,7 +39,6 @@ public class MessageBox {
         VBox layout = new VBox();
         layout.getChildren().addAll(label, close);
         layout.setAlignment(Pos.CENTER);
-
         layout.setPadding(new Insets(6, 0, 0, 0));
 
         Scene scene = new Scene(layout);

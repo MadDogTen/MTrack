@@ -2,7 +2,6 @@ package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.lang.Language;
 import com.maddogten.mtrack.lang.en_US;
-import com.maddogten.mtrack.lang.lipsum;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ public class LanguageHandler {
 
     public LanguageHandler() {
         languages.put("en_US", new en_US());
-        languages.put("lipsum", new lipsum()); // Only temporary, For demonstration purposes. TODO Remove
+        //languages.put("lipsum", new lipsum()); // Only temporary, For demonstration purposes. TODO Remove fully
     }
 
     public Map<String, String> getLanguageNames() {
@@ -156,11 +155,9 @@ public class LanguageHandler {
         if (Strings.WhereWouldYouLikeTheProgramFilesToBeStored == null)
             Strings.WhereWouldYouLikeTheProgramFilesToBeStored = Strings.TextMissing;
         if (Strings.HoverOverAButtonForThePath == null) Strings.HoverOverAButtonForThePath = Strings.TextMissing;
-        if (Strings.WasAdded == null) Strings.WasAdded = Strings.TextMissing;
-        if (Strings.WasRemoved == null) Strings.WasRemoved = Strings.TextMissing;
         if (Strings.DashSeason == null) Strings.DashSeason = Strings.TextMissing;
         if (Strings.DashEpisode == null) Strings.DashEpisode = Strings.TextMissing;
-        if (Strings.PickTheSeason == null) Strings.PickTheSeason = Strings.TextMissing;
+        if (Strings.PickTheSeasonAndEpisode == null) Strings.PickTheSeasonAndEpisode = Strings.TextMissing;
         if (Strings.YouHaveReachedTheEnd == null) Strings.YouHaveReachedTheEnd = Strings.TextMissing;
         if (Strings.PingingDirectories == null) Strings.PingingDirectories = Strings.TextMissing;
         if (Strings.PathToDirectory == null) Strings.PathToDirectory = Strings.TextMissing;

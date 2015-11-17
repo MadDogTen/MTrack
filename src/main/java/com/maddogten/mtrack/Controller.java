@@ -125,9 +125,9 @@ public class Controller implements Initializable {
     // Public method to update a particular show with new information. If the show happens to have been remove, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
     public static void updateShowField(String aShow, boolean showExists) {
         int index = -2;
-        for (DisplayShows test : tableViewFields) {
-            if (test.getShow().replaceAll("[(]|[)]", "").matches(aShow.replaceAll("[(]|[)]", ""))) {
-                index = tableViewFields.indexOf(test);
+        for (DisplayShows show : tableViewFields) {
+            if (show.getShow().replaceAll("[(]|[)]", "").matches(aShow.replaceAll("[(]|[)]", ""))) {
+                index = tableViewFields.indexOf(show);
                 break;
             }
         }
@@ -289,7 +289,7 @@ public class Controller implements Initializable {
                     setSeasonEpisode.setOnAction(e -> {
                         log.info("\"Set Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(Strings.PickTheSeason, show, showInfoController.getSeasonsList(show), showInfoController, pane.getScene().getWindow());
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(show, showInfoController, pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
                             userInfoController.setSeasonEpisode(show, seasonEpisode[0], seasonEpisode[1]);
@@ -304,7 +304,7 @@ public class Controller implements Initializable {
                     playSeasonEpisode.setOnAction(e -> {
                         log.info("\"Play Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(Strings.PickTheSeason, show, showInfoController.getSeasonsList(show), showInfoController, pane.getScene().getWindow());
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(show, showInfoController, pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
                             userInfoController.playAnyEpisode(show, seasonEpisode[0], seasonEpisode[1]);
@@ -395,13 +395,14 @@ public class Controller implements Initializable {
                         }
                         log.info("Finished attempting to play previous episode.");
                     });
-
+                    MenuItem printCurrentSeasonEpisode = new MenuItem(Strings.PrintCurrentSeasonEpisode);
+                    printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + userInfoController.getCurrentSeason(row.getItem().getShow()) + " - Episode: " + userInfoController.getCurrentEpisode(row.getItem().getShow())));
                     row.setOnMouseClicked(e -> {
                         if (e.getButton().equals(MouseButton.SECONDARY) && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
                                 toggleActive.setText(Strings.SetInactive);
                                 if (Variables.devMode) {
-                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory);
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode);
                                 } else
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
@@ -418,28 +419,35 @@ public class Controller implements Initializable {
                             boolean keepPlaying = true;
                             isShowCurrentlyPlaying = true;
                             while (keepPlaying) {
-                                Boolean fileExists = userInfoController.doesEpisodeExists(aShow);
-                                if (fileExists) {
+                                if (userInfoController.doesEpisodeExistInShowFile(aShow)) {
                                     userInfoController.playAnyEpisode(aShow, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow));
-                                    ShowConfirmBox showConfirmBox = new ShowConfirmBox();
-                                    int userChoice = showConfirmBox.display(Strings.HaveYouWatchedTheShow, pane.getScene().getWindow());
+                                    int userChoice = new ShowConfirmBox().display(Strings.HaveYouWatchedTheShow, pane.getScene().getWindow(), userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController) == 1);
                                     if (userChoice == 1) {
-                                        userInfoController.changeEpisode(aShow, -2, true);
+                                        userInfoController.changeEpisode(aShow, -2);
                                         updateShowField(aShow, true);
                                         tableView.getSelectionModel().clearSelection();
                                         keepPlaying = false;
                                     } else if (userChoice == 2) {
-                                        userInfoController.changeEpisode(aShow, -2, true);
+                                        userInfoController.changeEpisode(aShow, -2);
                                         updateShowField(aShow, true);
                                         tableView.getSelectionModel().clearSelection();
                                     } else if (userChoice == 0) {
                                         tableView.getSelectionModel().clearSelection();
                                         keepPlaying = false;
                                     }
-                                } else break;
+                                } else {
+                                    // This is being done because I set episodes 1 further when watched, which works when the season is ongoing. However, when moving onto a new season it breaks. This is a simple check to move
+                                    // it into a new season if one is found, and no further episodes are found in the current season.
+                                    if (row.getItem().getRemaining() > 0 && userInfoController.shouldSwitchSeasons(aShow, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow))) {
+                                        log.info("No further episodes found for current season, further episodes found in next season, switching to new season.");
+                                        userInfoController.changeEpisode(aShow, -2);
+                                        updateShowField(aShow, true);
+                                        tableView.getSelectionModel().clearSelection();
+                                    } else break;
+                                }
                             }
                             if (keepPlaying) {
-                                userInfoController.changeEpisode(aShow, -2, false);
+                                log.info("No further files!");
                                 MessageBox messageBox = new MessageBox();
                                 messageBox.display(Strings.YouHaveReachedTheEnd, pane.getScene().getWindow());
                             }
@@ -491,7 +499,6 @@ public class Controller implements Initializable {
                         "-fx-background-insets: 0px; " +
                         "-fx-padding: 0px;"
         );
-
         show0RemainingCheckBox.setSelected(show0Remaining);
         if (show0Remaining) {
             setTableViewFields(currentList);
@@ -556,7 +563,6 @@ public class Controller implements Initializable {
                         } else if (pingingDirectory.isVisible()) {
                             pingingDirectory.setVisible(false);
                         }
-
                         Platform.runLater(() -> {
                             Double temp = checkShowFiles.getRecheckShowFilePercentage();
                             isCurrentlyRechecking.setProgress(temp);
@@ -584,12 +590,12 @@ public class Controller implements Initializable {
             boolean keepOpen;
             Object[] answer = {false, pane.getScene().getWindow()};
             do {
-                answer = changesBox.openChanges((Stage) answer[1], ChangeReporter.getChanges());
+                answer = changesBox.openChanges((Stage) answer[1]);
                 keepOpen = (boolean) answer[0];
             } while (keepOpen);
             changesBox = null;
         } else {
-            changesBox.openChanges(pane.getScene().getWindow(), ChangeReporter.getChanges());
+            changesBox.openChanges(pane.getScene().getWindow());
         }
     }
 

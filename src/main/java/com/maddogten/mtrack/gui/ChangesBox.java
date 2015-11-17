@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class ChangesBox {
@@ -33,8 +34,8 @@ public class ChangesBox {
         return window;
     }
 
-    // Displays a window showing everything contained in the changes String[].
-    public Object[] openChanges(Window oldWindow, String[] changes) { //TODO Still have to finish the automatic refreshing.
+    // Displays a window showing everything contained in the changes String[]. It will automatically updated when changes are found.
+    public Object[] openChanges(Window oldWindow) {
         log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
             window.toFront();
@@ -47,38 +48,27 @@ public class ChangesBox {
         window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
+        window.setWidth(Variables.SIZE_WIDTH - 30);
 
         ListView<String> listView = new ListView<>();
         listView.setEditable(false);
 
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        observableList.addAll(changes);
+        final String[][] changes = {ChangeReporter.getChanges()};
+        observableList.addAll(changes[0]);
 
         listView.setItems(observableList);
-        if (changes.length >= 17) {
-            listView.setMaxHeight(Variables.SIZE_HEIGHT);
-        } else {
-            listView.setMaxHeight(25 * changes.length);
-        }
+        listView.setMaxHeight(Variables.SIZE_HEIGHT / 1.5);
 
         Button clear = new Button(Strings.Clear);
-        /*Button refresh = new Button(Strings.Refresh);*/
         Button close = new Button(Strings.Close);
 
         Object[] answer = new Object[2];
+        VBox layout = new VBox();
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();
             listView.getItems().clear();
-            answer[0] = true;
-            answer[1] = window;
-            window.close();
         });
-
-        /*refresh.setOnAction(e -> {
-            answerBoolean[0] = true;
-            thisWindow[0] = window;
-            window.close();
-        });*/
 
         close.setOnAction(e -> {
             answer[0] = false;
@@ -86,37 +76,33 @@ public class ChangesBox {
         });
 
         HBox hBox = new HBox();
-        hBox.getChildren().addAll(clear, /*refresh,*/ close);
+        hBox.getChildren().addAll(clear, close);
         hBox.setAlignment(Pos.CENTER);
         hBox.setPadding(new Insets(12, 12, 12, 12));
 
-        VBox layout = new VBox();
-        if (listView.getItems().isEmpty()) {
-            layout.getChildren().addAll(hBox);
-        } else {
-            layout.getChildren().addAll(hBox, listView);
-        }
+        layout.getChildren().addAll(hBox, listView);
+
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout);
-
         Task<Void> task = new Task<Void>() {
             @Override
-            protected Void call() throws Exception { //TODO Finish automatic refreshing
+            public Void call() throws Exception {
                 while (currentlyOpen) {
                     Thread.sleep(1000);
-                    if (ChangeReporter.getNumberOfChanges() != changes.length) {
-                        answer[0] = true;
-                        answer[1] = window;
-                        window.close();
+                    if (window.isShowing() && !Arrays.equals(changes[0], ChangeReporter.getChanges())) {
+                        changes[0] = ChangeReporter.getChanges();
+                        Platform.runLater(() -> {
+                            observableList.clear();
+                            observableList.addAll(changes[0]);
+                        });
                     }
-                    log.info("Ran");
                 }
                 //noinspection ReturnOfNull
                 return null;
             }
         };
-        new Thread(task);
+        new Thread(task).start();
 
         window.setScene(scene);
         Platform.runLater(() -> {

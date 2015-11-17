@@ -9,6 +9,7 @@ import java.util.Random;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class ProgramSettings implements Serializable {
 
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = 3699693145859359106L;
     private final long programGeneratedID;
     // Versions

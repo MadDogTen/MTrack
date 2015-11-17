@@ -88,7 +88,6 @@ public class ProgramSettingsController {
             if (!Main.getMainRun().firstRun) {
                 userInfoController.setUserDirectoryVersion(version);
             }
-
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;

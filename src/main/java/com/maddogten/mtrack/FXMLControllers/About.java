@@ -39,25 +39,19 @@ public class About implements Initializable {
         log.finest("About has been opened.");
         programName.setText(Strings.ProgramTitle);
         programName.setAlignment(Pos.CENTER);
-
         versionNumber.setText(Strings.MTrackVersion);
         versionNumber.setAlignment(Pos.CENTER);
-
         codedBy.setText(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);
-
         codedUsing.setText(Strings.CodedUsing);
         codedUsing.setAlignment(Pos.CENTER);
-
         codedWith.setText(Strings.codedWith + ' ' + Strings.javaVersion);
         codedWith.setAlignment(Pos.CENTER);
-
         close.setText(Strings.Close);
         close.setOnAction(e -> {
             Stage stage = (Stage) pane.getScene().getWindow();
             stage.close();
         });
-
         // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(pane);
     }

@@ -8,6 +8,7 @@ import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,7 +26,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -165,7 +165,6 @@ public class ListSelectBox {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
         window.setMinWidth(250);
 
@@ -215,7 +214,7 @@ public class ListSelectBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public int[] pickSeasonEpisode(String message, String aShow, Set<Integer> seasons, ShowInfoController showInfoController, Window oldWindow) {
+    public int[] pickSeasonEpisode(String aShow, ShowInfoController showInfoController, Window oldWindow) {
         final int[] choice = new int[2];
 
         Stage window = new Stage();
@@ -226,21 +225,27 @@ public class ListSelectBox {
         window.setMinWidth(250);
 
         Label label = new Label();
-        label.setText(message);
+        label.setText(Strings.PickTheSeasonAndEpisode);
 
         ArrayList<Integer> seasonsString = new ArrayList<>();
-        seasonsString.addAll(seasons.stream().collect(Collectors.toList()));
+        seasonsString.addAll(showInfoController.getSeasonsList(aShow).stream().collect(Collectors.toList()));
         Collections.sort(seasonsString);
-
         ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsString);
-        ComboBox<Integer> comboBox = new ComboBox<>(seasonsList);
+        ComboBox<Integer> seasonsComboBox = new ComboBox<>(seasonsList);
+
+        ArrayList<Integer> episodesArrayList = new ArrayList<>();
+        ObservableList<Integer> episodesList = FXCollections.observableArrayList(episodesArrayList);
+        ComboBox<Integer> episodesComboBox = new ComboBox<>(episodesList);
+        episodesComboBox.setDisable(true);
 
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
-            if (comboBox.getValue() != null && !comboBox.getValue().toString().isEmpty() && comboBox.getValue().toString().matches("[0-9]*")) {
-                choice[0] = comboBox.getValue();
-                choice[1] = pickEpisode(Strings.PickTheEpisode, showInfoController.getEpisodesList(aShow, choice[0]), window.getWidth(), window.getHeight(), window);
-                window.close();
+            if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty()) {
+                if (episodesComboBox.getValue() != null && !episodesComboBox.getValue().toString().isEmpty()) {
+                    choice[0] = seasonsComboBox.getValue();
+                    choice[1] = episodesComboBox.getValue();
+                    window.close();
+                } else new MessageBox().display(Strings.YouHaveToPickAEpisode, window);
             } else new MessageBox().display(Strings.YouHaveToPickASeason, window);
         });
 
@@ -256,83 +261,52 @@ public class ListSelectBox {
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 5, 5, 5));
 
+        HBox comboBoxLayout = new HBox();
+        comboBoxLayout.getChildren().addAll(seasonsComboBox, episodesComboBox);
+        comboBoxLayout.setAlignment(Pos.CENTER);
+        comboBoxLayout.setPadding(new Insets(5, 5, 0, 5));
+
         VBox layout = new VBox();
-        layout.getChildren().addAll(label, comboBox, buttonLayout);
+        layout.getChildren().addAll(label, comboBoxLayout, buttonLayout);
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout);
 
         window.setScene(scene);
+
+        final int[] oldValue = {-1};
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                while (window.isShowing()) {
+                    if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty() && seasonsComboBox.getValue() != oldValue[0]) {
+                        oldValue[0] = seasonsComboBox.getValue();
+                        episodesArrayList.clear();
+                        episodesArrayList.addAll(showInfoController.getEpisodesList(aShow, seasonsComboBox.getValue()).stream().collect(Collectors.toList()));
+                        Collections.sort(episodesArrayList);
+                        Platform.runLater(() -> {
+                            episodesList.clear();
+                            episodesList.addAll(episodesArrayList);
+                            if (episodesComboBox.isDisabled()) {
+                                episodesComboBox.setDisable(false);
+                            }
+                        });
+                    }
+                }
+                return null;
+            }
+        };
         Platform.runLater(() -> {
             if (oldWindow != null) {
                 window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
                 window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
             }
             new MoveWindow().moveWindow(window, oldWindow);
+            new Thread(task).start();
         });
         window.showAndWait();
 
         return choice;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private int pickEpisode(String message, Set<Integer> episodes, Double width, Double height, Window oldWindow) {
-        final int[] choice = new int[1];
-
-        Stage window = new Stage();
-        window.getIcons().add(ImageLoader.getImage(Variables.Logo));
-        window.initStyle(StageStyle.UNDECORATED);
-
-        window.initModality(Modality.APPLICATION_MODAL);
-        window.setWidth(width);
-        window.setHeight(height);
-
-        Label label = new Label();
-        label.setText(message);
-
-        ArrayList<Integer> episodesArrayList = new ArrayList<>();
-        episodesArrayList.addAll(episodes.stream().collect(Collectors.toList()));
-        Collections.sort(episodesArrayList);
-
-        ObservableList<Integer> seasonsList = FXCollections.observableArrayList(episodesArrayList);
-        ComboBox<Integer> comboBox = new ComboBox<>(seasonsList);
-
-        Button submit = new Button(Strings.Submit);
-        submit.setOnAction(e -> {
-            if (comboBox.getValue() != null && !comboBox.getValue().toString().isEmpty()) {
-                choice[0] = comboBox.getValue();
-                window.close();
-            } else new MessageBox().display(Strings.YouHaveToPickAEpisode, window);
-        });
-
-        Button exit = new Button(Strings.ExitButtonText);
-        exit.setOnAction(e -> {
-            choice[0] = -1;
-            window.close();
-        });
-
-        HBox buttonLayout = new HBox();
-        buttonLayout.getChildren().addAll(submit, exit);
-        buttonLayout.setAlignment(Pos.CENTER);
-        buttonLayout.setPadding(new Insets(5, 5, 5, 5));
-
-        VBox layout = new VBox();
-        layout.getChildren().addAll(label, comboBox, buttonLayout);
-        layout.setAlignment(Pos.CENTER);
-
-        Scene scene = new Scene(layout);
-
-        window.setScene(scene);
-        Platform.runLater(() -> {
-            if (oldWindow != null) {
-                window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-                window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
-            }
-            new MoveWindow().moveWindow(window, oldWindow);
-        });
-        window.showAndWait();
-
-        return choice[0];
     }
 
     public String pickLanguage(String message, Collection<String> languages, Window oldWindow) {

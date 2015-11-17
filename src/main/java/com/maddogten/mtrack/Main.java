@@ -44,7 +44,6 @@ public class Main extends Application implements Runnable {
         if (!forceStop) {
             answer = confirmBox.display(Strings.AreYouSure, stage.getScene().getWindow());
         }
-
         if (answer) {
             if (saveSettings) {
                 programSettingsController.getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
@@ -61,16 +60,13 @@ public class Main extends Application implements Runnable {
             }
             programFullyRunning = false;
             programRunning = false;
-
             int timeRan = Clock.timeTakenSeconds(timer);
             if (timeRan > 60) {
                 log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             } else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
-
             if (programFullyRunning && Controller.isChangeBoxStageOpen())
                 Controller.closeChangeBoxStage();
-
             if (SettingsWindow.getStage() != null)
                 SettingsWindow.getStage().close();
             if (stage != null) {
@@ -119,23 +115,17 @@ public class Main extends Application implements Runnable {
             stage.initStyle(StageStyle.UNDECORATED);
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/MainGui.fxml"));
             Parent root = fxmlLoader.load();
-
             stage.setWidth(Variables.SIZE_WIDTH);
             stage.setHeight(Variables.SIZE_HEIGHT);
-
             Scene scene = new Scene(root);
-
             scene.setFill(Color.WHITESMOKE);
-
             stage.setOnCloseRequest(e -> {
                 e.consume();
                 stop(stage, true, true);
             });
-
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
-
             start();
         } else stop(null, true, false);
     }

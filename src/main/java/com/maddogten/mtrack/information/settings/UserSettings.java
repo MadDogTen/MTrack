@@ -8,7 +8,9 @@ import java.util.Map;
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class UserSettings implements Serializable {
 
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = 349723488242111763L;
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final String userName; // Final for now, May add the ability to change it later
 
     // Versions
@@ -16,9 +18,10 @@ public class UserSettings implements Serializable {
     private int userDirectoryVersion;
 
     // Show Settings
+    @SuppressWarnings("CanBeFinal")
     private Map<String, UserShowSettings> showSettings;
 
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
     private long lastProgramID;
 
     public UserSettings(String userName, Map<String, UserShowSettings> showSettings, long lastProgramID) {
@@ -35,9 +38,9 @@ public class UserSettings implements Serializable {
 
     // Basic Getters and Setters
 
-    public String getUserName() {
+    /*public String getUserName() {
         return userName;
-    }
+    }*/
 
     public int getUserSettingsFileVersion() {
         return userSettingsFileVersion;

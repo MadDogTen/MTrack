@@ -22,11 +22,9 @@ public class AboutBox {
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
+
         Pane root = FXMLLoader.load(getClass().getResource("/gui/About.fxml"));
-
-        assert root != null;
         Scene scene = new Scene(root);
-
         scene.setFill(Color.WHITESMOKE);
 
         window.setResizable(false);

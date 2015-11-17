@@ -7,10 +7,7 @@ import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class UserInfoController {
@@ -32,7 +29,7 @@ public class UserInfoController {
     public ArrayList<String> getAllUsers() {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
         ArrayList<String> users = new ArrayList<>();
-        if (new FileManager().checkFolderExists(folder)) {
+        if (new FileManager().checkFolderExistsAndReadable(folder)) {
             Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UsersExtension) && !name.toLowerCase().matches("Program"))));
         }
         ArrayList<String> usersCleaned = new ArrayList<>();
@@ -127,47 +124,41 @@ public class UserInfoController {
     }
 
     // Attempts to play the file using the default program for the extension.
-    public void playAnyEpisode(String aShow, int season, int episode) { //Todo Find proper place for this
-        log.info("Attempting to play " + aShow + " Season: " + season + " - Episode: " + episode);
-        String showLocation = showInfoController.getEpisode(aShow, season, episode);
+    public void playAnyEpisode(String aShow, int aSeason, int aEpisode) { //Todo Find proper place for this
+        log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
+        String showLocation = showInfoController.getEpisode(aShow, aSeason, aEpisode);
         log.info(showLocation);
         if (showLocation != null) {
             File file = new File(showLocation);
             if (file.exists()) {
                 new FileManager().open(file);
-            } else log.warning("File doesn't exists!");
+            } else log.warning("File \"" + file + "\" doesn't exists!");
         } else log.warning("File doesn't exists!");
     }
 
     // Changes which episode the user is currently on. If -2 is returned as the episode, it increases it to the next episode found.
     // If no episode is found, then it checks if there is another season, and if there is, checks if it contains the first episode in the season.
-    public void changeEpisode(String aShow, int episode, boolean fileExists) {
-        if (fileExists && episode == -2) {
+    public void changeEpisode(String aShow, int episode) {
+        if (episode == -2) {
             int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason();
             int currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
-            Boolean isDoubleEpisode = showInfoController.isDoubleEpisode(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode);
-            if (isDoubleEpisode) {
-                currentEpisode++;
+            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) {
+                ++currentEpisode;
             }
-            if (isAnotherEpisode(aShow, currentSeason, currentEpisode)) {
-                userSettings.getAShowSettings(aShow).setCurrentEpisode(currentEpisode);
+            boolean[] isAnotherEpisodeResult = isAnotherEpisode(aShow, currentSeason, currentEpisode);
+            if (isAnotherEpisodeResult[0]) {
+                userSettings.getAShowSettings(aShow).setCurrentEpisode(++currentEpisode);
                 log.info(aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
-            } else if (isAnotherSeason(aShow, currentSeason)) {
-                userSettings.getAShowSettings(aShow).setCurrentSeason(currentSeason++);
-                if (isAnotherEpisode(aShow, currentSeason, 0))
-                    userSettings.getAShowSettings(aShow).setCurrentEpisode(0);
-                else {
-                    userSettings.getAShowSettings(aShow).setCurrentEpisode(0);
-                    log.info(aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
-                }
+            } else if (isAnotherEpisodeResult[1] && isAnotherSeason(aShow, currentSeason)) {
+                userSettings.getAShowSettings(aShow).setCurrentSeason(++currentSeason);
+                userSettings.getAShowSettings(aShow).setCurrentEpisode(1);
+                log.info(aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
             } else {
-                currentEpisode++;
-                userSettings.getAShowSettings(aShow).setCurrentEpisode(currentEpisode);
+                userSettings.getAShowSettings(aShow).setCurrentEpisode(++currentEpisode);
+                log.info(aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
             }
-        } else if (!fileExists && episode == -2) {
-            log.info("No further files!");
         } else {
-            if (doesEpisodeExist(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), episode)) {
+            if (doesEpisodeExistInShowFile(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), episode)) {
                 userSettings.getAShowSettings(aShow).setCurrentEpisode(episode);
             }
         }
@@ -180,23 +171,27 @@ public class UserInfoController {
         log.info(aShow + " is now set to Season: " + season + " - Episode: " + episode);
     }
 
-    // Checks if there is another season directly following the current season.
-    private boolean isAnotherSeason(String aShow, int season) {
-        Set<Integer> seasons = showInfoController.getSeasonsList(aShow);
-        season++;
-        return seasons.contains(season);
+    // Checks if there is an episode directly following the current episode.
+    private boolean[] isAnotherEpisode(String aShow, int aSeason, int aEpisode) {
+        boolean[] result = {false, false};
+        Set<Integer> episodes = new HashSet<>();
+        showInfoController.getEpisodesList(aShow, aSeason).stream().filter(episodeInt -> episodeInt >= aEpisode).forEach(episodes::add);
+        if (episodes.contains(aEpisode)) {
+            result[0] = true;
+        }
+        if (!result[0] && episodes.isEmpty()) {
+            result[1] = true;
+        }
+        return result;
     }
 
-    // Checks if there is an episode directly following the current episode.
-    private boolean isAnotherEpisode(String aShow, int aSeason, int episode) {
-        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, aSeason);
-        int newEpisode = episode + 1;
-        if (!episodes.isEmpty()) {
-            if (episodes.contains(newEpisode)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean shouldSwitchSeasons(String aShow, int aSeason, int aEpisode) {
+        return isAnotherEpisode(aShow, aSeason, aEpisode)[1] && isAnotherSeason(aShow, aSeason);
+    }
+
+    // Checks if there is another season directly following the current season.
+    private boolean isAnotherSeason(String aShow, int season) {
+        return showInfoController.getSeasonsList(aShow).contains(++season);
     }
 
     // Sets a show to the very first season & episode.
@@ -214,14 +209,15 @@ public class UserInfoController {
     }
 
     // Checks if the given episode has been found for a show.
-    private boolean doesEpisodeExist(String aShow, int season, int episode) {
-        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(season)));
-        return !episodes.isEmpty() && episodes.contains(episode);
+    private boolean doesEpisodeExistInShowFile(String aShow, int aSeason, int aEpisode) {
+        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, aSeason);
+        return !episodes.isEmpty() && episodes.contains(aEpisode);
     }
 
     // Does same as above, but checks against the current episode & season.
-    public boolean doesEpisodeExists(String aShow) { //TODO Actually fix this to do what it is meant to do.
-        return userSettings.getShowSettings().containsKey(aShow);
+    public boolean doesEpisodeExistInShowFile(String aShow) {
+        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, getCurrentSeason(aShow));
+        return !episodes.isEmpty() && episodes.contains(getCurrentEpisode(aShow));
     }
 
     // Attempts to get the episode directly before the current one. If the current one is the first of a season,

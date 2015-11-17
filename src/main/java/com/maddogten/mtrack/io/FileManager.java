@@ -21,7 +21,6 @@ public class FileManager {
         if (overWrite || !checkFileExists(folder, filename, extension)) {
             try {
                 FileOutputStream fos = new FileOutputStream(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension);
-
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(objectToSerialise);
                 oos.flush();
@@ -56,8 +55,8 @@ public class FileManager {
         return new File(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension).isFile();
     }
 
-    public boolean checkFolderExists(File aFolder) {
-        return aFolder.isDirectory();
+    public boolean checkFolderExistsAndReadable(File aFolder) {
+        return aFolder.isDirectory() && aFolder.canRead();
     }
 
     @SuppressWarnings("AccessOfSystemProperties")
@@ -127,7 +126,7 @@ public class FileManager {
     }
 
     public void deleteFolder(File toDeleteFolder) {
-        if (!checkFolderExists(toDeleteFolder)) {
+        if (!checkFolderExistsAndReadable(toDeleteFolder)) {
             log.warning(toDeleteFolder + " does not exist!");
         }
         if (toDeleteFolder.canWrite()) {

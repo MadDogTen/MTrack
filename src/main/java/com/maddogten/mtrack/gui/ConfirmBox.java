@@ -26,7 +26,6 @@ public class ConfirmBox {
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
@@ -43,7 +42,6 @@ public class ConfirmBox {
             answer[0] = true;
             window.close();
         });
-
         noButton.setOnAction(e -> {
             answer[0] = false;
             window.close();
@@ -52,13 +50,11 @@ public class ConfirmBox {
         HBox layout2 = new HBox();
         layout2.getChildren().addAll(yesButton, noButton);
         layout2.setAlignment(Pos.CENTER);
-
         layout2.setPadding(new Insets(4, 6, 6, 6));
 
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2);
         layout.setAlignment(Pos.CENTER);
-
         layout.setPadding(new Insets(6, 0, 0, 0));
 
         Scene scene = new Scene(layout);

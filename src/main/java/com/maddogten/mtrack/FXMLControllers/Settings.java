@@ -10,10 +10,7 @@ import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveWindow;
-import com.maddogten.mtrack.util.FirstRun;
-import com.maddogten.mtrack.util.LanguageHandler;
-import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.util.*;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -175,7 +172,6 @@ public class Settings implements Initializable {
             }
         });
         deleteUser.setTooltip(new Tooltip(Strings.DeleteUsersNoteCantDeleteCurrentUser));
-
         // Other
         changeUpdateSpeed.setText(Strings.ChangeUpdateTime);
         changeUpdateSpeed.setOnAction(e -> {
@@ -188,25 +184,24 @@ public class Settings implements Initializable {
             boolean[] wasAdded = directoryController.addDirectory(index, new TextBox().addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
-                final boolean[] taskRunning = {true};
+                FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile());
                 Task<Void> task = new Task<Void>() {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
                         new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateShowsFile(directoryController.getDirectory(index));
-                        taskRunning[0] = false;
                         return null;
                     }
                 };
-                new Thread(task).start();
-                while (taskRunning[0]) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e1) {
-                        log.severe(e1.toString());
-                    }
+                Thread generateShowsFileThread = new Thread(task);
+                generateShowsFileThread.start();
+                try {
+                    generateShowsFileThread.join();
+                } catch (InterruptedException e1) {
+                    log.severe(e1.toString());
                 }
                 showInfoController.loadShowsFile();
+                findChangedShows.findShowFileDifferences(showInfoController.getShowsFile());
                 Directory aDirectory = directoryController.getDirectory(index);
                 aDirectory.getShows().keySet().forEach(aShow -> {
                     userInfoController.addNewShow(aShow);
@@ -227,7 +222,7 @@ public class Settings implements Initializable {
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 File directoryToDelete = listSelectBox.directories(Strings.DirectoryToDelete, directories, tabPane.getScene().getWindow());
-                if (directoryToDelete != null) {
+                if (directoryToDelete != null && !directoryToDelete.toString().isEmpty()) {
                     log.info("Directory selected for deletion: " + directoryToDelete);
                     ConfirmBox confirmBox = new ConfirmBox();
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + directoryToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
@@ -242,7 +237,7 @@ public class Settings implements Initializable {
                                     boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, showsFileArray);
                                     if (!showExistsElsewhere) {
                                         userInfoController.setIgnoredStatus(aShow, true);
-                                        ChangeReporter.addChange(aShow + Strings.WasRemoved);
+                                        ChangeReporter.addChange("- " + aShow);
                                     }
                                     Controller.updateShowField(aShow, showExistsElsewhere);
                                 });
@@ -310,13 +305,12 @@ public class Settings implements Initializable {
                 log.info(Arrays.toString(e1.getStackTrace()));
             }
         });
-
         //noinspection PointlessBooleanExpression
         if (!Variables.devMode) {
             developerTab.setDisable(true);
-            tabPane.getTabs().remove(3);
+            developerTab.setText(Strings.EmptyString);
+            tabPane.getTabs().remove(developerTab);
         }
-
         // Developer
         printAllShows.setText(Strings.PrintAllShowInfo);
         printAllShows.setOnAction(e -> showInfoController.printOutAllShowsAndEpisodes());
@@ -332,7 +326,7 @@ public class Settings implements Initializable {
                 directories.forEach(aDirectory -> {
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     emptyShows.forEach(aShow -> {
-                        if (new FileManager().checkFolderExists(new File(aDirectory + Strings.FileSeparator + aShow)) && !aDirectory.getShows().containsKey(aShow)) {
+                        if (new FileManager().checkFolderExistsAndReadable(new File(aDirectory + Strings.FileSeparator + aShow)) && !aDirectory.getShows().containsKey(aShow)) {
                             emptyShowsDir.add(aShow);
                         }
                     });
@@ -395,7 +389,6 @@ public class Settings implements Initializable {
                 log.info("Set all shows inactive.");
             }
         });
-
         // Dev 2
         printProgramSettingsFileVersion.setText(Strings.PrintPSFV);
         printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(programSettingsController.getProgramSettingsFileVersion())));
@@ -448,7 +441,6 @@ public class Settings implements Initializable {
             }
         });
         deleteEverythingAndClose.setTooltip(new Tooltip(Strings.WarningUnrecoverable));
-
         // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(tabPane, Main.stage);
     }

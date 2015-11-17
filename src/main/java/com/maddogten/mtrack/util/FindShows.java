@@ -18,8 +18,7 @@ public class FindShows {
         Collections.addAll(result, dir.list());
         Iterator<String> stringIterator = result.iterator();
         while (stringIterator.hasNext()) {
-            String next = stringIterator.next();
-            if (!new File(dir + Strings.FileSeparator + next).isDirectory()) {
+            if (!new File(dir + Strings.FileSeparator + stringIterator.next()).isDirectory()) {
                 stringIterator.remove();
             }
         }
@@ -36,8 +35,7 @@ public class FindShows {
         showFolder.forEach(aShowFolder -> {
             Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());
             if (matcher.find()) {
-                String matched = matcher.group();
-                String[] seasonsList = matched.toLowerCase().split(" ");
+                String[] seasonsList = matcher.group().toLowerCase().split(" ");
                 seasonNumber.add(Integer.parseInt(seasonsList[1]));
             }
         });
@@ -49,7 +47,7 @@ public class FindShows {
         log.finest("Searching for episodes...");
         ArrayList<String> episodes = new ArrayList<>();
         File folder = new File(dir + Strings.FileSeparator + ShowName + "/Season" + ' ' + Season);
-        if (new FileManager().checkFolderExists(folder) && new File(String.valueOf(folder)).list().length > 0) {
+        if (new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0) {
             Collections.addAll(episodes, folder.list((dir1, name) -> name.toLowerCase().endsWith(".mkv") || name.toLowerCase().endsWith(".avi") || name.toLowerCase().endsWith(".mp4") || name.toLowerCase().endsWith(".ts")));
             return episodes;
         }

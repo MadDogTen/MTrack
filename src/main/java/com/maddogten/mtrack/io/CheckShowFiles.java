@@ -67,7 +67,8 @@ public class CheckShowFiles {
     public void recheckShowFile(boolean forceRun) {
         if (!recheckShowFileRunning || (forceRun && keepRunning)) {
             // hasChanged - If anything is found differently, this will be set to true. Used at the end to determine if it should reload the showInfoController showsFile and scan for changes.
-            final boolean[] hasChanged = {false};
+            boolean[] hasChanged = {false};
+            ArrayList<String> updatedShows = new ArrayList<>();
             // timer - Used purely for log purposes to see how long the run takes.
             int timer = Clock.getTimeSeconds();
             log.info("Started rechecking shows...");
@@ -93,22 +94,24 @@ public class CheckShowFiles {
                     log.info("Directory currently being rechecked: \"" + folderLocation + "\".");
                     ArrayList<String> removedShows = new ArrayList<>();
                     // Check if any shows were removed.
-                    userInfoController.getAllNonIgnoredShows().stream().filter(aShow -> (showsMap.containsKey(aShow) && !fileManager.checkFolderExists(new File(folderLocation + Strings.FileSeparator + aShow)))).forEach(aShow -> {
+                    userInfoController.getAllNonIgnoredShows().stream().filter(aShow -> (showsMap.containsKey(aShow) && !fileManager.checkFolderExistsAndReadable(new File(folderLocation + Strings.FileSeparator + aShow)))).forEach(aShow -> {
                         showsMap.remove(aShow);
                         removedShows.add(aShow);
                     });
-                    hasChanged[0] = handleRemovedShows(removedShows, aDirectory, folderLocation, aDirectory.getIndex());
+                    if (handleRemovedShows(removedShows, aDirectory, folderLocation, aDirectory.getIndex())) {
+                        hasChanged[0] = true;
+                    }
                     for (String aShow : userInfoController.getActiveShows()) {
                         if (showsMap.containsKey(aShow)) {
                             log.info("Currently rechecking " + aShow);
                             int currentSeason = userInfoController.getCurrentSeason(aShow);
-                            final boolean[] hasShowChanged = {false};
                             removeLowerSeasons(currentSeason, showsMap.get(aShow).getSeasons().keySet()).forEach(aSeason -> {
-                                if (fileManager.checkFolderExists(new File(String.valueOf(folderLocation) + Strings.FileSeparator + aShow + "/Season " + aSeason + Strings.FileSeparator))) {
+                                if (fileManager.checkFolderExistsAndReadable(new File(String.valueOf(folderLocation) + Strings.FileSeparator + aShow + "/Season " + aSeason + Strings.FileSeparator))) {
                                     ArrayList<Integer> changedEpisodes = hasEpisodesChanged(aShow, aSeason, folderLocation, showsMap);
                                     if (!changedEpisodes.isEmpty()) {
+                                        log.info("Episode changes detected for " + aShow + ", updating files...");
                                         hasChanged[0] = true;
-                                        hasShowChanged[0] = true;
+                                        updatedShows.add(aShow);
                                         checkForNewOrRemovedEpisodes(folderLocation, aShow, aSeason, aDirectory);
                                     }
                                 } else
@@ -116,14 +119,11 @@ public class CheckShowFiles {
                             });
                             ArrayList<Integer> changedSeasons = removeLowerSeasons(currentSeason, hasSeasonsChanged(aShow, folderLocation, showsMap));
                             if (!changedSeasons.isEmpty()) {
+                                log.info("Season changes detected for " + aShow + ", updating files...");
                                 hasChanged[0] = true;
-                                hasShowChanged[0] = true;
+                                updatedShows.add(aShow);
                                 checkForNewOrRemovedSeasons(folderLocation, aShow, changedSeasons, aDirectory);
                             }
-                            if (hasShowChanged[0]) {
-                                Controller.updateShowField(aShow, true);
-                            }
-
                             if (!Main.programFullyRunning || (!forceRun && !keepRunning)) {
                                 stopRunning = true;
                                 break;
@@ -147,7 +147,8 @@ public class CheckShowFiles {
                                 recheckShowFilePercentage += percentagePer / changedShows.size();
                             });
                             aDirectory.setShows(showsMap);
-                            directoryController.saveDirectory(aDirectory, true);
+                            directoryController.saveDirectory(aDirectory, false);
+                            showInfoController.loadShowsFile();
                             changedShows.keySet().forEach(aShow -> {
                                 userInfoController.addNewShow(aShow);
                                 Controller.updateShowField(aShow, true);
@@ -164,6 +165,9 @@ public class CheckShowFiles {
                 recheckShowFilePercentage = 100;
                 if (hasChanged[0] && Main.programFullyRunning) {
                     showInfoController.loadShowsFile();
+                    if (!updatedShows.isEmpty()) {
+                        updatedShows.forEach(aShow -> Controller.updateShowField(aShow, true));
+                    }
                     findChangedShows.findShowFileDifferences(showInfoController.getShowsFile());
                     log.info("Some shows have been updated.");
                     log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
@@ -218,10 +222,10 @@ public class CheckShowFiles {
                 newSeasonsIterator.remove();
             }
         }
-        Set<Integer> ChangedSeasons = new HashSet<>();
-        ChangedSeasons.addAll(oldSeasons.stream().filter(aOldSeason -> !newSeasons.contains(aOldSeason)).collect(Collectors.toList()));
-        ChangedSeasons.addAll(newSeasons.stream().filter(aNewSeason -> !oldSeasons.contains(aNewSeason)).collect(Collectors.toList()));
-        return ChangedSeasons;
+        Set<Integer> changedSeasons = new HashSet<>();
+        changedSeasons.addAll(oldSeasons.stream().filter(aOldSeason -> !newSeasons.contains(aOldSeason)).collect(Collectors.toList()));
+        changedSeasons.addAll(newSeasons.stream().filter(aNewSeason -> !oldSeasons.contains(aNewSeason)).collect(Collectors.toList()));
+        return changedSeasons;
     }
 
     // Scans the folder for any changes between it and the given showsFile, and for new shows it finds (that aren't empty) it gets all seasons & episodes for it, adds them to a Map and returns that.
@@ -294,10 +298,10 @@ public class CheckShowFiles {
                     int[] episode = showInfoController.getEpisodeInfo(aEpisode);
                     if (episode != null) {
                         if (episode.length == 1) {
-                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode, false));
+                            episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, false));
                         } else if (episode.length == 2) {
-                            episodeNum.put(episode[0], new Episode(episode[0], aEpisode, true));
-                            episodeNum.put(episode[1], new Episode(episode[1], aEpisode, true));
+                            episodeNum.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, true));
+                            episodeNum.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, true));
                         } else {
                             log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
                         }
@@ -339,7 +343,7 @@ public class CheckShowFiles {
     private ArrayList<Integer> removeLowerSeasons(int baseInt, Set<Integer> listToCheck) {
         ArrayList<Integer> result = new ArrayList<>();
         listToCheck.forEach(integer -> {
-            if (baseInt >= integer) {
+            if (integer >= baseInt) {
                 result.add(integer);
             } else {
                 log.finest("Season " + integer + " was skipped in rechecking as the current user is past it.");

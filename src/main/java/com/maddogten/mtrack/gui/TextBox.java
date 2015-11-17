@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-
 public class TextBox {
     private static final Logger log = Logger.getLogger(TextBox.class.getName());
 
@@ -42,7 +41,6 @@ public class TextBox {
         label.setText(message);
 
         TextField textField = new TextField();
-
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(event -> {
             if (isValid(messageIfNameFieldIsBlank, textField.getText(), allUsers, window)) {
@@ -77,19 +75,15 @@ public class TextBox {
     private boolean isValid(String messageIfBlank, String message, ArrayList<String> allUsers, Window oldWindow) {
         log.finest("isValid has been called.");
         if (message.isEmpty()) {
-            ConfirmBox confirmBox = new ConfirmBox();
-            return confirmBox.display(messageIfBlank, oldWindow);
+            return new ConfirmBox().display(messageIfBlank, oldWindow);
         } else if (message.contentEquals(Strings.AddNewUsername) || !message.matches("^[a-zA-Z0-9]+$")) {
-            MessageBox messageBox = new MessageBox();
-            messageBox.display(Strings.UsernameIsntValid, oldWindow);
+            new MessageBox().display(Strings.UsernameIsntValid, oldWindow);
             return false;
         } else if (allUsers.contains(message)) {
-            MessageBox messageBox = new MessageBox();
-            messageBox.display(Strings.UsernameAlreadyTaken, oldWindow);
+            new MessageBox().display(Strings.UsernameAlreadyTaken, oldWindow);
             return false;
         } else if (message.length() > 20) {
-            MessageBox messageBox = new MessageBox();
-            messageBox.display(Strings.UsernameIsTooLong, oldWindow);
+            new MessageBox().display(Strings.UsernameIsTooLong, oldWindow);
             return false;
         } else return true;
     }
@@ -157,15 +151,13 @@ public class TextBox {
         if (currentDirectories.contains(message)) {
             new MessageBox().display(Strings.DirectoryIsAlreadyAdded, oldWindow);
             return false;
-        } else if (new FileManager().checkFolderExists(new File(message))) {
+        } else if (new FileManager().checkFolderExistsAndReadable(new File(message))) {
             return true;
         } else if (message.isEmpty()) {
-            MessageBox messageBox = new MessageBox();
-            messageBox.display(messageIfBlank, oldWindow);
+            new MessageBox().display(messageIfBlank, oldWindow);
             return false;
         } else {
-            MessageBox messageBox = new MessageBox();
-            messageBox.display(messageIfNotDirectory, oldWindow);
+            new MessageBox().display(messageIfNotDirectory, oldWindow);
             return false;
         }
     }
@@ -219,11 +211,9 @@ public class TextBox {
     private boolean isUpdateSpeedValid(String messageIfBlank, String textFieldValue, Window oldWindow) {
         log.finest("isUpdateSpeedValid has been called.");
         if (textFieldValue.isEmpty()) {
-            ConfirmBox confirmBox = new ConfirmBox();
-            return confirmBox.display(messageIfBlank, oldWindow);
+            return new ConfirmBox().display(messageIfBlank, oldWindow);
         } else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) < 10) {
-            MessageBox messageBox = new MessageBox();
-            messageBox.display(Strings.MustBeANumberGreaterThanOrEqualTo10, oldWindow);
+            new MessageBox().display(Strings.MustBeANumberGreaterThanOrEqualTo10, oldWindow);
             return false;
         } else return true;
     }
