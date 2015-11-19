@@ -179,7 +179,7 @@ public class UpdateManager {
     // These are ran if the versions didn't match, and updates the file with the latest information. It uses the oldVersion to find where it last updated, and runs through all the cases at and below it to catch it up, than updates the file to the latest version if it ran successfully.
     @SuppressWarnings("SameParameterValue")
     private void convertProgramSettingsFile(int oldVersion, int newVersion) {
-        ProgramSettings programSettings = programSettingsController.getSettingsFile();
+        ProgramSettings programSettings = null;
         boolean updated = false;
         if (oldVersion <= 1008) {
             @SuppressWarnings("unchecked") HashMap<String, ArrayList<String>> oldProgramSettingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
@@ -242,6 +242,7 @@ public class UpdateManager {
                             Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(1)),
                             Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(2)),
                             Integer.parseInt(oldProgramSettingsFile.get("General").get(0)),
+                            -1,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("General").get(1)),
                             Strings.EmptyString,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)),
@@ -257,9 +258,19 @@ public class UpdateManager {
                     );
                     neededObjects = new Object[]{oldProgramSettingsFile.get("Directories")};
                     log.info("Program has been updated from version 1008 -> 1009.");
-                    programSettingsController.setSettingsFile(programSettings);
-                    updated = true;
+                    oldVersion = 1009; //This is so the next switch will run from where this left off.
             }
+        }
+        if (programSettings == null) {
+            programSettingsController.loadProgramSettingsFile();
+            programSettings = programSettingsController.getSettingsFile();
+        }
+        switch (oldVersion) {
+            case 1009:
+                programSettings.setTimeToWaitForDirectory(Variables.defaultTimeToWaitForDirectory);
+                log.info("Program has been updated from version 1009 -> 1010.");
+                programSettingsController.setSettingsFile(programSettings);
+                updated = true;
         }
         //switch (oldVersion) {}
         if (updated) {

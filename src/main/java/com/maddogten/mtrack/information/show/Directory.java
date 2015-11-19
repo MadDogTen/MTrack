@@ -38,6 +38,8 @@ public class Directory implements Serializable {
         return index;
     }
 
+
+    // The idea here is that once this is implemented you will be able to choose which directory the program will prefer to play an episode from, if found in multiple locations.
     /*public int getPriority() { //TODO Implement Priority
         return priority;
     }

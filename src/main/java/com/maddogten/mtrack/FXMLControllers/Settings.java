@@ -15,9 +15,9 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -74,8 +74,6 @@ public class Settings implements Initializable {
     @FXML
     private Button about;
     @FXML
-    private Button changeUpdateSpeed;
-    @FXML
     private Button addDirectory;
     @FXML
     private Button removeDirectory;
@@ -107,6 +105,18 @@ public class Settings implements Initializable {
     private Button changeLanguage;
     @FXML
     private Button toggleDevMode;
+    @FXML
+    private Text updateText;
+    @FXML
+    private TextField updateTimeTextField;
+    @FXML
+    private Button setUpdateTime;
+    @FXML
+    private Text directoryTimeoutText;
+    @FXML
+    private TextField directoryTimeoutTextField;
+    @FXML
+    private Button setDirectoryTimeout;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -123,6 +133,39 @@ public class Settings implements Initializable {
         dev2Tab.setText(Strings.Dev2);
 
         // ~~~~ Buttons ~~~~ \\
+
+        // Main
+        forceRecheck.setText(Strings.ForceRecheckShows);
+        forceRecheck.setOnAction(e -> {
+            Task<Void> task = new Task<Void>() {
+                @SuppressWarnings("ReturnOfNull")
+                @Override
+                protected Void call() throws Exception {
+                    checkShowFiles.recheckShowFile(true);
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        });
+        updateText.setText(Strings.UpdateTime);
+        updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
+        setUpdateTime.setText(Strings.Set);
+        setUpdateTime.setOnAction(e -> {
+            if (isNumberValid(updateTimeTextField.getText(), 10)) {
+                if (updateTimeTextField.getText().isEmpty()) {
+                    updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
+                } else programSettingsController.setUpdateSpeed(Integer.valueOf(updateTimeTextField.getText()));
+            }
+        });
+        about.setText(Strings.About);
+        about.setOnAction(e -> {
+            AboutBox aboutBox = new AboutBox();
+            try {
+                aboutBox.display(tabPane.getScene().getWindow());
+            } catch (Exception e1) {
+                log.info(Arrays.toString(e1.getStackTrace()));
+            }
+        });
 
         // Users
         exit.setText(Strings.ExitButtonText);
@@ -173,11 +216,6 @@ public class Settings implements Initializable {
         });
         deleteUser.setTooltip(new Tooltip(Strings.DeleteUsersNoteCantDeleteCurrentUser));
         // Other
-        changeUpdateSpeed.setText(Strings.ChangeUpdateTime);
-        changeUpdateSpeed.setOnAction(e -> {
-            log.info("Change update speed started:");
-            programSettingsController.setUpdateSpeed(new TextBox().updateSpeed(Strings.EnterHowFastYouWantItToScanTheShowsFolders, Strings.LeaveItAsIs, Variables.defaultUpdateSpeed, programSettingsController.getUpdateSpeed(), tabPane.getScene().getWindow()));
-        });
         addDirectory.setText(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
             int index = directoryController.getLowestFreeDirectoryIndex();
@@ -252,6 +290,17 @@ public class Settings implements Initializable {
             }
             log.info("Remove Directory Finished!");
         });
+        directoryTimeoutText.setText(Strings.DirectoryTimeout);
+        directoryTimeoutTextField.setText(String.valueOf(Variables.timeToWaitForDirectory));
+        setDirectoryTimeout.setText(Strings.Set);
+        setDirectoryTimeout.setOnAction(e -> {
+            if (isNumberValid(directoryTimeoutTextField.getText(), 2)) {
+                if (directoryTimeoutTextField.getText().isEmpty()) {
+                    directoryTimeoutTextField.setText(String.valueOf(Variables.timeToWaitForDirectory));
+                } else
+                    programSettingsController.setTimeToWaitForDirectory(Integer.valueOf(directoryTimeoutTextField.getText()));
+            }
+        });
         changeLanguage.setText(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {
             LanguageHandler languageHandler = new LanguageHandler();
@@ -272,18 +321,6 @@ public class Settings implements Initializable {
                 new MessageBox().display(Strings.RestartTheProgramForTheNewLanguageToTakeEffect, tabPane.getScene().getWindow());
             }
         });
-        forceRecheck.setText(Strings.ForceRecheckShows);
-        forceRecheck.setOnAction(e -> {
-            Task<Void> task = new Task<Void>() {
-                @SuppressWarnings("ReturnOfNull")
-                @Override
-                protected Void call() throws Exception {
-                    checkShowFiles.recheckShowFile(true);
-                    return null;
-                }
-            };
-            new Thread(task).start();
-        });
         if (Variables.showOptionToToggleDevMode) {
             toggleDevMode.setText(Strings.ToggleDevMode);
             toggleDevMode.setOnAction(e -> Variables.devMode = !Variables.devMode);
@@ -294,15 +331,6 @@ public class Settings implements Initializable {
                 Desktop.getDesktop().open(Variables.dataFolder);
             } catch (IOException e1) {
                 log.severe(e1.toString());
-            }
-        });
-        about.setText(Strings.About);
-        about.setOnAction(e -> {
-            AboutBox aboutBox = new AboutBox();
-            try {
-                aboutBox.display(tabPane.getScene().getWindow());
-            } catch (Exception e1) {
-                log.info(Arrays.toString(e1.getStackTrace()));
             }
         });
         //noinspection PointlessBooleanExpression
@@ -443,5 +471,15 @@ public class Settings implements Initializable {
         deleteEverythingAndClose.setTooltip(new Tooltip(Strings.WarningUnrecoverable));
         // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(tabPane, Main.stage);
+    }
+
+    private boolean isNumberValid(String textFieldValue, int minValue) {
+        log.finest("isNumberValid has been called.");
+        if (textFieldValue.isEmpty()) {
+            return new ConfirmBox().display(Strings.LeaveItAsIs, this.tabPane.getScene().getWindow());
+        } else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) < minValue) {
+            new MessageBox().display(Strings.MustBeANumberGreaterThanOrEqualTo10, this.tabPane.getScene().getWindow()); // Fix text to work with any minValue
+            return false;
+        } else return true;
     }
 }

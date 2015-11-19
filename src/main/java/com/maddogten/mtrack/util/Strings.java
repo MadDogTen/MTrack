@@ -7,7 +7,7 @@ public class Strings {
     // Program Info
     public static final String ProgramTitle = "MTrack";
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Alpha 1.0.2";
+    public static final String MTrackVersion = "Alpha 1.0.4";
     public static final String CodedBy = "MadDogTen";
     public static final String CodedUsing = "Using: Intellij IDEA 15";
     public static final String codedWith = "Java";
@@ -46,6 +46,7 @@ public class Strings {
     public static String About;
     public static String Season;
     public static String Episode;
+    public static String Set;
 
     // Button Text
     public static String SetSeasonEpisode;
@@ -82,6 +83,8 @@ public class Strings {
     public static String ToggleDevMode;
     public static String InAppData;
     public static String WithTheJar;
+    public static String UpdateTime;
+    public static String DirectoryTimeout;
 
     // Tooltip Text
     public static String ShowHideShowsWith0EpisodeLeft;

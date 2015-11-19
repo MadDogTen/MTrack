@@ -4,6 +4,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
       fx:controller="com.maddogten.mtrack.FXMLControllers.Settings">
     <children>
@@ -16,10 +17,14 @@
                             <children>
                                 <Button fx:id="forceRecheck" layoutX="42.0" layoutY="14.0" mnemonicParsing="false"
                                         text="Force Recheck Shows"/>
-                                <Button fx:id="changeUpdateSpeed" layoutX="43.0" layoutY="46.0" mnemonicParsing="false"
-                                        text="Change Update Time"/>
                                 <Button fx:id="about" layoutX="83.0" layoutY="188.0" mnemonicParsing="false"
                                         text="About"/>
+                                <TextField fx:id="updateTimeTextField" layoutX="120.0" layoutY="59.0" prefHeight="25.0"
+                                           prefWidth="36.0"/>
+                                <Text fx:id="updateText" layoutX="14.0" layoutY="76.0" strokeType="OUTSIDE"
+                                      strokeWidth="0.0" text="Update Time:"/>
+                                <Button fx:id="setUpdateTime" layoutX="166.0" layoutY="59.0" mnemonicParsing="false"
+                                        text="Set"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -44,16 +49,22 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Button fx:id="openProgramFolder" layoutX="42.0" layoutY="176.0" mnemonicParsing="false"
+                                <Button fx:id="openProgramFolder" layoutX="43.0" layoutY="176.0" mnemonicParsing="false"
                                         text="Open Settings Folder"/>
                                 <Button fx:id="addDirectory" layoutX="4.0" layoutY="14.0" mnemonicParsing="false"
                                         text="Add Directory"/>
                                 <Button fx:id="removeDirectory" layoutX="98.0" layoutY="14.0" mnemonicParsing="false"
                                         text="Remove Directory"/>
-                                <Button fx:id="changeLanguage" layoutX="41.0" layoutY="63.0" mnemonicParsing="false"
+                                <Button fx:id="changeLanguage" layoutX="51.0" layoutY="108.0" mnemonicParsing="false"
                                         text="Change Language"/>
-                                <Button fx:id="toggleDevMode" layoutX="65.0" layoutY="142.0" mnemonicParsing="false"
+                                <Button fx:id="toggleDevMode" layoutX="66.0" layoutY="145.0" mnemonicParsing="false"
                                         prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
+                                <Button fx:id="setDirectoryTimeout" layoutX="107.0" layoutY="66.0"
+                                        mnemonicParsing="false" text="Set"/>
+                                <TextField fx:id="directoryTimeoutTextField" layoutX="66.0" layoutY="66.0"
+                                           prefHeight="25.0" prefWidth="36.0"/>
+                                <Text fx:id="directoryTimeoutText" layoutX="53.0" layoutY="60.0" strokeType="OUTSIDE"
+                                      strokeWidth="0.0" text="Directory Timeout:"/>
                             </children>
                         </AnchorPane>
                     </content>

@@ -36,6 +36,17 @@ public class ProgramSettingsController {
         log.info("Update speed is now set to: " + updateSpeed);
     }
 
+    // timeToWaitForDirectory is how long the program will wait for a response from a directory, Once the time is surpassed, it will skip it.
+    public int getTimeToWaitForDirectory() {
+        return settingsFile.getTimeToWaitForDirectory();
+    }
+
+    public void setTimeToWaitForDirectory(int timeToWaitForDirectory) {
+        settingsFile.setTimeToWaitForDirectory(timeToWaitForDirectory);
+        Variables.setTimeToWaitForDirectory(timeToWaitForDirectory);
+        log.info("Time to wait for directory is now set to: " + timeToWaitForDirectory);
+    }
+
     // Show0Remaining is used in the Controller to save the state of the checkbox at shutdown. Toggles whether or not the program has shows with 0 episode remaining visible.
     public boolean getShow0Remaining() {
         return settingsFile.isShow0Remaining();

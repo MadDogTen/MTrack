@@ -43,6 +43,7 @@ public class lipsum extends Language {
         Strings.About = "eget";
         Strings.Season = "vertamis";
         Strings.Episode = "medutu";
+        Strings.Set = "hegu";
 
         // Button Text
         Strings.SetSeasonEpisode = "malesuada";
@@ -79,6 +80,8 @@ public class lipsum extends Language {
         Strings.ToggleDevMode = "gulamina";
         Strings.InAppData = "burgula";
         Strings.WithTheJar = "zemberna";
+        Strings.UpdateTime = "nunula";
+        Strings.DirectoryTimeout = "termula";
 
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "sollicitudin";

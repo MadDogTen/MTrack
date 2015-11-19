@@ -42,6 +42,7 @@ public class template extends Language {
         Strings.About = "";
         Strings.Season = "";
         Strings.Episode = "";
+        Strings.Set = "";
 
         // Button Text
         Strings.SetSeasonEpisode = "";
@@ -78,6 +79,8 @@ public class template extends Language {
         Strings.ToggleDevMode = "";
         Strings.InAppData = "";
         Strings.WithTheJar = "";
+        Strings.UpdateTime = "";
+        Strings.DirectoryTimeout = "";
 
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "";

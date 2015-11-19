@@ -141,6 +141,7 @@ public class MainRun {
         log.info("Username is set: " + Strings.UserName);
         updateManager.updateMainDirectoryVersion();
         Variables.setUpdateSpeed(programSettingsController.getUpdateSpeed());
+        Variables.setTimeToWaitForDirectory(programSettingsController.getTimeToWaitForDirectory());
 
         return continueStarting;
     }

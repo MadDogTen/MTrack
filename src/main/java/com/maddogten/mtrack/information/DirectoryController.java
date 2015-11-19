@@ -3,8 +3,10 @@ package com.maddogten.mtrack.information;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.Clock;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
+import javafx.concurrent.Task;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.regex.Pattern;
 public class DirectoryController {
     private final Logger log = Logger.getLogger(DirectoryController.class.getName());
     private boolean reloadShowsFile = false;
+    private ArrayList<File> inactiveDirectories = new ArrayList<>();
 
     // Saves all the directory paths that the program is currently set to check.
     public ArrayList<Directory> getDirectories() {
@@ -33,33 +36,112 @@ public class DirectoryController {
     }
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    public boolean isDirectoryCurrentlyActive(File directory) { //TODO The must be a better way of doing this.
-        String bsR1 = "\\\\";
-        Pattern drivePattern = Pattern.compile("[A-Z]:" + bsR1);
-        Pattern networkFolderPattern = Pattern.compile(bsR1 + bsR1 + "[0-9A-Za-z-]+" + bsR1);
-        Matcher driveMatcher = drivePattern.matcher(directory.toString());
-        Matcher networkFolderMatcher = networkFolderPattern.matcher(directory.toString());
-        if (driveMatcher.find() || networkFolderMatcher.find()) {
+    public boolean isDirectoryCurrentlyActive(File directory, boolean skipFoundInactiveDrives) { //TODO The must be a better way of doing this.
+        if (skipFoundInactiveDrives && inactiveDirectories.contains(directory)) {
+            log.info(directory.toString() + " was skipped in active check as it was previously found as inactive.");
+        } else {
+            String bsR1 = "\\\\";
+            Pattern drivePattern = Pattern.compile("[A-Z]:" + bsR1);
+            Pattern networkFolderPattern = Pattern.compile(bsR1 + bsR1 + "[0-9A-Za-z-]+" + bsR1);
+            Matcher driveMatcher = drivePattern.matcher(directory.toString());
+            Matcher networkFolderMatcher = networkFolderPattern.matcher(directory.toString());
             String match = Strings.EmptyString;
+
             if (driveMatcher.find()) {
                 match = driveMatcher.group();
             } else if (networkFolderMatcher.find()) {
                 match = networkFolderMatcher.group();
             }
-            File baseDirectory = new File(match);
-            return baseDirectory.exists() && baseDirectory.canRead() && directory.exists() && directory.canRead();
-        }
 
-        Pattern ipPattern = Pattern.compile(bsR1 + bsR1 + "[0-9a-z][0-9.a-z:]+[.|:][0-9.a-z:]+[0-9a-z]" + bsR1);
-        Matcher ipMatcher = ipPattern.matcher(directory.toString());
-        if (ipMatcher.find()) {
-            return directory.exists() && directory.canRead() && directory.getTotalSpace() > 0;
+            if (!match.isEmpty()) {
+                log.info(directory.toString() + " was detected as being a drive/networked directory.");
+                File baseDirectory = new File(match);
+                boolean[] isDirectoryActive = {false};
+                Task<Void> checkingTask = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        isDirectoryActive[0] = baseDirectory.exists() && baseDirectory.canRead() && directory.exists() && directory.canRead();
+                        return null;
+                    }
+                };
+                Thread thread = new Thread(checkingTask);
+                thread.start();
+                int timer = Clock.getTimeSeconds();
+                while (thread.isAlive()) {
+                    log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer)));
+                    if (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer) < 1) {
+                        log.info(directory.toString() + " took to long to respond to alive check, Check that the drive is plugged in & working.");
+                        if (!inactiveDirectories.contains(directory)) {
+                            inactiveDirectories.add(directory);
+                        }
+                        thread.interrupt();
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            log.severe(e.toString());
+                        }
+                    }
+                    if (!Main.programRunning) {
+                        thread.interrupt();
+                        return false;
+                    }
+                }
+                if (!skipFoundInactiveDrives && isDirectoryActive[0] && inactiveDirectories.contains(directory)) {
+                    inactiveDirectories.remove(directory);
+                }
+                return isDirectoryActive[0];
+            }
+
+            Pattern ipPattern = Pattern.compile(bsR1 + bsR1 + "[0-9a-z][0-9.a-z:]+[.|:][0-9.a-z:]+[0-9a-z]" + bsR1);
+            Matcher ipMatcher = ipPattern.matcher(directory.toString());
+            if (ipMatcher.find()) {
+                log.info(directory.toString() + " was detected as being an ip address.");
+                boolean[] isDirectoryActive = {false};
+                Task<Void> checkingTask = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        isDirectoryActive[0] = directory.exists() && directory.canRead() && directory.getTotalSpace() > 0;
+                        return null;
+                    }
+                };
+                Thread thread = new Thread(checkingTask);
+                thread.start();
+                int timer = Clock.getTimeSeconds();
+                while (thread.isAlive()) {
+                    log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer)));
+                    if (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer) < 1) {
+                        log.info(directory.toString() + " took to long to respond to alive check, Check that the drive is plugged in & working.");
+                        if (!inactiveDirectories.contains(directory)) {
+                            inactiveDirectories.add(directory);
+                        }
+                        thread.interrupt();
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            log.severe(e.toString());
+                        }
+                    }
+                    if (!Main.programRunning) {
+                        thread.interrupt();
+                        return false;
+                    }
+                }
+                if (!skipFoundInactiveDrives && isDirectoryActive[0] && inactiveDirectories.contains(directory)) {
+                    inactiveDirectories.remove(directory);
+                }
+                return isDirectoryActive[0];
+            }
+            log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory);
         }
-        log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory);
         return false;
     }
 
     // Debugging tool - Prints all directories to console.
+
     public void printAllDirectories() {
         log.info("Printing out all directories:");
         if (getDirectories().isEmpty()) {

@@ -41,6 +41,7 @@ public class en_US extends Language {
         Strings.About = "About";
         Strings.Season = "Season";
         Strings.Episode = "Episode";
+        Strings.Set = "Set";
 
         // Button Text
         Strings.SetSeasonEpisode = "Set Season + Episode";
@@ -77,6 +78,8 @@ public class en_US extends Language {
         Strings.ToggleDevMode = "Toggle Dev";
         Strings.InAppData = "In Appdata";
         Strings.WithTheJar = "With the Jar";
+        Strings.UpdateTime = "Update Time:";
+        Strings.DirectoryTimeout = "Directory Timeout:";
 
         // Tooltip Text
         Strings.ShowHideShowsWith0EpisodeLeft = "Show/Hide shows with 0 episode left.";
