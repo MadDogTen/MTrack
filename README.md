@@ -3,7 +3,7 @@ A Program to track Shows you have stored on your network for additions and remov
 
 Coded using IntelliJ IDEA 14.1.4 Windows Edition.
 
-Works on Windows 10, Might work on other Windows versions. Eventual support of other operating systems is planned (Ubuntu may or many not currently work).
+Works on Windows 10, Might work on other Windows versions. Eventual support of other operating systems is planned (Ubuntu may or may not currently work).
 
 Notice- I'm making this to learn Java. Before this project I had 0 experience in coding (or .1 if you count very basic HTML).
 I expect to have done a lot of things wrong, But with your help I can hopefully get better and make this a usable program.

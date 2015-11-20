@@ -1,26 +1,30 @@
 Changes:
 
 Alpha 0.1 - || Running changelog, Nothing finalized + Things may be missing. The development branch is constantly being updated which may break things, So make sure to backup you settings if you want to try it out.
-General Fixes.
+General Fixes/Changes/Cleanup.
 Changed Shows file storage to a much better storage format. Makes everything cleaner / better. Old files will convert to the new one.
 Changed Settings file storage to a much better storage format. Old files will convert to the new one.
 Episodes Number are no longer stored as a string, double episodes are stored as each being a single episode.
-Lipsum cannot be permanently set as your language (Next time you start the application it will ask you to pick a language).
 Added options to display which Season / Episode your on in a Column.
 All Column's width & visibility settings are saved.
-Changed most files not static, Controller now handles most of them.
-Pulled FirstRun from MainRun into a FirstRun class.
+Changed most files to not static, Controller now handles most of them.
+Pulled FirstRun method from MainRun into a FirstRun class.
 Further refinements on the percentage on the progress indicator.
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
 Added Option to have the files stored in AppData or at the location of the Jar.
-ChangesBox length is now based on how many entry's it has, Up to a maximum length of 17 until you have to scroll to see the rest.
-Added option (Programmer option, Will default to true until Beta) to Toggle DevMode for that run.
+Added option (Programmer option, Will default to true until Beta) to Toggle DevMode while program is running.
 ChangeBox will automatically refresh when new changes are added. (Checks once a second).
+ChangeBox now shows additions with a '+' and removals with a '-'. (Easier to notice at a glace and saves on space)
 Finished up multilingual support. Added some missing strings. Added a method in LanguageHandler to check if any strings are missing after being set, and if any are missing, set them to TextMissing.
 Converted to Maven build structure.
 Added ability to close the program before it is fully started.
 Added comments to mostly everything.
-Directory information is no longer stored in the program settings file, They are instead gotten on program load from the folder. You can add or remove directories and it will properly handle it.
+Directory information is no longer stored in the program settings file, They are instead gotten on program load from the folder. You can add or remove directories freely and it will properly handle it.
+Will now properly switch to new seasons when found.
+Selecting show season & episode is now done on one window.
+If watching the last sequential episode, The "Next Episode" button is disabled.
+"Properly" checks if a directory is found, and active (Plugged in and accessible), and has a timeout period (20 Second by default, Configurable)
+Added fields in settings to directly change 'Update Time' (& removed the old button for it) & directory timeout time without opening another window.
 
 Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).

@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 
 public class DirectoryController {
     private final Logger log = Logger.getLogger(DirectoryController.class.getName());
+    private final ArrayList<File> inactiveDirectories = new ArrayList<>();
     private boolean reloadShowsFile = false;
-    private ArrayList<File> inactiveDirectories = new ArrayList<>();
 
     // Saves all the directory paths that the program is currently set to check.
     public ArrayList<Directory> getDirectories() {
