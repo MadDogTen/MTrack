@@ -24,6 +24,7 @@ public class SettingsWindow {
     public void display() throws Exception {
         log.finest("SettingsWindow has been opened.");
         window = new Stage();
+        window.initOwner(Main.stage);
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);

@@ -28,15 +28,16 @@ public class LanguageHandler {
         log.info("Attempting to set language to " + name);
         if (languages.containsKey(name)) {
             languages.get(name).setAllStrings();
+            addMissingTextForAllMissingStrings();
             return true;
         }
         return false;
     }
 
     // This verifies that all the Strings have been set, and if any haven't been, sets it as TextMissing. If TextMissing happens to be missing, it uses a default english string.
-    public void addMissingTextForAllMissingStrings() {
+    private void addMissingTextForAllMissingStrings() {
         log.info("Checking for missing Strings...");
-        if (Strings.TextMissing == null) Strings.TextMissing = "Text is missing, Please report.";
+        if (Strings.TextMissing == null) Strings.TextMissing = "Proper text is missing, Please report.";
 
         if (Strings.Submit == null) Strings.Submit = Strings.TextMissing;
         if (Strings.Clear == null) Strings.Clear = Strings.TextMissing;
@@ -59,6 +60,8 @@ public class LanguageHandler {
         if (Strings.About == null) Strings.About = Strings.TextMissing;
         if (Strings.Season == null) Strings.Season = Strings.TextMissing;
         if (Strings.Episode == null) Strings.Episode = Strings.TextMissing;
+        if (Strings.Set == null) Strings.Set = Strings.TextMissing;
+        if (Strings.Warning == null) Strings.Warning = Strings.TextMissing;
         if (Strings.SetSeasonEpisode == null) Strings.SetSeasonEpisode = Strings.TextMissing;
         if (Strings.PlaySeasonEpisode == null) Strings.PlaySeasonEpisode = Strings.TextMissing;
         if (Strings.HideShow == null) Strings.HideShow = Strings.TextMissing;
@@ -94,7 +97,10 @@ public class LanguageHandler {
         if (Strings.ToggleDevMode == null) Strings.ToggleDevMode = Strings.TextMissing;
         if (Strings.InAppData == null) Strings.InAppData = Strings.TextMissing;
         if (Strings.WithTheJar == null) Strings.WithTheJar = Strings.TextMissing;
-        if (Strings.ShowHideShowsWith0EpisodeLeft == null) Strings.ShowHideShowsWith0EpisodeLeft = Strings.TextMissing;
+        if (Strings.UpdateTime == null) Strings.UpdateTime = Strings.TextMissing;
+        if (Strings.DirectoryTimeout == null) Strings.DirectoryTimeout = Strings.TextMissing;
+        if (Strings.ShowHiddenShowsWith0EpisodeLeft == null)
+            Strings.ShowHiddenShowsWith0EpisodeLeft = Strings.TextMissing;
         if (Strings.CurrentlyRechecking == null) Strings.CurrentlyRechecking = Strings.TextMissing;
         if (Strings.DeleteUsersNoteCantDeleteCurrentUser == null)
             Strings.DeleteUsersNoteCantDeleteCurrentUser = Strings.TextMissing;
@@ -112,8 +118,8 @@ public class LanguageHandler {
         if (Strings.UsernameAlreadyTaken == null) Strings.UsernameAlreadyTaken = Strings.TextMissing;
         if (Strings.UsernameIsTooLong == null) Strings.UsernameIsTooLong = Strings.TextMissing;
         if (Strings.DirectoryIsAlreadyAdded == null) Strings.DirectoryIsAlreadyAdded = Strings.TextMissing;
-        if (Strings.MustBeANumberGreaterThanOrEqualTo10 == null)
-            Strings.MustBeANumberGreaterThanOrEqualTo10 = Strings.TextMissing;
+        if (Strings.MustBeANumberBetween == null)
+            Strings.MustBeANumberBetween = Strings.TextMissing;
         if (Strings.ChooseYourUsername == null) Strings.ChooseYourUsername = Strings.TextMissing;
         if (Strings.DirectoryWasADuplicate == null) Strings.DirectoryWasADuplicate = Strings.TextMissing;
         if (Strings.AddAnotherDirectory == null) Strings.AddAnotherDirectory = Strings.TextMissing;
@@ -161,6 +167,10 @@ public class LanguageHandler {
         if (Strings.YouHaveReachedTheEnd == null) Strings.YouHaveReachedTheEnd = Strings.TextMissing;
         if (Strings.PingingDirectories == null) Strings.PingingDirectories = Strings.TextMissing;
         if (Strings.PathToDirectory == null) Strings.PathToDirectory = Strings.TextMissing;
+        if (Strings.PrintCurrentSeasonEpisode == null) Strings.PrintCurrentSeasonEpisode = Strings.TextMissing;
+        if (Strings.WasFoundToBeInactive == null) Strings.WasFoundToBeInactive = Strings.TextMissing;
+        if (Strings.PleaseCorrectTheIssueThenForceRefresh == null)
+            Strings.PleaseCorrectTheIssueThenForceRefresh = Strings.TextMissing;
         log.info("Finished checking for missing Strings.");
     }
 }

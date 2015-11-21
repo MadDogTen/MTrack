@@ -212,7 +212,6 @@ public class MainRun {
                 Boolean wasSet = languageHandler.setLanguage(language);
                 if (wasSet) {
                     Variables.language = language;
-                    languageHandler.addMissingTextForAllMissingStrings();
                     log.info("Language is set: " + language);
                 } else {
                     log.severe("Language was not set for some reason, Please report.");
@@ -232,7 +231,6 @@ public class MainRun {
                     Boolean wasSet = languageHandler.setLanguage(internalName);
                     if (wasSet) {
                         Variables.language = internalName;
-                        languageHandler.addMissingTextForAllMissingStrings();
                         log.info("Language is set: " + languageReadable);
                     } else {
                         log.severe("Language was not set for some reason, Please report.");

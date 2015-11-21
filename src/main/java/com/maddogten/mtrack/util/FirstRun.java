@@ -130,7 +130,7 @@ public class FirstRun {
             index++;
             if (!matched[0] && !matched[1]) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display(Strings.DirectoryWasADuplicate, null);
+                messageBox.display(new String[]{Strings.DirectoryWasADuplicate}, null);
             } else if (matched[1]) {
                 break;
             }

@@ -43,6 +43,7 @@ public class template extends Language {
         Strings.Season = "";
         Strings.Episode = "";
         Strings.Set = "";
+        Strings.Warning = "";
 
         // Button Text
         Strings.SetSeasonEpisode = "";
@@ -83,7 +84,7 @@ public class template extends Language {
         Strings.DirectoryTimeout = "";
 
         // Tooltip Text
-        Strings.ShowHideShowsWith0EpisodeLeft = "";
+        Strings.ShowHiddenShowsWith0EpisodeLeft = "";
         Strings.CurrentlyRechecking = "";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "";
         Strings.WarningUnrecoverable = "";
@@ -102,7 +103,7 @@ public class template extends Language {
         Strings.UsernameAlreadyTaken = "";
         Strings.UsernameIsTooLong = "";
         Strings.DirectoryIsAlreadyAdded = "";
-        Strings.MustBeANumberGreaterThanOrEqualTo10 = "";
+        Strings.MustBeANumberBetween = "";
         Strings.ChooseYourUsername = "";
         Strings.DirectoryWasADuplicate = "";
         Strings.AddAnotherDirectory = "";
@@ -144,5 +145,7 @@ public class template extends Language {
         Strings.YouHaveReachedTheEnd = "";
         Strings.PingingDirectories = "";
         Strings.PathToDirectory = "";
+        Strings.WasFoundToBeInactive = "";
+        Strings.PleaseCorrectTheIssueThenForceRefresh = "";
     }
 }

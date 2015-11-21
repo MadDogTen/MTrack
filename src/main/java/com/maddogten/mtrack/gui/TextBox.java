@@ -77,13 +77,13 @@ public class TextBox {
         if (message.isEmpty()) {
             return new ConfirmBox().display(messageIfBlank, oldWindow);
         } else if (message.contentEquals(Strings.AddNewUsername) || !message.matches("^[a-zA-Z0-9]+$")) {
-            new MessageBox().display(Strings.UsernameIsntValid, oldWindow);
+            new MessageBox().display(new String[]{Strings.UsernameIsntValid}, oldWindow);
             return false;
         } else if (allUsers.contains(message)) {
-            new MessageBox().display(Strings.UsernameAlreadyTaken, oldWindow);
+            new MessageBox().display(new String[]{Strings.UsernameAlreadyTaken}, oldWindow);
             return false;
         } else if (message.length() > 20) {
-            new MessageBox().display(Strings.UsernameIsTooLong, oldWindow);
+            new MessageBox().display(new String[]{Strings.UsernameIsTooLong}, oldWindow);
             return false;
         } else return true;
     }
@@ -149,15 +149,15 @@ public class TextBox {
     private boolean isDirectoryValid(ArrayList<String> currentDirectories, String messageIfBlank, String messageIfNotDirectory, String message, Window oldWindow) {
         log.finest("isDirectoryValid has been called.");
         if (currentDirectories.contains(message)) {
-            new MessageBox().display(Strings.DirectoryIsAlreadyAdded, oldWindow);
+            new MessageBox().display(new String[]{Strings.DirectoryIsAlreadyAdded}, oldWindow);
             return false;
         } else if (new FileManager().checkFolderExistsAndReadable(new File(message))) {
             return true;
         } else if (message.isEmpty()) {
-            new MessageBox().display(messageIfBlank, oldWindow);
+            new MessageBox().display(new String[]{messageIfBlank}, oldWindow);
             return false;
         } else {
-            new MessageBox().display(messageIfNotDirectory, oldWindow);
+            new MessageBox().display(new String[]{messageIfNotDirectory}, oldWindow);
             return false;
         }
     }

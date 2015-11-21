@@ -121,7 +121,7 @@ public class ListSelectBox {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display(Strings.DefaultUserNotSet, window);
+                    messageBox.display(new String[]{Strings.DefaultUserNotSet}, window);
                     window.close();
                 } else {
                     userName[0] = comboBox.getValue();
@@ -180,7 +180,7 @@ public class ListSelectBox {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty()) {
                     MessageBox messageBox = new MessageBox();
-                    messageBox.display(Strings.PleaseChooseAFolder, window);
+                    messageBox.display(new String[]{Strings.PleaseChooseAFolder}, window);
                 } else {
                     file[0] = comboBox.getValue();
                     window.close();
@@ -245,8 +245,8 @@ public class ListSelectBox {
                     choice[0] = seasonsComboBox.getValue();
                     choice[1] = episodesComboBox.getValue();
                     window.close();
-                } else new MessageBox().display(Strings.YouHaveToPickAEpisode, window);
-            } else new MessageBox().display(Strings.YouHaveToPickASeason, window);
+                } else new MessageBox().display(new String[]{Strings.YouHaveToPickAEpisode}, window);
+            } else new MessageBox().display(new String[]{Strings.YouHaveToPickASeason}, window);
         });
 
         Button exit = new Button(Strings.ExitButtonText);

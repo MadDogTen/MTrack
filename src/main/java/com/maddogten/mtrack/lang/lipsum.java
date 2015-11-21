@@ -44,6 +44,7 @@ public class lipsum extends Language {
         Strings.Season = "vertamis";
         Strings.Episode = "medutu";
         Strings.Set = "hegu";
+        Strings.Warning = "murta";
 
         // Button Text
         Strings.SetSeasonEpisode = "malesuada";
@@ -84,7 +85,7 @@ public class lipsum extends Language {
         Strings.DirectoryTimeout = "termula";
 
         // Tooltip Text
-        Strings.ShowHideShowsWith0EpisodeLeft = "sollicitudin";
+        Strings.ShowHiddenShowsWith0EpisodeLeft = "sollicitudin";
         Strings.CurrentlyRechecking = "nisi";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "Nulla";
         Strings.WarningUnrecoverable = "vitae";
@@ -103,7 +104,7 @@ public class lipsum extends Language {
         Strings.UsernameAlreadyTaken = "malesuada";
         Strings.UsernameIsTooLong = "fames";
         Strings.DirectoryIsAlreadyAdded = "turpis";
-        Strings.MustBeANumberGreaterThanOrEqualTo10 = "egestas";
+        Strings.MustBeANumberBetween = "egestas";
         Strings.ChooseYourUsername = "Vivamus";
         Strings.DirectoryWasADuplicate = "faucibus";
         Strings.AddAnotherDirectory = "felis";
@@ -145,5 +146,7 @@ public class lipsum extends Language {
         Strings.YouHaveReachedTheEnd = "galaminka";
         Strings.PingingDirectories = "vermuna";
         Strings.PathToDirectory = "mezera";
+        Strings.WasFoundToBeInactive = "galamru";
+        Strings.PleaseCorrectTheIssueThenForceRefresh = "altez";
     }
 }

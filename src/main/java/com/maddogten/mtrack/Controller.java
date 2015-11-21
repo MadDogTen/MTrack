@@ -389,7 +389,7 @@ public class Controller implements Initializable {
                         log.info("Attempting to play previous episode...");
                         int[] seasonEpisode = userInfoController.getPreviousEpisodeIfExists(row.getItem().getShow());
                         if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3) {
-                            new MessageBox().display(Strings.NoDirectlyPrecedingEpisodesFound, tabPane.getScene().getWindow());
+                            new MessageBox().display(new String[]{Strings.NoDirectlyPrecedingEpisodesFound}, tabPane.getScene().getWindow());
                         } else {
                             userInfoController.playAnyEpisode(row.getItem().getShow(), seasonEpisode[0], seasonEpisode[1]);
                         }
@@ -449,7 +449,7 @@ public class Controller implements Initializable {
                             if (keepPlaying) {
                                 log.info("No further files!");
                                 MessageBox messageBox = new MessageBox();
-                                messageBox.display(Strings.YouHaveReachedTheEnd, pane.getScene().getWindow());
+                                messageBox.display(new String[]{Strings.YouHaveReachedTheEnd}, pane.getScene().getWindow());
                             }
                             isShowCurrentlyPlaying = false;
                         }
@@ -515,7 +515,7 @@ public class Controller implements Initializable {
             setTableViewFields(currentList);
             setTableView();
         });
-        show0RemainingCheckBox.setTooltip(new Tooltip(Strings.ShowHideShowsWith0EpisodeLeft));
+        show0RemainingCheckBox.setTooltip(new Tooltip(Strings.ShowHiddenShowsWith0EpisodeLeft));
         Tooltip.install(
                 pingingDirectory,
                 new Tooltip(Strings.PingingDirectories));
@@ -567,7 +567,7 @@ public class Controller implements Initializable {
                             Double temp = checkShowFiles.getRecheckShowFilePercentage();
                             isCurrentlyRechecking.setProgress(temp);
                         });
-                    }
+                    } else if (pingingDirectory.isVisible()) pingingDirectory.setVisible(false);
                     isChangesListPopulated();
                     if (currentlyRechecking) {
                         Thread.sleep(80);

@@ -5,12 +5,12 @@ import java.io.File;
 @SuppressWarnings("ClassWithoutLogger")
 public class Variables {
     //---------- Main Variables ----------\\ -- "/**/" == Dev Option - Set to normal state for builds (Comment on the right).
-    public static final int SIZE_WIDTH = 282;
-    public static final int SIZE_HEIGHT = 454;
-    public static final int SHOWS_COLUMN_WIDTH = 239;
-    public static final int REMAINING_COLUMN_WIDTH = 29;
-    public static final int SEASONS_COLUMN_WIDTH = 48;
-    public static final int EPISODE_COLUMN_WIDTH = 50;
+    public static final short SIZE_WIDTH = 282;
+    public static final short SIZE_HEIGHT = 454;
+    public static final short SHOWS_COLUMN_WIDTH = 239;
+    public static final short REMAINING_COLUMN_WIDTH = 29;
+    public static final short SEASONS_COLUMN_WIDTH = 48;
+    public static final short EPISODE_COLUMN_WIDTH = 50;
 
     // Base Directories
     public static final String ProgramRootFolder = Strings.FileSeparator + "MTrack";
@@ -30,6 +30,7 @@ public class Variables {
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final int defaultUpdateSpeed = 120;
     public static final int defaultTimeToWaitForDirectory = 20;
+    public static final int maxWaitTimeSeconds = 172800; // 2 Days will be the max wait time - Might be changed
     public static final String Logo = "/image/MTrackLogo.png";
     /**/public static boolean devMode = false; // false
     public static int updateSpeed;

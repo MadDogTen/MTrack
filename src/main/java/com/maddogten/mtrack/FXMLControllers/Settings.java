@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -148,6 +149,7 @@ public class Settings implements Initializable {
             new Thread(task).start();
         });
         updateText.setText(Strings.UpdateTime);
+        updateText.setTextAlignment(TextAlignment.CENTER);
         updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
         setUpdateTime.setText(Strings.Set);
         setUpdateTime.setOnAction(e -> {
@@ -201,7 +203,7 @@ public class Settings implements Initializable {
             users.remove(Strings.UserName);
             if (users.isEmpty()) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display(Strings.ThereAreNoOtherUsersToDelete, tabPane.getScene().getWindow());
+                messageBox.display(new String[]{Strings.ThereAreNoOtherUsersToDelete}, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String userToDelete = listSelectBox.defaultUser(Strings.UserToDelete, users, programSettingsController.getDefaultUsername(), tabPane.getScene().getWindow());
@@ -256,7 +258,7 @@ public class Settings implements Initializable {
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
                 MessageBox messageBox = new MessageBox();
-                messageBox.display(Strings.ThereAreNoDirectoriesToDelete, tabPane.getScene().getWindow());
+                messageBox.display(new String[]{Strings.ThereAreNoDirectoriesToDelete}, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 File directoryToDelete = listSelectBox.directories(Strings.DirectoryToDelete, directories, tabPane.getScene().getWindow());
@@ -291,6 +293,7 @@ public class Settings implements Initializable {
             log.info("Remove Directory Finished!");
         });
         directoryTimeoutText.setText(Strings.DirectoryTimeout);
+        directoryTimeoutText.setTextAlignment(TextAlignment.CENTER);
         directoryTimeoutTextField.setText(String.valueOf(Variables.timeToWaitForDirectory));
         setDirectoryTimeout.setText(Strings.Set);
         setDirectoryTimeout.setOnAction(e -> {
@@ -318,7 +321,7 @@ public class Settings implements Initializable {
                     }
                 }
                 programSettingsController.setLanguage(internalName);
-                new MessageBox().display(Strings.RestartTheProgramForTheNewLanguageToTakeEffect, tabPane.getScene().getWindow());
+                new MessageBox().display(new String[]{Strings.RestartTheProgramForTheNewLanguageToTakeEffect}, tabPane.getScene().getWindow());
             }
         });
         if (Variables.showOptionToToggleDevMode) {
@@ -432,7 +435,7 @@ public class Settings implements Initializable {
             directoryController.getDirectories().forEach(aDirectory -> directories.add(aDirectory.getDirectory()));
             if (directories.isEmpty()) {
                 MessageBox messageBox = new MessageBox();
-                messageBox.display(Strings.ThereAreNoDirectoriesToClear, tabPane.getScene().getWindow());
+                messageBox.display(new String[]{Strings.ThereAreNoDirectoriesToClear}, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToClear = String.valueOf(listSelectBox.directories(Strings.DirectoryToClear, directories, tabPane.getScene().getWindow()));
@@ -477,8 +480,8 @@ public class Settings implements Initializable {
         log.finest("isNumberValid has been called.");
         if (textFieldValue.isEmpty()) {
             return new ConfirmBox().display(Strings.LeaveItAsIs, this.tabPane.getScene().getWindow());
-        } else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) < minValue) {
-            new MessageBox().display(Strings.MustBeANumberGreaterThanOrEqualTo10, this.tabPane.getScene().getWindow()); // Fix text to work with any minValue
+        } else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) > Variables.maxWaitTimeSeconds || Integer.parseInt(textFieldValue) < minValue) {
+            new MessageBox().display(new String[]{Strings.MustBeANumberBetween + minValue + " - " + Variables.maxWaitTimeSeconds}, this.tabPane.getScene().getWindow());
             return false;
         } else return true;
     }

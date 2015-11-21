@@ -47,6 +47,7 @@ public class Strings {
     public static String Season;
     public static String Episode;
     public static String Set;
+    public static String Warning;
 
     // Button Text
     public static String SetSeasonEpisode;
@@ -87,7 +88,7 @@ public class Strings {
     public static String DirectoryTimeout;
 
     // Tooltip Text
-    public static String ShowHideShowsWith0EpisodeLeft;
+    public static String ShowHiddenShowsWith0EpisodeLeft;
     public static String CurrentlyRechecking;
     public static String DeleteUsersNoteCantDeleteCurrentUser;
     public static String WarningUnrecoverable;
@@ -106,7 +107,7 @@ public class Strings {
     public static String UsernameAlreadyTaken;
     public static String UsernameIsTooLong;
     public static String DirectoryIsAlreadyAdded;
-    public static String MustBeANumberGreaterThanOrEqualTo10;
+    public static String MustBeANumberBetween;
     public static String ChooseYourUsername;
     public static String DirectoryWasADuplicate;
     public static String AddAnotherDirectory;
@@ -149,6 +150,8 @@ public class Strings {
     public static String PingingDirectories;
     public static String PathToDirectory;
     public static String PrintCurrentSeasonEpisode;
+    public static String WasFoundToBeInactive;
+    public static String PleaseCorrectTheIssueThenForceRefresh;
 
     // Strings set by program
     public static String UserName;

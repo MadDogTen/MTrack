@@ -17,7 +17,7 @@ public class en_US extends Language {
 
         // All Other Text
         Strings.DefaultUsername = "Default User";
-        Strings.TextMissing = "Text is missing, Please report.";
+        Strings.TextMissing = "Proper text is missing, Please report.";
 
         // Single Words
         Strings.Submit = "Submit";
@@ -42,6 +42,7 @@ public class en_US extends Language {
         Strings.Season = "Season";
         Strings.Episode = "Episode";
         Strings.Set = "Set";
+        Strings.Warning = "Warning- ";
 
         // Button Text
         Strings.SetSeasonEpisode = "Set Season + Episode";
@@ -78,11 +79,11 @@ public class en_US extends Language {
         Strings.ToggleDevMode = "Toggle Dev";
         Strings.InAppData = "In Appdata";
         Strings.WithTheJar = "With the Jar";
-        Strings.UpdateTime = "Update Time:";
-        Strings.DirectoryTimeout = "Directory Timeout:";
+        Strings.UpdateTime = "Update Time (Seconds):";
+        Strings.DirectoryTimeout = "Directory Timeout (Seconds):";
 
         // Tooltip Text
-        Strings.ShowHideShowsWith0EpisodeLeft = "Show/Hide shows with 0 episode left.";
+        Strings.ShowHiddenShowsWith0EpisodeLeft = "Show/Hide shows with 0 episode left.";
         Strings.CurrentlyRechecking = "Currently Rechecking...";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "Delete Users. Note: Can't delete current user!";
         Strings.WarningUnrecoverable = "Warning, Unrecoverable!";
@@ -101,7 +102,7 @@ public class en_US extends Language {
         Strings.UsernameAlreadyTaken = "Username already taken.";
         Strings.UsernameIsTooLong = "Username is too long.";
         Strings.DirectoryIsAlreadyAdded = "Directory is already added.";
-        Strings.MustBeANumberGreaterThanOrEqualTo10 = "Cannot be set to less than 10 seconds.";
+        Strings.MustBeANumberBetween = "Must be a number between ";
         Strings.ChooseYourUsername = "Choose your Username:";
         Strings.DirectoryWasADuplicate = "Directory was a duplicate!";
         Strings.AddAnotherDirectory = "Add another directory?";
@@ -144,5 +145,7 @@ public class en_US extends Language {
         Strings.PingingDirectories = "Pinging Directories...";
         Strings.PathToDirectory = "PathToDirectory";
         Strings.PrintCurrentSeasonEpisode = "Print Current Season & Episode";
+        Strings.WasFoundToBeInactive = " was found to be inactive.";
+        Strings.PleaseCorrectTheIssueThenForceRefresh = "Please correct the issue then force refresh.";
     }
 }

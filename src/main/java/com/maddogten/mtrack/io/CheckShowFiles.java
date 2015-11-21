@@ -83,13 +83,8 @@ public class CheckShowFiles {
                 percentagePerDirectory[0] = 100 / directoryController.getDirectories().size();
             }
             // Just so the user knows when it is a directory that is delaying the search, and not the program hanging.
-            ArrayList<Directory> activeDirectories = new ArrayList<>();
             currentlyCheckingDirectories = true;
-            directoryController.getDirectories().forEach(directory -> {
-                if (Main.programRunning && directoryController.isDirectoryCurrentlyActive(directory.getDirectory(), !forceRun)) {
-                    activeDirectories.add(directory);
-                }
-            });
+            ArrayList<Directory> activeDirectories = directoryController.getActiveDirectories(!forceRun);
             currentlyCheckingDirectories = false;
             activeDirectories.forEach(aDirectory -> {
                 Map<String, Show> showsMap = aDirectory.getShows();

@@ -18,17 +18,25 @@ import javafx.stage.Window;
 import java.util.logging.Logger;
 
 public class MessageBox {
-    private static final Logger log = Logger.getLogger(MessageBox.class.getName());
+    private final Logger log = Logger.getLogger(MessageBox.class.getName());
 
-    public void display(String message, Window oldWindow) {
+    public void display(String[] message, Window oldWindow) {
         log.finest("MessageBox has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
 
-        Label label = new Label();
-        label.setText(message);
+        VBox layout = new VBox();
+
+        if (message.length == 1) {
+            layout.getChildren().add(new Label(message[0]));
+        } else if (message.length > 1) {
+
+            for (String aMessage : message) {
+                layout.getChildren().add(new Label(aMessage));
+            }
+        }
 
         Button close = new Button(Strings.Close);
         close.setMinHeight(20);
@@ -36,8 +44,7 @@ public class MessageBox {
 
         close.setOnAction(e -> window.close());
 
-        VBox layout = new VBox();
-        layout.getChildren().addAll(label, close);
+        layout.getChildren().add(close);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
 

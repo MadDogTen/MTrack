@@ -19,11 +19,11 @@
                                         text="Force Recheck Shows"/>
                                 <Button fx:id="about" layoutX="83.0" layoutY="188.0" mnemonicParsing="false"
                                         text="About"/>
-                                <TextField fx:id="updateTimeTextField" layoutX="120.0" layoutY="59.0" prefHeight="25.0"
+                                <TextField fx:id="updateTimeTextField" layoutX="65.0" layoutY="68.0" prefHeight="25.0"
                                            prefWidth="36.0"/>
-                                <Text fx:id="updateText" layoutX="14.0" layoutY="76.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" text="Update Time:"/>
-                                <Button fx:id="setUpdateTime" layoutX="166.0" layoutY="59.0" mnemonicParsing="false"
+                                <Text fx:id="updateText" layoutX="45.0" layoutY="62.0" strokeType="OUTSIDE"
+                                      strokeWidth="0.0" text="Update Time (Seconds):"/>
+                                <Button fx:id="setUpdateTime" layoutX="108.0" layoutY="68.0" mnemonicParsing="false"
                                         text="Set"/>
                             </children>
                         </AnchorPane>
@@ -59,12 +59,12 @@
                                         text="Change Language"/>
                                 <Button fx:id="toggleDevMode" layoutX="66.0" layoutY="145.0" mnemonicParsing="false"
                                         prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
-                                <Button fx:id="setDirectoryTimeout" layoutX="107.0" layoutY="66.0"
+                                <Button fx:id="setDirectoryTimeout" layoutX="108.0" layoutY="68.0"
                                         mnemonicParsing="false" text="Set"/>
-                                <TextField fx:id="directoryTimeoutTextField" layoutX="66.0" layoutY="66.0"
+                                <TextField fx:id="directoryTimeoutTextField" layoutX="65.0" layoutY="68.0"
                                            prefHeight="25.0" prefWidth="36.0"/>
-                                <Text fx:id="directoryTimeoutText" layoutX="53.0" layoutY="60.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" text="Directory Timeout:"/>
+                                <Text fx:id="directoryTimeoutText" layoutX="30.0" layoutY="62.0" strokeType="OUTSIDE"
+                                      strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
                             </children>
                         </AnchorPane>
                     </content>
