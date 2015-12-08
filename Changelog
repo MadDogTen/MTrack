@@ -30,6 +30,7 @@ Fixed the search field text not being applied on list changes.
 ChangeList is now saved and reloaded next run.
 Show rechecking will now recheck older seasons on program start, every 5th recheck, and when doing a forceRun; and added option to hide related found changes from the changelog.
 Show rechecking will now recheck all nonIgnored shows on program start, every 10th recheck, and when doing a forceRun; and added option to hide related found changes from the changelog.
+Fixed rechecking not searching for ignored shows.
 
 Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).

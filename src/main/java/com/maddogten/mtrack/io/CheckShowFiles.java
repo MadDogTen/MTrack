@@ -240,6 +240,7 @@ public class CheckShowFiles {
     private Map<String, Show> hasShowsChanged(File folderLocation, Map<String, Show> showsFile, double percentIncrease, boolean forceRun) {
         Map<String, Show> newShows = new HashMap<>();
         Set<String> oldShows = showsFile.keySet();
+        ArrayList<String> ignoredShows = userInfoController.getIgnoredShows();
         FindShows findShows = new FindShows();
         ArrayList<String> showsToCheck = findShows.findShows(folderLocation);
         double percentagePer = percentIncrease / showsToCheck.size();
@@ -247,7 +248,7 @@ public class CheckShowFiles {
             if (forceRun || runNumber % Variables.recheckPreviouslyFoundEmptyShowsInterval == 0) {
                 emptyShows = new ArrayList<>();
             }
-            if (Main.programFullyRunning && !oldShows.contains(aShow) && !emptyShows.contains(aShow)) {
+            if (Main.programFullyRunning && !oldShows.contains(aShow) && !emptyShows.contains(aShow) || ignoredShows.contains(aShow) && !emptyShows.contains(aShow)) {
                 log.info("Currently checking if new & valid: " + aShow);
                 Map<Integer, Season> seasonEpisode = new HashMap<>(0);
                 findShows.findSeasons(folderLocation, aShow).forEach(aSeason -> {
