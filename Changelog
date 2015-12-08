@@ -26,6 +26,10 @@ If watching the last sequential episode, The "Next Episode" button is disabled.
 "Properly" checks if a directory is found, and active (Plugged in and accessible), and has a timeout period (20 Second by default, Configurable)
 Added fields in settings to directly change 'Update Time' (& removed the old button for it) & directory timeout time without opening another window.
 MessageBox now supports multiline messages.
+Fixed the search field text not being applied on list changes.
+ChangeList is now saved and reloaded next run.
+Show rechecking will now recheck older seasons on program start, every 5th recheck, and when doing a forceRun; and added option to hide related found changes from the changelog.
+Show rechecking will now recheck all nonIgnored shows on program start, every 10th recheck, and when doing a forceRun; and added option to hide related found changes from the changelog.
 
 Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).

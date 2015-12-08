@@ -92,6 +92,7 @@ public class Strings {
     public static String CurrentlyRechecking;
     public static String DeleteUsersNoteCantDeleteCurrentUser;
     public static String WarningUnrecoverable;
+    public static String InternalVersion;
 
     // Other Text
     public static String AddNewUsername;

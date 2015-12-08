@@ -199,7 +199,7 @@ public class DirectoryController {
                     } else fileName += '_' + singleSplit;
                 }
             }
-            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), Main.getProgramSettingsController().getProgramGeneratedID()), false);
+            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), Main.getProgramSettingsController().getSettingsFile().getProgramSettingsID()), false);
             answer[0] = true;
         } else if (directory.toString().isEmpty()) {
             answer[1] = true;
@@ -250,7 +250,7 @@ public class DirectoryController {
             }
         }
         log.warning("Warning- If this point is reached, please report.");
-        return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>(), Main.getProgramSettingsController().getProgramGeneratedID());
+        return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>(), Main.getProgramSettingsController().getSettingsFile().getProgramSettingsID());
     }
 
     public void saveDirectory(Directory directory, Boolean loadMap) {

@@ -17,8 +17,12 @@ public class SettingsWindow {
     private static final Logger log = Logger.getLogger(SettingsWindow.class.getName());
     private static Stage window;
 
-    public static Stage getStage() {
-        return window;
+    public static void closeSettings() {
+        if (window != null) {
+            log.fine("Setting was open, closing...");
+            window.close();
+            window = null;
+        }
     }
 
     public void display() throws Exception {

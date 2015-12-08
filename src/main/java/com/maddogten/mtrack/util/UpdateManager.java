@@ -74,7 +74,7 @@ public class UpdateManager {
                 int lowestSeason = showInfoController.findLowestSeason(aShow);
                 showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
             }
-            new FileManager().save(new UserSettings(Strings.UserName, showSettings, programSettingsController.getProgramGeneratedID()), Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, false);
+            new FileManager().save(new UserSettings(Strings.UserName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, false);
             log.info("User settings file was generated, skipping version check.");
             return;
         }
@@ -107,24 +107,24 @@ public class UpdateManager {
     }
 
     public void updateShowFile() {
-        if (Variables.ShowFileVersion == programSettingsController.getShowFileVersion()) {
+        if (Variables.ShowFileVersion == programSettingsController.getSettingsFile().getShowFileVersion()) {
             log.info("Show file versions matched.");
         } else {
-            log.info("Show file versions didn't match " + Variables.ShowFileVersion + " - " + programSettingsController.getShowFileVersion() + ", Updating...");
-            convertShowFile(programSettingsController.getShowFileVersion(), Variables.ShowFileVersion);
+            log.info("Show file versions didn't match " + Variables.ShowFileVersion + " - " + programSettingsController.getSettingsFile().getShowFileVersion() + ", Updating...");
+            convertShowFile(programSettingsController.getSettingsFile().getShowFileVersion(), Variables.ShowFileVersion);
         }
     }
 
     // This checks if the user has the latest show information, and if they don't, updates it to the latest.
     public void updateMainDirectoryVersion() {
-        int mainDirectoryVersion = programSettingsController.getMainDirectoryVersion();
-        if (mainDirectoryVersion == userInfoController.getUserDirectoryVersion()) {
+        int mainDirectoryVersion = programSettingsController.getSettingsFile().getMainDirectoryVersion();
+        if (mainDirectoryVersion == userInfoController.getUserSettings().getUserDirectoryVersion()) {
             log.info("User directory version matched, Now checking if number of directories match...");
-            if (directoryController.getDirectories().size() == programSettingsController.getNumberOfDirectories()) {
+            if (directoryController.getDirectories().size() == programSettingsController.getSettingsFile().getNumberOfDirectories()) {
                 log.info("Number of directories matched, Now checking if programID's match...");
                 boolean allMatched = true;
                 for (Directory directory : directoryController.getDirectories()) {
-                    if (directory.getLastProgramID() != programSettingsController.getProgramGeneratedID()) {
+                    if (directory.getLastProgramID() != programSettingsController.getSettingsFile().getProgramSettingsID()) {
                         log.info("programID's didn't match, updating...");
                         allMatched = false;
                         programSettingsController.setMainDirectoryVersion(mainDirectoryVersion + 1);
@@ -135,8 +135,8 @@ public class UpdateManager {
                 if (allMatched) log.info("programID's matched.");
                 else {
                     directoryController.getDirectories().forEach(aDirectory -> {
-                        if (aDirectory.getLastProgramID() != programSettingsController.getProgramGeneratedID()) {
-                            aDirectory.setLastProgramID(programSettingsController.getProgramGeneratedID());
+                        if (aDirectory.getLastProgramID() != programSettingsController.getSettingsFile().getProgramSettingsID()) {
+                            aDirectory.setLastProgramID(programSettingsController.getSettingsFile().getProgramSettingsID());
                             directoryController.saveDirectory(aDirectory, false);
                         }
                     });
@@ -223,6 +223,8 @@ public class UpdateManager {
                             -1,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("General").get(1)),
                             Strings.EmptyString,
+                            false,
+                            false,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)),
                             oldProgramSettingsFile.get("DefaultUser").get(1),
                             Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(0)),
@@ -247,10 +249,13 @@ public class UpdateManager {
             case 1009:
                 programSettings.setTimeToWaitForDirectory(Variables.defaultTimeToWaitForDirectory);
                 updatedText(fileType, 1009, 1010);
+            case 1010:
+                programSettings.setRecordChangesForNonActiveShows(false);
+                programSettings.setRecordChangedSeasonsLowerThanCurrent(false);
+                updatedText(fileType, 1010, 1011);
                 programSettingsController.setSettingsFile(programSettings);
                 updated = true;
         }
-        //switch (oldVersion) {}
         if (updated) {
             // Update Program Settings File Version
             programSettings.setProgramSettingsFileVersion(newVersion);
@@ -262,7 +267,7 @@ public class UpdateManager {
 
     @SuppressWarnings("SameParameterValue")
     private void convertUserSettingsFile(int oldVersion, int newVersion) {
-        UserSettings userSettings = userInfoController.getUserSettings();
+        UserSettings userSettings = null;
         boolean updated = false;
         String fileType = "User settings";
         if (oldVersion <= 1001) {
@@ -309,12 +314,23 @@ public class UpdateManager {
                 case 1001:
                     Map<String, UserShowSettings> showsConverted = new HashMap<>();
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
-                    userSettings = new UserSettings(Strings.UserName, showsConverted, programSettingsController.getProgramGeneratedID());
+                    userSettings = new UserSettings(Strings.UserName, showsConverted, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID());
                     updatedText(fileType, 1001, 1002);
-                    updated = true;
+                    oldVersion = 1002;
             }
         }
-        //switch (oldVersion) {}
+        if (userSettings == null) {
+            userInfoController.loadUserInfo();
+            userSettings = userInfoController.getUserSettings();
+        }
+        switch (oldVersion) {
+            case 1002:
+                if (userSettings.getChanges() == null) {
+                    userSettings.setChanges(new String[0]);
+                }
+                updatedText(fileType, 1002, 1003);
+                updated = true;
+        }
         if (updated) {
             // Update User Settings File Version
             userSettings.setUserSettingsFileVersion(newVersion);
@@ -370,7 +386,7 @@ public class UpdateManager {
                             } else fileName += '_' + singleSplit;
                         }
                     }
-                    directoryController.saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, Integer.parseInt(directory.split(">")[0]), -1, showsMap, programSettingsController.getProgramGeneratedID()), false);
+                    directoryController.saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, Integer.parseInt(directory.split(">")[0]), -1, showsMap, programSettingsController.getSettingsFile().getProgramSettingsID()), false);
                 });
                 updatedText(fileType, 1000, -2);
                 log.info("Shows file has been updated from version -2 -> 1000.");
@@ -378,7 +394,7 @@ public class UpdateManager {
         }
         if (updated) {
             // Update Program Settings File Version
-            programSettingsController.setShowFileVersion(newVersion);
+            programSettingsController.getSettingsFile().setShowFileVersion(newVersion);
             programSettingsController.saveSettingsFile();
             log.info("Show file was successfully updated to version " + newVersion + '.');
         } else log.info("Show file was not updated. This is an error, please report.");
@@ -414,7 +430,7 @@ public class UpdateManager {
         if (!changed[0]) {
             log.info("No changes found.");
         }
-        userInfoController.setUserDirectoryVersion(newVersion);
+        userInfoController.getUserSettings().setUserDirectoryVersion(newVersion);
     }
 
     private void updatedText(String fileType, int oldVersion, int newVersion) {

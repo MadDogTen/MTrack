@@ -28,7 +28,14 @@ public class ShowInfoController {
         if (directoryController.isReloadShowsFile()) {
             directoryController.setReloadShowsFile(false);
         }
-        if (directoryController.getDirectories().size() > 1) {
+        if (directoryController.getDirectories().isEmpty()) {
+            showsFile = new HashMap<>();
+            log.info("showsFile was loaded blank, No directories found.");
+        } else if (directoryController.getDirectories().size() == 1) {
+            //noinspection unchecked
+            showsFile = directoryController.getDirectories().get(0).getShows();
+            log.info("showsFile was loaded, Only one Directory.");
+        } else if (directoryController.getDirectories().size() > 1) {
             long timer = Clock.getTimeMilliSeconds();
             showsFile = new HashMap<>();
             ArrayList<Directory> showsFileArray = directoryController.getDirectories(-2);
@@ -46,10 +53,6 @@ public class ShowInfoController {
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
             });
             log.info("showsFile was loaded, It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
-        } else {
-            //noinspection unchecked
-            showsFile = directoryController.getDirectories().get(0).getShows();
-            log.info("showsFile was loaded, Only one Directory.");
         }
     }
 

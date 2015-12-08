@@ -2,11 +2,13 @@ package com.maddogten.mtrack.FXMLControllers;
 
 import com.maddogten.mtrack.io.MoveWindow;
 import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -41,6 +43,9 @@ public class About implements Initializable {
         programName.setAlignment(Pos.CENTER);
         versionNumber.setText(Strings.MTrackVersion);
         versionNumber.setAlignment(Pos.CENTER);
+        if (Variables.showInternalVersion) {
+            versionNumber.setTooltip(new Tooltip(Strings.InternalVersion + String.valueOf(Variables.InternalVersion)));
+        }
         codedBy.setText(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);
         codedUsing.setText(Strings.CodedUsing);

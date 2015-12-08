@@ -89,7 +89,7 @@ public class TextBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public File addDirectoriesDisplay(String message, ArrayList<Directory> currentDirectories, String messageIfFieldIsBlank, String messageIfNotDirectory, Window oldWindow) {
+    public File addDirectoriesDisplay(ArrayList<Directory> currentDirectories, Window oldWindow) {
         log.finest("TextBox addDirectoriesDisplay has been opened.");
         Stage window = new Stage();
         ImageLoader.setIcon(window);
@@ -99,8 +99,7 @@ public class TextBox {
         window.initModality(Modality.APPLICATION_MODAL);
         window.setMinWidth(250);
 
-        Label label = new Label();
-        label.setText(message);
+        Label label = new Label(Strings.PleaseEnterShowsDirectory);
 
         TextField textField = new TextField();
         textField.setPromptText(Strings.FileSeparator + Strings.PathToDirectory + Strings.FileSeparator + Strings.Shows);
@@ -110,7 +109,7 @@ public class TextBox {
 
         Button submit = new Button(Strings.Submit);
         submit.setOnAction(e -> {
-            if (isDirectoryValid(directoryPaths, messageIfFieldIsBlank, messageIfNotDirectory, textField.getText(), window)) {
+            if (isDirectoryValid(directoryPaths, textField.getText(), window)) {
                 directories[0] = new File(textField.getText());
                 window.close();
             } else textField.clear();
@@ -146,18 +145,18 @@ public class TextBox {
         return directories[0];
     }
 
-    private boolean isDirectoryValid(ArrayList<String> currentDirectories, String messageIfBlank, String messageIfNotDirectory, String message, Window oldWindow) {
+    private boolean isDirectoryValid(ArrayList<String> currentDirectories, String directory, Window oldWindow) {
         log.finest("isDirectoryValid has been called.");
-        if (currentDirectories.contains(message)) {
+        if (currentDirectories.contains(directory)) {
             new MessageBox().display(new String[]{Strings.DirectoryIsAlreadyAdded}, oldWindow);
             return false;
-        } else if (new FileManager().checkFolderExistsAndReadable(new File(message))) {
+        } else if (new FileManager().checkFolderExistsAndReadable(new File(directory))) {
             return true;
-        } else if (message.isEmpty()) {
-            new MessageBox().display(new String[]{messageIfBlank}, oldWindow);
+        } else if (directory.isEmpty()) {
+            new MessageBox().display(new String[]{Strings.YouNeedToEnterADirectory}, oldWindow);
             return false;
         } else {
-            new MessageBox().display(new String[]{messageIfNotDirectory}, oldWindow);
+            new MessageBox().display(new String[]{Strings.DirectoryIsInvalid}, oldWindow);
             return false;
         }
     }

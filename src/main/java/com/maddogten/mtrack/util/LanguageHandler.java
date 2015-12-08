@@ -171,6 +171,7 @@ public class LanguageHandler {
         if (Strings.WasFoundToBeInactive == null) Strings.WasFoundToBeInactive = Strings.TextMissing;
         if (Strings.PleaseCorrectTheIssueThenForceRefresh == null)
             Strings.PleaseCorrectTheIssueThenForceRefresh = Strings.TextMissing;
+        if (Strings.InternalVersion == null) Strings.InternalVersion = Strings.TextMissing;
         log.info("Finished checking for missing Strings.");
     }
 }

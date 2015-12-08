@@ -88,6 +88,7 @@ public class template extends Language {
         Strings.CurrentlyRechecking = "";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "";
         Strings.WarningUnrecoverable = "";
+        Strings.InternalVersion = "";
 
         // Other Text
         Strings.AddNewUsername = "";

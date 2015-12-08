@@ -89,6 +89,7 @@ public class lipsum extends Language {
         Strings.CurrentlyRechecking = "nisi";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "Nulla";
         Strings.WarningUnrecoverable = "vitae";
+        Strings.InternalVersion = "gataluma";
 
         // Other Text
         Strings.AddNewUsername = "porta";

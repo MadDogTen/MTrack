@@ -2,10 +2,7 @@ package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.SettingsWindow;
-import com.maddogten.mtrack.information.DirectoryController;
-import com.maddogten.mtrack.information.ProgramSettingsController;
-import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.util.Clock;
 import com.maddogten.mtrack.util.ImageLoader;
@@ -54,7 +51,8 @@ public class Main extends Application implements Runnable {
                 programSettingsController.getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
                 programSettingsController.getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
                 programSettingsController.getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
-                programSettingsController.setNumberOfDirectories(directoryController.getDirectories().size());
+                programSettingsController.getSettingsFile().setNumberOfDirectories(directoryController.getDirectories().size());
+                userInfoController.getUserSettings().setChanges(ChangeReporter.getChanges());
                 programSettingsController.saveSettingsFile();
                 userInfoController.saveUserSettingsFile();
             }
@@ -65,13 +63,9 @@ public class Main extends Application implements Runnable {
                 log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             } else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
-            if (programFullyRunning && Controller.isChangeBoxStageOpen())
-                Controller.closeChangeBoxStage();
-            if (SettingsWindow.getStage() != null)
-                SettingsWindow.getStage().close();
-            if (stage != null) {
-                stage.close();
-            }
+            Controller.closeChangeBoxStage();
+            SettingsWindow.closeSettings();
+            if (stage != null) stage.close();
             if (thread != null) {
                 try {
                     thread.join();

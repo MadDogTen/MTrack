@@ -1,10 +1,7 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ListSelectBox;
-import com.maddogten.mtrack.information.DirectoryController;
-import com.maddogten.mtrack.information.ProgramSettingsController;
-import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.*;
@@ -140,8 +137,11 @@ public class MainRun {
         }
         log.info("Username is set: " + Strings.UserName);
         updateManager.updateMainDirectoryVersion();
-        Variables.setUpdateSpeed(programSettingsController.getUpdateSpeed());
-        Variables.setTimeToWaitForDirectory(programSettingsController.getTimeToWaitForDirectory());
+        Variables.updateSpeed = programSettingsController.getSettingsFile().getUpdateSpeed();
+        Variables.timeToWaitForDirectory = programSettingsController.getSettingsFile().getTimeToWaitForDirectory();
+        Variables.recordChangesForNonActiveShows = programSettingsController.getSettingsFile().isRecordChangesForNonActiveShows();
+        Variables.recordChangedSeasonsLowerThanCurrent = programSettingsController.getSettingsFile().isRecordChangedSeasonsLowerThanCurrent();
+        ChangeReporter.setChanges(userInfoController.getUserSettings().getChanges());
 
         return continueStarting;
     }
@@ -165,7 +165,7 @@ public class MainRun {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
-                    checkShowFiles.recheckShowFile(false);
+                    checkShowFiles.recheckShowFile(forceRun);
                     return null;
                 }
             };
@@ -185,9 +185,9 @@ public class MainRun {
     private String getUser() {
         log.info("getUser Running...");
         ArrayList<String> Users = userInfoController.getAllUsers();
-        if (programSettingsController.isDefaultUsername()) {
+        if (programSettingsController.getSettingsFile().isUseDefaultUser()) {
             log.info("Using default user.");
-            return programSettingsController.getDefaultUsername();
+            return programSettingsController.getSettingsFile().getDefaultUser();
         } else {
             String result = new ListSelectBox().display(Strings.ChooseYourUsername, Users, null);
             if (result.matches(Strings.AddNewUsername)) {
@@ -203,7 +203,7 @@ public class MainRun {
         Map<String, String> languages = languageHandler.getLanguageNames();
         String language = null;
         if (!firstRun) {
-            language = programSettingsController.getLanguage();
+            language = programSettingsController.getSettingsFile().getLanguage();
         }
         if (languages.size() == 1) {
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));

@@ -87,6 +87,7 @@ public class en_US extends Language {
         Strings.CurrentlyRechecking = "Currently Rechecking...";
         Strings.DeleteUsersNoteCantDeleteCurrentUser = "Delete Users. Note: Can't delete current user!";
         Strings.WarningUnrecoverable = "Warning, Unrecoverable!";
+        Strings.InternalVersion = "Internal Version: ";
 
         // Other Text
         Strings.AddNewUsername = "Add New Username";

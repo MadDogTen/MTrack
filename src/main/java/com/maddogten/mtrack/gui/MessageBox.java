@@ -28,7 +28,6 @@ public class MessageBox {
         window.initModality(Modality.APPLICATION_MODAL);
 
         VBox layout = new VBox();
-
         if (message.length == 1) {
             layout.getChildren().add(new Label(message[0]));
         } else if (message.length > 1) {
@@ -41,7 +40,6 @@ public class MessageBox {
         Button close = new Button(Strings.Close);
         close.setMinHeight(20);
         close.setMinWidth(30);
-
         close.setOnAction(e -> window.close());
 
         layout.getChildren().add(close);
@@ -58,6 +56,6 @@ public class MessageBox {
             }
             new MoveWindow().moveWindow(window, oldWindow);
         });
-        window.showAndWait();
+        window.show();
     }
 }

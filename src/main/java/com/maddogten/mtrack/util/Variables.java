@@ -22,35 +22,38 @@ public class Variables {
     public static final String SettingsExtension = ".settings";
     public static final String DefaultLanguage = "en_US";
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // TODO Set back to 1 for full release. \\
-    public static final int ProgramSettingsFileVersion = 1010; // Was Changed //TODO Remove all "Was Changed" before merging with master.
-    public static final int UserSettingsFileVersion = 1002; // Was Changed
+    public static final int ProgramSettingsFileVersion = 1011; // Was Changed // TODO Remove all "Was Changed" before merging with master.
+    public static final int UserSettingsFileVersion = 1003; // Was Changed
     public static final int ShowFileVersion = 1000; // Was Changed
 
-    /**/public static final boolean showOptionToToggleDevMode = false; // false
+    public static final int InternalVersion = 3; // To help keep track of what I'm currently working on / testing.
+
+    /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
+    public static final boolean showInternalVersion = true; // Set to false or remove before full release
     public static final int defaultUpdateSpeed = 120;
     public static final int defaultTimeToWaitForDirectory = 20;
     public static final int maxWaitTimeSeconds = 172800; // 2 Days will be the max wait time - Might be changed
     public static final String Logo = "/image/MTrackLogo.png";
+    //---------- Variables to be polished / finished ----------\\
+    public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
+    public static final int checkSeasonsLowerThanCurrentInterval = 5;
+    public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
     /**/public static boolean devMode = false; // false
+    public static boolean keepTextFieldText = true; // TODO Implement Option to have the text field clear itself on list change
     public static int updateSpeed;
+
+    //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static String language;
     public static int timeToWaitForDirectory;
-
-    //---------- Other Variables ----------\\
-
-    public static void setUpdateSpeed(int updateSpeed) {
-        Variables.updateSpeed = updateSpeed;
-    }
-
-    public static void setTimeToWaitForDirectory(int timeToWaitForDirectory) {
-        Variables.timeToWaitForDirectory = timeToWaitForDirectory;
-    }
+    public static boolean recordChangesForNonActiveShows; // TODO Make setting accessible to user.
+    public static boolean recordChangedSeasonsLowerThanCurrent; // TODO Make setting accessible to user.
 
     public static void setDataFolder(File file) {
         dataFolder = file;
     }
+
 
     //---------- Temp Variables ----------\\
 }

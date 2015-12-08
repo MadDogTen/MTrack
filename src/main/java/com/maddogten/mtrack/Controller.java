@@ -140,10 +140,11 @@ public class Controller implements Initializable {
         }
         if (!remove) {
             int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), season = userInfoController.getCurrentSeason(aShow), episode = userInfoController.getCurrentEpisode(aShow);
+            DisplayShows show = new DisplayShows(aShow, remaining, season, episode);
             if ((show0Remaining || remaining != 0) && index != -2) {
-                tableViewFields.add(index, new DisplayShows(aShow, remaining, season, episode));
+                tableViewFields.add(index, show);
             } else if (index == -2 && show0Remaining || index == -2 && remaining != 0) {
-                tableViewFields.add(new DisplayShows(aShow, remaining, season, episode));
+                tableViewFields.add(show);
             }
         }
     }
@@ -209,26 +210,22 @@ public class Controller implements Initializable {
         return controller.episode.isVisible();
     }
 
-    public static boolean isChangeBoxStageOpen() {
-        return controller.changesBox != null && controller.changesBox.getStage() != null;
-    }
-
     public static void closeChangeBoxStage() {
-        controller.changesBox.getStage().close();
+        if (controller.changesBox != null && controller.changesBox.getStage() != null) {
+            log.fine("ChangeBox was open, closing...");
+            controller.changesBox.getStage().close();
+        }
     }
 
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
+        // Gives the option to clear the text field when you switch lists, or keep it and apply the filter to the new list. // TODO - Do I want to keep this option?
+        if (Variables.keepTextFieldText) {
+            newFilteredData.setPredicate(show -> textField.getText() == null || textField.getText().isEmpty() || show.getShow().toLowerCase().contains(textField.getText().toLowerCase()));
+        } else textField.clear();
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            newFilteredData.setPredicate(show -> {
-                        if (newValue == null || newValue.isEmpty()) {
-                            return true;
-                        }
-                        String lowerCaseFilter = newValue.toLowerCase();
-                        return show.getShow().toLowerCase().contains(lowerCaseFilter);
-                    }
-            );
+            newFilteredData.setPredicate(show -> newValue == null || newValue.isEmpty() || show.getShow().toLowerCase().contains(newValue.toLowerCase()));
         });
         SortedList<DisplayShows> newSortedData = new SortedList<>(newFilteredData);
         newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
@@ -255,7 +252,7 @@ public class Controller implements Initializable {
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
         showsTab.setText(Strings.Shows);
         settingsTab.setText(Strings.Settings);
-        show0Remaining = programSettingsController.getShow0Remaining();
+        show0Remaining = programSettingsController.getSettingsFile().isShow0Remaining();
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         shows.setSortType(TableColumn.SortType.ASCENDING);
         shows.setText(Strings.Shows);
@@ -446,11 +443,6 @@ public class Controller implements Initializable {
                                     } else break;
                                 }
                             }
-                            if (keepPlaying) {
-                                log.info("No further files!");
-                                MessageBox messageBox = new MessageBox();
-                                messageBox.display(new String[]{Strings.YouHaveReachedTheEnd}, pane.getScene().getWindow());
-                            }
                             isShowCurrentlyPlaying = false;
                         }
                     });
@@ -482,7 +474,7 @@ public class Controller implements Initializable {
                 setTableViewFields("active");
                 log.info("TableViewFields set to active.");
             }
-            setTableView();
+            this.setTableView();
         });
         changeTableView.setText(Strings.SwitchBetweenActiveInactiveList);
 
@@ -506,7 +498,7 @@ public class Controller implements Initializable {
         }
         show0RemainingCheckBox.setOnAction(e -> {
             show0Remaining = show0RemainingCheckBox.isSelected();
-            programSettingsController.setShow0Remaining(show0Remaining);
+            programSettingsController.getSettingsFile().setShow0Remaining(show0Remaining);
             if (show0Remaining && currentList.matches("active")) {
                 log.info("Now showing shows with 0 episodes remaining.");
             } else if (currentList.matches("active")) {
@@ -591,7 +583,7 @@ public class Controller implements Initializable {
             Object[] answer = {false, pane.getScene().getWindow()};
             do {
                 answer = changesBox.openChanges((Stage) answer[1]);
-                keepOpen = (boolean) answer[0];
+                keepOpen = Main.programRunning && (boolean) answer[0];
             } while (keepOpen);
             changesBox = null;
         } else {

@@ -21,14 +21,18 @@ public class UserSettings implements Serializable {
     @SuppressWarnings("CanBeFinal")
     private Map<String, UserShowSettings> showSettings;
 
+    // Changes List
+    private String[] changes;
+
     @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
     private long lastProgramID;
 
-    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, long lastProgramID) {
+    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, String[] changes, long lastProgramID) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
         this.showSettings = showSettings;
+        this.changes = changes;
         this.lastProgramID = lastProgramID;
     }
 
@@ -64,5 +68,13 @@ public class UserSettings implements Serializable {
 
     public UserShowSettings getAShowSettings(String aShow) {
         return showSettings.get(aShow);
+    }
+
+    public String[] getChanges() {
+        return changes;
+    }
+
+    public void setChanges(String[] changes) {
+        this.changes = changes;
     }
 }

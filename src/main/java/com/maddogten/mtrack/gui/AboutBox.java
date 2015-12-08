@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 public class AboutBox {
     private static final Logger log = Logger.getLogger(AboutBox.class.getName());
+
     public void display(Window oldWindow) throws Exception {
         log.finest("AboutBox has been opened.");
         Stage window = new Stage();

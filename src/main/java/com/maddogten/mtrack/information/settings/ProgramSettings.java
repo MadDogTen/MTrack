@@ -23,6 +23,10 @@ public class ProgramSettings implements Serializable {
     private boolean show0Remaining;
     private String language;
 
+    // ChangeList Settings
+    private boolean recordChangesForNonActiveShows;
+    private boolean recordChangedSeasonsLowerThanCurrent;
+
     // Default User
     private boolean useDefaultUser;
     private String defaultUser;
@@ -52,6 +56,8 @@ public class ProgramSettings implements Serializable {
         this.timeToWaitForDirectory = Variables.defaultTimeToWaitForDirectory;
         this.show0Remaining = false;
         this.language = "None";
+        this.recordChangesForNonActiveShows = false;
+        this.recordChangedSeasonsLowerThanCurrent = false;
         this.useDefaultUser = false;
         this.defaultUser = Strings.EmptyString;
         this.showColumnWidth = Variables.SHOWS_COLUMN_WIDTH;
@@ -66,7 +72,7 @@ public class ProgramSettings implements Serializable {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, int timeToWaitForDirectory, boolean show0Remaining, String language, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
+    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, int timeToWaitForDirectory, boolean show0Remaining, String language, boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
         this.programGeneratedID = new Random().nextLong();
         this.programSettingsFileVersion = programSettingsFileVersion;
         this.mainDirectoryVersion = mainDirectoryVersion;
@@ -75,6 +81,8 @@ public class ProgramSettings implements Serializable {
         this.timeToWaitForDirectory = timeToWaitForDirectory;
         this.show0Remaining = show0Remaining;
         this.language = language;
+        this.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
+        this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
         this.useDefaultUser = useDefaultUser;
         this.defaultUser = defaultUser;
         this.showColumnWidth = showColumnWidth;
@@ -149,6 +157,22 @@ public class ProgramSettings implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public boolean isRecordChangesForNonActiveShows() {
+        return recordChangesForNonActiveShows;
+    }
+
+    public void setRecordChangesForNonActiveShows(boolean recordChangesForNonActiveShows) {
+        this.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
+    }
+
+    public boolean isRecordChangedSeasonsLowerThanCurrent() {
+        return recordChangedSeasonsLowerThanCurrent;
+    }
+
+    public void setRecordChangedSeasonsLowerThanCurrent(boolean recordChangedSeasonsLowerThanCurrent) {
+        this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
     }
 
     public boolean isUseDefaultUser() {

@@ -120,8 +120,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
-                    MessageBox messageBox = new MessageBox();
-                    messageBox.display(new String[]{Strings.DefaultUserNotSet}, window);
+                    new MessageBox().display(new String[]{Strings.DefaultUserNotSet}, window);
                     window.close();
                 } else {
                     userName[0] = comboBox.getValue();
@@ -179,8 +178,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty()) {
-                    MessageBox messageBox = new MessageBox();
-                    messageBox.display(new String[]{Strings.PleaseChooseAFolder}, window);
+                    new MessageBox().display(new String[]{Strings.PleaseChooseAFolder}, window);
                 } else {
                     file[0] = comboBox.getValue();
                     window.close();

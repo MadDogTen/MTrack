@@ -105,7 +105,7 @@ public class Settings implements Initializable {
     @FXML
     private Button changeLanguage;
     @FXML
-    private Button toggleDevMode;
+    private ToggleButton toggleDevMode;
     @FXML
     private Text updateText;
     @FXML
@@ -161,9 +161,8 @@ public class Settings implements Initializable {
         });
         about.setText(Strings.About);
         about.setOnAction(e -> {
-            AboutBox aboutBox = new AboutBox();
             try {
-                aboutBox.display(tabPane.getScene().getWindow());
+                new AboutBox().display(tabPane.getScene().getWindow());
             } catch (Exception e1) {
                 log.info(Arrays.toString(e1.getStackTrace()));
             }
@@ -179,7 +178,7 @@ public class Settings implements Initializable {
         setDefaultUsername.setOnAction(e -> {
             ListSelectBox listSelectBox = new ListSelectBox();
             ArrayList<String> Users = userInfoController.getAllUsers();
-            String defaultUsername = listSelectBox.defaultUser(Strings.PleaseChooseADefaultUser, Users, programSettingsController.getDefaultUsername(), tabPane.getScene().getWindow());
+            String defaultUsername = listSelectBox.defaultUser(Strings.PleaseChooseADefaultUser, Users, programSettingsController.getSettingsFile().getDefaultUser(), tabPane.getScene().getWindow());
             if (defaultUsername != null && !defaultUsername.isEmpty()) {
                 programSettingsController.setDefaultUsername(defaultUsername, true);
             }
@@ -195,18 +194,17 @@ public class Settings implements Initializable {
                 int lowestSeason = showInfoController.findLowestSeason(aShow);
                 showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
             }
-            new FileManager().save(new UserSettings(userName, showSettings, programSettingsController.getProgramGeneratedID()), Variables.UsersFolder, userName, Variables.UsersExtension, false);
+            new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UsersExtension, false);
         });
         deleteUser.setText(Strings.DeleteUser);
         deleteUser.setOnAction(e -> {
             ArrayList<String> users = userInfoController.getAllUsers();
             users.remove(Strings.UserName);
             if (users.isEmpty()) {
-                MessageBox messageBox = new MessageBox();
-                messageBox.display(new String[]{Strings.ThereAreNoOtherUsersToDelete}, tabPane.getScene().getWindow());
+                new MessageBox().display(new String[]{Strings.ThereAreNoOtherUsersToDelete}, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
-                String userToDelete = listSelectBox.defaultUser(Strings.UserToDelete, users, programSettingsController.getDefaultUsername(), tabPane.getScene().getWindow());
+                String userToDelete = listSelectBox.defaultUser(Strings.UserToDelete, users, programSettingsController.getSettingsFile().getDefaultUser(), tabPane.getScene().getWindow());
                 if (userToDelete != null) {
                     ConfirmBox confirmBox = new ConfirmBox();
                     boolean confirm = confirmBox.display((Strings.AreYouSureToWantToDelete + userToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
@@ -221,10 +219,10 @@ public class Settings implements Initializable {
         addDirectory.setText(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
             int index = directoryController.getLowestFreeDirectoryIndex();
-            boolean[] wasAdded = directoryController.addDirectory(index, new TextBox().addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, tabPane.getScene().getWindow()));
+            boolean[] wasAdded = directoryController.addDirectory(index, new TextBox().addDirectoriesDisplay(directoryController.getDirectories(), tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
-                FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile());
+                FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile(), userInfoController);
                 Task<Void> task = new Task<Void>() {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
@@ -247,7 +245,7 @@ public class Settings implements Initializable {
                     userInfoController.addNewShow(aShow);
                     Controller.updateShowField(aShow, true);
                 });
-                programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
+                programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
             } else log.info("Directory wasn't added.");
         });
         removeDirectory.setText(Strings.RemoveDirectory);
@@ -257,8 +255,7 @@ public class Settings implements Initializable {
             directoryController.getDirectories().forEach(aDirectory -> directories.add(aDirectory.getDirectory()));
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
-                MessageBox messageBox = new MessageBox();
-                messageBox.display(new String[]{Strings.ThereAreNoDirectoriesToDelete}, tabPane.getScene().getWindow());
+                new MessageBox().display(new String[]{Strings.ThereAreNoDirectoriesToDelete}, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 File directoryToDelete = listSelectBox.directories(Strings.DirectoryToDelete, directories, tabPane.getScene().getWindow());
@@ -282,7 +279,7 @@ public class Settings implements Initializable {
                                     Controller.updateShowField(aShow, showExistsElsewhere);
                                 });
                                 directoryController.removeDirectory(directory);
-                                programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
+                                programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
                                 break;
                             }
                         }
@@ -308,8 +305,8 @@ public class Settings implements Initializable {
         changeLanguage.setOnAction(e -> {
             LanguageHandler languageHandler = new LanguageHandler();
             Map<String, String> languages = languageHandler.getLanguageNames();
-            if (languages.containsKey(programSettingsController.getLanguage())) {
-                languages.remove(programSettingsController.getLanguage());
+            if (languages.containsKey(programSettingsController.getSettingsFile().getLanguage())) {
+                languages.remove(programSettingsController.getSettingsFile().getLanguage());
             }
             String languageReadable = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages.values(), tabPane.getScene().getWindow());
             if (!languageReadable.contains("-2")) {
@@ -320,11 +317,14 @@ public class Settings implements Initializable {
                         break;
                     }
                 }
-                programSettingsController.setLanguage(internalName);
+                programSettingsController.getSettingsFile().setLanguage(internalName);
                 new MessageBox().display(new String[]{Strings.RestartTheProgramForTheNewLanguageToTakeEffect}, tabPane.getScene().getWindow());
             }
         });
         if (Variables.showOptionToToggleDevMode) {
+            if (Variables.devMode) {
+                toggleDevMode.setSelected(true);
+            }
             toggleDevMode.setText(Strings.ToggleDevMode);
             toggleDevMode.setOnAction(e -> Variables.devMode = !Variables.devMode);
         } else toggleDevMode.setDisable(true);
@@ -422,20 +422,19 @@ public class Settings implements Initializable {
         });
         // Dev 2
         printProgramSettingsFileVersion.setText(Strings.PrintPSFV);
-        printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(programSettingsController.getProgramSettingsFileVersion())));
+        printProgramSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(programSettingsController.getSettingsFile().getProgramSettingsFileVersion())));
         printUserSettingsFileVersion.setText(Strings.PrintUSFV);
-        printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(userInfoController.getUserSettingsVersion())));
+        printUserSettingsFileVersion.setOnAction(e -> log.info(String.valueOf(userInfoController.getUserSettings().getUserSettingsFileVersion())));
         printAllUserInfo.setText(Strings.PrintAllUserInfo);
         printAllUserInfo.setOnAction(e -> userInfoController.printAllUserInfo());
         add1ToDirectoryVersion.setText(Strings.DirectoryVersionPlus1);
-        add1ToDirectoryVersion.setOnAction(e -> programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1));
+        add1ToDirectoryVersion.setOnAction(e -> programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1));
         clearFile.setText(Strings.ClearFile);
         clearFile.setOnAction(e -> {
             ArrayList<File> directories = new ArrayList<>();
             directoryController.getDirectories().forEach(aDirectory -> directories.add(aDirectory.getDirectory()));
             if (directories.isEmpty()) {
-                MessageBox messageBox = new MessageBox();
-                messageBox.display(new String[]{Strings.ThereAreNoDirectoriesToClear}, tabPane.getScene().getWindow());
+                new MessageBox().display(new String[]{Strings.ThereAreNoDirectoriesToClear}, tabPane.getScene().getWindow());
             } else {
                 ListSelectBox listSelectBox = new ListSelectBox();
                 String directoryToClear = String.valueOf(listSelectBox.directories(Strings.DirectoryToClear, directories, tabPane.getScene().getWindow()));
@@ -453,7 +452,7 @@ public class Settings implements Initializable {
                                 });
                                 aDirectory.setShows(new HashMap<>());
                                 directoryController.saveDirectory(aDirectory, true);
-                                programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
+                                programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
                                 break;
                             }
                         }

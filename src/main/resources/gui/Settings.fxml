@@ -57,14 +57,15 @@
                                         text="Remove Directory"/>
                                 <Button fx:id="changeLanguage" layoutX="51.0" layoutY="108.0" mnemonicParsing="false"
                                         text="Change Language"/>
-                                <Button fx:id="toggleDevMode" layoutX="66.0" layoutY="145.0" mnemonicParsing="false"
-                                        prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
                                 <Button fx:id="setDirectoryTimeout" layoutX="108.0" layoutY="68.0"
                                         mnemonicParsing="false" text="Set"/>
                                 <TextField fx:id="directoryTimeoutTextField" layoutX="65.0" layoutY="68.0"
                                            prefHeight="25.0" prefWidth="36.0"/>
                                 <Text fx:id="directoryTimeoutText" layoutX="30.0" layoutY="62.0" strokeType="OUTSIDE"
                                       strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
+                                <ToggleButton fx:id="toggleDevMode" layoutX="66.0" layoutY="145.0"
+                                              mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0"
+                                              text="Toggle Dev"/>
                             </children>
                         </AnchorPane>
                     </content>

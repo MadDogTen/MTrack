@@ -63,7 +63,7 @@ public class FirstRun {
             fileManager.createFolder(Strings.EmptyString);
             generateProgramSettingsFile();
             programSettingsController.loadProgramSettingsFile();
-            programSettingsController.setLanguage(Variables.language);
+            programSettingsController.getSettingsFile().setLanguage(Variables.language);
             addDirectories();
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
@@ -116,7 +116,7 @@ public class FirstRun {
             int lowestSeason = showInfoController.findLowestSeason(aShow);
             showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
         }
-        new FileManager().save(new UserSettings(userName, showSettings, programSettingsController.getProgramGeneratedID()), Variables.UsersFolder, userName, Variables.UsersExtension, false);
+        new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UsersExtension, false);
     }
 
     // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
@@ -126,11 +126,10 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectoriesDisplay(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(), Strings.YouNeedToEnterADirectory, Strings.DirectoryIsInvalid, null));
+            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectoriesDisplay(directoryController.getDirectories(), null));
             index++;
             if (!matched[0] && !matched[1]) {
-                MessageBox messageBox = new MessageBox();
-                messageBox.display(new String[]{Strings.DirectoryWasADuplicate}, null);
+                new MessageBox().display(new String[]{Strings.DirectoryWasADuplicate}, null);
             } else if (matched[1]) {
                 break;
             }
@@ -185,7 +184,7 @@ public class FirstRun {
             });
             directory.setShows(shows);
             directoryController.saveDirectory(directory, false);
-            programSettingsController.setMainDirectoryVersion(programSettingsController.getMainDirectoryVersion() + 1);
+            programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
         }
     }
 }

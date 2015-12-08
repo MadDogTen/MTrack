@@ -83,7 +83,7 @@ public class UserInfoController {
         return inActiveShows;
     }
 
-    // Returns all the shows the program currently has being tracked. //TODO Make it occasionally search for this list so the Inactive list is semi up-to-date.
+    // Returns all the shows the program currently has being tracked.
     public ArrayList<String> getAllNonIgnoredShows() {
         ArrayList<String> nonIgnoredShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
@@ -108,19 +108,6 @@ public class UserInfoController {
             }
         });
         return hiddenShows;
-    }
-
-    // Version's are used in the UpdateManager.
-    public int getUserSettingsVersion() {
-        return userSettings.getUserSettingsFileVersion();
-    }
-
-    public int getUserDirectoryVersion() {
-        return userSettings.getUserDirectoryVersion();
-    }
-
-    public void setUserDirectoryVersion(int version) {
-        userSettings.setUserDirectoryVersion(version);
     }
 
     // Attempts to play the file using the default program for the extension.
