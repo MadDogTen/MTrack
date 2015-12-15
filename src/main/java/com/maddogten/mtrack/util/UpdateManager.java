@@ -176,17 +176,14 @@ public class UpdateManager {
                     oldProgramSettingsFile.get("General").remove(1);
                     updatedText(fileType, 1001, 1002);
                 case 1002:
-                    log.info("Converting directories...");
                     if (oldProgramSettingsFile.containsKey("Directories")) {
                         ArrayList<String> directories = new ArrayList<>();
                         oldProgramSettingsFile.get("Directories").forEach(aDirectory -> {
                             int index = oldProgramSettingsFile.get("Directories").indexOf(aDirectory);
                             directories.add(index + ">" + aDirectory);
-                            log.info("Converted " + aDirectory + " to " + index + '>' + aDirectory);
                         });
                         oldProgramSettingsFile.replace("Directories", directories);
-                    } else log.info("Program settings file contains no directories, Nothing was converted.");
-                    log.info("Finished converting directories");
+                    }
                     updatedText(fileType, 1002, 1003);
                 case 1003:
                     oldProgramSettingsFile.get("ProgramVersions").add(1, "1");
@@ -341,7 +338,7 @@ public class UpdateManager {
 
     private void convertShowFile(int oldVersion, @SuppressWarnings("SameParameterValue") int newVersion) {
         boolean updated = false;
-        String fileType = "Shows file";
+        String fileType = "ShowsFile";
         switch (oldVersion) {
             case -2:
                 //noinspection unchecked

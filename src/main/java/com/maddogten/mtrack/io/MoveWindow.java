@@ -11,7 +11,7 @@ public class MoveWindow {
     private static final Logger log = Logger.getLogger(MoveWindow.class.getName());
 
     public void moveWindow(Window window, Window parent) {
-        log.finest("MessageBox is now running.");
+        log.finest("moveWindow is now running.");
         final double[] xOffset = new double[1], yOffset = new double[1];
         window.getScene().setOnMousePressed(e -> {
             if (e.isPrimaryButtonDown()) {
@@ -32,7 +32,7 @@ public class MoveWindow {
     }
 
     public void moveWindow(TabPane tabPane, Stage parent) {
-        log.finest("MessageBox TabPane is now running.");
+        log.finest("moveWindow TabPane is now running.");
         final double[] xOffset = new double[1], yOffset = new double[1];
         tabPane.setOnMousePressed(e -> {
             if (e.isPrimaryButtonDown()) {
@@ -53,7 +53,7 @@ public class MoveWindow {
     }
 
     public void moveWindow(Pane pane) {
-        log.finest("MessageBox Pane is now running.");
+        log.finest("moveWindow Pane is now running.");
         final double[] xOffset = new double[1], yOffset = new double[1];
         pane.setOnMousePressed(e -> {
             if (e.isPrimaryButtonDown()) {

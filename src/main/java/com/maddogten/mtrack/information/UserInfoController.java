@@ -213,10 +213,9 @@ public class UserInfoController {
         int[] seasonEpisodeReturn = new int[2];
         int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason();
         seasonEpisodeReturn[0] = currentSeason;
-        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, currentSeason);
         int episode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
         episode -= 1;
-        for (int aEpisode : episodes) {
+        for (int aEpisode : showInfoController.getEpisodesList(aShow, currentSeason)) {
             seasonEpisodeReturn[1] = aEpisode;
             if (aEpisode == episode) {
                 return seasonEpisodeReturn;

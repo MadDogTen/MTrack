@@ -35,7 +35,6 @@ public class Variables {
     public static final int defaultTimeToWaitForDirectory = 20;
     public static final int maxWaitTimeSeconds = 172800; // 2 Days will be the max wait time - Might be changed
     public static final String Logo = "/image/MTrackLogo.png";
-    //---------- Variables to be polished / finished ----------\\
     public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
     public static final int checkSeasonsLowerThanCurrentInterval = 5;
     public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;

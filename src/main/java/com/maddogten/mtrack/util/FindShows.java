@@ -27,9 +27,8 @@ public class FindShows {
 
     public final ArrayList<Integer> findSeasons(File dir, String show) {
         log.finest("Searching for seasons...");
-        File folder = new File(dir + Strings.FileSeparator + show);
         ArrayList<String> showFolder = new ArrayList<>();
-        Collections.addAll(showFolder, folder.list((dir1, name) -> new File(dir1, name).isDirectory()));
+        Collections.addAll(showFolder, new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1, name).isDirectory()));
         ArrayList<Integer> seasonNumber = new ArrayList<>();
         Pattern pattern = Pattern.compile("[s][e][a][s][o][n]\\s\\d{1,4}");
         showFolder.forEach(aShowFolder -> {

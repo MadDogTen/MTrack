@@ -227,7 +227,7 @@ public class Settings implements Initializable {
                     @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
-                        new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateShowsFile(directoryController.getDirectory(index));
+                        new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, Main.getMainRun()).generateShowsFile(directoryController.getDirectory(index));
                         return null;
                     }
                 };

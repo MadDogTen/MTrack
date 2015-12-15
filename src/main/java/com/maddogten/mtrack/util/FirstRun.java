@@ -1,6 +1,6 @@
 package com.maddogten.mtrack.util;
 
-import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.MainRun;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.DualChoiceButtons;
 import com.maddogten.mtrack.gui.MessageBox;
@@ -34,27 +34,29 @@ public class FirstRun {
     private final ShowInfoController showInfoController;
     private final UserInfoController userInfoController;
     private final DirectoryController directoryController;
+    private final MainRun mainRun;
 
-    public FirstRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, DirectoryController directoryController) {
+    public FirstRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, DirectoryController directoryController, MainRun mainRun) {
         this.programSettingsController = programSettingsController;
         this.showInfoController = showInfoController;
         this.userInfoController = userInfoController;
         this.directoryController = directoryController;
+        this.mainRun = mainRun;
     }
 
     public void programFirstRun() {
         log.info("First Run, Generating Files...");
-        Main.getMainRun().getLanguage();
-        if (Main.getMainRun().continueStarting) {
+        mainRun.getLanguage();
+        if (mainRun.continueStarting) {
             FileManager fileManager = new FileManager();
-            File jarLocation = null;
+            File jarLocation = new File(Strings.EmptyString);
             try {
                 jarLocation = fileManager.getJarLocationFolder();
             } catch (UnsupportedEncodingException e) {
                 log.severe(Arrays.toString(e.getStackTrace()));
             }
             File appData = fileManager.getAppDataFolder();
-            String answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, String.valueOf(appData), String.valueOf(jarLocation), null);
+            String answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString(), null);
             if (answer.matches(Strings.InAppData)) {
                 Variables.setDataFolder(appData);
             } else if (answer.matches(Strings.WithTheJar)) {
@@ -111,8 +113,7 @@ public class FirstRun {
     public void generateUserSettingsFile(String userName) {
         log.info("Attempting to generate settings file for " + userName + '.');
         Map<String, UserShowSettings> showSettings = new HashMap<>();
-        ArrayList<String> showsList = showInfoController.getShowsList();
-        for (String aShow : showsList) {
+        for (String aShow : showInfoController.getShowsList()) {
             int lowestSeason = showInfoController.findLowestSeason(aShow);
             showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
         }

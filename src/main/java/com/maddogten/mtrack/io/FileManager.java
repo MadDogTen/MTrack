@@ -20,8 +20,7 @@ public class FileManager {
         }
         if (overWrite || !checkFileExists(folder, filename, extension)) {
             try {
-                FileOutputStream fos = new FileOutputStream(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension);
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension));
                 oos.writeObject(objectToSerialise);
                 oos.flush();
                 oos.close();
@@ -37,8 +36,7 @@ public class FileManager {
         Object loadedFile = null;
         if (checkFileExists(folder, theFile, extension)) {
             try {
-                FileInputStream fis = new FileInputStream(new File(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));
-                ObjectInputStream ois = new ObjectInputStream(fis);
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension)));
                 loadedFile = ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
@@ -102,7 +100,7 @@ public class FileManager {
 
     public File getJarLocationFolder() throws UnsupportedEncodingException {
         File file = new File(URLDecoder.decode(FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
-        String converted = "";
+        String converted = Strings.EmptyString;
         String[] split = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
         for (int x = 0; x <= split.length - 2; x++) {
             if (x == 0) {

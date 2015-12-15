@@ -93,7 +93,7 @@ public class MainRun {
         // If both of those failed or it deleted the files,  Then it starts firstRun.
         if (!folderFound) {
             firstRun = true;
-            new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).programFirstRun();
+            new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).programFirstRun();
             firstRun = false;
             runFinished = true;
         }
@@ -113,13 +113,13 @@ public class MainRun {
                 Strings.UserName = getUser();
                 if (!continueStarting) return false;
                 if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
-                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateUserSettingsFile(Strings.UserName);
+                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).generateUserSettingsFile(Strings.UserName);
                 }
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();
                 userInfoController.loadUserInfo();
             } else {
-                new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateProgramSettingsFile();
+                new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).generateProgramSettingsFile();
                 programSettingsController.loadProgramSettingsFile();
                 updateManager.updateShowFile();
                 getLanguage();
@@ -127,7 +127,7 @@ public class MainRun {
                 Strings.UserName = getUser();
                 if (!continueStarting) return false;
                 if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
-                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController).generateUserSettingsFile(Strings.UserName);
+                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).generateUserSettingsFile(Strings.UserName);
                 }
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();

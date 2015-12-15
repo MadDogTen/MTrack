@@ -38,7 +38,7 @@ public class DirectoryController {
     }
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    public ArrayList<Directory> getActiveDirectories(boolean skipFoundInactiveDirectories) { //TODO The must be a better way of doing this.
+    public ArrayList<Directory> getActiveDirectories(boolean skipFoundInactiveDirectories) { //TODO There must be a better way of doing this.
         ArrayList<Directory> activeDirectories = new ArrayList<>();
         ArrayList<Directory> untestedDirectories = getDirectories();
         if (skipFoundInactiveDirectories) {
@@ -61,7 +61,7 @@ public class DirectoryController {
         Pattern drivePattern = Pattern.compile("[A-Z]:" + bsR1);
         Pattern networkFolderPattern = Pattern.compile(bsR1 + bsR1 + "[0-9A-Za-z-]+" + bsR1);
         Pattern ipPattern = Pattern.compile(bsR1 + bsR1 + "[0-9a-z][0-9.a-z:]+[.|:][0-9.a-z:]+[0-9a-z]" + bsR1);
-        untestedDirectories.stream().forEach(directory -> {
+        untestedDirectories.forEach(directory -> {
             log.info("Checking active status of " + directory.getDirectory() + '.');
             Matcher driveMatcher = drivePattern.matcher(directory.getDirectory().toString());
             Matcher networkFolderMatcher = networkFolderPattern.matcher(directory.getDirectory().toString());
@@ -86,6 +86,11 @@ public class DirectoryController {
                 };
                 Thread thread = new Thread(checkingTask);
                 thread.start();
+                try { // This is to give the Thread a chance to finish before the while loop starts. Mainly to avoid the "Time remaining" message without using a boolean.
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    log.severe(e.toString());
+                }
                 int timer = Clock.getTimeSeconds();
                 while (thread.isAlive()) {
                     log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer)));
@@ -119,6 +124,11 @@ public class DirectoryController {
                     };
                     Thread thread = new Thread(checkingTask);
                     thread.start();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        log.severe(e.toString());
+                    }
                     int timer = Clock.getTimeSeconds();
                     while (thread.isAlive()) {
                         log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer)));
@@ -154,7 +164,7 @@ public class DirectoryController {
                         inactiveDirectories.add(directory.getDirectory());
                     }
                 }
-                log.info("Finished checking if " + directory.getDirectory() + " is active. It was found to be " + activeStatus);
+                log.info("Finished checking " + directory.getDirectory() + ". It was found to be " + activeStatus);
             } else
                 log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory.getDirectory());
         });
