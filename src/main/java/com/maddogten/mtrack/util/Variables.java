@@ -28,7 +28,7 @@ public class Variables {
 
     public static final int InternalVersion = 4; // To help keep track of what I'm currently working on / testing.
 
-    /**/public static final boolean showOptionToToggleDevMode = true; // false
+    /**/public static final boolean showOptionToToggleDevMode = false; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
     public static final int defaultUpdateSpeed = 120;
@@ -38,16 +38,15 @@ public class Variables {
     public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
     public static final int checkSeasonsLowerThanCurrentInterval = 5;
     public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
-    /**/public static boolean devMode = false; // false
-    public static boolean keepTextFieldText = true; // TODO Implement Option to have the text field clear itself on list change
+    /**/public static boolean devMode = true; // false
     public static int updateSpeed;
 
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static String language;
     public static int timeToWaitForDirectory;
-    public static boolean recordChangesForNonActiveShows; // TODO Make setting accessible to user.
-    public static boolean recordChangedSeasonsLowerThanCurrent; // TODO Make setting accessible to user.
+    public static boolean recordChangesForNonActiveShows;
+    public static boolean recordChangedSeasonsLowerThanCurrent;
 
     public static void setDataFolder(File file) {
         dataFolder = file;

@@ -94,7 +94,7 @@ public class UserInfoController {
         return nonIgnoredShows;
     }
 
-    // If a user doesn't want a show clogging up any lists, then it can be set hidden. It should be able to be found anywhere at that point.
+    // If a user doesn't want a show clogging up any lists, then it can be set hidden. It shouldn't be able to be found anywhere at that point.
     public void setHiddenStatus(String aShow, boolean isHidden) { //TODO Add ability to un-hide shows.
         log.info(aShow + " hidden status is: " + isHidden);
         userSettings.getAShowSettings(aShow).setHidden(isHidden);
@@ -111,15 +111,14 @@ public class UserInfoController {
     }
 
     // Attempts to play the file using the default program for the extension.
-    public void playAnyEpisode(String aShow, int aSeason, int aEpisode) { //Todo Find proper place for this
+    public void playAnyEpisode(String aShow, int aSeason, int aEpisode) { // TODO Look for a better place to put this
         log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
         String showLocation = showInfoController.getEpisode(aShow, aSeason, aEpisode);
-        log.info(showLocation);
-        if (showLocation != null) {
+        log.info("Known show location: " + showLocation);
+        if (showLocation.isEmpty()) {
             File file = new File(showLocation);
-            if (file.exists()) {
-                new FileManager().open(file);
-            } else log.warning("File \"" + file + "\" doesn't exists!");
+            if (file.exists()) new FileManager().open(file);
+            else log.warning("File \"" + file + "\" doesn't exists!");
         } else log.warning("File doesn't exists!");
     }
 

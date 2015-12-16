@@ -118,6 +118,14 @@ public class Settings implements Initializable {
     private TextField directoryTimeoutTextField;
     @FXML
     private Button setDirectoryTimeout;
+    @FXML
+    private Text notifyChangesText;
+    @FXML
+    private Text onlyChecksEveryText;
+    @FXML
+    private CheckBox inactiveShowsCheckBox;
+    @FXML
+    private CheckBox olderSeasonsCheckBox;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -136,18 +144,6 @@ public class Settings implements Initializable {
         // ~~~~ Buttons ~~~~ \\
 
         // Main
-        forceRecheck.setText(Strings.ForceRecheckShows);
-        forceRecheck.setOnAction(e -> {
-            Task<Void> task = new Task<Void>() {
-                @SuppressWarnings("ReturnOfNull")
-                @Override
-                protected Void call() throws Exception {
-                    checkShowFiles.recheckShowFile(true);
-                    return null;
-                }
-            };
-            new Thread(task).start();
-        });
         updateText.setText(Strings.UpdateTime);
         updateText.setTextAlignment(TextAlignment.CENTER);
         updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
@@ -159,6 +155,22 @@ public class Settings implements Initializable {
                 } else programSettingsController.setUpdateSpeed(Integer.valueOf(updateTimeTextField.getText()));
             }
         });
+        notifyChangesText.setText(Strings.NotifyChangesFor);
+        notifyChangesText.setTextAlignment(TextAlignment.CENTER);
+        onlyChecksEveryText.setText(Strings.OnlyChecksEveryRuns);
+        onlyChecksEveryText.setTextAlignment(TextAlignment.CENTER);
+        inactiveShowsCheckBox.setText(Strings.InactiveShows);
+        inactiveShowsCheckBox.setSelected(programSettingsController.getSettingsFile().isRecordChangesForNonActiveShows());
+        inactiveShowsCheckBox.setOnAction(e -> {
+            programSettingsController.getSettingsFile().setRecordChangesForNonActiveShows(!programSettingsController.getSettingsFile().isRecordChangesForNonActiveShows());
+            log.info("Record inactive shows has been set to: " + programSettingsController.getSettingsFile().isRecordChangesForNonActiveShows());
+        });
+        olderSeasonsCheckBox.setText(Strings.OlderSeasons);
+        olderSeasonsCheckBox.setSelected(programSettingsController.getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
+        olderSeasonsCheckBox.setOnAction(e -> {
+            programSettingsController.getSettingsFile().setRecordChangedSeasonsLowerThanCurrent(!programSettingsController.getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
+            log.info("Record older seasons has been set to: " + programSettingsController.getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
+        });
         about.setText(Strings.About);
         about.setOnAction(e -> {
             try {
@@ -168,7 +180,7 @@ public class Settings implements Initializable {
             }
         });
 
-        // Users
+        // User
         exit.setText(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             Stage stage = (Stage) tabPane.getScene().getWindow();
@@ -215,6 +227,20 @@ public class Settings implements Initializable {
             }
         });
         deleteUser.setTooltip(new Tooltip(Strings.DeleteUsersNoteCantDeleteCurrentUser));
+
+        // Show
+        forceRecheck.setText(Strings.ForceRecheckShows);
+        forceRecheck.setOnAction(e -> {
+            Task<Void> task = new Task<Void>() {
+                @SuppressWarnings("ReturnOfNull")
+                @Override
+                protected Void call() throws Exception {
+                    checkShowFiles.recheckShowFile(true);
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        });
         // Other
         addDirectory.setText(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
@@ -327,7 +353,7 @@ public class Settings implements Initializable {
             }
             toggleDevMode.setText(Strings.ToggleDevMode);
             toggleDevMode.setOnAction(e -> Variables.devMode = !Variables.devMode);
-        } else toggleDevMode.setDisable(true);
+        } else toggleDevMode.setVisible(false);
         openProgramFolder.setText(Strings.OpenSettingsFolder);
         openProgramFolder.setOnAction(e -> {
             try {

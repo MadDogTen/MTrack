@@ -83,6 +83,10 @@ public class template extends Language {
         Strings.UpdateTime = "";
         Strings.DirectoryTimeout = "";
 
+        // CheckBox Text
+        Strings.InactiveShows = "";
+        Strings.OlderSeasons = "";
+
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft = "";
         Strings.CurrentlyRechecking = "";
@@ -148,5 +152,7 @@ public class template extends Language {
         Strings.PathToDirectory = "";
         Strings.WasFoundToBeInactive = "";
         Strings.PleaseCorrectTheIssueThenForceRefresh = "";
+        Strings.NotifyChangesFor = "";
+        Strings.OnlyChecksEveryRuns = "";
     }
 }

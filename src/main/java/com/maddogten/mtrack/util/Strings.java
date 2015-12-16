@@ -87,6 +87,10 @@ public class Strings {
     public static String UpdateTime;
     public static String DirectoryTimeout;
 
+    // Checkbox Text
+    public static String InactiveShows;
+    public static String OlderSeasons;
+
     // Tooltip Text
     public static String ShowHiddenShowsWith0EpisodeLeft;
     public static String CurrentlyRechecking;
@@ -153,6 +157,8 @@ public class Strings {
     public static String PrintCurrentSeasonEpisode;
     public static String WasFoundToBeInactive;
     public static String PleaseCorrectTheIssueThenForceRefresh;
+    public static String NotifyChangesFor;
+    public static String OnlyChecksEveryRuns;
 
     // Strings set by program
     public static String UserName;

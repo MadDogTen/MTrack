@@ -208,7 +208,7 @@ public class MainRun {
         if (languages.size() == 1) {
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
         } else {
-            if (language != null && !language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice TODO <- Remove
+            if (language != null && !language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice TODO <- Eventually Remove
                 Boolean wasSet = languageHandler.setLanguage(language);
                 if (wasSet) {
                     Variables.language = language;

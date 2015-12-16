@@ -28,8 +28,8 @@ Added fields in settings to directly change 'Update Time' (& removed the old but
 MessageBox now supports multiline messages.
 Fixed the search field text not being applied on list changes.
 ChangeList is now saved and reloaded next run.
-Show rechecking will now recheck older seasons on program start, every 5th recheck, and when doing a forceRun; and added option to hide related found changes from the changelog.
-Show rechecking will now recheck all nonIgnored shows on program start, every 10th recheck, and when doing a forceRun; and added option to hide related found changes from the changelog.
+Show rechecking will now recheck older seasons on program start, every 5th recheck, and when doing a forceRun; and added option to show related found changes on the changelog. Defaults off.
+Show rechecking will now recheck all nonIgnored shows on program start, every 10th recheck, and when doing a forceRun; and added option to show related found changes on the changelog. Defaults off.
 Fixed rechecking not searching for ignored shows.
 
 Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

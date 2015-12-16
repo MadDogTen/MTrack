@@ -15,7 +15,7 @@ public class LanguageHandler {
 
     public LanguageHandler() {
         languages.put("en_US", new en_US());
-        //languages.put("lipsum", new lipsum()); // Only temporary, For demonstration purposes. TODO Remove fully
+        //languages.put("lipsum", new lipsum()); // Only temporary, For demonstration purposes. TODO <- Eventually Remove
     }
 
     public Map<String, String> getLanguageNames() {
@@ -172,6 +172,10 @@ public class LanguageHandler {
         if (Strings.PleaseCorrectTheIssueThenForceRefresh == null)
             Strings.PleaseCorrectTheIssueThenForceRefresh = Strings.TextMissing;
         if (Strings.InternalVersion == null) Strings.InternalVersion = Strings.TextMissing;
+        if (Strings.InactiveShows == null) Strings.InactiveShows = Strings.TextMissing;
+        if (Strings.OlderSeasons == null) Strings.OlderSeasons = Strings.TextMissing;
+        if (Strings.NotifyChangesFor == null) Strings.NotifyChangesFor = Strings.TextMissing;
+        if (Strings.OnlyChecksEveryRuns == null) Strings.OnlyChecksEveryRuns = Strings.TextMissing;
         log.info("Finished checking for missing Strings.");
     }
 }

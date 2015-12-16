@@ -82,6 +82,10 @@ public class en_US extends Language {
         Strings.UpdateTime = "Update Time (Seconds):";
         Strings.DirectoryTimeout = "Directory Timeout (Seconds):";
 
+        // CheckBox Text
+        Strings.InactiveShows = "Inactive Shows";
+        Strings.OlderSeasons = "Older Seasons";
+
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft = "Show/Hide shows with 0 episode left.";
         Strings.CurrentlyRechecking = "Currently Rechecking...";
@@ -148,5 +152,7 @@ public class en_US extends Language {
         Strings.PrintCurrentSeasonEpisode = "Print Current Season & Episode";
         Strings.WasFoundToBeInactive = " was found to be inactive.";
         Strings.PleaseCorrectTheIssueThenForceRefresh = "Please correct the issue then force refresh.";
+        Strings.NotifyChangesFor = "Notify Changes For:";
+        Strings.OnlyChecksEveryRuns = "Only checks every 5 runs";
     }
 }

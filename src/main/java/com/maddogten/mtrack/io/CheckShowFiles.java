@@ -76,7 +76,7 @@ public class CheckShowFiles {
             FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile(), userInfoController);
             if (forceRun) runNumber = 0;
             else runNumber++;
-            while (recheckShowFilePercentage != 0) {
+            while (recheckShowFilePercentage != 0) { // Just in case the interrupted run hasn't full finished stopping. Don't want to risk messing up the recheckShowFilePercentage.
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {

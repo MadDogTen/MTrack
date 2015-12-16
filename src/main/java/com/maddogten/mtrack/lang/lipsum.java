@@ -84,6 +84,10 @@ public class lipsum extends Language {
         Strings.UpdateTime = "nunula";
         Strings.DirectoryTimeout = "termula";
 
+        // CheckBox Text
+        Strings.InactiveShows = "miterra";
+        Strings.OlderSeasons = "avartu";
+
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft = "sollicitudin";
         Strings.CurrentlyRechecking = "nisi";
@@ -149,5 +153,7 @@ public class lipsum extends Language {
         Strings.PathToDirectory = "mezera";
         Strings.WasFoundToBeInactive = "galamru";
         Strings.PleaseCorrectTheIssueThenForceRefresh = "altez";
+        Strings.NotifyChangesFor = "iternu";
+        Strings.OnlyChecksEveryRuns = "viter";
     }
 }

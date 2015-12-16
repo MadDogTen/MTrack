@@ -87,8 +87,7 @@ public class ShowInfoController {
             return showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename();
         } else {
             log.warning("Error for: " + show + " - Season " + season + " - Episode " + episode + ", Please report.");
-            //noinspection ReturnOfNull
-            return null;
+            return "";
         }
     }
 

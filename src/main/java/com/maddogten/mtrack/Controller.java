@@ -220,10 +220,7 @@ public class Controller implements Initializable {
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
-        // Gives the option to clear the text field when you switch lists, or keep it and apply the filter to the new list. // TODO - Do I want to keep this option?
-        if (Variables.keepTextFieldText) {
-            newFilteredData.setPredicate(show -> textField.getText() == null || textField.getText().isEmpty() || show.getShow().toLowerCase().contains(textField.getText().toLowerCase()));
-        } else textField.clear();
+        newFilteredData.setPredicate(show -> textField.getText() == null || textField.getText().isEmpty() || show.getShow().toLowerCase().contains(textField.getText().toLowerCase()));
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             newFilteredData.setPredicate(show -> newValue == null || newValue.isEmpty() || show.getShow().toLowerCase().contains(newValue.toLowerCase()));
         });
@@ -232,9 +229,9 @@ public class Controller implements Initializable {
         tableView.setItems(newSortedData);
 
         if (currentList.matches("active")) {
-            show0RemainingCheckBox.setDisable(false);
+            show0RemainingCheckBox.setVisible(true);
         } else if (currentList.matches("inactive")) {
-            show0RemainingCheckBox.setDisable(true);
+            show0RemainingCheckBox.setVisible(false);
         }
     }
 
