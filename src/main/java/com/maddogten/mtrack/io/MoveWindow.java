@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.io;
 
+import com.maddogten.mtrack.util.Variables;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -23,7 +24,7 @@ public class MoveWindow {
             if (e.isPrimaryButtonDown()) {
                 window.setX(e.getScreenX() - xOffset[0]);
                 window.setY(e.getScreenY() - yOffset[0]);
-                if (parent != null) {
+                if (parent != null && Variables.moveStageWithParent) {
                     parent.getScene().getWindow().setX(window.getScene().getWindow().getX() - (parent.getWidth() / 2) + (window.getWidth() / 2));
                     parent.getScene().getWindow().setY(window.getScene().getWindow().getY() - (parent.getHeight() / 2) + (window.getHeight() / 2));
                 }
@@ -44,7 +45,7 @@ public class MoveWindow {
             if (e.isPrimaryButtonDown()) {
                 tabPane.getScene().getWindow().setX(e.getScreenX() - xOffset[0]);
                 tabPane.getScene().getWindow().setY(e.getScreenY() - yOffset[0]);
-                if (parent != null) {
+                if (parent != null && Variables.moveStageWithParent) {
                     parent.getScene().getWindow().setX(tabPane.getScene().getWindow().getX() - (parent.getWidth() / 2) + (tabPane.getWidth() / 2));
                     parent.getScene().getWindow().setY(tabPane.getScene().getWindow().getY() - (parent.getHeight() / 2) + (tabPane.getHeight() / 2));
                 }

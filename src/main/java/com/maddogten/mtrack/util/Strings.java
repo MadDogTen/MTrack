@@ -90,6 +90,7 @@ public class Strings {
     // Checkbox Text
     public static String InactiveShows;
     public static String OlderSeasons;
+    public static String AllowFullWindowMovementUse;
 
     // Tooltip Text
     public static String ShowHiddenShowsWith0EpisodeLeft;

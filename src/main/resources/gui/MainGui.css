@@ -1,3 +1,7 @@
 #isCurrentlyRechecking .percentage {
--fx-fill: null;
+     -fx-fill: null;
+}
+
+#isCurrentlyRechecking .progress {
+    -fx-progress-color: green;
 }

@@ -36,146 +36,157 @@ public class LanguageHandler {
 
     // This verifies that all the Strings have been set, and if any haven't been, sets it as TextMissing. If TextMissing happens to be missing, it uses a default english string.
     private void addMissingTextForAllMissingStrings() {
-        log.info("Checking for missing Strings...");
-        if (Strings.TextMissing == null) Strings.TextMissing = "Proper text is missing, Please report.";
+        log.info("Checking for missing strings...");
+        if (isStringMissing(Strings.TextMissing)) Strings.TextMissing = "Proper text is missing, Please report.";
 
-        if (Strings.Submit == null) Strings.Submit = Strings.TextMissing;
-        if (Strings.Clear == null) Strings.Clear = Strings.TextMissing;
-        if (Strings.Refresh == null) Strings.Refresh = Strings.TextMissing;
-        if (Strings.Close == null) Strings.Close = Strings.TextMissing;
-        if (Strings.Yes == null) Strings.Yes = Strings.TextMissing;
-        if (Strings.No == null) Strings.No = Strings.TextMissing;
-        if (Strings.Beginning == null) Strings.Beginning = Strings.TextMissing;
-        if (Strings.End == null) Strings.End = Strings.TextMissing;
-        if (Strings.QuestionMark == null) Strings.QuestionMark = Strings.TextMissing;
-        if (Strings.Shows == null) Strings.Shows = Strings.TextMissing;
-        if (Strings.Left == null) Strings.Left = Strings.TextMissing;
-        if (Strings.Settings == null) Strings.Settings = Strings.TextMissing;
-        if (Strings.Options == null) Strings.Options = Strings.TextMissing;
-        if (Strings.Main == null) Strings.Main = Strings.TextMissing;
-        if (Strings.Users == null) Strings.Users = Strings.TextMissing;
-        if (Strings.Other == null) Strings.Other = Strings.TextMissing;
-        if (Strings.Developers == null) Strings.Developers = Strings.TextMissing;
-        if (Strings.Reset == null) Strings.Reset = Strings.TextMissing;
-        if (Strings.About == null) Strings.About = Strings.TextMissing;
-        if (Strings.Season == null) Strings.Season = Strings.TextMissing;
-        if (Strings.Episode == null) Strings.Episode = Strings.TextMissing;
-        if (Strings.Set == null) Strings.Set = Strings.TextMissing;
-        if (Strings.Warning == null) Strings.Warning = Strings.TextMissing;
-        if (Strings.SetSeasonEpisode == null) Strings.SetSeasonEpisode = Strings.TextMissing;
-        if (Strings.PlaySeasonEpisode == null) Strings.PlaySeasonEpisode = Strings.TextMissing;
-        if (Strings.HideShow == null) Strings.HideShow = Strings.TextMissing;
-        if (Strings.ResetTo == null) Strings.ResetTo = Strings.TextMissing;
-        if (Strings.OpenFileLocation == null) Strings.OpenFileLocation = Strings.TextMissing;
-        if (Strings.GetRemaining == null) Strings.GetRemaining = Strings.TextMissing;
-        if (Strings.PlayPreviousEpisode == null) Strings.PlayPreviousEpisode = Strings.TextMissing;
-        if (Strings.SetInactive == null) Strings.SetInactive = Strings.TextMissing;
-        if (Strings.SetActive == null) Strings.SetActive = Strings.TextMissing;
-        if (Strings.SwitchBetweenActiveInactiveList == null)
+        if (isStringMissing(Strings.Submit)) Strings.Submit = Strings.TextMissing;
+        if (isStringMissing(Strings.Clear)) Strings.Clear = Strings.TextMissing;
+        if (isStringMissing(Strings.Refresh)) Strings.Refresh = Strings.TextMissing;
+        if (isStringMissing(Strings.Close)) Strings.Close = Strings.TextMissing;
+        if (isStringMissing(Strings.Yes)) Strings.Yes = Strings.TextMissing;
+        if (isStringMissing(Strings.No)) Strings.No = Strings.TextMissing;
+        if (isStringMissing(Strings.Beginning)) Strings.Beginning = Strings.TextMissing;
+        if (isStringMissing(Strings.End)) Strings.End = Strings.TextMissing;
+        if (isStringMissing(Strings.QuestionMark)) Strings.QuestionMark = Strings.TextMissing;
+        if (isStringMissing(Strings.Shows)) Strings.Shows = Strings.TextMissing;
+        if (isStringMissing(Strings.Left)) Strings.Left = Strings.TextMissing;
+        if (isStringMissing(Strings.Settings)) Strings.Settings = Strings.TextMissing;
+        if (isStringMissing(Strings.Options)) Strings.Options = Strings.TextMissing;
+        if (isStringMissing(Strings.Main)) Strings.Main = Strings.TextMissing;
+        if (isStringMissing(Strings.Users)) Strings.Users = Strings.TextMissing;
+        if (isStringMissing(Strings.Other)) Strings.Other = Strings.TextMissing;
+        if (isStringMissing(Strings.Developers)) Strings.Developers = Strings.TextMissing;
+        if (isStringMissing(Strings.Reset)) Strings.Reset = Strings.TextMissing;
+        if (isStringMissing(Strings.About)) Strings.About = Strings.TextMissing;
+        if (isStringMissing(Strings.Season)) Strings.Season = Strings.TextMissing;
+        if (isStringMissing(Strings.Episode)) Strings.Episode = Strings.TextMissing;
+        if (isStringMissing(Strings.Set)) Strings.Set = Strings.TextMissing;
+        if (isStringMissing(Strings.Warning)) Strings.Warning = Strings.TextMissing;
+        if (isStringMissing(Strings.SetSeasonEpisode)) Strings.SetSeasonEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.PlaySeasonEpisode)) Strings.PlaySeasonEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.HideShow)) Strings.HideShow = Strings.TextMissing;
+        if (isStringMissing(Strings.ResetTo)) Strings.ResetTo = Strings.TextMissing;
+        if (isStringMissing(Strings.OpenFileLocation)) Strings.OpenFileLocation = Strings.TextMissing;
+        if (isStringMissing(Strings.GetRemaining)) Strings.GetRemaining = Strings.TextMissing;
+        if (isStringMissing(Strings.PlayPreviousEpisode)) Strings.PlayPreviousEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.SetInactive)) Strings.SetInactive = Strings.TextMissing;
+        if (isStringMissing(Strings.SetActive)) Strings.SetActive = Strings.TextMissing;
+        if (isStringMissing(Strings.SwitchBetweenActiveInactiveList))
             Strings.SwitchBetweenActiveInactiveList = Strings.TextMissing;
-        if (Strings.AddUser == null) Strings.AddUser = Strings.TextMissing;
-        if (Strings.DeleteUser == null) Strings.DeleteUser = Strings.TextMissing;
-        if (Strings.ChangeUpdateTime == null) Strings.ChangeUpdateTime = Strings.TextMissing;
-        if (Strings.ForceRecheckShows == null) Strings.ForceRecheckShows = Strings.TextMissing;
-        if (Strings.AddDirectory == null) Strings.AddDirectory = Strings.TextMissing;
-        if (Strings.RemoveDirectory == null) Strings.RemoveDirectory = Strings.TextMissing;
-        if (Strings.OpenSettingsFolder == null) Strings.OpenSettingsFolder = Strings.TextMissing;
-        if (Strings.PrintAllShowInfo == null) Strings.PrintAllShowInfo = Strings.TextMissing;
-        if (Strings.PrintAllDirectories == null) Strings.PrintAllDirectories = Strings.TextMissing;
-        if (Strings.PrintEmptyShows == null) Strings.PrintEmptyShows = Strings.TextMissing;
-        if (Strings.PrintIgnoredShows == null) Strings.PrintIgnoredShows = Strings.TextMissing;
-        if (Strings.PrintHiddenShows == null) Strings.PrintHiddenShows = Strings.TextMissing;
-        if (Strings.UnHideAll == null) Strings.UnHideAll = Strings.TextMissing;
-        if (Strings.SetAllActive == null) Strings.SetAllActive = Strings.TextMissing;
-        if (Strings.SetAllInactive == null) Strings.SetAllInactive = Strings.TextMissing;
-        if (Strings.PrintPSFV == null) Strings.PrintPSFV = Strings.TextMissing;
-        if (Strings.PrintUSFV == null) Strings.PrintUSFV = Strings.TextMissing;
-        if (Strings.PrintAllUserInfo == null) Strings.PrintAllUserInfo = Strings.TextMissing;
-        if (Strings.DirectoryVersionPlus1 == null) Strings.DirectoryVersionPlus1 = Strings.TextMissing;
-        if (Strings.ClearFile == null) Strings.ClearFile = Strings.TextMissing;
-        if (Strings.ResetProgram == null) Strings.ResetProgram = Strings.TextMissing;
-        if (Strings.ToggleDevMode == null) Strings.ToggleDevMode = Strings.TextMissing;
-        if (Strings.InAppData == null) Strings.InAppData = Strings.TextMissing;
-        if (Strings.WithTheJar == null) Strings.WithTheJar = Strings.TextMissing;
-        if (Strings.UpdateTime == null) Strings.UpdateTime = Strings.TextMissing;
-        if (Strings.DirectoryTimeout == null) Strings.DirectoryTimeout = Strings.TextMissing;
-        if (Strings.ShowHiddenShowsWith0EpisodeLeft == null)
+        if (isStringMissing(Strings.AddUser)) Strings.AddUser = Strings.TextMissing;
+        if (isStringMissing(Strings.DeleteUser)) Strings.DeleteUser = Strings.TextMissing;
+        if (isStringMissing(Strings.ChangeUpdateTime)) Strings.ChangeUpdateTime = Strings.TextMissing;
+        if (isStringMissing(Strings.ForceRecheckShows)) Strings.ForceRecheckShows = Strings.TextMissing;
+        if (isStringMissing(Strings.AddDirectory)) Strings.AddDirectory = Strings.TextMissing;
+        if (isStringMissing(Strings.RemoveDirectory)) Strings.RemoveDirectory = Strings.TextMissing;
+        if (isStringMissing(Strings.OpenSettingsFolder)) Strings.OpenSettingsFolder = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintAllShowInfo)) Strings.PrintAllShowInfo = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintAllDirectories)) Strings.PrintAllDirectories = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintEmptyShows)) Strings.PrintEmptyShows = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintIgnoredShows)) Strings.PrintIgnoredShows = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintHiddenShows)) Strings.PrintHiddenShows = Strings.TextMissing;
+        if (isStringMissing(Strings.UnHideAll)) Strings.UnHideAll = Strings.TextMissing;
+        if (isStringMissing(Strings.SetAllActive)) Strings.SetAllActive = Strings.TextMissing;
+        if (isStringMissing(Strings.SetAllInactive)) Strings.SetAllInactive = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintPSFV)) Strings.PrintPSFV = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintUSFV)) Strings.PrintUSFV = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintAllUserInfo)) Strings.PrintAllUserInfo = Strings.TextMissing;
+        if (isStringMissing(Strings.DirectoryVersionPlus1)) Strings.DirectoryVersionPlus1 = Strings.TextMissing;
+        if (isStringMissing(Strings.ClearFile)) Strings.ClearFile = Strings.TextMissing;
+        if (isStringMissing(Strings.ResetProgram)) Strings.ResetProgram = Strings.TextMissing;
+        if (isStringMissing(Strings.ToggleDevMode)) Strings.ToggleDevMode = Strings.TextMissing;
+        if (isStringMissing(Strings.InAppData)) Strings.InAppData = Strings.TextMissing;
+        if (isStringMissing(Strings.WithTheJar)) Strings.WithTheJar = Strings.TextMissing;
+        if (isStringMissing(Strings.UpdateTime)) Strings.UpdateTime = Strings.TextMissing;
+        if (isStringMissing(Strings.DirectoryTimeout)) Strings.DirectoryTimeout = Strings.TextMissing;
+        if (isStringMissing(Strings.ShowHiddenShowsWith0EpisodeLeft))
             Strings.ShowHiddenShowsWith0EpisodeLeft = Strings.TextMissing;
-        if (Strings.CurrentlyRechecking == null) Strings.CurrentlyRechecking = Strings.TextMissing;
-        if (Strings.DeleteUsersNoteCantDeleteCurrentUser == null)
+        if (isStringMissing(Strings.CurrentlyRechecking)) Strings.CurrentlyRechecking = Strings.TextMissing;
+        if (isStringMissing(Strings.DeleteUsersNoteCantDeleteCurrentUser))
             Strings.DeleteUsersNoteCantDeleteCurrentUser = Strings.TextMissing;
-        if (Strings.WarningUnrecoverable == null) Strings.WarningUnrecoverable = Strings.TextMissing;
-        if (Strings.AddNewUsername == null) Strings.AddNewUsername = Strings.TextMissing;
-        if (Strings.PleaseEnterUsername == null) Strings.PleaseEnterUsername = Strings.TextMissing;
-        if (Strings.UseDefaultUsername == null) Strings.UseDefaultUsername = Strings.TextMissing;
-        if (Strings.DefaultUserNotSet == null) Strings.DefaultUserNotSet = Strings.TextMissing;
-        if (Strings.PleaseChooseAFolder == null) Strings.PleaseChooseAFolder = Strings.TextMissing;
-        if (Strings.PickTheEpisode == null) Strings.PickTheEpisode = Strings.TextMissing;
-        if (Strings.YouHaveToPickASeason == null) Strings.YouHaveToPickASeason = Strings.TextMissing;
-        if (Strings.YouHaveToPickAEpisode == null) Strings.YouHaveToPickAEpisode = Strings.TextMissing;
-        if (Strings.NextEpisode == null) Strings.NextEpisode = Strings.TextMissing;
-        if (Strings.UsernameIsntValid == null) Strings.UsernameIsntValid = Strings.TextMissing;
-        if (Strings.UsernameAlreadyTaken == null) Strings.UsernameAlreadyTaken = Strings.TextMissing;
-        if (Strings.UsernameIsTooLong == null) Strings.UsernameIsTooLong = Strings.TextMissing;
-        if (Strings.DirectoryIsAlreadyAdded == null) Strings.DirectoryIsAlreadyAdded = Strings.TextMissing;
-        if (Strings.MustBeANumberBetween == null)
+        if (isStringMissing(Strings.WarningUnrecoverable)) Strings.WarningUnrecoverable = Strings.TextMissing;
+        if (isStringMissing(Strings.AddNewUsername)) Strings.AddNewUsername = Strings.TextMissing;
+        if (isStringMissing(Strings.PleaseEnterUsername)) Strings.PleaseEnterUsername = Strings.TextMissing;
+        if (isStringMissing(Strings.UseDefaultUsername)) Strings.UseDefaultUsername = Strings.TextMissing;
+        if (isStringMissing(Strings.DefaultUserNotSet)) Strings.DefaultUserNotSet = Strings.TextMissing;
+        if (isStringMissing(Strings.PleaseChooseAFolder)) Strings.PleaseChooseAFolder = Strings.TextMissing;
+        if (isStringMissing(Strings.PickTheEpisode)) Strings.PickTheEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.YouHaveToPickASeason)) Strings.YouHaveToPickASeason = Strings.TextMissing;
+        if (isStringMissing(Strings.YouHaveToPickAEpisode)) Strings.YouHaveToPickAEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.NextEpisode)) Strings.NextEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.UsernameIsntValid)) Strings.UsernameIsntValid = Strings.TextMissing;
+        if (isStringMissing(Strings.UsernameAlreadyTaken)) Strings.UsernameAlreadyTaken = Strings.TextMissing;
+        if (isStringMissing(Strings.UsernameIsTooLong)) Strings.UsernameIsTooLong = Strings.TextMissing;
+        if (isStringMissing(Strings.DirectoryIsAlreadyAdded)) Strings.DirectoryIsAlreadyAdded = Strings.TextMissing;
+        if (isStringMissing(Strings.MustBeANumberBetween))
             Strings.MustBeANumberBetween = Strings.TextMissing;
-        if (Strings.ChooseYourUsername == null) Strings.ChooseYourUsername = Strings.TextMissing;
-        if (Strings.DirectoryWasADuplicate == null) Strings.DirectoryWasADuplicate = Strings.TextMissing;
-        if (Strings.AddAnotherDirectory == null) Strings.AddAnotherDirectory = Strings.TextMissing;
-        if (Strings.WhatShould == null) Strings.WhatShould = Strings.TextMissing;
-        if (Strings.BeResetTo == null) Strings.BeResetTo = Strings.TextMissing;
-        if (Strings.ShowIsResetToThe == null) Strings.ShowIsResetToThe = Strings.TextMissing;
-        if (Strings.DoYouWantToOpenAllAssociatedFolders == null)
+        if (isStringMissing(Strings.ChooseYourUsername)) Strings.ChooseYourUsername = Strings.TextMissing;
+        if (isStringMissing(Strings.DirectoryWasADuplicate)) Strings.DirectoryWasADuplicate = Strings.TextMissing;
+        if (isStringMissing(Strings.AddAnotherDirectory)) Strings.AddAnotherDirectory = Strings.TextMissing;
+        if (isStringMissing(Strings.WhatShould)) Strings.WhatShould = Strings.TextMissing;
+        if (isStringMissing(Strings.BeResetTo)) Strings.BeResetTo = Strings.TextMissing;
+        if (isStringMissing(Strings.ShowIsResetToThe)) Strings.ShowIsResetToThe = Strings.TextMissing;
+        if (isStringMissing(Strings.DoYouWantToOpenAllAssociatedFolders))
             Strings.DoYouWantToOpenAllAssociatedFolders = Strings.TextMissing;
-        if (Strings.PickTheFolderYouWantToOpen == null) Strings.PickTheFolderYouWantToOpen = Strings.TextMissing;
-        if (Strings.NoDirectlyPrecedingEpisodesFound == null)
+        if (isStringMissing(Strings.PickTheFolderYouWantToOpen))
+            Strings.PickTheFolderYouWantToOpen = Strings.TextMissing;
+        if (isStringMissing(Strings.NoDirectlyPrecedingEpisodesFound))
             Strings.NoDirectlyPrecedingEpisodesFound = Strings.TextMissing;
-        if (Strings.HaveYouWatchedTheShow == null) Strings.HaveYouWatchedTheShow = Strings.TextMissing;
-        if (Strings.AreYouSure == null) Strings.AreYouSure = Strings.TextMissing;
-        if (Strings.PleaseChooseADefaultUser == null) Strings.PleaseChooseADefaultUser = Strings.TextMissing;
-        if (Strings.ThereAreNoOtherUsersToDelete == null) Strings.ThereAreNoOtherUsersToDelete = Strings.TextMissing;
-        if (Strings.UserToDelete == null) Strings.UserToDelete = Strings.TextMissing;
-        if (Strings.AreYouSureToWantToDelete == null) Strings.AreYouSureToWantToDelete = Strings.TextMissing;
-        if (Strings.EnterHowFastYouWantItToScanTheShowsFolders == null)
+        if (isStringMissing(Strings.HaveYouWatchedTheShow)) Strings.HaveYouWatchedTheShow = Strings.TextMissing;
+        if (isStringMissing(Strings.AreYouSure)) Strings.AreYouSure = Strings.TextMissing;
+        if (isStringMissing(Strings.PleaseChooseADefaultUser)) Strings.PleaseChooseADefaultUser = Strings.TextMissing;
+        if (isStringMissing(Strings.ThereAreNoOtherUsersToDelete))
+            Strings.ThereAreNoOtherUsersToDelete = Strings.TextMissing;
+        if (isStringMissing(Strings.UserToDelete)) Strings.UserToDelete = Strings.TextMissing;
+        if (isStringMissing(Strings.AreYouSureToWantToDelete)) Strings.AreYouSureToWantToDelete = Strings.TextMissing;
+        if (isStringMissing(Strings.EnterHowFastYouWantItToScanTheShowsFolders))
             Strings.EnterHowFastYouWantItToScanTheShowsFolders = Strings.TextMissing;
-        if (Strings.LeaveItAsIs == null) Strings.LeaveItAsIs = Strings.TextMissing;
-        if (Strings.PleaseEnterShowsDirectory == null) Strings.PleaseEnterShowsDirectory = Strings.TextMissing;
-        if (Strings.YouNeedToEnterADirectory == null) Strings.YouNeedToEnterADirectory = Strings.TextMissing;
-        if (Strings.DirectoryIsInvalid == null) Strings.DirectoryIsInvalid = Strings.TextMissing;
-        if (Strings.ThereAreNoDirectoriesToDelete == null) Strings.ThereAreNoDirectoriesToDelete = Strings.TextMissing;
-        if (Strings.ThereAreNoDirectoriesToClear == null) Strings.ThereAreNoDirectoriesToClear = Strings.TextMissing;
-        if (Strings.DirectoryToClear == null) Strings.DirectoryToClear = Strings.TextMissing;
-        if (Strings.AreYouSureToWantToClear == null) Strings.AreYouSureToWantToClear = Strings.TextMissing;
-        if (Strings.AreYouSureThisWillDeleteEverything == null)
+        if (isStringMissing(Strings.LeaveItAsIs)) Strings.LeaveItAsIs = Strings.TextMissing;
+        if (isStringMissing(Strings.PleaseEnterShowsDirectory)) Strings.PleaseEnterShowsDirectory = Strings.TextMissing;
+        if (isStringMissing(Strings.YouNeedToEnterADirectory)) Strings.YouNeedToEnterADirectory = Strings.TextMissing;
+        if (isStringMissing(Strings.DirectoryIsInvalid)) Strings.DirectoryIsInvalid = Strings.TextMissing;
+        if (isStringMissing(Strings.ThereAreNoDirectoriesToDelete))
+            Strings.ThereAreNoDirectoriesToDelete = Strings.TextMissing;
+        if (isStringMissing(Strings.ThereAreNoDirectoriesToClear))
+            Strings.ThereAreNoDirectoriesToClear = Strings.TextMissing;
+        if (isStringMissing(Strings.DirectoryToClear)) Strings.DirectoryToClear = Strings.TextMissing;
+        if (isStringMissing(Strings.AreYouSureToWantToClear)) Strings.AreYouSureToWantToClear = Strings.TextMissing;
+        if (isStringMissing(Strings.AreYouSureThisWillDeleteEverything))
             Strings.AreYouSureThisWillDeleteEverything = Strings.TextMissing;
-        if (Strings.OpenChangesWindow == null) Strings.OpenChangesWindow = Strings.TextMissing;
-        if (Strings.Dev1 == null) Strings.Dev1 = Strings.TextMissing;
-        if (Strings.Dev2 == null) Strings.Dev2 = Strings.TextMissing;
-        if (Strings.SetDefaultUser == null) Strings.SetDefaultUser = Strings.TextMissing;
-        if (Strings.DirectoryToDelete == null) Strings.DirectoryToDelete = Strings.TextMissing;
-        if (Strings.PleaseChooseYourLanguage == null) Strings.PleaseChooseYourLanguage = Strings.TextMissing;
-        if (Strings.ChangeLanguage == null) Strings.ChangeLanguage = Strings.TextMissing;
-        if (Strings.RestartTheProgramForTheNewLanguageToTakeEffect == null)
+        if (isStringMissing(Strings.OpenChangesWindow)) Strings.OpenChangesWindow = Strings.TextMissing;
+        if (isStringMissing(Strings.Dev1)) Strings.Dev1 = Strings.TextMissing;
+        if (isStringMissing(Strings.Dev2)) Strings.Dev2 = Strings.TextMissing;
+        if (isStringMissing(Strings.SetDefaultUser)) Strings.SetDefaultUser = Strings.TextMissing;
+        if (isStringMissing(Strings.DirectoryToDelete)) Strings.DirectoryToDelete = Strings.TextMissing;
+        if (isStringMissing(Strings.PleaseChooseYourLanguage)) Strings.PleaseChooseYourLanguage = Strings.TextMissing;
+        if (isStringMissing(Strings.ChangeLanguage)) Strings.ChangeLanguage = Strings.TextMissing;
+        if (isStringMissing(Strings.RestartTheProgramForTheNewLanguageToTakeEffect))
             Strings.RestartTheProgramForTheNewLanguageToTakeEffect = Strings.TextMissing;
-        if (Strings.WhereWouldYouLikeTheProgramFilesToBeStored == null)
+        if (isStringMissing(Strings.WhereWouldYouLikeTheProgramFilesToBeStored))
             Strings.WhereWouldYouLikeTheProgramFilesToBeStored = Strings.TextMissing;
-        if (Strings.HoverOverAButtonForThePath == null) Strings.HoverOverAButtonForThePath = Strings.TextMissing;
-        if (Strings.DashSeason == null) Strings.DashSeason = Strings.TextMissing;
-        if (Strings.DashEpisode == null) Strings.DashEpisode = Strings.TextMissing;
-        if (Strings.PickTheSeasonAndEpisode == null) Strings.PickTheSeasonAndEpisode = Strings.TextMissing;
-        if (Strings.YouHaveReachedTheEnd == null) Strings.YouHaveReachedTheEnd = Strings.TextMissing;
-        if (Strings.PingingDirectories == null) Strings.PingingDirectories = Strings.TextMissing;
-        if (Strings.PathToDirectory == null) Strings.PathToDirectory = Strings.TextMissing;
-        if (Strings.PrintCurrentSeasonEpisode == null) Strings.PrintCurrentSeasonEpisode = Strings.TextMissing;
-        if (Strings.WasFoundToBeInactive == null) Strings.WasFoundToBeInactive = Strings.TextMissing;
-        if (Strings.PleaseCorrectTheIssueThenForceRefresh == null)
+        if (isStringMissing(Strings.HoverOverAButtonForThePath))
+            Strings.HoverOverAButtonForThePath = Strings.TextMissing;
+        if (isStringMissing(Strings.DashSeason)) Strings.DashSeason = Strings.TextMissing;
+        if (isStringMissing(Strings.DashEpisode)) Strings.DashEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.PickTheSeasonAndEpisode)) Strings.PickTheSeasonAndEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.YouHaveReachedTheEnd)) Strings.YouHaveReachedTheEnd = Strings.TextMissing;
+        if (isStringMissing(Strings.PingingDirectories)) Strings.PingingDirectories = Strings.TextMissing;
+        if (isStringMissing(Strings.PathToDirectory)) Strings.PathToDirectory = Strings.TextMissing;
+        if (isStringMissing(Strings.PrintCurrentSeasonEpisode)) Strings.PrintCurrentSeasonEpisode = Strings.TextMissing;
+        if (isStringMissing(Strings.WasFoundToBeInactive)) Strings.WasFoundToBeInactive = Strings.TextMissing;
+        if (isStringMissing(Strings.PleaseCorrectTheIssueThenForceRefresh))
             Strings.PleaseCorrectTheIssueThenForceRefresh = Strings.TextMissing;
-        if (Strings.InternalVersion == null) Strings.InternalVersion = Strings.TextMissing;
-        if (Strings.InactiveShows == null) Strings.InactiveShows = Strings.TextMissing;
-        if (Strings.OlderSeasons == null) Strings.OlderSeasons = Strings.TextMissing;
-        if (Strings.NotifyChangesFor == null) Strings.NotifyChangesFor = Strings.TextMissing;
-        if (Strings.OnlyChecksEveryRuns == null) Strings.OnlyChecksEveryRuns = Strings.TextMissing;
-        log.info("Finished checking for missing Strings.");
+        if (isStringMissing(Strings.InternalVersion)) Strings.InternalVersion = Strings.TextMissing;
+        if (isStringMissing(Strings.InactiveShows)) Strings.InactiveShows = Strings.TextMissing;
+        if (isStringMissing(Strings.OlderSeasons)) Strings.OlderSeasons = Strings.TextMissing;
+        if (isStringMissing(Strings.NotifyChangesFor)) Strings.NotifyChangesFor = Strings.TextMissing;
+        if (isStringMissing(Strings.OnlyChecksEveryRuns)) Strings.OnlyChecksEveryRuns = Strings.TextMissing;
+        if (isStringMissing(Strings.AllowFullWindowMovementUse))
+            Strings.AllowFullWindowMovementUse = Strings.TextMissing;
+        log.info("Finished checking for missing strings.");
+    }
+
+    private boolean isStringMissing(String stringToCheck) {
+        return stringToCheck == null || stringToCheck.isEmpty();
     }
 }

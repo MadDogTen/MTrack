@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -25,7 +24,7 @@ public class MainRun {
     private final DirectoryController directoryController;
     public boolean firstRun = false, continueStarting = true;
     private boolean hasRan = false, forceRun = true;
-    private int timer = Clock.getTimeSeconds();
+    private int timer = GenericMethods.getTimeSeconds();
 
     @SuppressWarnings("SameParameterValue")
     public MainRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, CheckShowFiles checkShowFiles, DirectoryController directoryController) {
@@ -54,7 +53,7 @@ public class MainRun {
                 }
             }
         } catch (UnsupportedEncodingException e) {
-            log.severe(Arrays.toString(e.getStackTrace()));
+            GenericMethods.printStackTrace(log, e);
         }
 
         // If the above isn't the correct folder, it then checks if the Roaming Appdata folder is the correct one.
@@ -141,6 +140,7 @@ public class MainRun {
         Variables.timeToWaitForDirectory = programSettingsController.getSettingsFile().getTimeToWaitForDirectory();
         Variables.recordChangesForNonActiveShows = programSettingsController.getSettingsFile().isRecordChangesForNonActiveShows();
         Variables.recordChangedSeasonsLowerThanCurrent = programSettingsController.getSettingsFile().isRecordChangedSeasonsLowerThanCurrent();
+        Variables.setStageMoveWithParentAndBlockParent(programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
         ChangeReporter.setChanges(userInfoController.getUserSettings().getChanges());
 
         return continueStarting;
@@ -149,7 +149,7 @@ public class MainRun {
     public void tick() {
         if (!hasRan) {
             log.info("MainRun Running...");
-            timer = Clock.getTimeSeconds();
+            timer = GenericMethods.getTimeSeconds();
             hasRan = true;
         }
         if (directoryController.isReloadShowsFile()) {
@@ -160,7 +160,7 @@ public class MainRun {
 
     private void recheck() {
         //noinspection PointlessBooleanExpression,ConstantConditions
-        if (!Variables.devMode && (forceRun && Clock.timeTakenSeconds(timer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (Clock.timeTakenSeconds(timer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && Clock.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
+        if (!Variables.disableAutomaticRechecking && !Variables.devMode && (forceRun && GenericMethods.timeTakenSeconds(timer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(timer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
@@ -174,9 +174,9 @@ public class MainRun {
             try {
                 recheckThread.join();
             } catch (InterruptedException e) {
-                log.severe(e.toString());
+                GenericMethods.printStackTrace(log, e);
             }
-            timer = Clock.getTimeSeconds();
+            timer = GenericMethods.getTimeSeconds();
             forceRun = false;
         }
     }

@@ -4,7 +4,7 @@ import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
-import com.maddogten.mtrack.util.Clock;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -89,12 +89,12 @@ public class DirectoryController {
                 try { // This is to give the Thread a chance to finish before the while loop starts. Mainly to avoid the "Time remaining" message without using a boolean.
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    log.severe(e.toString());
+                    GenericMethods.printStackTrace(log, e);
                 }
-                int timer = Clock.getTimeSeconds();
+                int timer = GenericMethods.getTimeSeconds();
                 while (thread.isAlive()) {
-                    log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer)));
-                    if (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer) < 1) {
+                    log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer)));
+                    if (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer) < 1) {
                         log.info(directory.getDirectory() + " took to long to respond to alive check, Check that the drive is plugged in & working.");
                         thread.interrupt();
                         break;
@@ -102,7 +102,7 @@ public class DirectoryController {
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            log.severe(e.toString());
+                            GenericMethods.printStackTrace(log, e);
                         }
                     }
                     if (!Main.programRunning) {
@@ -127,12 +127,12 @@ public class DirectoryController {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        log.severe(e.toString());
+                        GenericMethods.printStackTrace(log, e);
                     }
-                    int timer = Clock.getTimeSeconds();
+                    int timer = GenericMethods.getTimeSeconds();
                     while (thread.isAlive()) {
-                        log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer)));
-                        if (Variables.timeToWaitForDirectory - Clock.timeTakenSeconds(timer) < 1) {
+                        log.info("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer)));
+                        if (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer) < 1) {
                             log.info(directory.getDirectory() + " took to long to respond to alive check, Check that the drive is plugged in & working.");
                             thread.interrupt();
                             break;
@@ -140,7 +140,7 @@ public class DirectoryController {
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
-                                log.severe(e.toString());
+                                GenericMethods.printStackTrace(log, e);
                             }
                         }
                         if (!Main.programRunning) {

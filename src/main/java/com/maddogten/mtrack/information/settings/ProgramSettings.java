@@ -27,6 +27,10 @@ public class ProgramSettings implements Serializable {
     private boolean recordChangesForNonActiveShows;
     private boolean recordChangedSeasonsLowerThanCurrent;
 
+    // UI Settings
+    private boolean moveStageWithParent;
+    private boolean haveStageBlockParentStage;
+
     // Default User
     private boolean useDefaultUser;
     private String defaultUser;
@@ -58,6 +62,8 @@ public class ProgramSettings implements Serializable {
         this.language = "None";
         this.recordChangesForNonActiveShows = false;
         this.recordChangedSeasonsLowerThanCurrent = false;
+        this.moveStageWithParent = true;
+        this.haveStageBlockParentStage = true;
         this.useDefaultUser = false;
         this.defaultUser = Strings.EmptyString;
         this.showColumnWidth = Variables.SHOWS_COLUMN_WIDTH;
@@ -72,7 +78,7 @@ public class ProgramSettings implements Serializable {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, int timeToWaitForDirectory, boolean show0Remaining, String language, boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
+    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, int timeToWaitForDirectory, boolean show0Remaining, String language, boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, boolean moveStageWithParent, boolean haveStageBlockParentStage, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
         this.programGeneratedID = new Random().nextLong();
         this.programSettingsFileVersion = programSettingsFileVersion;
         this.mainDirectoryVersion = mainDirectoryVersion;
@@ -83,6 +89,8 @@ public class ProgramSettings implements Serializable {
         this.language = language;
         this.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
         this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
+        this.moveStageWithParent = moveStageWithParent;
+        this.haveStageBlockParentStage = haveStageBlockParentStage;
         this.useDefaultUser = useDefaultUser;
         this.defaultUser = defaultUser;
         this.showColumnWidth = showColumnWidth;
@@ -173,6 +181,31 @@ public class ProgramSettings implements Serializable {
 
     public void setRecordChangedSeasonsLowerThanCurrent(boolean recordChangedSeasonsLowerThanCurrent) {
         this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
+    }
+
+    private boolean isMoveStageWithParent() {
+        return moveStageWithParent;
+    }
+
+    private void setMoveStageWithParent(boolean moveStageWithParent) {
+        this.moveStageWithParent = moveStageWithParent;
+    }
+
+    private boolean isHaveStageBlockParentStage() {
+        return haveStageBlockParentStage;
+    }
+
+    private void setHaveStageBlockParentStage(boolean haveStageBlockParentStage) {
+        this.haveStageBlockParentStage = haveStageBlockParentStage;
+    }
+
+    public boolean isStageMoveWithParentAndBlockParent() {
+        return isMoveStageWithParent() && isHaveStageBlockParentStage();
+    }
+
+    public void setStageMoveWithParentAndBlockParent(boolean moveAndBlock) {
+        setMoveStageWithParent(moveAndBlock);
+        setHaveStageBlockParentStage(moveAndBlock);
     }
 
     public boolean isUseDefaultUser() {

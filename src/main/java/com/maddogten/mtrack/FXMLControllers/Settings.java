@@ -11,6 +11,7 @@ import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveWindow;
 import com.maddogten.mtrack.util.*;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,13 +32,12 @@ import java.util.logging.Logger;
 @SuppressWarnings("WeakerAccess")
 public class Settings implements Initializable {
     private static final Logger log = Logger.getLogger(Settings.class.getName());
-
+    private static Settings settings;
     private ProgramSettingsController programSettingsController;
     private ShowInfoController showInfoController;
     private UserInfoController userInfoController;
     private DirectoryController directoryController;
     private CheckShowFiles checkShowFiles;
-
     @SuppressWarnings("unused")
     @FXML
     private TabPane tabPane;
@@ -126,9 +126,16 @@ public class Settings implements Initializable {
     private CheckBox inactiveShowsCheckBox;
     @FXML
     private CheckBox olderSeasonsCheckBox;
+    @FXML
+    private CheckBox unlockParentScene;
+
+    public static Settings getSettings() {
+        return settings;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setSettings();
         this.programSettingsController = Controller.getProgramSettingsController();
         this.showInfoController = Controller.getShowInfoController();
         this.userInfoController = Controller.getUserInfoController();
@@ -176,12 +183,11 @@ public class Settings implements Initializable {
             try {
                 new AboutBox().display(tabPane.getScene().getWindow());
             } catch (Exception e1) {
-                log.info(Arrays.toString(e1.getStackTrace()));
+                GenericMethods.printStackTrace(log, e1);
             }
         });
 
         // User
-        exit.setText(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             Stage stage = (Stage) tabPane.getScene().getWindow();
             stage.close();
@@ -241,6 +247,7 @@ public class Settings implements Initializable {
             };
             new Thread(task).start();
         });
+
         // Other
         addDirectory.setText(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
@@ -262,7 +269,7 @@ public class Settings implements Initializable {
                 try {
                     generateShowsFileThread.join();
                 } catch (InterruptedException e1) {
-                    log.severe(e1.toString());
+                    GenericMethods.printStackTrace(log, e1);
                 }
                 showInfoController.loadShowsFile();
                 findChangedShows.findShowFileDifferences(showInfoController.getShowsFile());
@@ -309,7 +316,7 @@ public class Settings implements Initializable {
                                 break;
                             }
                         }
-                        log.info("Directory has been deleted!");
+                        log.info("\"" + directoryToDelete + "\" has been deleted!");
                     } else log.info("No directory has been deleted.");
                 }
             }
@@ -352,22 +359,43 @@ public class Settings implements Initializable {
                 toggleDevMode.setSelected(true);
             }
             toggleDevMode.setText(Strings.ToggleDevMode);
-            toggleDevMode.setOnAction(e -> Variables.devMode = !Variables.devMode);
+            toggleDevMode.setOnAction(e -> {
+                Variables.devMode = !Variables.devMode;
+                if (Variables.devMode) {
+                    developerTab.setDisable(false);
+                    tabPane.getTabs().add(developerTab);
+                } else {
+                    developerTab.setDisable(true);
+                    tabPane.getTabs().remove(developerTab);
+                }
+            });
         } else toggleDevMode.setVisible(false);
         openProgramFolder.setText(Strings.OpenSettingsFolder);
         openProgramFolder.setOnAction(e -> {
             try {
                 Desktop.getDesktop().open(Variables.dataFolder);
             } catch (IOException e1) {
-                log.severe(e1.toString());
+                GenericMethods.printStackTrace(log, e1);
             }
         });
         //noinspection PointlessBooleanExpression
         if (!Variables.devMode) {
             developerTab.setDisable(true);
-            developerTab.setText(Strings.EmptyString);
             tabPane.getTabs().remove(developerTab);
         }
+
+        // UI
+        unlockParentScene.setText(Strings.AllowFullWindowMovementUse);
+        unlockParentScene.setSelected(!programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
+        unlockParentScene.setOnAction(e -> {
+            programSettingsController.getSettingsFile().setStageMoveWithParentAndBlockParent(!programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
+            Variables.setStageMoveWithParentAndBlockParent(programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
+            Stage stage = (Stage) tabPane.getScene().getWindow();
+            stage.close();
+            Platform.runLater(() -> Controller.openSettingsWindow(4));
+            log.info("MoveAndBlock has been set to: " + programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
+        });
+
         // Developer
         printAllShows.setText(Strings.PrintAllShowInfo);
         printAllShows.setOnAction(e -> showInfoController.printOutAllShowsAndEpisodes());
@@ -487,6 +515,7 @@ public class Settings implements Initializable {
             }
         });
         deleteEverythingAndClose.setText(Strings.ResetProgram);
+        deleteEverythingAndClose.setTooltip(new Tooltip(Strings.WarningUnrecoverable));
         deleteEverythingAndClose.setOnAction(e -> {
             ConfirmBox confirmBox = new ConfirmBox();
             if (confirmBox.display(Strings.AreYouSureThisWillDeleteEverything, tabPane.getScene().getWindow())) {
@@ -496,7 +525,6 @@ public class Settings implements Initializable {
                 Main.stop(Main.stage, true, false);
             }
         });
-        deleteEverythingAndClose.setTooltip(new Tooltip(Strings.WarningUnrecoverable));
         // Allow the undecorated stage to be moved.
         new MoveWindow().moveWindow(tabPane, Main.stage);
     }
@@ -509,5 +537,13 @@ public class Settings implements Initializable {
             new MessageBox().display(new String[]{Strings.MustBeANumberBetween + minValue + " - " + Variables.maxWaitTimeSeconds}, this.tabPane.getScene().getWindow());
             return false;
         } else return true;
+    }
+
+    public TabPane getTabPane() {
+        return tabPane;
+    }
+
+    private void setSettings() {
+        settings = this;
     }
 }

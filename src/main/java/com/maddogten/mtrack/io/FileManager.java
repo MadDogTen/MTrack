@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.io;
 
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.OperatingSystem;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -25,7 +26,7 @@ public class FileManager {
                 oos.flush();
                 oos.close();
             } catch (IOException e) {
-                log.severe(e.toString());
+                GenericMethods.printStackTrace(log, e);
             }
         } else log.info(filename + " save already exists.");
     }
@@ -40,7 +41,7 @@ public class FileManager {
                 loadedFile = ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
-                log.severe(e.toString());
+                GenericMethods.printStackTrace(log, e);
             }
             return loadedFile;
         }
@@ -172,7 +173,7 @@ public class FileManager {
                 log.warning("FileManager- Your OS is Unknown, Attempting to open file anyways, But it may fail.");
             }
         } catch (IOException e) {
-            log.severe(e.toString());
+            GenericMethods.printStackTrace(log, e);
         }
     }
 }

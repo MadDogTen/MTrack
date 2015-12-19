@@ -222,6 +222,8 @@ public class UpdateManager {
                             Strings.EmptyString,
                             false,
                             false,
+                            true,
+                            true,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)),
                             oldProgramSettingsFile.get("DefaultUser").get(1),
                             Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(0)),
@@ -250,6 +252,9 @@ public class UpdateManager {
                 programSettings.setRecordChangesForNonActiveShows(false);
                 programSettings.setRecordChangedSeasonsLowerThanCurrent(false);
                 updatedText(fileType, 1010, 1011);
+            case 1011:
+                programSettings.setStageMoveWithParentAndBlockParent(true);
+                updatedText(fileType, 1011, 1012);
                 programSettingsController.setSettingsFile(programSettings);
                 updated = true;
         }

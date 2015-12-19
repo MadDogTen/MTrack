@@ -31,6 +31,12 @@ ChangeList is now saved and reloaded next run.
 Show rechecking will now recheck older seasons on program start, every 5th recheck, and when doing a forceRun; and added option to show related found changes on the changelog. Defaults off.
 Show rechecking will now recheck all nonIgnored shows on program start, every 10th recheck, and when doing a forceRun; and added option to show related found changes on the changelog. Defaults off.
 Fixed rechecking not searching for ignored shows.
+ProgressIndicator isCurrentlyRechecking is not shown until pingingDirectory is finished.
+pingingDirectory is now a symbol and will rotate instead of fading in and out.
+Changed the "X" and "-" buttons to a image.
+Moved Clock Methods to a GenericMethods class and removed the Clock class.
+Added UI Settings to allow parent windows to be clicked (Only currently available with Settings) + unlock window movement (Both settings are locked together, As it would be pointless to have one without the other).
+settingsTab is now disabled while the settings window is open (To go along with above change).
 
 Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).

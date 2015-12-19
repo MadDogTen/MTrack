@@ -3,10 +3,10 @@
 <!--suppress JavaFxDefaultTag -->
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Circle?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="454.0" prefWidth="281.0"
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="454.0" prefWidth="281.0" stylesheets="@MainGui.css"
       xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.Controller">
     <children>
         <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
@@ -51,16 +51,39 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <Button fx:id="exit" layoutX="257.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="22.0"
-                text="X" textAlignment="CENTER" textOverrun="CLIP"/>
+        <Button id="exit" fx:id="exit" layoutX="257.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0"
+                prefWidth="23.0" textAlignment="CENTER" textOverrun="CLIP">
+            <graphic>
+                <ImageView fitHeight="12.0" fitWidth="7.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../image/UI/ExitButton.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
         <Button fx:id="minimize" layoutX="232.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0"
-                prefWidth="23.0" text="–"/>
+                prefWidth="23.0">
+            <graphic>
+                <ImageView fitHeight="12.0" fitWidth="7.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../image/UI/MinimiseButton.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
         <ProgressIndicator id="isCurrentlyRechecking" fx:id="isCurrentlyRechecking" layoutX="145.0" layoutY="2.0"
-                           prefHeight="42.0" prefWidth="56.0" progress="0.0" stylesheets="@MainGui.css"
-                           visible="false"/>
+                           prefHeight="42.0" prefWidth="56.0" progress="0.0" visible="false"/>
         <Button fx:id="changesAlert" layoutX="190.0" layoutY="3.0" mnemonicParsing="false" prefHeight="1.0"
                 prefWidth="1.0" text="!" visible="false"/>
-        <Circle fx:id="pingingDirectory" fill="#2deb30" layoutX="173.0" layoutY="14.0" radius="8.0" stroke="BLACK"
-                strokeType="INSIDE" strokeWidth="0.3" visible="false"/>
+        <Pane fx:id="pingingDirectoryPane" layoutX="164.0" layoutY="6.0" prefHeight="18.0" prefWidth="18.0">
+            <children>
+                <ImageView fx:id="pingingDirectory" fitHeight="18.0" fitWidth="18.0" layoutX="2.0" layoutY="-1.0"
+                           pickOnBounds="true" preserveRatio="true" visible="false">
+                    <image>
+                        <Image url="@../image/UI/PingingDirectoriesCircle.png"/>
+                    </image>
+                </ImageView>
+            </children>
+        </Pane>
     </children>
 </Pane>

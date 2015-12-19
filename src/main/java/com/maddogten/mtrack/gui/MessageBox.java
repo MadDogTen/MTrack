@@ -19,16 +19,13 @@ import java.util.logging.Logger;
 
 public class MessageBox {
     private final Logger log = Logger.getLogger(MessageBox.class.getName());
-    public boolean isOpen = false;
 
     public void display(String[] message, Window oldWindow) {
         log.finest("MessageBox has been opened.");
-        isOpen = true;
         Stage window = new Stage();
         ImageLoader.setIcon(window);
         window.initStyle(StageStyle.UNDECORATED);
         window.initModality(Modality.APPLICATION_MODAL);
-
         VBox layout = new VBox();
         if (message.length == 1) {
             layout.getChildren().add(new Label(message[0]));
@@ -42,10 +39,7 @@ public class MessageBox {
         Button close = new Button(Strings.Close);
         close.setMinHeight(20);
         close.setMinWidth(30);
-        close.setOnAction(e -> {
-            isOpen = false;
-            window.close();
-        });
+        close.setOnAction(e -> window.close());
 
         layout.getChildren().add(close);
         layout.setAlignment(Pos.CENTER);

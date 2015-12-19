@@ -4,7 +4,7 @@ import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
-import com.maddogten.mtrack.util.Clock;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 
 import java.util.*;
@@ -36,7 +36,7 @@ public class ShowInfoController {
             showsFile = directoryController.getDirectories().get(0).getShows();
             log.info("showsFile was loaded, Only one Directory.");
         } else if (directoryController.getDirectories().size() > 1) {
-            long timer = Clock.getTimeMilliSeconds();
+            long timer = GenericMethods.getTimeMilliSeconds();
             showsFile = new HashMap<>();
             ArrayList<Directory> showsFileArray = directoryController.getDirectories(-2);
             HashSet<String> allShows = new HashSet<>();
@@ -52,7 +52,7 @@ public class ShowInfoController {
                 });
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
             });
-            log.info("showsFile was loaded, It took " + Clock.timeTakenMilli(timer) + " nanoseconds to combine all files");
+            log.info("showsFile was loaded, It took " + GenericMethods.timeTakenMilli(timer) + " nanoseconds to combine all files");
         }
     }
 
@@ -87,7 +87,7 @@ public class ShowInfoController {
             return showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename();
         } else {
             log.warning("Error for: " + show + " - Season " + season + " - Episode " + episode + ", Please report.");
-            return "";
+            return Strings.EmptyString;
         }
     }
 

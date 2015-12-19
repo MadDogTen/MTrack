@@ -86,6 +86,7 @@ public class template extends Language {
         // CheckBox Text
         Strings.InactiveShows = "";
         Strings.OlderSeasons = "";
+        Strings.AllowFullWindowMovementUse = "";
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft = "";

@@ -53,7 +53,7 @@ public class FirstRun {
             try {
                 jarLocation = fileManager.getJarLocationFolder();
             } catch (UnsupportedEncodingException e) {
-                log.severe(Arrays.toString(e.getStackTrace()));
+                GenericMethods.printStackTrace(log, e);
             }
             File appData = fileManager.getAppDataFolder();
             String answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString(), null);
@@ -82,7 +82,7 @@ public class FirstRun {
             try {
                 generateShowFilesThread.join();
             } catch (InterruptedException e) {
-                log.severe(e.toString());
+                GenericMethods.printStackTrace(log, e);
             }
             log.info(Strings.UserName);
             showInfoController.loadShowsFile();

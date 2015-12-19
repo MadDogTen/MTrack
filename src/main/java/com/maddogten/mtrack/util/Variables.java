@@ -22,13 +22,13 @@ public class Variables {
     public static final String SettingsExtension = ".settings";
     public static final String DefaultLanguage = "en_US";
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // TODO Set back to 1 for full release. \\
-    public static final int ProgramSettingsFileVersion = 1011; // Was Changed // TODO Remove all "Was Changed" before merging with master.
+    public static final int ProgramSettingsFileVersion = 1012; // Was Changed // TODO Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1003; // Was Changed
     public static final int ShowFileVersion = 1000; // Was Changed
 
     public static final int InternalVersion = 4; // To help keep track of what I'm currently working on / testing.
 
-    /**/public static final boolean showOptionToToggleDevMode = false; // false
+    /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
     public static final int defaultUpdateSpeed = 120;
@@ -38,7 +38,8 @@ public class Variables {
     public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
     public static final int checkSeasonsLowerThanCurrentInterval = 5;
     public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
-    /**/public static boolean devMode = true; // false
+    public static final boolean disableAutomaticRechecking = true; // TODO Add Setting for user
+    /**/public static boolean devMode = false; // false
     public static int updateSpeed;
 
     //---------- Other Variables ----------\\
@@ -47,9 +48,16 @@ public class Variables {
     public static int timeToWaitForDirectory;
     public static boolean recordChangesForNonActiveShows;
     public static boolean recordChangedSeasonsLowerThanCurrent;
+    public static boolean moveStageWithParent;
+    public static boolean haveStageBlockParentStage;
 
     public static void setDataFolder(File file) {
         dataFolder = file;
+    }
+
+    public static void setStageMoveWithParentAndBlockParent(boolean stageMoveWithParentAndBlockParent) {
+        moveStageWithParent = stageMoveWithParentAndBlockParent;
+        haveStageBlockParentStage = stageMoveWithParentAndBlockParent;
     }
 
 

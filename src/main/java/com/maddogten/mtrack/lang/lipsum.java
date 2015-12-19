@@ -4,7 +4,7 @@ import com.maddogten.mtrack.util.Strings;
 
 import java.util.logging.Logger;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection", "unused", "WeakerAccess"})
 public class lipsum extends Language {
     private final Logger log = Logger.getLogger(lipsum.class.getName());
 
@@ -87,6 +87,7 @@ public class lipsum extends Language {
         // CheckBox Text
         Strings.InactiveShows = "miterra";
         Strings.OlderSeasons = "avartu";
+        Strings.AllowFullWindowMovementUse = "hula";
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft = "sollicitudin";

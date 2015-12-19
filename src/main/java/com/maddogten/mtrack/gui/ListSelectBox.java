@@ -40,7 +40,6 @@ public class ListSelectBox {
         Stage window = new Stage();
         window.getIcons().add(ImageLoader.getImage(Variables.Logo));
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
         window.setMinWidth(250);
 
@@ -218,7 +217,6 @@ public class ListSelectBox {
         Stage window = new Stage();
         window.getIcons().add(ImageLoader.getImage(Variables.Logo));
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
         window.setMinWidth(250);
 
@@ -309,11 +307,9 @@ public class ListSelectBox {
 
     public String pickLanguage(String message, Collection<String> languages, Window oldWindow) {
         final String[] language = {"-2"};
-
         Stage window = new Stage();
         window.getIcons().add(ImageLoader.getImage(Variables.Logo));
         window.initStyle(StageStyle.UNDECORATED);
-
         window.initModality(Modality.APPLICATION_MODAL);
         window.setMinWidth(250);
 

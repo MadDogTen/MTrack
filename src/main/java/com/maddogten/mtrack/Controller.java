@@ -7,6 +7,7 @@ import com.maddogten.mtrack.information.show.DisplayShows;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -20,15 +21,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("WeakerAccess")
 public class Controller implements Initializable {
     private static final Logger log = Logger.getLogger(Controller.class.getName());
+    private static final SettingsWindow settingsWindow = new SettingsWindow();
     private static ProgramSettingsController programSettingsController;
     private static ShowInfoController showInfoController;
     private static UserInfoController userInfoController;
@@ -88,7 +89,9 @@ public class Controller implements Initializable {
     @FXML
     private Button changesAlert;
     @FXML
-    private Circle pingingDirectory;
+    private Pane pingingDirectoryPane;
+    @FXML
+    private ImageView pingingDirectory;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
@@ -215,6 +218,20 @@ public class Controller implements Initializable {
             log.fine("ChangeBox was open, closing...");
             controller.changesBox.getStage().close();
         }
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    public static void openSettingsWindow(int tab) {
+        settingsWindow.closeSettings();
+        try {
+            settingsWindow.display(tab);
+        } catch (Exception e) {
+            GenericMethods.printStackTrace(log, e);
+        }
+    }
+
+    public static SettingsWindow getSettingsWindow() {
+        return settingsWindow;
     }
 
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
@@ -507,16 +524,24 @@ public class Controller implements Initializable {
         show0RemainingCheckBox.setTooltip(new Tooltip(Strings.ShowHiddenShowsWith0EpisodeLeft));
         Tooltip.install(
                 pingingDirectory,
-                new Tooltip(Strings.PingingDirectories));
+                new Tooltip(Strings.PingingDirectories)
+        );
+        Tooltip.install(
+                pingingDirectoryPane,
+                new Tooltip(Strings.PingingDirectories)
+        );
 
         // || ~~~~ Settings Tab ~~~~ || \\
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
         settingsTab.setOnSelectionChanged(e -> {
             selectionModel.select(showsTab);
             try {
-                new SettingsWindow().display();
+                if (!settingsWindow.isSettingsOpen()) {
+                    settingsTab.setDisable(true);
+                    settingsWindow.display(-2);
+                }
             } catch (Exception e1) {
-                log.info(Arrays.toString(e1.getStackTrace()));
+                GenericMethods.printStackTrace(log, e1);
             }
         });
 
@@ -525,50 +550,59 @@ public class Controller implements Initializable {
 
         // Shows an indicator when its rechecking the shows.
         isCurrentlyRechecking.setTooltip(new Tooltip(Strings.CurrentlyRechecking));
+        isCurrentlyRechecking.setStyle(
+                "-fx-progress-color: blue;"
+        );
 
-        final boolean[] lowerOpacity = {false};
-        final double[] currentOpacity = {1};
-        Task<Void> task = new Task<Void>() {
+        Task<Void> mainTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 while (Main.programRunning) {
-                    boolean currentlyRechecking = isCurrentlyRechecking();
-                    if (currentlyRechecking) {
-                        if (checkShowFiles.isCurrentlyCheckingDirectories()) {
-                            if (!pingingDirectory.isVisible()) {
-                                pingingDirectory.setVisible(true);
-                            }
-                            pingingDirectory.setOpacity(currentOpacity[0]);
-                            if (currentOpacity[0] >= 1.25) {
-                                lowerOpacity[0] = true;
-                            } else if (currentOpacity[0] <= 0.30) {
-                                lowerOpacity[0] = false;
-                            }
-                            if (lowerOpacity[0]) {
-                                currentOpacity[0] -= 0.03;
-                            } else {
-                                currentOpacity[0] += 0.03;
-                            }
-                        } else if (pingingDirectory.isVisible()) {
-                            pingingDirectory.setVisible(false);
+                    if (checkShowFiles.getRecheckShowFileRunning()) {
+                        pingingDirectory.setVisible(true);
+                        while (checkShowFiles.isCurrentlyCheckingDirectories()) {
+                            pingingDirectory.setRotate(pingingDirectory.getRotate() + 4);
+                            Thread.sleep(80);
                         }
-                        Platform.runLater(() -> {
-                            Double temp = checkShowFiles.getRecheckShowFilePercentage();
-                            isCurrentlyRechecking.setProgress(temp);
-                        });
-                    } else if (pingingDirectory.isVisible()) pingingDirectory.setVisible(false);
-                    isChangesListPopulated();
-                    if (currentlyRechecking) {
-                        Thread.sleep(80);
-                    } else {
-                        Thread.sleep(800);
+                        pingingDirectory.setRotate(0);
+                        pingingDirectory.setVisible(false);
+                        isCurrentlyRechecking.setVisible(true);
+                        while (checkShowFiles.getRecheckShowFileRunning()) {
+                            Platform.runLater(() -> isCurrentlyRechecking.setProgress(checkShowFiles.getRecheckShowFilePercentage()));
+                            Thread.sleep(80);
+                        }
+                        isCurrentlyRechecking.setProgress(0);
+                        isCurrentlyRechecking.setVisible(false);
                     }
+                    checkIfChangesListIsPopulated();
+                    Thread.sleep(800);
                 }
                 //noinspection ReturnOfNull
                 return null;
             }
         };
-        new Thread(task).start();
+        new Thread(mainTask).start();
+        Task<Void> secondaryTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                while (Main.programRunning) {
+                    if (settingsWindow.isSettingsOpen()) {
+                        if (!settingsTab.isDisable()) {
+                            settingsTab.setDisable(true);
+                        }
+                        while (settingsWindow.isSettingsOpen()) {
+                            Thread.sleep(80);
+                        }
+                        settingsTab.setDisable(false);
+                    } else if (settingsTab.isDisable()) {
+                        settingsTab.setDisable(false);
+                    }
+                    Thread.sleep(800);
+                }
+                return null;
+            }
+        };
+        new Thread(secondaryTask).start();
     }
 
     private void openChangeBox() {
@@ -588,19 +622,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private boolean isCurrentlyRechecking() {
-        if (checkShowFiles.getRecheckShowFileRunning()) {
-            if (!isCurrentlyRechecking.isVisible()) {
-                isCurrentlyRechecking.setVisible(true);
-            }
-            return true;
-        } else if (isCurrentlyRechecking.isVisible()) {
-            isCurrentlyRechecking.setVisible(false);
-        }
-        return false;
-    }
-
-    private void isChangesListPopulated() {
+    private void checkIfChangesListIsPopulated() {
         if (ChangeReporter.getIsChanges()) {
             changesAlert.setVisible(true);
         } else if (changesAlert.isVisible()) {

@@ -1,10 +1,9 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ConfirmBox;
-import com.maddogten.mtrack.gui.SettingsWindow;
 import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
-import com.maddogten.mtrack.util.Clock;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -26,7 +25,7 @@ public class Main extends Application implements Runnable {
     private final static ProgramSettingsController programSettingsController = new ProgramSettingsController(userInfoController);
     private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController, directoryController);
     private final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles, directoryController);
-    private final static int timer = Clock.getTimeSeconds();
+    private final static int timer = GenericMethods.getTimeSeconds();
     public static boolean programRunning = true, programFullyRunning = false;
     public static Stage stage;
     private static Thread thread;
@@ -58,19 +57,19 @@ public class Main extends Application implements Runnable {
             }
             programFullyRunning = false;
             programRunning = false;
-            int timeRan = Clock.timeTakenSeconds(timer);
+            int timeRan = GenericMethods.timeTakenSeconds(timer);
             if (timeRan > 60) {
                 log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             } else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
             Controller.closeChangeBoxStage();
-            SettingsWindow.closeSettings();
+            Controller.getSettingsWindow().closeSettings();
             if (stage != null) stage.close();
             if (thread != null) {
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
-                    log.severe(e.toString());
+                    GenericMethods.printStackTrace(log, e);
                 }
             }
         }
@@ -139,7 +138,7 @@ public class Main extends Application implements Runnable {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                log.severe(e.toString());
+                GenericMethods.printStackTrace(log, e);
             }
         }
     }

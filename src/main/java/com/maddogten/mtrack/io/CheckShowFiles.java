@@ -67,7 +67,7 @@ public class CheckShowFiles {
             boolean[] hasChanged = {false};
             ArrayList<String> updatedShows = new ArrayList<>();
             // timer - Used purely for log purposes to see how long the run takes.
-            int timer = Clock.getTimeSeconds();
+            int timer = GenericMethods.getTimeSeconds();
             log.info("Started rechecking shows...");
             recheckShowFileRunning = true;
             keepRunning = !forceRun;
@@ -80,7 +80,7 @@ public class CheckShowFiles {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    log.severe(e.toString());
+                    GenericMethods.printStackTrace(log, e);
                 }
             }
             final double[] percentagePerDirectory = {100};
@@ -157,10 +157,10 @@ public class CheckShowFiles {
                     }
                     findChangedShows.findShowFileDifferences(showInfoController.getShowsFile());
                     log.info("Some shows have been updated.");
-                    log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
+                    log.info("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
                 } else if (Main.programFullyRunning) {
                     log.info("All shows were the same.");
-                    log.info("Finished Rechecking Shows! - It took " + Clock.timeTakenSeconds(timer) + " seconds.");
+                    log.info("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
                 }
                 recheckShowFileRunning = false;
             }

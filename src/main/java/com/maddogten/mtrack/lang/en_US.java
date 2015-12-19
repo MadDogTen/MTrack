@@ -85,6 +85,7 @@ public class en_US extends Language {
         // CheckBox Text
         Strings.InactiveShows = "Inactive Shows";
         Strings.OlderSeasons = "Older Seasons";
+        Strings.AllowFullWindowMovementUse = "Allow Full Window Movement/Use";
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft = "Show/Hide shows with 0 episode left.";
