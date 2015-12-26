@@ -115,11 +115,12 @@ public class UserInfoController {
         log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
         String showLocation = showInfoController.getEpisode(aShow, aSeason, aEpisode);
         log.info("Known show location: " + showLocation);
-        if (showLocation.isEmpty()) {
+        if (showLocation.isEmpty()) log.warning("showLocation is empty!");
+        else {
             File file = new File(showLocation);
             if (file.exists()) new FileManager().open(file);
             else log.warning("File \"" + file + "\" doesn't exists!");
-        } else log.warning("File doesn't exists!");
+        }
     }
 
     // Changes which episode the user is currently on. If -2 is returned as the episode, it increases it to the next episode found.
