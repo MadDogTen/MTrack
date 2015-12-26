@@ -3,6 +3,11 @@ package com.maddogten.mtrack.information.show;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+/*
+      DisplayShows is used for the Controller Class. It stores the information that needs to be displayed
+      on the tableView.
+ */
+
 @SuppressWarnings({"unused", "ClassWithoutLogger"})
 public class DisplayShows {
     private SimpleStringProperty show;

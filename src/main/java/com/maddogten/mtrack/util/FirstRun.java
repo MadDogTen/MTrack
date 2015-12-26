@@ -17,6 +17,7 @@ import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.io.FileManager;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -56,10 +57,10 @@ public class FirstRun {
                 GenericMethods.printStackTrace(log, e);
             }
             File appData = fileManager.getAppDataFolder();
-            String answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString(), null);
-            if (answer.matches(Strings.InAppData)) {
+            StringProperty answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString(), null);
+            if (answer.getValue().matches(Strings.InAppData.getValue())) {
                 Variables.setDataFolder(appData);
-            } else if (answer.matches(Strings.WithTheJar)) {
+            } else if (answer.getValue().matches(Strings.WithTheJar.getValue())) {
                 Variables.setDataFolder(jarLocation);
             }
             fileManager.createFolder(Strings.EmptyString);
@@ -78,7 +79,7 @@ public class FirstRun {
             Thread generateShowFilesThread = new Thread(task);
             generateShowFilesThread.start();
             TextBox textBox = new TextBox();
-            Strings.UserName = textBox.display(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
+            Strings.UserName = textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
             try {
                 generateShowFilesThread.join();
             } catch (InterruptedException e) {
@@ -127,10 +128,10 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectoriesDisplay(directoryController.getDirectories(), null));
+            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectory(directoryController.getDirectories(), null));
             index++;
             if (!matched[0] && !matched[1]) {
-                new MessageBox().display(new String[]{Strings.DirectoryWasADuplicate}, null);
+                new MessageBox().display(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
             } else if (matched[1]) {
                 break;
             }

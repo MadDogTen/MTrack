@@ -1,6 +1,6 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
@@ -24,10 +24,10 @@ public class SelectBox {
 
     public String display(String message, String[] buttonsText, Window oldWindow) {
         log.finest("SelectBox has been opened.");
-        Stage window = new Stage();
-        ImageLoader.setIcon(window);
-        window.initStyle(StageStyle.UNDECORATED);
-        window.initModality(Modality.APPLICATION_MODAL);
+        Stage stage = new Stage();
+        ImageLoader.setIcon(stage);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
         label.setText(message);
@@ -45,14 +45,14 @@ public class SelectBox {
         buttons.forEach(aButton -> {
             aButton.setOnAction(e -> {
                 answer[0] = aButton.getText();
-                window.close();
+                stage.close();
             });
             layout2.getChildren().add(aButton);
         });
 
         close.setOnAction(e -> {
             answer[0] = Strings.EmptyString;
-            window.close();
+            stage.close();
         });
 
         layout2.getChildren().add(close);
@@ -66,13 +66,13 @@ public class SelectBox {
 
         Scene scene = new Scene(layout);
 
-        window.setScene(scene);
+        stage.setScene(scene);
         Platform.runLater(() -> {
-            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
-            new MoveWindow().moveWindow(window, oldWindow);
+            stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
+            new MoveStage().moveWindow(stage, oldWindow);
         });
-        window.showAndWait();
+        stage.showAndWait();
 
         return answer[0];
     }

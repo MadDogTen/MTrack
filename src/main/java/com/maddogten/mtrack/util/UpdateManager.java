@@ -217,12 +217,12 @@ public class UpdateManager {
                             Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(1)),
                             Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(2)),
                             Integer.parseInt(oldProgramSettingsFile.get("General").get(0)),
+                            false,
                             -1,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("General").get(1)),
                             Strings.EmptyString,
                             false,
                             false,
-                            true,
                             true,
                             Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)),
                             oldProgramSettingsFile.get("DefaultUser").get(1),
@@ -254,6 +254,7 @@ public class UpdateManager {
                 updatedText(fileType, 1010, 1011);
             case 1011:
                 programSettings.setStageMoveWithParentAndBlockParent(true);
+                programSettings.setDisableAutomaticShowUpdating(false);
                 updatedText(fileType, 1011, 1012);
                 programSettingsController.setSettingsFile(programSettings);
                 updated = true;

@@ -26,7 +26,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1003; // Was Changed
     public static final int ShowFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 4; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 5; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -38,7 +38,8 @@ public class Variables {
     public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
     public static final int checkSeasonsLowerThanCurrentInterval = 5;
     public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
-    public static final boolean disableAutomaticRechecking = true; // TODO Add Setting for user
+    /**/public static final boolean forceDisableAutomaticRechecking = false; // false
+    public static boolean disableAutomaticRechecking;
     /**/public static boolean devMode = false; // false
     public static int updateSpeed;
 

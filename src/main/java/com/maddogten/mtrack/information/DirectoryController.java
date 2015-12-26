@@ -8,6 +8,8 @@ import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -158,7 +160,7 @@ public class DirectoryController {
                     activeDirectories.add(directory);
                 } else {
                     activeStatus = "inactive.";
-                    Platform.runLater(() -> new MessageBox().display(new String[]{Strings.Warning + directory.getDirectory() + Strings.WasFoundToBeInactive, Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
+                    Platform.runLater(() -> new MessageBox().display(new StringProperty[]{new SimpleStringProperty(Strings.Warning.getValue() + directory.getDirectory() + Strings.WasFoundToBeInactive.getValue()), Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
                     if (!inactiveDirectories.contains(directory.getDirectory())) {
                         log.info(directory.getDirectory() + " was added to the inactiveDirectories list.");
                         inactiveDirectories.add(directory.getDirectory());

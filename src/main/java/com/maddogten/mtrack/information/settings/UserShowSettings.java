@@ -2,6 +2,10 @@ package com.maddogten.mtrack.information.settings;
 
 import java.io.Serializable;
 
+/*
+      UserShowSettings stores each shows settings.
+ */
+
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class UserShowSettings implements Serializable {
 

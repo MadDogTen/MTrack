@@ -15,44 +15,50 @@ import javafx.stage.StageStyle;
 
 import java.util.logging.Logger;
 
+/*
+      SettingsWindow handles opening the Settings class, and Settings can be opened to a specific tab.
+      closeSettings() allows the parent class to close it.
+      isSettingsOpen() allows the parent class to check its status.
+ */
+
 public class SettingsWindow {
     private final Logger log = Logger.getLogger(SettingsWindow.class.getName());
-    private Stage window;
+    private Stage stage;
 
     public void closeSettings() {
         if (isSettingsOpen()) {
             log.fine("Setting was open, closing...");
-            window.close();
+            stage.close();
         }
     }
 
     public boolean isSettingsOpen() {
-        return window != null;
+        return stage != null;
     }
 
     public void display(int tab) throws Exception {
         log.info("SettingsWindow has been opened.");
-        window = new Stage();
-        window.initOwner(Main.stage);
-        ImageLoader.setIcon(window);
-        window.initStyle(StageStyle.UNDECORATED);
-        if (Variables.haveStageBlockParentStage) window.initModality(Modality.APPLICATION_MODAL);
+        stage = new Stage();
+        stage.initOwner(Main.stage);
+        ImageLoader.setIcon(stage);
+        stage.initStyle(StageStyle.UNDECORATED);
+        if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);
 
         Pane root = FXMLLoader.load(getClass().getResource("/gui/Settings.fxml"));
         Scene scene = new Scene(root);
         scene.setFill(Color.WHITESMOKE);
 
-        window.setResizable(false);
-        window.setScene(scene);
+        stage.setResizable(false);
+        stage.setScene(scene);
         Platform.runLater(() -> {
-            window.setX(Main.stage.getX() + (Main.stage.getWidth() / 2) - (window.getWidth() / 2));
-            window.setY(Main.stage.getY() + (Main.stage.getHeight() / 2) - (window.getHeight() / 2));
+            stage.setX(Main.stage.getX() + (Main.stage.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(Main.stage.getY() + (Main.stage.getHeight() / 2) - (stage.getHeight() / 2));
             if (tab != -2) {
                 Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab);
             }
         });
-        window.showAndWait();
-        window = null;
+        stage.showAndWait();
+        stage = null;
         log.info("SettingsWindow has been closed.");
     }
 }

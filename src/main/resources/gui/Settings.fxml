@@ -15,25 +15,27 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Text fx:id="updateText" layoutX="14.0" layoutY="42.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" text="Update Time (Seconds):"/>
-                                <TextField fx:id="updateTimeTextField" layoutX="149.0" layoutY="25.0" prefHeight="25.0"
+                                <Text fx:id="updateText" layoutX="36.0" layoutY="22.0" strokeType="OUTSIDE"
+                                      strokeWidth="0.0" text="Searching Wait Time (Seconds):"/>
+                                <TextField fx:id="updateTimeTextField" layoutX="83.0" layoutY="30.0" prefHeight="25.0"
                                            prefWidth="36.0"/>
-                                <Button fx:id="setUpdateTime" layoutX="192.0" layoutY="25.0" mnemonicParsing="false"
+                                <Button fx:id="setUpdateTime" layoutX="125.0" layoutY="30.0" mnemonicParsing="false"
                                         text="Set"/>
-                                <Separator layoutX="52.0" layoutY="64.0" prefHeight="14.0" prefWidth="134.0"/>
-                                <Text fx:id="notifyChangesText" layoutX="66.0" layoutY="86.0" strokeType="OUTSIDE"
+                                <Separator layoutX="52.0" layoutY="84.0" prefHeight="14.0" prefWidth="134.0"/>
+                                <Text fx:id="notifyChangesText" layoutX="66.0" layoutY="106.0" strokeType="OUTSIDE"
                                       strokeWidth="0.0" text="Notify Changes For:"/>
-                                <CheckBox fx:id="inactiveShowsCheckBox" layoutX="70.0" layoutY="94.0"
+                                <CheckBox fx:id="inactiveShowsCheckBox" layoutX="70.0" layoutY="114.0"
                                           mnemonicParsing="false" prefHeight="17.0" prefWidth="105.0"
                                           text="Inactive Shows"/>
-                                <CheckBox fx:id="olderSeasonsCheckBox" layoutX="70.0" layoutY="115.0"
+                                <CheckBox fx:id="olderSeasonsCheckBox" layoutX="70.0" layoutY="135.0"
                                           mnemonicParsing="false" text="Older Seasons"/>
-                                <Text fx:id="onlyChecksEveryText" layoutX="54.0" layoutY="146.0" strokeType="OUTSIDE"
+                                <Text fx:id="onlyChecksEveryText" layoutX="54.0" layoutY="166.0" strokeType="OUTSIDE"
                                       strokeWidth="0.0" text="Only checks every 5 runs"/>
-                                <Separator layoutX="52.0" layoutY="146.0" prefHeight="14.0" prefWidth="134.0"/>
+                                <Separator layoutX="52.0" layoutY="166.0" prefHeight="14.0" prefWidth="134.0"/>
                                 <Button fx:id="about" layoutX="101.0" layoutY="244.0" mnemonicParsing="false"
                                         text="About"/>
+                                <CheckBox fx:id="disableAutomaticShowUpdating" layoutX="22.0" layoutY="60.0"
+                                          mnemonicParsing="false" text="Disable Automatic Show Searching"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -54,13 +56,14 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Show">
+                <Tab fx:id="showTab" text="Show">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
                                 <Button fx:id="forceRecheck" layoutX="61.0" layoutY="26.0" mnemonicParsing="false"
                                         text="Force Recheck Shows"/>
-                                <Button layoutX="82.0" layoutY="69.0" mnemonicParsing="false" text="UnHide Show"/>
+                                <Button fx:id="unHideShow" layoutX="82.0" layoutY="69.0" mnemonicParsing="false"
+                                        text="UnHide Show"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -75,28 +78,28 @@
                                         text="Add Directory"/>
                                 <Button fx:id="removeDirectory" layoutX="121.0" layoutY="27.0" mnemonicParsing="false"
                                         text="Remove Directory"/>
-                                <Button fx:id="changeLanguage" layoutX="59.0" layoutY="169.0" mnemonicParsing="false"
-                                        text="Change Language"/>
                                 <Button fx:id="setDirectoryTimeout" layoutX="125.0" layoutY="103.0"
                                         mnemonicParsing="false" text="Set"/>
                                 <TextField fx:id="directoryTimeoutTextField" layoutX="79.0" layoutY="103.0"
                                            prefHeight="25.0" prefWidth="36.0"/>
                                 <Text fx:id="directoryTimeoutText" layoutX="45.0" layoutY="91.0" strokeType="OUTSIDE"
                                       strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
-                                <ToggleButton fx:id="toggleDevMode" layoutX="79.0" layoutY="220.0"
+                                <ToggleButton fx:id="toggleDevMode" layoutX="74.0" layoutY="211.0"
                                               mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0"
                                               text="Toggle Dev"/>
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="UI">
+                <Tab fx:id="uiTab" text="UI">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
                                 <CheckBox fx:id="unlockParentScene" layoutX="18.0" layoutY="38.0"
                                           mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0"
                                           text="Allow Full Window Movement/Use"/>
+                                <Button fx:id="changeLanguage" layoutX="69.0" layoutY="224.0" mnemonicParsing="false"
+                                        text="Change Language"/>
                             </children>
                         </AnchorPane>
                     </content>

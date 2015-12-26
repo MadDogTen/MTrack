@@ -18,7 +18,7 @@ ChangeBox now shows additions with a '+' and removals with a '-'. (Easier to not
 Finished up multilingual support. Added some missing strings. Added a method in LanguageHandler to check if any strings are missing after being set, and if any are missing, set them to TextMissing.
 Converted to Maven build structure.
 Added ability to close the program before it is fully started.
-Added comments to mostly everything.
+Added comments to quite a bit more.
 Directory information is no longer stored in the program settings file, They are instead gotten on program load from the folder. You can add or remove directories freely and it will properly handle it.
 Will now properly switch to new seasons when found.
 Selecting show season & episode is now done on one window.
@@ -37,6 +37,12 @@ Changed the "X" and "-" buttons to a image.
 Moved Clock Methods to a GenericMethods class and removed the Clock class.
 Added UI Settings to allow parent windows to be clicked (Only currently available with Settings) + unlock window movement (Both settings are locked together, As it would be pointless to have one without the other).
 settingsTab is now disabled while the settings window is open (To go along with above change).
+Added setting to disable automatic show rechecking.
+Moved "Change Language" to UI tab in the settings stage.
+Added slight delay when moving the window to prevent unintentionally moving it.
+Changed "ChangeLanguage" to have changes take effect immediately. Note- Needs more testing to make I didn't break anything while implementing this.
+Renamed MoveWindow to MoveStage.
+Added a Main Comment to each Class, explaining the basic use of it. Currently unfinished (Left off on DisplayShows).
 
 Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).

@@ -1,9 +1,10 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,20 +19,26 @@ import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
+/*
+      ConfirmBox is a simple stage that displays a message and a Yes or No buttons and returns the answer.
+ */
+
 public class ConfirmBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
 
-    public boolean display(String message, Window oldWindow) {
+    public boolean display(StringProperty message, Window oldWindow) {
         log.finest("ConfirmBox has been ran.");
-        Stage window = new Stage();
-        ImageLoader.setIcon(window);
-        window.initStyle(StageStyle.UNDECORATED);
-        window.initModality(Modality.APPLICATION_MODAL);
+        Stage stage = new Stage();
+        ImageLoader.setIcon(stage);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
-        label.setText(message);
+        label.textProperty().bind(message);
 
-        Button yesButton = new Button(Strings.Yes), noButton = new Button(Strings.No);
+        Button yesButton = new Button(), noButton = new Button();
+        yesButton.textProperty().bind(Strings.Yes);
+        noButton.textProperty().bind(Strings.No);
         yesButton.setMinHeight(20);
         yesButton.setMinWidth(30);
         noButton.setMinHeight(20);
@@ -40,11 +47,11 @@ public class ConfirmBox {
         final boolean[] answer = new boolean[1];
         yesButton.setOnAction(e -> {
             answer[0] = true;
-            window.close();
+            stage.close();
         });
         noButton.setOnAction(e -> {
             answer[0] = false;
-            window.close();
+            stage.close();
         });
 
         HBox layout2 = new HBox();
@@ -59,15 +66,15 @@ public class ConfirmBox {
 
         Scene scene = new Scene(layout);
 
-        window.setScene(scene);
+        stage.setScene(scene);
         Platform.runLater(() -> {
             if (oldWindow != null) {
-                window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-                window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+                stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
+                stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
             }
-            new MoveWindow().moveWindow(window, oldWindow);
+            new MoveStage().moveWindow(stage, oldWindow);
         });
-        window.showAndWait();
+        stage.showAndWait();
 
         return answer[0];
     }

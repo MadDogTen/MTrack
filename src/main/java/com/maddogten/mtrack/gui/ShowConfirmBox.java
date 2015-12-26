@@ -1,10 +1,11 @@
 package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.Main;
-import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,22 +20,29 @@ import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
+/*
+      ShowConfirmBox is displayed when the user plays a show. It allows them increment the episode number and close, leave the episode number as is and close,
+      or to increment the episode number and automatically start the next episode and redisplay this window.
+ */
+
 public class ShowConfirmBox {
     private static final Logger log = Logger.getLogger(ShowConfirmBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public int display(String message, Window oldWindow, boolean disableNextEpisodeButton) {
+    public int display(StringProperty message, Window oldWindow, boolean disableNextEpisodeButton) {
         log.finest("ShowConfirmBox has been opened.");
-        Stage window = new Stage();
-        window.initOwner(Main.stage); // TODO - Decide if I want to do it this way? Works for now.
-        ImageLoader.setIcon(window);
-        window.initStyle(StageStyle.UNDECORATED);
-        window.initModality(Modality.APPLICATION_MODAL);
+        Stage stage = new Stage();
+        stage.initOwner(Main.stage); // TODO - Decide if I want to do it this way? Works for now.
+        ImageLoader.setIcon(stage);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
 
         Label label = new Label();
-        label.setText(message);
+        label.textProperty().bind(message);
 
-        Button yesButton = new Button(Strings.Yes), noButton = new Button(Strings.No);
+        Button yesButton = new Button(), noButton = new Button();
+        yesButton.textProperty().bind(Strings.Yes);
+        noButton.textProperty().bind(Strings.No);
         yesButton.setMinHeight(20);
         yesButton.setMinWidth(30);
         noButton.setMinHeight(20);
@@ -43,12 +51,12 @@ public class ShowConfirmBox {
         final int[] answer = new int[1];
         yesButton.setOnAction(e -> {
             answer[0] = 1;
-            window.close();
+            stage.close();
         });
 
         noButton.setOnAction(e -> {
             answer[0] = 0;
-            window.close();
+            stage.close();
         });
 
         HBox layout2 = new HBox();
@@ -56,12 +64,13 @@ public class ShowConfirmBox {
         layout2.setAlignment(Pos.CENTER);
         layout2.setPadding(new Insets(4, 6, 6, 6));
 
-        Button nextEpisode = new Button(Strings.NextEpisode);
+        Button nextEpisode = new Button();
+        nextEpisode.textProperty().bind(Strings.NextEpisode);
         nextEpisode.setMinHeight(20);
         nextEpisode.setMinWidth(30);
         nextEpisode.setOnAction(e -> {
             answer[0] = 2;
-            window.close();
+            stage.close();
         });
         if (disableNextEpisodeButton) {
             nextEpisode.setDisable(true);
@@ -73,13 +82,13 @@ public class ShowConfirmBox {
         layout.setPadding(new Insets(6, 0, 0, 0));
 
         Scene scene = new Scene(layout);
-        window.setScene(scene);
+        stage.setScene(scene);
         Platform.runLater(() -> {
-            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
-            new MoveWindow().moveWindow(window, oldWindow);
+            stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
+            new MoveStage().moveWindow(stage, oldWindow);
         });
-        window.showAndWait();
+        stage.showAndWait();
 
         return answer[0];
     }

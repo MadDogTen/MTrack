@@ -1,7 +1,7 @@
 package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.information.ChangeReporter;
-import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -23,32 +23,36 @@ import javafx.stage.Window;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+/*
+      ChangeBox displays any changes the program reported during show scans. Does NOT display the changelog.
+ */
+
 public class ChangesBox {
     private static final Logger log = Logger.getLogger(ChangesBox.class.getName());
 
     // This is true when the openChanges stage is open. If it open, then you are unable to open another instance of it.
     private boolean currentlyOpen = false;
-    private Stage window;
+    private Stage stage;
 
     public Stage getStage() {
-        return window;
+        return stage;
     }
 
-    // Displays a window showing everything contained in the changes String[]. It will automatically updated when changes are found.
+    // Displays a stage showing everything contained in the changes String[]. It will automatically updated when changes are found.
     public Object[] openChanges(Window oldWindow) {
         log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
-            window.toFront();
-            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+            stage.toFront();
+            stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
             return new Object[]{false};
         } else {
             currentlyOpen = true;
         }
-        window = new Stage();
-        ImageLoader.setIcon(window);
-        window.initStyle(StageStyle.UNDECORATED);
-        window.setWidth(Variables.SIZE_WIDTH - 30);
+        stage = new Stage();
+        ImageLoader.setIcon(stage);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setWidth(Variables.SIZE_WIDTH - 30);
 
         ListView<String> listView = new ListView<>();
         listView.setEditable(false);
@@ -60,8 +64,10 @@ public class ChangesBox {
         listView.setItems(observableList);
         listView.setMaxHeight(Variables.SIZE_HEIGHT / 1.5);
 
-        Button clear = new Button(Strings.Clear);
-        Button close = new Button(Strings.Close);
+        Button clear = new Button();
+        clear.textProperty().bind(Strings.Clear);
+        Button close = new Button();
+        close.textProperty().bind(Strings.Close);
 
         Object[] answer = new Object[2];
         VBox layout = new VBox();
@@ -72,7 +78,7 @@ public class ChangesBox {
 
         close.setOnAction(e -> {
             answer[0] = false;
-            window.close();
+            stage.close();
         });
 
         HBox hBox = new HBox();
@@ -90,7 +96,7 @@ public class ChangesBox {
             public Void call() throws Exception {
                 while (currentlyOpen) {
                     Thread.sleep(1000);
-                    if (window.isShowing() && !Arrays.equals(changes[0], ChangeReporter.getChanges())) {
+                    if (stage.isShowing() && !Arrays.equals(changes[0], ChangeReporter.getChanges())) {
                         changes[0] = ChangeReporter.getChanges();
                         Platform.runLater(() -> {
                             observableList.clear();
@@ -104,16 +110,16 @@ public class ChangesBox {
         };
         new Thread(task).start();
 
-        window.setScene(scene);
+        stage.setScene(scene);
         Platform.runLater(() -> {
-            window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-            window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
-            new MoveWindow().moveWindow(window, null);
+            stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
+            new MoveStage().moveWindow(stage, null);
         });
-        window.showAndWait();
+        stage.showAndWait();
 
         currentlyOpen = false;
-        window = null;
+        stage = null;
         return answer;
     }
 }

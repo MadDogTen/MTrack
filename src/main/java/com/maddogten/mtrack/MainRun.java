@@ -140,6 +140,7 @@ public class MainRun {
         Variables.timeToWaitForDirectory = programSettingsController.getSettingsFile().getTimeToWaitForDirectory();
         Variables.recordChangesForNonActiveShows = programSettingsController.getSettingsFile().isRecordChangesForNonActiveShows();
         Variables.recordChangedSeasonsLowerThanCurrent = programSettingsController.getSettingsFile().isRecordChangedSeasonsLowerThanCurrent();
+        Variables.disableAutomaticRechecking = programSettingsController.getSettingsFile().isDisableAutomaticShowUpdating();
         Variables.setStageMoveWithParentAndBlockParent(programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
         ChangeReporter.setChanges(userInfoController.getUserSettings().getChanges());
 
@@ -160,7 +161,7 @@ public class MainRun {
 
     private void recheck() {
         //noinspection PointlessBooleanExpression,ConstantConditions
-        if (!Variables.disableAutomaticRechecking && !Variables.devMode && (forceRun && GenericMethods.timeTakenSeconds(timer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(timer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
+        if (!(Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(timer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(timer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
@@ -189,8 +190,8 @@ public class MainRun {
             log.info("Using default user.");
             return programSettingsController.getSettingsFile().getDefaultUser();
         } else {
-            String result = new ListSelectBox().display(Strings.ChooseYourUsername, Users, null);
-            if (result.matches(Strings.AddNewUsername)) {
+            String result = new ListSelectBox().pickUser(Strings.ChooseYourUsername, Users, null);
+            if (result.matches(Strings.AddNewUsername.getValue())) {
                 continueStarting = false;
             }
             return result;
@@ -218,7 +219,7 @@ public class MainRun {
                 }
             } else {
                 languageHandler.setLanguage(Variables.DefaultLanguage);
-                String languageReadable = new ListSelectBox().pickLanguage(Strings.PleaseChooseYourLanguage, languages.values(), null);
+                String languageReadable = new ListSelectBox().pickLanguage(languages.values(), null);
                 if (languageReadable.matches("-2")) continueStarting = false;
                 else {
                     String internalName = Strings.EmptyString;

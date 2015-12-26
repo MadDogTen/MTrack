@@ -5,6 +5,10 @@ import com.maddogten.mtrack.util.Variables;
 import java.io.Serializable;
 import java.util.Map;
 
+/*
+      UserSettings stores all the user settings, including a Map that stores show names and their related settings.
+ */
+
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class UserSettings implements Serializable {
 

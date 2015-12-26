@@ -1,9 +1,10 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,29 +18,37 @@ import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
+/*
+      MessageBox simply displays a message to the user.
+ */
+
 public class MessageBox {
     private final Logger log = Logger.getLogger(MessageBox.class.getName());
 
-    public void display(String[] message, Window oldWindow) {
+    public void display(StringProperty[] message, Window oldWindow) {
         log.finest("MessageBox has been opened.");
-        Stage window = new Stage();
-        ImageLoader.setIcon(window);
-        window.initStyle(StageStyle.UNDECORATED);
-        window.initModality(Modality.APPLICATION_MODAL);
+        Stage stage = new Stage();
+        ImageLoader.setIcon(stage);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
         VBox layout = new VBox();
         if (message.length == 1) {
-            layout.getChildren().add(new Label(message[0]));
+            Label messageLabel = new Label();
+            messageLabel.textProperty().bind(message[0]);
+            layout.getChildren().add(messageLabel);
         } else if (message.length > 1) {
-
-            for (String aMessage : message) {
-                layout.getChildren().add(new Label(aMessage));
+            for (StringProperty aMessage : message) {
+                Label messageLabel = new Label();
+                messageLabel.textProperty().bind(aMessage);
+                layout.getChildren().add(messageLabel);
             }
         }
 
-        Button close = new Button(Strings.Close);
+        Button close = new Button();
+        close.textProperty().bind(Strings.Close);
         close.setMinHeight(20);
         close.setMinWidth(30);
-        close.setOnAction(e -> window.close());
+        close.setOnAction(e -> stage.close());
 
         layout.getChildren().add(close);
         layout.setAlignment(Pos.CENTER);
@@ -47,14 +56,14 @@ public class MessageBox {
 
         Scene scene = new Scene(layout);
 
-        window.setScene(scene);
+        stage.setScene(scene);
         Platform.runLater(() -> {
             if (oldWindow != null) {
-                window.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (window.getWidth() / 2));
-                window.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (window.getHeight() / 2));
+                stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
+                stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
             }
-            new MoveWindow().moveWindow(window, oldWindow);
+            new MoveStage().moveWindow(stage, oldWindow);
         });
-        window.show();
+        stage.show();
     }
 }

@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 
+/*
+      Directory stores each directory the user added, and their related information / settings.
+ */
+
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class Directory implements Serializable {
 

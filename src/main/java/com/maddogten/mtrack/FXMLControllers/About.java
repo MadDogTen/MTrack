@@ -1,6 +1,6 @@
 package com.maddogten.mtrack.FXMLControllers;
 
-import com.maddogten.mtrack.io.MoveWindow;
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.fxml.FXML;
@@ -15,6 +15,10 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
+/*
+      About is the About Stage that displays the program name, version, and other related information.
+ */
 
 @SuppressWarnings("WeakerAccess")
 public class About implements Initializable {
@@ -44,7 +48,7 @@ public class About implements Initializable {
         versionNumber.setText(Strings.MTrackVersion);
         versionNumber.setAlignment(Pos.CENTER);
         if (Variables.showInternalVersion) {
-            versionNumber.setTooltip(new Tooltip(Strings.InternalVersion + String.valueOf(Variables.InternalVersion)));
+            versionNumber.setTooltip(new Tooltip(Strings.InternalVersion.toString() + String.valueOf(Variables.InternalVersion)));
         }
         codedBy.setText(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);
@@ -52,12 +56,12 @@ public class About implements Initializable {
         codedUsing.setAlignment(Pos.CENTER);
         codedWith.setText(Strings.codedWith + ' ' + Strings.javaVersion);
         codedWith.setAlignment(Pos.CENTER);
-        close.setText(Strings.Close);
+        close.textProperty().bind(Strings.Close);
         close.setOnAction(e -> {
             Stage stage = (Stage) pane.getScene().getWindow();
             stage.close();
         });
         // Allow the undecorated stage to be moved.
-        new MoveWindow().moveWindow(pane);
+        new MoveStage().moveWindow(pane);
     }
 }

@@ -6,12 +6,17 @@ import com.maddogten.mtrack.util.Variables;
 import java.io.Serializable;
 import java.util.Random;
 
+/*
+      ProgramSettings stores all the program settings.
+ */
+
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class ProgramSettings implements Serializable {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 3699693145859359106L;
     private final long programGeneratedID;
+
     // Versions
     private int programSettingsFileVersion;
     private int mainDirectoryVersion;
@@ -19,6 +24,7 @@ public class ProgramSettings implements Serializable {
 
     // General
     private int updateSpeed;
+    private boolean disableAutomaticShowUpdating;
     private int timeToWaitForDirectory;
     private boolean show0Remaining;
     private String language;
@@ -57,6 +63,7 @@ public class ProgramSettings implements Serializable {
         this.mainDirectoryVersion = 0;
         this.showFileVersion = Variables.ShowFileVersion;
         this.updateSpeed = Variables.defaultUpdateSpeed;
+        this.disableAutomaticShowUpdating = false;
         this.timeToWaitForDirectory = Variables.defaultTimeToWaitForDirectory;
         this.show0Remaining = false;
         this.language = "None";
@@ -78,19 +85,20 @@ public class ProgramSettings implements Serializable {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, int timeToWaitForDirectory, boolean show0Remaining, String language, boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, boolean moveStageWithParent, boolean haveStageBlockParentStage, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
+    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, boolean disableAutomaticShowUpdating, int timeToWaitForDirectory, boolean show0Remaining, String language, boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, boolean StageMoveWithParentAndBlockParent, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
         this.programGeneratedID = new Random().nextLong();
         this.programSettingsFileVersion = programSettingsFileVersion;
         this.mainDirectoryVersion = mainDirectoryVersion;
         this.showFileVersion = showFileVersion;
         this.updateSpeed = updateSpeed;
+        this.disableAutomaticShowUpdating = disableAutomaticShowUpdating;
         this.timeToWaitForDirectory = timeToWaitForDirectory;
         this.show0Remaining = show0Remaining;
         this.language = language;
         this.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
         this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
-        this.moveStageWithParent = moveStageWithParent;
-        this.haveStageBlockParentStage = haveStageBlockParentStage;
+        this.moveStageWithParent = StageMoveWithParentAndBlockParent;
+        this.haveStageBlockParentStage = StageMoveWithParentAndBlockParent;
         this.useDefaultUser = useDefaultUser;
         this.defaultUser = defaultUser;
         this.showColumnWidth = showColumnWidth;
@@ -141,6 +149,14 @@ public class ProgramSettings implements Serializable {
 
     public void setUpdateSpeed(int updateSpeed) {
         this.updateSpeed = updateSpeed;
+    }
+
+    public boolean isDisableAutomaticShowUpdating() {
+        return disableAutomaticShowUpdating;
+    }
+
+    public void setDisableAutomaticShowUpdating(boolean disableAutomaticShowUpdating) {
+        this.disableAutomaticShowUpdating = disableAutomaticShowUpdating;
     }
 
     public int getTimeToWaitForDirectory() {

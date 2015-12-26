@@ -11,10 +11,13 @@ import java.net.URLDecoder;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+/*
+      FileManager handles the saving and loading of files, checking if files exist, as well as accessing other things needed from the OS.
+ */
+
 public class FileManager {
     private final Logger log = Logger.getLogger(FileManager.class.getName());
 
-    // Serialise
     public void save(Serializable objectToSerialise, String folder, String filename, String extension, boolean overWrite) {
         if (!new File(Variables.dataFolder + folder).isDirectory()) {
             createFolder(folder);
@@ -31,7 +34,6 @@ public class FileManager {
         } else log.info(filename + " save already exists.");
     }
 
-    // Deserialize
     @SuppressWarnings("unchecked")
     public Object loadFile(String folder, String theFile, String extension) {
         Object loadedFile = null;
