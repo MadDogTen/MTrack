@@ -40,6 +40,9 @@
                                                   text="Open Changes Window"/>
                                     </items>
                                 </MenuButton>
+                                <Button id="clearTextField" fx:id="clearTextField" layoutX="137.0" layoutY="12.5"
+                                        mnemonicParsing="false" prefHeight="0.0" prefWidth="0.0"
+                                        text="Clear TextField"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -72,13 +75,14 @@
             </graphic>
         </Button>
         <ProgressIndicator id="isCurrentlyRechecking" fx:id="isCurrentlyRechecking" layoutX="145.0" layoutY="2.0"
-                           prefHeight="42.0" prefWidth="56.0" progress="0.0" visible="false"/>
+                           mouseTransparent="true" prefHeight="42.0" prefWidth="56.0" progress="0.0" visible="false"/>
         <Button fx:id="changesAlert" layoutX="190.0" layoutY="3.0" mnemonicParsing="false" prefHeight="1.0"
                 prefWidth="1.0" text="!" visible="false"/>
-        <Pane fx:id="pingingDirectoryPane" layoutX="164.0" layoutY="6.0" prefHeight="18.0" prefWidth="18.0">
+        <Pane fx:id="pingingDirectoryPane" layoutX="164.0" layoutY="6.0" mouseTransparent="true" prefHeight="18.0"
+              prefWidth="18.0">
             <children>
                 <ImageView fx:id="pingingDirectory" fitHeight="18.0" fitWidth="18.0" layoutX="2.0" layoutY="-1.0"
-                           pickOnBounds="true" preserveRatio="true" visible="false">
+                           mouseTransparent="true" pickOnBounds="true" preserveRatio="true" visible="false">
                     <image>
                         <Image url="@../image/UI/PingingDirectoriesCircle.png"/>
                     </image>

@@ -1,6 +1,6 @@
 Changes:
 
-Alpha 0.1 - || Running changelog, Nothing finalized + Things may be missing. The development branch is constantly being updated which may break things, So make sure to backup you settings if you want to try it out.
+Alpha 1.0.0 - || Running changelog, Nothing finalized + Things may be missing. The development branch is constantly being updated which may break things, So make sure to backup you settings if you want to try it out.
 General Fixes/Changes/Cleanup.
 Changed Shows file storage to a much better storage format. Makes everything cleaner / better. Old files will convert to the new one.
 Changed Settings file storage to a much better storage format. Old files will convert to the new one.
@@ -42,10 +42,16 @@ Moved "Change Language" to UI tab in the settings stage.
 Added slight delay when moving the window to prevent unintentionally moving it.
 Changed "ChangeLanguage" to have changes take effect immediately. Note- Needs more testing to make I didn't break anything while implementing this.
 Renamed MoveWindow to MoveStage.
-Added a Main Comment to each Class, explaining the basic use of it. Currently unfinished (Left off on DisplayShows).
+Added a Main Comment to each Class, explaining the basic use of it. They still need more work, Some are quite basic.
+Added Button to clear the text on the main stage. It's hidden until you type something.
+Added the Logo as the background on the About window.
 
-Note- Version bumped to 'Alpha 0.1'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
+Note- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).
+
+Known Bugs:
+Windows-
+Clicking the TaskBar icon doesn't minimize the program.
 
 Pre-Alpha 0.9.8 -
 Added comments. Still tons more to add.

@@ -4,7 +4,6 @@ import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.ImageLoader;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Application;
@@ -16,6 +15,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.util.logging.Logger;
+
+/*
+      Main is the entrance into the program. Loads, holds, and passed out the DirectoryController, ShowInfoController, UserInfoController, CheckShowFiles, and MainRun.
+ */
 
 public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
@@ -104,7 +107,7 @@ public class Main extends Application implements Runnable {
         boolean continueStarting = mainRun.startBackend();
         if (continueStarting) {
             stage = primaryStage;
-            ImageLoader.setIcon(stage);
+            GenericMethods.setIcon(stage);
             stage.initStyle(StageStyle.UNDECORATED);
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/MainGui.fxml"));
             Parent root = fxmlLoader.load();

@@ -1,7 +1,14 @@
 package com.maddogten.mtrack.util;
 
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+
 import java.util.Arrays;
 import java.util.logging.Logger;
+
+/*
+      GenericMethods is for methods that don't really fit anywhere else, and doesn't need their own class.
+ */
 
 public class GenericMethods {
     private static final Logger log = Logger.getLogger(GenericMethods.class.getName());
@@ -26,6 +33,16 @@ public class GenericMethods {
     public static int timeTakenSeconds(int timer) {
         log.finest("timeTakenSeconds has been ran.");
         return getTimeSeconds() - timer;
+    }
+
+    // Loads Images.
+    @SuppressWarnings("SameParameterValue")
+    public static Image getImage(String directory) {
+        return new Image(directory);
+    }
+
+    public static void setIcon(Stage stage) {
+        stage.getIcons().add(getImage(Variables.Logo));
     }
 
     // Handles Exceptions

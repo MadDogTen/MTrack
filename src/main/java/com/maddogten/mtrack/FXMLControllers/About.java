@@ -48,13 +48,15 @@ public class About implements Initializable {
         versionNumber.setText(Strings.MTrackVersion);
         versionNumber.setAlignment(Pos.CENTER);
         if (Variables.showInternalVersion) {
-            versionNumber.setTooltip(new Tooltip(Strings.InternalVersion.toString() + String.valueOf(Variables.InternalVersion)));
+            Tooltip versionNumberTooltip = new Tooltip();
+            versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
+            versionNumber.setTooltip(versionNumberTooltip);
         }
         codedBy.setText(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);
-        codedUsing.setText(Strings.CodedUsing);
+        codedUsing.textProperty().bind(Strings.CodedUsingFull);
         codedUsing.setAlignment(Pos.CENTER);
-        codedWith.setText(Strings.codedWith + ' ' + Strings.javaVersion);
+        codedWith.textProperty().bind(Strings.JavaVersionFull);
         codedWith.setAlignment(Pos.CENTER);
         close.textProperty().bind(Strings.Close);
         close.setOnAction(e -> {

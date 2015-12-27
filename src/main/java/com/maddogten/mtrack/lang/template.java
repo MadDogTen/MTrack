@@ -159,5 +159,7 @@ public class template extends Language {
         Strings.PleaseCorrectTheIssueThenForceRefresh.setValue("");
         Strings.NotifyChangesFor.setValue("");
         Strings.OnlyChecksEveryRuns.setValue("");
+        Strings.JavaVersionFull.setValue("");
+        Strings.CodedUsingFull.setValue("");
     }
 }

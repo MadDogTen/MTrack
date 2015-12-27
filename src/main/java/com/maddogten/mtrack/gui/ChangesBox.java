@@ -2,7 +2,7 @@ package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.io.MoveStage;
-import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -50,7 +50,7 @@ public class ChangesBox {
             currentlyOpen = true;
         }
         stage = new Stage();
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setWidth(Variables.SIZE_WIDTH - 30);
 

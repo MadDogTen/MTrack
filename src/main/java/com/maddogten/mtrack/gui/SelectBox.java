@@ -1,7 +1,7 @@
 package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.io.MoveStage;
-import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -25,7 +25,7 @@ public class SelectBox {
     public String display(String message, String[] buttonsText, Window oldWindow) {
         log.finest("SelectBox has been opened.");
         Stage stage = new Stage();
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
 

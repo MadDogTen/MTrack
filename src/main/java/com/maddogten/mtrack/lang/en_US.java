@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.lang;
 
 import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.util.logging.Logger;
 
@@ -96,7 +97,7 @@ public class en_US extends Language {
         Strings.CurrentlyRechecking.setValue("Currently Searching Shows...");
         Strings.DeleteUsersNoteCantDeleteCurrentUser.setValue("Delete Users. Note: Can't delete current user!");
         Strings.WarningUnrecoverable.setValue("Warning, Unrecoverable!");
-        Strings.InternalVersion.setValue("Internal Version: ");
+        Strings.InternalVersion.setValue("Internal Version: " + Variables.InternalVersion);
 
         // Other Text
         Strings.AddNewUsername.setValue("Add New Username");
@@ -159,5 +160,7 @@ public class en_US extends Language {
         Strings.PleaseCorrectTheIssueThenForceRefresh.setValue("Please correct the issue then force refresh.");
         Strings.NotifyChangesFor.setValue("Notify Changes For:");
         Strings.OnlyChecksEveryRuns.setValue("Only checks every 5 runs");
+        Strings.JavaVersionFull.setValue("Coded In " + Strings.CodedIn + "\nVersion: " + Strings.JavaVersion);
+        Strings.CodedUsingFull.setValue("Coded With: " + Strings.CodedUsing);
     }
 }

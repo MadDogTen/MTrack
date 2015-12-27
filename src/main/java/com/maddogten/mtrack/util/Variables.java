@@ -2,6 +2,10 @@ package com.maddogten.mtrack.util;
 
 import java.io.File;
 
+/*
+      Variables holds the variables for various things, Most variable should be put into here.
+ */
+
 @SuppressWarnings("ClassWithoutLogger")
 public class Variables {
     //---------- Main Variables ----------\\ -- "/**/" == Dev Option - Set to normal state for builds (Comment on the right).
@@ -26,7 +30,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1003; // Was Changed
     public static final int ShowFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 5; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 7; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.

@@ -10,6 +10,10 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
+/*
+      UserInfoController loads and stores all the UserSettings.
+ */
+
 public class UserInfoController {
     private final Logger log = Logger.getLogger(UserInfoController.class.getName());
     private final ShowInfoController showInfoController;

@@ -2,6 +2,11 @@ package com.maddogten.mtrack.information;
 
 import java.util.logging.Logger;
 
+/*
+      ChangeReporter holds all the strings that the ChangesBox displays.
+      Any changes added are put on top of the list.
+ */
+
 public class ChangeReporter {
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
 

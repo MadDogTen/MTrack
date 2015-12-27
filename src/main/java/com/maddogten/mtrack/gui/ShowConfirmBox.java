@@ -2,7 +2,7 @@ package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.io.MoveStage;
-import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
@@ -33,7 +33,7 @@ public class ShowConfirmBox {
         log.finest("ShowConfirmBox has been opened.");
         Stage stage = new Stage();
         stage.initOwner(Main.stage); // TODO - Decide if I want to do it this way? Works for now.
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
 

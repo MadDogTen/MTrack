@@ -2,7 +2,7 @@ package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.FXMLControllers.Settings;
 import com.maddogten.mtrack.Main;
-import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -40,7 +40,7 @@ public class SettingsWindow {
         log.info("SettingsWindow has been opened.");
         stage = new Stage();
         stage.initOwner(Main.stage);
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);
 

@@ -15,6 +15,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+/*
+      MainRun handles starting the main logic of the program.
+ */
+
 public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
     private final ProgramSettingsController programSettingsController;

@@ -3,7 +3,7 @@ package com.maddogten.mtrack.gui;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
-import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -38,7 +38,7 @@ public class TextBox {
     public String addUser(StringProperty message, StringProperty messageIfNameFieldIsBlank, String defaultValue, ArrayList<String> allUsers, Window oldWindow) {
         log.finest("TextBox display has been opened.");
         Stage stage = new Stage();
-        stage.getIcons().add(ImageLoader.getImage(Variables.Logo));
+        stage.getIcons().add(GenericMethods.getImage(Variables.Logo));
         final String[] userName = new String[1];
 
         stage.initStyle(StageStyle.UNDECORATED);
@@ -99,7 +99,7 @@ public class TextBox {
     public File addDirectory(ArrayList<Directory> currentDirectories, Window oldWindow) {
         log.finest("TextBox addDirectory has been opened.");
         Stage stage = new Stage();
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         final File[] directories = new File[1];
 
         stage.initStyle(StageStyle.UNDECORATED);

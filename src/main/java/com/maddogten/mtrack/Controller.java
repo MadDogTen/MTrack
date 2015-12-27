@@ -23,6 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -33,6 +34,10 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+/*
+      Controller is the controller for the main stage started in Main. Handles quite a bit, Most likely more then it sh
+ */
 
 @SuppressWarnings("WeakerAccess")
 public class Controller implements Initializable {
@@ -95,6 +100,8 @@ public class Controller implements Initializable {
     private Pane pingingDirectoryPane;
     @FXML
     private ImageView pingingDirectory;
+    @FXML
+    private Button clearTextField;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
@@ -292,6 +299,24 @@ public class Controller implements Initializable {
         tableView.getItems();
 
         tableView.getSortOrder().add(shows);
+
+        clearTextField.setText(Strings.EmptyString);
+        textField.setOnKeyTyped(e -> {
+            if (!clearTextField.isVisible()) {
+                clearTextField.setVisible(true);
+            }
+        });
+        textField.setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.BACK_SPACE && textField.getText().isEmpty() && clearTextField.isVisible())
+                clearTextField.setVisible(false);
+        });
+
+        clearTextField.setVisible(false);
+        clearTextField.setOnAction(e -> {
+            textField.clear();
+            clearTextField.setVisible(false);
+            textField.requestFocus();
+        });
 
         tableView.setRowFactory(
                 param -> {
@@ -538,10 +563,6 @@ public class Controller implements Initializable {
         Tooltip pingingDirectoryTooltip = new Tooltip();
         pingingDirectoryTooltip.textProperty().bind(Strings.PingingDirectories);
         Tooltip.install(
-                pingingDirectory,
-                pingingDirectoryTooltip
-        );
-        Tooltip.install(
                 pingingDirectoryPane,
                 pingingDirectoryTooltip
         );
@@ -577,18 +598,23 @@ public class Controller implements Initializable {
                 while (Main.programRunning) {
                     if (checkShowFiles.getRecheckShowFileRunning()) {
                         pingingDirectory.setVisible(true);
+                        pingingDirectoryPane.setMouseTransparent(false);
                         while (checkShowFiles.isCurrentlyCheckingDirectories()) {
+                            if (pingingDirectory.getRotate() == 180) pingingDirectory.setRotate(0);
                             pingingDirectory.setRotate(pingingDirectory.getRotate() + 4);
                             Thread.sleep(80);
                         }
                         pingingDirectory.setRotate(0);
                         pingingDirectory.setVisible(false);
+                        pingingDirectoryPane.setMouseTransparent(true);
                         isCurrentlyRechecking.setVisible(true);
+                        isCurrentlyRechecking.setMouseTransparent(false);
                         while (checkShowFiles.getRecheckShowFileRunning()) {
                             Platform.runLater(() -> isCurrentlyRechecking.setProgress(checkShowFiles.getRecheckShowFilePercentage()));
                             Thread.sleep(80);
                         }
                         isCurrentlyRechecking.setProgress(0);
+                        isCurrentlyRechecking.setMouseTransparent(true);
                         isCurrentlyRechecking.setVisible(false);
                     }
                     checkIfChangesListIsPopulated();

@@ -8,6 +8,10 @@ import com.maddogten.mtrack.util.Variables;
 
 import java.util.logging.Logger;
 
+/*
+      ProgramSettingsController loads and stores the ProgramSettings.
+ */
+
 public class ProgramSettingsController {
     private final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
     private final UserInfoController userInfoController;

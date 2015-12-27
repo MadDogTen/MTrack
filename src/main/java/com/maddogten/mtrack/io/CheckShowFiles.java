@@ -17,6 +17,12 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/*
+      CheckShowFiles handles checking for new shows, if any are found,
+      saves the new file. It sends the newly generated shows file to
+      FindChangedShows.
+ */
+
 public class CheckShowFiles {
     private final Logger log = Logger.getLogger(CheckShowFiles.class.getName());
     private final ProgramSettingsController programSettingsController;

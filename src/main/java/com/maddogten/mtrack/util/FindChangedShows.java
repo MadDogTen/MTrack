@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/*
+      FindChangedShows compares the old shows file to the new one,
+      and reports any found changes to the ChangeReporter.
+ */
+
 public class FindChangedShows {
     private final Logger log = Logger.getLogger(FindChangedShows.class.getName());
 
@@ -46,7 +51,7 @@ public class FindChangedShows {
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Removed");
                     if (recordShowInformation && recordSeason)
-                        ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason + aSeason);
+                        ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason.getValue() + aSeason);
                     hasChanged[0] = true;
                 }
             });
@@ -54,7 +59,7 @@ public class FindChangedShows {
                 if (!newShowsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Removed");
                     if (recordShowInformation && aSeasonFound >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent)
-                        ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason + aSeasonFound + Strings.DashEpisode + aEpisode);
+                        ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason.getValue() + aSeasonFound + Strings.DashEpisode.getValue() + aEpisode);
                     hasChanged[0] = true;
                 }
             }));
@@ -80,7 +85,7 @@ public class FindChangedShows {
                 } else {
                     log.info(aShowFound + " - Season " + aSeason + " Added");
                     if (recordShowInformation && recordSeason)
-                        ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason + aSeason);
+                        ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason.getValue() + aSeason);
                     hasChanged[0] = true;
                 }
             });
@@ -88,7 +93,7 @@ public class FindChangedShows {
                 if (!showsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
                     log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Added");
                     if (recordShowInformation && aSeasonFound >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent)
-                        ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason + aSeasonFound + Strings.DashEpisode + aEpisode);
+                        ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason.getValue() + aSeasonFound + Strings.DashEpisode.getValue() + aEpisode);
                     hasChanged[0] = true;
                 }
             }));

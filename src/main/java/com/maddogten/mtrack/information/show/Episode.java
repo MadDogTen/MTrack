@@ -2,6 +2,10 @@ package com.maddogten.mtrack.information.show;
 
 import java.io.Serializable;
 
+/*
+      Episode stores the information pertaining to each found episode.
+ */
+
 @SuppressWarnings({"ClassWithoutLogger", "SerializableClassInSecureContext", "DeserializableClassInSecureContext"})
 public class Episode implements Serializable {
 

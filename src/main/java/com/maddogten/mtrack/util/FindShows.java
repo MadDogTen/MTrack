@@ -10,6 +10,14 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+      FindShows looks for Shows, Their Seasons, and Their Episodes with the given information. It filters
+      any files that don't match what it's looking for.
+
+      Only Episode Extension's Currently accepted: ".mkv", ".avi", ".mp4", ".ts".
+      Other extensions are supported, and just need to be added if needed.
+ */
+
 public class FindShows {
     private final Logger log = Logger.getLogger(FindShows.class.getName());
 

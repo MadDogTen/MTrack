@@ -5,16 +5,20 @@ import javafx.beans.property.StringProperty;
 
 import java.io.File;
 
+/*
+      Strings stores all the strings the program uses. ALL Strings that aren't for logging should be in here.
+ */
+
 @SuppressWarnings("ClassWithoutLogger")
 public class Strings {
     // Program Info
     public static final String ProgramTitle = "MTrack";
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Alpha 0.1.0";
+    public static final String MTrackVersion = "Alpha 1.0.0";
     public static final String CodedBy = "MadDogTen";
-    public static final String CodedUsing = "Using: Intellij IDEA 15";
-    public static final String codedWith = "Java";
-    public static final String javaVersion = "Version: 1.8.0_60";
+    public static final String CodedUsing = "Intellij IDEA 15.0.2";
+    public static final String CodedIn = "Java";
+    public static final String JavaVersion = "1.8.0_60";
     //Other
     public static final String SettingsFileName = "Program";
     // Other
@@ -49,6 +53,7 @@ public class Strings {
     public static final StringProperty Warning = new SimpleStringProperty();
     public static final StringProperty Show = new SimpleStringProperty();
     public static final StringProperty UI = new SimpleStringProperty();
+
     // Button Text
     public static final StringProperty SetSeasonEpisode = new SimpleStringProperty();
     public static final StringProperty PlaySeasonEpisode = new SimpleStringProperty();
@@ -159,6 +164,8 @@ public class Strings {
     public static final StringProperty PleaseCorrectTheIssueThenForceRefresh = new SimpleStringProperty();
     public static final StringProperty NotifyChangesFor = new SimpleStringProperty();
     public static final StringProperty OnlyChecksEveryRuns = new SimpleStringProperty();
+    public static final StringProperty JavaVersionFull = new SimpleStringProperty();
+    public static final StringProperty CodedUsingFull = new SimpleStringProperty();
     // All Other Text
     public static String DefaultUsername;
     // Strings set by program

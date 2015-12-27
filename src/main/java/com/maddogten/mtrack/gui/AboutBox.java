@@ -1,7 +1,7 @@
 package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.io.MoveStage;
-import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.GenericMethods;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -20,7 +20,7 @@ public class AboutBox {
     public void display(Window oldWindow) throws Exception {
         log.finest("AboutBox has been opened.");
         Stage stage = new Stage();
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
 

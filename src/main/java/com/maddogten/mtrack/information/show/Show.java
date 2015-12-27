@@ -3,6 +3,11 @@ package com.maddogten.mtrack.information.show;
 import java.io.Serializable;
 import java.util.Map;
 
+/*
+      Show stores the information pertaining to each show, Including a Map
+      that stores the Season Number and Season itself.
+ */
+
 @SuppressWarnings({"ClassWithoutLogger", "DeserializableClassInSecureContext", "SerializableClassInSecureContext"})
 public class Show implements Serializable {
 

@@ -2,7 +2,7 @@ package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.information.ShowInfoController;
 import com.maddogten.mtrack.io.MoveStage;
-import com.maddogten.mtrack.util.ImageLoader;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -48,7 +48,7 @@ public class ListSelectBox {
         userName[0] = Strings.DefaultUsername;
 
         Stage stage = new Stage();
-        stage.getIcons().add(ImageLoader.getImage(Variables.Logo));
+        stage.getIcons().add(GenericMethods.getImage(Variables.Logo));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setMinWidth(250);
@@ -109,7 +109,7 @@ public class ListSelectBox {
         userName[0] = Strings.EmptyString;
 
         Stage stage = new Stage();
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
 
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -172,7 +172,7 @@ public class ListSelectBox {
         file[0] = new File(Strings.EmptyString);
 
         Stage stage = new Stage();
-        ImageLoader.setIcon(stage);
+        GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setMinWidth(250);
@@ -227,7 +227,7 @@ public class ListSelectBox {
         final int[] choice = new int[2];
 
         Stage stage = new Stage();
-        stage.getIcons().add(ImageLoader.getImage(Variables.Logo));
+        stage.getIcons().add(GenericMethods.getImage(Variables.Logo));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setMinWidth(250);
@@ -321,7 +321,7 @@ public class ListSelectBox {
     public String pickLanguage(Collection<String> languages, Window oldWindow) {
         final String[] language = {"-2"};
         Stage stage = new Stage();
-        stage.getIcons().add(ImageLoader.getImage(Variables.Logo));
+        stage.getIcons().add(GenericMethods.getImage(Variables.Logo));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setMinWidth(250);

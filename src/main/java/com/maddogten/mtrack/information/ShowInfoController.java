@@ -13,6 +13,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/*
+      ShowInfoController stores the showsFile. It loads all of the show files
+      found, and combines them into one master shows file.
+ */
+
 public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
     private final DirectoryController directoryController;

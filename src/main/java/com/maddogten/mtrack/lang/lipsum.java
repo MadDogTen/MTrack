@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.lang;
 
 import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.util.logging.Logger;
 
@@ -98,7 +99,7 @@ public class lipsum extends Language {
         Strings.CurrentlyRechecking.setValue("nisi");
         Strings.DeleteUsersNoteCantDeleteCurrentUser.setValue("Nulla");
         Strings.WarningUnrecoverable.setValue("vitae");
-        Strings.InternalVersion.setValue("gataluma");
+        Strings.InternalVersion.setValue("gataluma: " + Variables.InternalVersion);
 
         // Other Text
         Strings.AddNewUsername.setValue("porta");
@@ -160,5 +161,7 @@ public class lipsum extends Language {
         Strings.PleaseCorrectTheIssueThenForceRefresh.setValue("altez");
         Strings.NotifyChangesFor.setValue("iternu");
         Strings.OnlyChecksEveryRuns.setValue("viter");
+        Strings.JavaVersionFull.setValue("mutulu: " + Strings.JavaVersion);
+        Strings.CodedUsingFull.setValue("mecala: " + Strings.CodedUsing);
     }
 }

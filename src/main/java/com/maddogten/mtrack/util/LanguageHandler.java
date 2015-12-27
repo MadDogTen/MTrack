@@ -10,8 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/*
+      LanguageHandler handles loaded the Languages, Settings them, and checking for missing strings.
+
+      To add another language, Simply put it under LanguageHandler(), and add the appropriate file into "lang" using the template as the base.
+ */
+
 public class LanguageHandler {
-    // This file is a temporary solution, and will be changing.
     private final Logger log = Logger.getLogger(LanguageHandler.class.getName());
 
     private final Map<String, Language> languages = new HashMap<>();
@@ -243,6 +248,8 @@ public class LanguageHandler {
         if (isStringMissing(Strings.Show)) Strings.Show.setValue(Strings.TextMissing.getValue());
         if (isStringMissing(Strings.UI)) Strings.UI.setValue(Strings.TextMissing.getValue());
         if (isStringMissing(Strings.UnHideShow)) Strings.UnHideShow.setValue(Strings.TextMissing.getValue());
+        if (isStringMissing(Strings.JavaVersionFull)) Strings.JavaVersionFull.setValue(Strings.TextMissing.getValue());
+        if (isStringMissing(Strings.CodedUsingFull)) Strings.CodedUsingFull.setValue(Strings.TextMissing.getValue());
         log.info("Finished checking for missing strings.");
     }
 

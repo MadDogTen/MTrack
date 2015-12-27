@@ -5,3 +5,11 @@
 #isCurrentlyRechecking .progress {
     -fx-progress-color: green;
 }
+
+#clearTextField {
+    -fx-background-radius: 5em;
+    -fx-min-width: 12px;
+    -fx-min-height: 12px;
+    -fx-max-width: 12px;
+    -fx-max-height: 12px;
+}
