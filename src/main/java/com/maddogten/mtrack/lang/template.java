@@ -85,6 +85,9 @@ public class template extends Language {
         Strings.UpdateTime.setValue("");
         Strings.DirectoryTimeout.setValue("");
         Strings.UnHideShow.setValue("");
+        Strings.Cut.setValue("");
+        Strings.Copy.setValue("");
+        Strings.Paste.setValue("");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("");
@@ -98,6 +101,8 @@ public class template extends Language {
         Strings.DeleteUsersNoteCantDeleteCurrentUser.setValue("");
         Strings.WarningUnrecoverable.setValue("");
         Strings.InternalVersion.setValue("");
+        Strings.MakeUserDefault.setValue("");
+        Strings.MakeLanguageDefault.setValue("");
 
         // Other Text
         Strings.AddNewUsername.setValue("");
@@ -161,5 +166,7 @@ public class template extends Language {
         Strings.OnlyChecksEveryRuns.setValue("");
         Strings.JavaVersionFull.setValue("");
         Strings.CodedUsingFull.setValue("");
+        Strings.ThereAreNoHiddenShows.setValue("");
+        Strings.PickShowToUnHide.setValue("");
     }
 }

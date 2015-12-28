@@ -99,7 +99,7 @@ public class UserInfoController {
     }
 
     // If a user doesn't want a show clogging up any lists, then it can be set hidden. It shouldn't be able to be found anywhere at that point.
-    public void setHiddenStatus(String aShow, boolean isHidden) { //TODO Add ability to un-hide shows.
+    public void setHiddenStatus(String aShow, boolean isHidden) {
         log.info(aShow + " hidden status is: " + isHidden);
         userSettings.getAShowSettings(aShow).setHidden(isHidden);
     }

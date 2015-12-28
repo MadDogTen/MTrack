@@ -28,6 +28,11 @@ public class ProgramSettingsController {
         this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
     }
 
+    public void setDefaultLanguage(String language) {
+        settingsFile.setLanguage(language);
+        log.info("Default language was set to " + language + '.');
+    }
+
     public void setUpdateSpeed(int updateSpeed) {
         settingsFile.setUpdateSpeed(updateSpeed);
         Variables.updateSpeed = updateSpeed;
@@ -44,7 +49,7 @@ public class ProgramSettingsController {
         log.info("DefaultUsername is being set...");
         settingsFile.setUseDefaultUser(useDefaultUser);
         settingsFile.setDefaultUser(userName);
-        log.info("DefaultUsername is set.");
+        log.info("DefaultUsername is set as " + userName + '.');
     }
 
     public void setMainDirectoryVersion(int version) {

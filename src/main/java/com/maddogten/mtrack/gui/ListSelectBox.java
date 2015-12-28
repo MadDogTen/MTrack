@@ -13,9 +13,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -43,9 +41,8 @@ public class ListSelectBox {
     private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public String pickUser(StringProperty message, ArrayList<String> users, Window oldWindow) {
-        final String[] userName = new String[1];
-        userName[0] = Strings.DefaultUsername;
+    public Object[] pickUser(StringProperty message, ArrayList<String> users, Window oldWindow) {
+        Object[] result = new Object[]{Strings.DefaultUsername, false};
 
         Stage stage = new Stage();
         stage.getIcons().add(GenericMethods.getImage(Variables.Logo));
@@ -67,21 +64,29 @@ public class ListSelectBox {
         submit.textProperty().bind(Strings.Submit);
         submit.setOnAction(e -> {
             if (comboBox.getValue().contentEquals(Strings.AddNewUsername.getValue())) {
-                userName[0] = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, users, stage);
+                result[0] = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, users, stage);
                 stage.close();
             } else if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
-                userName[0] = comboBox.getValue();
+                result[0] = comboBox.getValue();
                 stage.close();
             }
         });
         Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
-            userName[0] = Strings.AddNewUsername.getValue();
+            result[0] = Strings.AddNewUsername.getValue();
             stage.close();
         });
 
+        CheckBox makeLanguageDefault = new CheckBox();
+        makeLanguageDefault.setPadding(new Insets(0, 6, 0, 0));
+        Tooltip makeLanguageDefaultTooltip = new Tooltip();
+        makeLanguageDefaultTooltip.setStyle("tooltip");
+        makeLanguageDefaultTooltip.textProperty().bind(Strings.MakeUserDefault);
+        makeLanguageDefault.setTooltip(makeLanguageDefaultTooltip);
+        makeLanguageDefault.setOnAction(e -> result[1] = !(boolean) result[1]);
+
         HBox buttonLayout = new HBox();
-        buttonLayout.getChildren().addAll(submit, exit);
+        buttonLayout.getChildren().addAll(makeLanguageDefault, submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
 
@@ -90,8 +95,9 @@ public class ListSelectBox {
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout);
-
+        scene.getStylesheets().add("/gui/ListSelectBox.css");
         stage.setScene(scene);
+
         Platform.runLater(() -> {
             if (oldWindow != null) {
                 stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
@@ -101,7 +107,7 @@ public class ListSelectBox {
         });
         stage.showAndWait();
 
-        return userName[0];
+        return result;
     }
 
     public String pickDefaultUser(StringProperty message, ArrayList<String> users, String currentDefaultUser, Window oldWindow) {
@@ -318,8 +324,8 @@ public class ListSelectBox {
         return choice;
     }
 
-    public String pickLanguage(Collection<String> languages, Window oldWindow) {
-        final String[] language = {"-2"};
+    public Object[] pickLanguage(Collection<String> languages, Window oldWindow) {
+        Object[] result = {"-2", false};
         Stage stage = new Stage();
         stage.getIcons().add(GenericMethods.getImage(Variables.Logo));
         stage.initStyle(StageStyle.UNDECORATED);
@@ -338,17 +344,24 @@ public class ListSelectBox {
         submit.textProperty().bind(Strings.Submit);
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
-                language[0] = comboBox.getValue();
+                result[0] = comboBox.getValue();
                 stage.close();
             }
         });
 
-        HBox buttonLayout = new HBox();
-
         Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> stage.close());
-        buttonLayout.getChildren().addAll(submit, exit);
 
+        CheckBox makeLanguageDefault = new CheckBox();
+        makeLanguageDefault.setPadding(new Insets(0, 6, 0, 0));
+        Tooltip makeLanguageDefaultTooltip = new Tooltip();
+        makeLanguageDefaultTooltip.setStyle("tooltip");
+        makeLanguageDefaultTooltip.textProperty().bind(Strings.MakeLanguageDefault);
+        makeLanguageDefault.setTooltip(makeLanguageDefaultTooltip);
+        makeLanguageDefault.setOnAction(e -> result[1] = !(boolean) result[1]);
+
+        HBox buttonLayout = new HBox();
+        buttonLayout.getChildren().addAll(makeLanguageDefault, submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
 
@@ -357,8 +370,9 @@ public class ListSelectBox {
         layout.setAlignment(Pos.CENTER);
 
         Scene scene = new Scene(layout);
-
+        scene.getStylesheets().add("/gui/ListSelectBox.css");
         stage.setScene(scene);
+
         Platform.runLater(() -> {
             if (oldWindow != null) {
                 stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
@@ -368,6 +382,53 @@ public class ListSelectBox {
         });
         stage.showAndWait();
 
-        return language[0];
+        return result;
+    }
+
+    public String pickShow(ArrayList<String> shows, Window oldWindow) {
+        String[] returnShow = {Strings.EmptyString};
+        Stage stage = new Stage();
+        stage.getIcons().add(GenericMethods.getImage(Variables.Logo));
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        Label label = new Label();
+        label.textProperty().bind(Strings.PickShowToUnHide);
+
+        ObservableList<String> showsList = FXCollections.observableList(shows);
+        showsList.sorted();
+        ComboBox<String> showComboBox = new ComboBox<>(showsList);
+
+        Button submit = new Button();
+        submit.textProperty().bind(Strings.Submit);
+        submit.setOnAction(e -> {
+            if (showComboBox.getValue() != null && !showComboBox.getValue().isEmpty()) {
+                returnShow[0] = showComboBox.getValue();
+                stage.close();
+            }
+        });
+        Button exit = new Button(Strings.ExitButtonText);
+        exit.setOnAction(e -> stage.close());
+
+        HBox buttonLayout = new HBox();
+        buttonLayout.getChildren().addAll(submit, exit);
+        buttonLayout.setAlignment(Pos.CENTER);
+        buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, showComboBox, buttonLayout);
+        layout.setAlignment(Pos.CENTER);
+
+        stage.setScene(new Scene(layout));
+        Platform.runLater(() -> {
+            if (oldWindow != null) {
+                stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
+                stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
+            }
+            new MoveStage().moveWindow(stage, oldWindow);
+        });
+        stage.showAndWait();
+
+        return returnShow[0];
     }
 }

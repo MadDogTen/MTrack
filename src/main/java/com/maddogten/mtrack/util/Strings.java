@@ -53,6 +53,9 @@ public class Strings {
     public static final StringProperty Warning = new SimpleStringProperty();
     public static final StringProperty Show = new SimpleStringProperty();
     public static final StringProperty UI = new SimpleStringProperty();
+    public static final StringProperty Cut = new SimpleStringProperty();
+    public static final StringProperty Copy = new SimpleStringProperty();
+    public static final StringProperty Paste = new SimpleStringProperty();
 
     // Button Text
     public static final StringProperty SetSeasonEpisode = new SimpleStringProperty();
@@ -103,6 +106,8 @@ public class Strings {
     public static final StringProperty DeleteUsersNoteCantDeleteCurrentUser = new SimpleStringProperty();
     public static final StringProperty WarningUnrecoverable = new SimpleStringProperty();
     public static final StringProperty InternalVersion = new SimpleStringProperty();
+    public static final StringProperty MakeUserDefault = new SimpleStringProperty();
+    public static final StringProperty MakeLanguageDefault = new SimpleStringProperty();
     // Other Text
     public static final StringProperty AddNewUsername = new SimpleStringProperty();
     public static final StringProperty PleaseEnterUsername = new SimpleStringProperty();
@@ -166,6 +171,9 @@ public class Strings {
     public static final StringProperty OnlyChecksEveryRuns = new SimpleStringProperty();
     public static final StringProperty JavaVersionFull = new SimpleStringProperty();
     public static final StringProperty CodedUsingFull = new SimpleStringProperty();
+    public static final StringProperty ThereAreNoHiddenShows = new SimpleStringProperty();
+    public static final StringProperty PickShowToUnHide = new SimpleStringProperty();
+
     // All Other Text
     public static String DefaultUsername;
     // Strings set by program

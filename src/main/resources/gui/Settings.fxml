@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.FXMLControllers.Settings">
+<Pane xmlns:fx="http://javafx.com/fxml/1" stylesheets="@Settings.css" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.FXMLControllers.Settings">
     <children>
         <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="319.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
@@ -15,27 +15,17 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Text fx:id="updateText" layoutX="36.0" layoutY="22.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" text="Searching Wait Time (Seconds):"/>
-                                <TextField fx:id="updateTimeTextField" layoutX="83.0" layoutY="30.0" prefHeight="25.0"
-                                           prefWidth="36.0"/>
-                                <Button fx:id="setUpdateTime" layoutX="125.0" layoutY="30.0" mnemonicParsing="false"
-                                        text="Set"/>
+                                <Text fx:id="updateText" layoutX="36.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Searching Wait Time (Seconds):"/>
+                                <TextField fx:id="updateTimeTextField" layoutX="83.0" layoutY="30.0" prefHeight="25.0" prefWidth="36.0"/>
+                                <Button fx:id="setUpdateTime" layoutX="125.0" layoutY="30.0" mnemonicParsing="false" text="Set"/>
                                 <Separator layoutX="52.0" layoutY="84.0" prefHeight="14.0" prefWidth="134.0"/>
-                                <Text fx:id="notifyChangesText" layoutX="66.0" layoutY="106.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" text="Notify Changes For:"/>
-                                <CheckBox fx:id="inactiveShowsCheckBox" layoutX="70.0" layoutY="114.0"
-                                          mnemonicParsing="false" prefHeight="17.0" prefWidth="105.0"
-                                          text="Inactive Shows"/>
-                                <CheckBox fx:id="olderSeasonsCheckBox" layoutX="70.0" layoutY="135.0"
-                                          mnemonicParsing="false" text="Older Seasons"/>
-                                <Text fx:id="onlyChecksEveryText" layoutX="54.0" layoutY="166.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" text="Only checks every 5 runs"/>
+                                <Text fx:id="notifyChangesText" layoutX="66.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Notify Changes For:"/>
+                                <CheckBox fx:id="inactiveShowsCheckBox" layoutX="70.0" layoutY="114.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="105.0" text="Inactive Shows"/>
+                                <CheckBox fx:id="olderSeasonsCheckBox" layoutX="70.0" layoutY="135.0" mnemonicParsing="false" text="Older Seasons"/>
+                                <Text fx:id="onlyChecksEveryText" layoutX="54.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Only checks every 5 runs"/>
                                 <Separator layoutX="52.0" layoutY="166.0" prefHeight="14.0" prefWidth="134.0"/>
-                                <Button fx:id="about" layoutX="101.0" layoutY="244.0" mnemonicParsing="false"
-                                        text="About"/>
-                                <CheckBox fx:id="disableAutomaticShowUpdating" layoutX="22.0" layoutY="60.0"
-                                          mnemonicParsing="false" text="Disable Automatic Show Searching"/>
+                                <Button fx:id="about" layoutX="101.0" layoutY="244.0" mnemonicParsing="false" text="About"/>
+                                <CheckBox fx:id="disableAutomaticShowUpdating" layoutX="22.0" layoutY="60.0" mnemonicParsing="false" text="Disable Automatic Show Searching"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -44,14 +34,14 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
                             <children>
-                                <Button fx:id="setDefaultUsername" layoutX="45.0" layoutY="31.0" mnemonicParsing="false"
-                                        text="Set Default user"/>
-                                <Button fx:id="clearDefaultUsername" layoutX="156.0" layoutY="31.0"
-                                        mnemonicParsing="false" text="Reset"/>
-                                <Button fx:id="deleteUser" layoutX="125.0" layoutY="114.0" mnemonicParsing="false"
-                                        text="Delete User"/>
-                                <Button fx:id="addUser" layoutX="51.0" layoutY="114.0" mnemonicParsing="false"
-                                        text="Add User"/>
+                                <Button fx:id="setDefaultUsername" layoutX="45.0" layoutY="31.0" mnemonicParsing="false" text="Set Default user"/>
+                                <Button fx:id="clearDefaultUsername" layoutX="156.0" layoutY="31.0" mnemonicParsing="false" text="Reset"/>
+                                <Button fx:id="deleteUser" layoutX="125.0" layoutY="114.0" mnemonicParsing="false" text="Delete User">
+                                    <tooltip>
+                                        <Tooltip id="tooltip" fx:id="deleteUserTooltip"/>
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="addUser" layoutX="51.0" layoutY="114.0" mnemonicParsing="false" text="Add User"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -60,10 +50,8 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Button fx:id="forceRecheck" layoutX="61.0" layoutY="26.0" mnemonicParsing="false"
-                                        text="Force Recheck Shows"/>
-                                <Button fx:id="unHideShow" layoutX="82.0" layoutY="69.0" mnemonicParsing="false"
-                                        text="UnHide Show"/>
+                                <Button fx:id="forceRecheck" layoutX="61.0" layoutY="26.0" mnemonicParsing="false" text="Force Recheck Shows"/>
+                                <Button fx:id="unHideShow" layoutX="82.0" layoutY="69.0" mnemonicParsing="false" text="UnHide Show"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -72,21 +60,13 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Button fx:id="openProgramFolder" layoutX="56.0" layoutY="251.0" mnemonicParsing="false"
-                                        text="Open Settings Folder"/>
-                                <Button fx:id="addDirectory" layoutX="14.0" layoutY="27.0" mnemonicParsing="false"
-                                        text="Add Directory"/>
-                                <Button fx:id="removeDirectory" layoutX="121.0" layoutY="27.0" mnemonicParsing="false"
-                                        text="Remove Directory"/>
-                                <Button fx:id="setDirectoryTimeout" layoutX="125.0" layoutY="103.0"
-                                        mnemonicParsing="false" text="Set"/>
-                                <TextField fx:id="directoryTimeoutTextField" layoutX="79.0" layoutY="103.0"
-                                           prefHeight="25.0" prefWidth="36.0"/>
-                                <Text fx:id="directoryTimeoutText" layoutX="45.0" layoutY="91.0" strokeType="OUTSIDE"
-                                      strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
-                                <ToggleButton fx:id="toggleDevMode" layoutX="74.0" layoutY="211.0"
-                                              mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0"
-                                              text="Toggle Dev"/>
+                                <Button fx:id="openProgramFolder" layoutX="56.0" layoutY="251.0" mnemonicParsing="false" text="Open Settings Folder"/>
+                                <Button fx:id="addDirectory" layoutX="14.0" layoutY="27.0" mnemonicParsing="false" text="Add Directory"/>
+                                <Button fx:id="removeDirectory" layoutX="121.0" layoutY="27.0" mnemonicParsing="false" text="Remove Directory"/>
+                                <Button fx:id="setDirectoryTimeout" layoutX="125.0" layoutY="103.0" mnemonicParsing="false" text="Set"/>
+                                <TextField fx:id="directoryTimeoutTextField" layoutX="79.0" layoutY="103.0" prefHeight="25.0" prefWidth="36.0"/>
+                                <Text fx:id="directoryTimeoutText" layoutX="45.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
+                                <ToggleButton fx:id="toggleDevMode" layoutX="74.0" layoutY="211.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -95,11 +75,8 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <CheckBox fx:id="unlockParentScene" layoutX="18.0" layoutY="38.0"
-                                          mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0"
-                                          text="Allow Full Window Movement/Use"/>
-                                <Button fx:id="changeLanguage" layoutX="69.0" layoutY="224.0" mnemonicParsing="false"
-                                        text="Change Language"/>
+                                <CheckBox fx:id="unlockParentScene" layoutX="18.0" layoutY="38.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0" text="Allow Full Window Movement/Use"/>
+                                <Button fx:id="changeLanguage" layoutX="69.0" layoutY="224.0" mnemonicParsing="false" text="Change Language"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -114,25 +91,14 @@
                                             <content>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                     <children>
-                                                        <Button fx:id="printAllShows" layoutX="12.0" layoutY="14.0"
-                                                                mnemonicParsing="false" text="Print All Show Info"/>
-                                                        <Button fx:id="printAllDirectories" layoutX="12.0"
-                                                                layoutY="47.0" mnemonicParsing="false"
-                                                                text="Print All Directories"/>
-                                                        <Button fx:id="printEmptyShowFolders" layoutX="13.0"
-                                                                layoutY="90.0" mnemonicParsing="false"
-                                                                text="Print Empty Shows"/>
-                                                        <Button fx:id="setAllActive" layoutX="14.0" layoutY="222.0"
-                                                                mnemonicParsing="false" text="Set All Active"/>
-                                                        <Button fx:id="setAllInactive" layoutX="103.0" layoutY="222.0"
-                                                                mnemonicParsing="false" text="Set All Inactive"/>
-                                                        <Button fx:id="printIgnoredShows" layoutX="13.0" layoutY="131.0"
-                                                                mnemonicParsing="false" text="Print Ignored Shows"/>
-                                                        <Button fx:id="printHiddenShows" layoutX="14.0" layoutY="177.0"
-                                                                mnemonicParsing="false" text="Print Hidden Shows"/>
-                                                        <Button fx:id="unHideAll" layoutX="140.0" layoutY="177.0"
-                                                                mnemonicParsing="false" prefHeight="25.0"
-                                                                prefWidth="73.0" text="UnHide All" wrapText="true"/>
+                                                        <Button fx:id="printAllShows" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" text="Print All Show Info"/>
+                                                        <Button fx:id="printAllDirectories" layoutX="12.0" layoutY="47.0" mnemonicParsing="false" text="Print All Directories"/>
+                                                        <Button fx:id="printEmptyShowFolders" layoutX="13.0" layoutY="90.0" mnemonicParsing="false" text="Print Empty Shows"/>
+                                                        <Button fx:id="setAllActive" layoutX="14.0" layoutY="222.0" mnemonicParsing="false" text="Set All Active"/>
+                                                        <Button fx:id="setAllInactive" layoutX="103.0" layoutY="222.0" mnemonicParsing="false" text="Set All Inactive"/>
+                                                        <Button fx:id="printIgnoredShows" layoutX="13.0" layoutY="131.0" mnemonicParsing="false" text="Print Ignored Shows"/>
+                                                        <Button fx:id="printHiddenShows" layoutX="14.0" layoutY="177.0" mnemonicParsing="false" text="Print Hidden Shows"/>
+                                                        <Button fx:id="unHideAll" layoutX="140.0" layoutY="177.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="73.0" text="UnHide All" wrapText="true"/>
                                                     </children>
                                                 </AnchorPane>
                                             </content>
@@ -141,22 +107,16 @@
                                             <content>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                     <children>
-                                                        <Button fx:id="printProgramSettingsFileVersion" layoutX="11.0"
-                                                                layoutY="23.0" mnemonicParsing="false"
-                                                                text="Print PSFV"/>
-                                                        <Button fx:id="printUserSettingsFileVersion" layoutX="10.0"
-                                                                layoutY="61.0" mnemonicParsing="false"
-                                                                text="Print USFV"/>
-                                                        <Button fx:id="clearFile" layoutX="154.0" layoutY="186.0"
-                                                                mnemonicParsing="false" text="Clear File"/>
-                                                        <Button fx:id="deleteEverythingAndClose" layoutX="146.0"
-                                                                layoutY="222.0" mnemonicParsing="false"
-                                                                text="Reset Program"/>
-                                                        <Button fx:id="printAllUserInfo" layoutX="10.0" layoutY="97.0"
-                                                                mnemonicParsing="false" text="Print All User Info"/>
-                                                        <Button fx:id="add1ToDirectoryVersion" layoutX="10.0"
-                                                                layoutY="138.0" mnemonicParsing="false"
-                                                                text="Directory Version +1"/>
+                                                        <Button fx:id="printProgramSettingsFileVersion" layoutX="11.0" layoutY="23.0" mnemonicParsing="false" text="Print PSFV"/>
+                                                        <Button fx:id="printUserSettingsFileVersion" layoutX="10.0" layoutY="61.0" mnemonicParsing="false" text="Print USFV"/>
+                                                        <Button fx:id="clearFile" layoutX="154.0" layoutY="186.0" mnemonicParsing="false" text="Clear File"/>
+                                                        <Button fx:id="deleteEverythingAndClose" layoutX="146.0" layoutY="222.0" mnemonicParsing="false" text="Reset Program">
+                                                            <tooltip>
+                                                                <Tooltip id="tooltip" fx:id="deleteEverythingAndCloseTooltip"/>
+                                                            </tooltip>
+                                                        </Button>
+                                                        <Button fx:id="printAllUserInfo" layoutX="10.0" layoutY="97.0" mnemonicParsing="false" text="Print All User Info"/>
+                                                        <Button fx:id="add1ToDirectoryVersion" layoutX="10.0" layoutY="138.0" mnemonicParsing="false" text="Directory Version +1"/>
                                                     </children>
                                                 </AnchorPane>
                                             </content>
@@ -169,8 +129,7 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <Button fx:id="exit" layoutX="225.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="23.0"
-                textAlignment="CENTER" textOverrun="CLIP">
+        <Button fx:id="exit" layoutX="225.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="23.0" textAlignment="CENTER" textOverrun="CLIP">
             <graphic>
                 <ImageView fitHeight="12.0" fitWidth="7.0" pickOnBounds="true" preserveRatio="true">
                     <image>

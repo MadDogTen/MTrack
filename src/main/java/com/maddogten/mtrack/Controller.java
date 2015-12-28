@@ -10,6 +10,7 @@ import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
+import com.sun.javafx.tk.Toolkit;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
@@ -23,10 +24,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.net.URL;
@@ -36,7 +38,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /*
-      Controller is the controller for the main stage started in Main. Handles quite a bit, Most likely more then it sh
+      Controller is the controller for the main stage started in Main. Handles quite a bit, Most likely more then it should.
  */
 
 @SuppressWarnings("WeakerAccess")
@@ -50,7 +52,7 @@ public class Controller implements Initializable {
     private static DirectoryController directoryController;
     private static Controller controller;
     // This is the list that is currently showing in the tableView. Currently can only be "active" or "inactive".
-    private static String currentList = "active";
+    private static String currentList = Strings.EmptyString;
     private static ObservableList<DisplayShows> tableViewFields;
     // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
@@ -102,6 +104,10 @@ public class Controller implements Initializable {
     private ImageView pingingDirectory;
     @FXML
     private Button clearTextField;
+    @FXML
+    private Tooltip show0RemainingCheckBoxTooltip;
+    @FXML
+    private Tooltip isCurrentlyRecheckingTooltip;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
@@ -122,16 +128,19 @@ public class Controller implements Initializable {
 
     // This sets the current tableView to whichever you want.
     public static void setTableViewFields(String type) {
-        if (type.matches("active")) {
-            if (!currentList.matches("active")) {
-                currentList = "active";
-            }
-            tableViewFields = MakeTableViewFields(userInfoController.getActiveShows());
-        } else if (type.matches("inactive")) {
-            if (!currentList.matches("inactive")) {
-                currentList = "inactive";
-            }
-            tableViewFields = MakeTableViewFields(userInfoController.getInactiveShows());
+        switch (type) {
+            case "active":
+                if (!currentList.matches("active")) {
+                    currentList = "active";
+                }
+                tableViewFields = MakeTableViewFields(userInfoController.getActiveShows());
+                break;
+            case "inactive":
+                if (!currentList.matches("inactive")) {
+                    currentList = "inactive";
+                }
+                tableViewFields = MakeTableViewFields(userInfoController.getInactiveShows());
+                break;
         }
     }
 
@@ -145,7 +154,7 @@ public class Controller implements Initializable {
             }
         }
         boolean isShowActive = (userInfoController.isShowActive(aShow) && showExists), remove = false;
-        if (currentList.contains("active") && !isShowActive || currentList.contains("inactive") && isShowActive) {
+        if (currentList.matches("active") && !isShowActive || currentList.matches("inactive") && isShowActive) {
             remove = true;
         }
         if (index != -2) {
@@ -154,9 +163,9 @@ public class Controller implements Initializable {
         if (!remove) {
             int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), season = userInfoController.getCurrentSeason(aShow), episode = userInfoController.getCurrentEpisode(aShow);
             DisplayShows show = new DisplayShows(aShow, remaining, season, episode);
-            if ((show0Remaining || remaining != 0) && index != -2) {
+            if (((show0Remaining || currentList.contains("inactive")) || remaining != 0) && index != -2) {
                 tableViewFields.add(index, show);
-            } else if (index == -2 && show0Remaining || index == -2 && remaining != 0) {
+            } else if (index == -2 && ((show0Remaining) || currentList.contains("inactive") || remaining != 0)) {
                 tableViewFields.add(show);
             }
         }
@@ -224,9 +233,9 @@ public class Controller implements Initializable {
     }
 
     public static void closeChangeBoxStage() {
-        if (controller.changesBox != null && controller.changesBox.getStage() != null) {
+        if (controller != null && controller.changesBox != null) {
             log.fine("ChangeBox was open, closing...");
-            controller.changesBox.getStage().close();
+            controller.changesBox.closeStage();
         }
     }
 
@@ -297,27 +306,7 @@ public class Controller implements Initializable {
         Controller.setTableViewFields("active");
         setTableView();
         tableView.getItems();
-
         tableView.getSortOrder().add(shows);
-
-        clearTextField.setText(Strings.EmptyString);
-        textField.setOnKeyTyped(e -> {
-            if (!clearTextField.isVisible()) {
-                clearTextField.setVisible(true);
-            }
-        });
-        textField.setOnKeyReleased(e -> {
-            if (e.getCode() == KeyCode.BACK_SPACE && textField.getText().isEmpty() && clearTextField.isVisible())
-                clearTextField.setVisible(false);
-        });
-
-        clearTextField.setVisible(false);
-        clearTextField.setOnAction(e -> {
-            textField.clear();
-            clearTextField.setVisible(false);
-            textField.requestFocus();
-        });
-
         tableView.setRowFactory(
                 param -> {
                     final TableRow<DisplayShows> row = new TableRow<>();
@@ -500,6 +489,65 @@ public class Controller implements Initializable {
                 }
         );
 
+        // ~~~~ Search TextField ~~~~ \\
+        // The ContextMenu *really* isn't needed, But I wanted to make the clearTextField button to properly disappear and appear when needed. Using a Task would have been much easier...
+        MenuItem textFieldCut = new MenuItem();
+        textFieldCut.textProperty().bind(Strings.Cut);
+        textFieldCut.setOnAction(e -> {
+            //noinspection unchecked
+            Toolkit.getToolkit().getSystemClipboard().putContent(new Pair<>(DataFormat.PLAIN_TEXT, textField.getSelectedText()));
+            int caretPosition = textField.getSelection().getStart();
+            String cutText = textField.getText().substring(0, textField.getSelection().getStart()) + textField.getText().substring(textField.getSelection().getEnd(), textField.getText().length());
+            textField.setText(cutText);
+            textField.positionCaret(caretPosition);
+            if (clearTextField.isVisible() && textField.getText().isEmpty()) {
+                clearTextField.setVisible(false);
+            } else if (!clearTextField.isVisible() && !textField.getText().isEmpty()) {
+                clearTextField.setVisible(true);
+            }
+        });
+
+        MenuItem textFieldCopy = new MenuItem();
+        textFieldCopy.textProperty().bind(Strings.Copy);
+        textFieldCopy.setOnAction(e -> {
+            //noinspection unchecked
+            Toolkit.getToolkit().getSystemClipboard().putContent(new Pair<>(DataFormat.PLAIN_TEXT, textField.getSelectedText()));
+        });
+
+        MenuItem textFieldPaste = new MenuItem();
+        textFieldPaste.textProperty().bind(Strings.Paste);
+        textFieldPaste.setOnAction(e -> {
+            String pasteTextAdded = textField.getText().substring(0, textField.getCaretPosition()) + Toolkit.getToolkit().getSystemClipboard().getContent(DataFormat.PLAIN_TEXT) + textField.getText().substring(textField.getCaretPosition(), textField.getText().length());
+            textField.setText(pasteTextAdded);
+            if (clearTextField.isVisible() && textField.getText().isEmpty()) {
+                clearTextField.setVisible(false);
+            } else if (!clearTextField.isVisible() && !textField.getText().isEmpty()) {
+                clearTextField.setVisible(true);
+            }
+            textField.positionCaret(textField.getText().length());
+        });
+        ContextMenu textFieldContextMenu = new ContextMenu();
+        textFieldContextMenu.getItems().addAll(textFieldCut, textFieldCopy, textFieldPaste);
+        textField.setContextMenu(textFieldContextMenu);
+        // End of unnecessary stuff.
+
+        clearTextField.setText(Strings.EmptyString);
+        textField.setOnKeyTyped(e -> {
+            if (!e.getCharacter().matches("") && !clearTextField.isVisible()) {
+                clearTextField.setVisible(true);
+            }
+        });
+        textField.setOnKeyReleased(e -> {
+            if (textField.getText().isEmpty() && clearTextField.isVisible()) clearTextField.setVisible(false);
+            else if (!textField.getText().isEmpty() && !clearTextField.isVisible()) clearTextField.setVisible(true);
+        });
+        clearTextField.setVisible(false);
+        clearTextField.setOnAction(e -> {
+            textField.clear();
+            clearTextField.setVisible(false);
+            textField.requestFocus();
+        });
+
         // ~~~~ Buttons ~~~~ \\
         exit.setOnAction(e -> Main.stop(Main.stage, false, true));
         minimize.setOnAction(e -> Main.stage.setIconified(true));
@@ -557,11 +605,10 @@ public class Controller implements Initializable {
             setTableViewFields(currentList);
             setTableView();
         });
-        Tooltip show0RemainingCheckBoxTooltip = new Tooltip();
         show0RemainingCheckBoxTooltip.textProperty().bind(Strings.ShowHiddenShowsWith0EpisodeLeft);
-        show0RemainingCheckBox.setTooltip(show0RemainingCheckBoxTooltip);
         Tooltip pingingDirectoryTooltip = new Tooltip();
         pingingDirectoryTooltip.textProperty().bind(Strings.PingingDirectories);
+        pingingDirectoryTooltip.getStyleClass().add("tooltip");
         Tooltip.install(
                 pingingDirectoryPane,
                 pingingDirectoryTooltip
@@ -585,13 +632,10 @@ public class Controller implements Initializable {
         new MoveStage().moveWindow(tabPane, null);
 
         // Shows an indicator when its rechecking the shows.
-        Tooltip isCurrentlyRecheckingTooltip = new Tooltip();
         isCurrentlyRecheckingTooltip.textProperty().bind(Strings.CurrentlyRechecking);
-        isCurrentlyRechecking.setTooltip(isCurrentlyRecheckingTooltip);
         isCurrentlyRechecking.setStyle(
                 "-fx-progress-color: blue;"
         );
-
         Task<Void> mainTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {

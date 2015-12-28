@@ -66,7 +66,7 @@ public class FirstRun {
             fileManager.createFolder(Strings.EmptyString);
             generateProgramSettingsFile();
             programSettingsController.loadProgramSettingsFile();
-            programSettingsController.getSettingsFile().setLanguage(Variables.language);
+            if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
             addDirectories();
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")

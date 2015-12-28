@@ -142,6 +142,10 @@ public class Settings implements Initializable {
     private CheckBox disableAutomaticShowUpdating;
     @FXML
     private Button unHideShow;
+    @FXML
+    private Tooltip deleteUserTooltip;
+    @FXML
+    private Tooltip deleteEverythingAndCloseTooltip;
 
     public static Settings getSettings() {
         return settings;
@@ -258,9 +262,7 @@ public class Settings implements Initializable {
                 }
             }
         });
-        Tooltip deleteUserTooltip = new Tooltip();
         deleteUserTooltip.textProperty().bind(Strings.DeleteUsersNoteCantDeleteCurrentUser);
-        deleteUser.setTooltip(deleteUserTooltip);
 
         // Show
         forceRecheck.textProperty().bind(Strings.ForceRecheckShows);
@@ -276,8 +278,19 @@ public class Settings implements Initializable {
             new Thread(task).start();
         });
         unHideShow.textProperty().bind(Strings.UnHideShow);
-        unHideShow.setVisible(false); // TODO Remove when button is finished
-        unHideShow.setOnAction(e -> {/*TODO Finish unHideShow Button*/});
+        unHideShow.setOnAction(e -> {
+            ArrayList<String> hiddenShows = userInfoController.getHiddenShows();
+            if (hiddenShows.isEmpty())
+                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoHiddenShows}, tabPane.getScene().getWindow());
+            else {
+                String showToUnHide = new ListSelectBox().pickShow(userInfoController.getHiddenShows(), tabPane.getScene().getWindow());
+                if (showToUnHide != null && !showToUnHide.isEmpty()) {
+                    userInfoController.setHiddenStatus(showToUnHide, false);
+                    Controller.updateShowField(showToUnHide, true);
+                    log.info(showToUnHide + " was unhidden.");
+                } else log.info("No show was unhidden.");
+            }
+        });
 
         // Other
         addDirectory.textProperty().bind(Strings.AddDirectory);
@@ -413,7 +426,8 @@ public class Settings implements Initializable {
             if (languages.containsKey(programSettingsController.getSettingsFile().getLanguage())) {
                 languages.remove(programSettingsController.getSettingsFile().getLanguage());
             }
-            String languageReadable = new ListSelectBox().pickLanguage(languages.values(), tabPane.getScene().getWindow());
+            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), tabPane.getScene().getWindow());
+            String languageReadable = (String) pickLanguageResult[0];
             if (!languageReadable.contains("-2")) {
                 String internalName = Strings.EmptyString;
                 for (String langKey : languages.keySet()) {
@@ -422,7 +436,7 @@ public class Settings implements Initializable {
                         break;
                     }
                 }
-                programSettingsController.getSettingsFile().setLanguage(internalName);
+                programSettingsController.setDefaultLanguage(internalName);
                 Variables.language = programSettingsController.getSettingsFile().getLanguage();
                 languageHandler.setLanguage(Variables.language);
             }
@@ -547,9 +561,7 @@ public class Settings implements Initializable {
             }
         });
         deleteEverythingAndClose.textProperty().bind(Strings.ResetProgram);
-        Tooltip deleteEverythingAndCloseTooltip = new Tooltip();
         deleteEverythingAndCloseTooltip.textProperty().bind(Strings.WarningUnrecoverable);
-        deleteEverythingAndClose.setTooltip(deleteEverythingAndCloseTooltip);
         deleteEverythingAndClose.setOnAction(e -> {
             ConfirmBox confirmBox = new ConfirmBox();
             if (confirmBox.display(Strings.AreYouSureThisWillDeleteEverything, tabPane.getScene().getWindow())) {

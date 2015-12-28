@@ -87,6 +87,9 @@ public class lipsum extends Language {
         Strings.UpdateTime.setValue("nunula");
         Strings.DirectoryTimeout.setValue("termula");
         Strings.UnHideShow.setValue("mutalu");
+        Strings.Cut.setValue("tu");
+        Strings.Copy.setValue("ta");
+        Strings.Paste.setValue("te");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("miterra");
@@ -100,6 +103,8 @@ public class lipsum extends Language {
         Strings.DeleteUsersNoteCantDeleteCurrentUser.setValue("Nulla");
         Strings.WarningUnrecoverable.setValue("vitae");
         Strings.InternalVersion.setValue("gataluma: " + Variables.InternalVersion);
+        Strings.MakeUserDefault.setValue("tertavu");
+        Strings.MakeLanguageDefault.setValue("mitaka");
 
         // Other Text
         Strings.AddNewUsername.setValue("porta");
@@ -163,5 +168,7 @@ public class lipsum extends Language {
         Strings.OnlyChecksEveryRuns.setValue("viter");
         Strings.JavaVersionFull.setValue("mutulu: " + Strings.JavaVersion);
         Strings.CodedUsingFull.setValue("mecala: " + Strings.CodedUsing);
+        Strings.ThereAreNoHiddenShows.setValue("utala");
+        Strings.PickShowToUnHide.setValue("hulva");
     }
 }

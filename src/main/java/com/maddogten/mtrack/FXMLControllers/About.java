@@ -39,6 +39,8 @@ public class About implements Initializable {
     private Label codedWith;
     @FXML
     private Button close;
+    @FXML
+    private Tooltip versionNumberTooltip;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -48,10 +50,8 @@ public class About implements Initializable {
         versionNumber.setText(Strings.MTrackVersion);
         versionNumber.setAlignment(Pos.CENTER);
         if (Variables.showInternalVersion) {
-            Tooltip versionNumberTooltip = new Tooltip();
             versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
-            versionNumber.setTooltip(versionNumberTooltip);
-        }
+        } else versionNumber.setTooltip(null);
         codedBy.setText(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);
         codedUsing.textProperty().bind(Strings.CodedUsingFull);

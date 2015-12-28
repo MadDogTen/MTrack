@@ -114,6 +114,7 @@ public class Main extends Application implements Runnable {
             stage.setWidth(Variables.SIZE_WIDTH);
             stage.setHeight(Variables.SIZE_HEIGHT);
             Scene scene = new Scene(root);
+            scene.getStylesheets().add("/gui/MainGui.css");
             scene.setFill(Color.WHITESMOKE);
             stage.setOnCloseRequest(e -> {
                 e.consume();

@@ -46,6 +46,9 @@ public class en_US extends Language {
         Strings.Warning.setValue("Warning- ");
         Strings.Show.setValue("Show");
         Strings.UI.setValue("UI");
+        Strings.Cut.setValue("Cut");
+        Strings.Copy.setValue("Copy");
+        Strings.Paste.setValue("Paste");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("Set Season + Episode");
@@ -95,9 +98,11 @@ public class en_US extends Language {
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("Show/Hide shows with 0 episode left.");
         Strings.CurrentlyRechecking.setValue("Currently Searching Shows...");
-        Strings.DeleteUsersNoteCantDeleteCurrentUser.setValue("Delete Users. Note: Can't delete current user!");
+        Strings.DeleteUsersNoteCantDeleteCurrentUser.setValue("Note: Can't delete current user!");
         Strings.WarningUnrecoverable.setValue("Warning, Unrecoverable!");
         Strings.InternalVersion.setValue("Internal Version: " + Variables.InternalVersion);
+        Strings.MakeUserDefault.setValue("Make User Default");
+        Strings.MakeLanguageDefault.setValue("Make Language Default");
 
         // Other Text
         Strings.AddNewUsername.setValue("Add New Username");
@@ -162,5 +167,7 @@ public class en_US extends Language {
         Strings.OnlyChecksEveryRuns.setValue("Only checks every 5 runs");
         Strings.JavaVersionFull.setValue("Coded In " + Strings.CodedIn + "\nVersion: " + Strings.JavaVersion);
         Strings.CodedUsingFull.setValue("Coded With: " + Strings.CodedUsing);
+        Strings.ThereAreNoHiddenShows.setValue("There are no hidden shows.");
+        Strings.PickShowToUnHide.setValue("Pick show to UnHide...");
     }
 }

@@ -30,7 +30,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1003; // Was Changed
     public static final int ShowFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 7; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 8; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -50,6 +50,7 @@ public class Variables {
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static String language;
+    public static boolean makeLanguageDefault;
     public static int timeToWaitForDirectory;
     public static boolean recordChangesForNonActiveShows;
     public static boolean recordChangedSeasonsLowerThanCurrent;

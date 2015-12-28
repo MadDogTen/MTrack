@@ -45,6 +45,11 @@ Renamed MoveWindow to MoveStage.
 Added a Main Comment to each Class, explaining the basic use of it. They still need more work, Some are quite basic.
 Added Button to clear the text on the main stage. It's hidden until you type something.
 Added the Logo as the background on the About window.
+Changed Tooltip Style.
+Added Custom ContextMenu to the search box, Which fixes the clear button not appearing when using it to paste, or not disappearing when using it to cut everything.
+Added Settings Button to UnHide shows. (Under "Show" tab)
+Added ability to set the language as default during startup.
+Added ability to set the default user during startup.
 
 Note- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).

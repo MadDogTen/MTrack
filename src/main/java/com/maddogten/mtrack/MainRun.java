@@ -112,6 +112,7 @@ public class MainRun {
                 programSettingsController.loadProgramSettingsFile();
                 updateManager.updateShowFile();
                 getLanguage();
+                if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
                 if (!continueStarting) return false;
                 Strings.UserName = getUser();
                 if (!continueStarting) return false;
@@ -126,6 +127,7 @@ public class MainRun {
                 programSettingsController.loadProgramSettingsFile();
                 updateManager.updateShowFile();
                 getLanguage();
+                if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
                 if (!continueStarting) return false;
                 Strings.UserName = getUser();
                 if (!continueStarting) return false;
@@ -194,11 +196,15 @@ public class MainRun {
             log.info("Using default user.");
             return programSettingsController.getSettingsFile().getDefaultUser();
         } else {
-            String result = new ListSelectBox().pickUser(Strings.ChooseYourUsername, Users, null);
-            if (result.matches(Strings.AddNewUsername.getValue())) {
+            Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, Users, null);
+            String user = (String) pickUserResult[0];
+            if (user.matches(Strings.AddNewUsername.getValue())) {
                 continueStarting = false;
             }
-            return result;
+            if ((boolean) pickUserResult[1]) {
+                programSettingsController.setDefaultUsername(user, true);
+            }
+            return user;
         }
     }
 
@@ -215,6 +221,7 @@ public class MainRun {
         } else {
             if (language != null && !language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice TODO <- Eventually Remove
                 Boolean wasSet = languageHandler.setLanguage(language);
+                Variables.makeLanguageDefault = true;
                 if (wasSet) {
                     Variables.language = language;
                     log.info("Language is set: " + language);
@@ -223,7 +230,8 @@ public class MainRun {
                 }
             } else {
                 languageHandler.setLanguage(Variables.DefaultLanguage);
-                String languageReadable = new ListSelectBox().pickLanguage(languages.values(), null);
+                Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), null);
+                String languageReadable = (String) pickLanguageResult[0];
                 if (languageReadable.matches("-2")) continueStarting = false;
                 else {
                     String internalName = Strings.EmptyString;
@@ -233,6 +241,7 @@ public class MainRun {
                             break;
                         }
                     }
+                    Variables.makeLanguageDefault = (boolean) pickLanguageResult[1];
                     Boolean wasSet = languageHandler.setLanguage(internalName);
                     if (wasSet) {
                         Variables.language = internalName;

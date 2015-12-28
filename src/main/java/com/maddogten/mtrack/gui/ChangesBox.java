@@ -34,10 +34,15 @@ public class ChangesBox {
     private boolean currentlyOpen = false;
     private Stage stage;
 
+    public void closeStage() {
+        if (stage != null) {
+            stage.close();
+        }
+    }
+
     public Stage getStage() {
         return stage;
     }
-
     // Displays a stage showing everything contained in the changes String[]. It will automatically updated when changes are found.
     public Object[] openChanges(Window oldWindow) {
         log.finest("ChangesBox has been opened.");
