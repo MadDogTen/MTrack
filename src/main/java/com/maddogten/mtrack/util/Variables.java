@@ -21,16 +21,18 @@ public class Variables {
     public static final String DirectoriesFolder = Strings.FileSeparator + "Directories";
     public static final String UsersFolder = Strings.FileSeparator + "Users";
     // Extensions
-    public static final String ShowsExtension = ".shows";
-    public static final String UsersExtension = ".user";
-    public static final String SettingsExtension = ".settings";
+    public static final String ShowFileExtension = ".shows";
+    public static final String UserFileExtension = ".user";
+    public static final String SettingFileExtension = ".settings";
     public static final String DefaultLanguage = "en_US";
-    // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // TODO Set back to 1 for full release. \\
-    public static final int ProgramSettingsFileVersion = 1012; // Was Changed // TODO Remove all "Was Changed" before merging with master.
+    @SuppressWarnings("PublicStaticArrayField")
+    public static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
+    // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
+    public static final int ProgramSettingsFileVersion = 1012; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1003; // Was Changed
-    public static final int ShowFileVersion = 1000; // Was Changed
+    public static final int DirectoryFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 8; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 10; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -44,7 +46,7 @@ public class Variables {
     public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
     /**/public static final boolean forceDisableAutomaticRechecking = false; // false
     public static boolean disableAutomaticRechecking;
-    /**/public static boolean devMode = false; // false
+    /**/public static boolean devMode = true; // false
     public static int updateSpeed;
 
     //---------- Other Variables ----------\\

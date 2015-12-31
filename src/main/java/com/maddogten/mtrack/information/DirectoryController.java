@@ -13,9 +13,7 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +38,7 @@ public class DirectoryController {
     }
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    public ArrayList<Directory> getActiveDirectories(boolean skipFoundInactiveDirectories) { //TODO There must be a better way of doing this.
+    public ArrayList<Directory> getActiveDirectories(boolean skipFoundInactiveDirectories) {
         ArrayList<Directory> activeDirectories = new ArrayList<>();
         ArrayList<Directory> untestedDirectories = getDirectories();
         if (skipFoundInactiveDirectories) {
@@ -70,11 +68,8 @@ public class DirectoryController {
             String match = Strings.EmptyString;
             boolean[] isDirectoryActive = {false};
             boolean directoryChecked = false;
-            if (driveMatcher.find()) {
-                match = driveMatcher.group();
-            } else if (networkFolderMatcher.find()) {
-                match = networkFolderMatcher.group();
-            }
+            if (driveMatcher.find()) match = driveMatcher.group();
+            else if (networkFolderMatcher.find()) match = networkFolderMatcher.group();
             if (!match.isEmpty()) {
                 log.info(directory.getDirectory().toString() + " was detected as being a drive/networked directory.");
                 directoryChecked = true;
@@ -107,9 +102,7 @@ public class DirectoryController {
                             GenericMethods.printStackTrace(log, e);
                         }
                     }
-                    if (!Main.programRunning) {
-                        thread.interrupt();
-                    }
+                    if (!Main.programRunning) thread.interrupt();
                 }
             }
             if (!directoryChecked) {
@@ -145,9 +138,7 @@ public class DirectoryController {
                                 GenericMethods.printStackTrace(log, e);
                             }
                         }
-                        if (!Main.programRunning) {
-                            thread.interrupt();
-                        }
+                        if (!Main.programRunning) thread.interrupt();
                     }
                 }
             }
@@ -177,9 +168,8 @@ public class DirectoryController {
 
     public void printAllDirectories() {
         log.info("Printing out all directories:");
-        if (getDirectories().isEmpty()) {
-            log.info("No directories.");
-        } else getDirectories().forEach(directory -> log.info(directory.getDirectory().toString()));
+        if (getDirectories().isEmpty()) log.info("No directories.");
+        else getDirectories().forEach(directory -> log.info(directory.getDirectory().toString()));
         log.info("Finished printing out all directories:");
     }
 
@@ -187,9 +177,7 @@ public class DirectoryController {
     public boolean[] addDirectory(int index, File directory) {
         ArrayList<Directory> directories = getDirectories();
         boolean[] answer = {false, false};
-        if (directories == null) {
-            directories = new ArrayList<>();
-        }
+        if (directories == null) directories = new ArrayList<>();
         boolean directoryAlreadyExists = false;
         for (Directory aDirectory : directories) {
             if (aDirectory.getDirectory() == directory) {
@@ -202,44 +190,31 @@ public class DirectoryController {
             String[] splitResult = String.valueOf(directory).split(Pattern.quote(Strings.FileSeparator));
             String fileName = "";
             for (String singleSplit : splitResult) {
-                if (singleSplit.contains(":")) {
-                    singleSplit = singleSplit.replace(":", "");
-                }
+                if (singleSplit.contains(":")) singleSplit = singleSplit.replace(":", "");
                 if (!singleSplit.isEmpty()) {
-                    if (fileName.isEmpty()) {
-                        fileName = singleSplit;
-                    } else fileName += '_' + singleSplit;
+                    if (fileName.isEmpty()) fileName = singleSplit;
+                    else fileName += '_' + singleSplit;
                 }
             }
             saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), Main.getProgramSettingsController().getSettingsFile().getProgramSettingsID()), false);
             answer[0] = true;
-        } else if (directory.toString().isEmpty()) {
-            answer[1] = true;
-        }
+        } else if (directory.toString().isEmpty()) answer[1] = true;
         return answer;
     }
 
     // Returns the lowest usable directory index. If directory is deleted this make the index reusable.
     public int getLowestFreeDirectoryIndex() {
-        final int[] lowestFreeIndex = {0};
-        final boolean[] first = {true};
-        getDirectories().forEach(directory -> {
-            int index = directory.getIndex();
-            if (first[0]) {
-                lowestFreeIndex[0] = index;
-                first[0] = false;
-            } else if (index < lowestFreeIndex[0]) {
-                lowestFreeIndex[0] = index;
-            }
-        });
-        return lowestFreeIndex[0];
+        List<Integer> usedIndexes = new LinkedList<>();
+        getDirectories().forEach(directory -> usedIndexes.add(directory.getIndex()));
+        int lowestFreeIndex = 0;
+        while (usedIndexes.contains(lowestFreeIndex)) lowestFreeIndex++;
+        return lowestFreeIndex;
     }
 
     // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
     public ArrayList<Directory> getDirectories(int skip) {
         // ArrayList = Shows list from all added Directories
-        if (skip == -2)
-            return getDirectories();
+        if (skip == -2) return getDirectories();
         else {
             ArrayList<Directory> directories = getDirectories();
             Iterator<Directory> directoryIterator = directories.iterator();
@@ -257,25 +232,21 @@ public class DirectoryController {
     @SuppressWarnings("unchecked")
     public Directory getDirectory(int index) {
         for (Directory directory : getDirectories()) {
-            if (directory.getIndex() == index) {
-                return directory;
-            }
+            if (directory.getIndex() == index) return directory;
         }
         log.warning("Warning- If this point is reached, please report.");
         return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>(), Main.getProgramSettingsController().getSettingsFile().getProgramSettingsID());
     }
 
     public void saveDirectory(Directory directory, Boolean loadMap) {
-        new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowsExtension, true);
-        if (loadMap) {
-            reloadShowsFile = true;
-        }
+        new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowFileExtension, true);
+        if (loadMap) reloadShowsFile = true;
     }
 
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
     public void removeDirectory(Directory aDirectory) {
         log.info("Currently processing removal of: " + aDirectory.getFileName());
-        new FileManager().deleteFile(Variables.dataFolder + Variables.DirectoriesFolder, aDirectory.getFileName(), Variables.ShowsExtension);
+        new FileManager().deleteFile(Variables.DirectoriesFolder, aDirectory.getFileName(), Variables.ShowFileExtension);
         log.info("Finished processing removal of the directory.");
     }
 

@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
@@ -25,7 +24,7 @@ import java.util.logging.Logger;
 public class MessageBox {
     private final Logger log = Logger.getLogger(MessageBox.class.getName());
 
-    public void display(StringProperty[] message, Window oldWindow) {
+    public void display(StringProperty[] message, Stage oldStage) {
         log.finest("MessageBox has been opened.");
         Stage stage = new Stage();
         GenericMethods.setIcon(stage);
@@ -43,27 +42,23 @@ public class MessageBox {
                 layout.getChildren().add(messageLabel);
             }
         }
-
         Button close = new Button();
         close.textProperty().bind(Strings.Close);
         close.setMinHeight(20);
         close.setMinWidth(30);
         close.setOnAction(e -> stage.close());
-
         layout.getChildren().add(close);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
-
         Scene scene = new Scene(layout);
-
         stage.setScene(scene);
         Platform.runLater(() -> {
-            if (oldWindow != null) {
-                stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
-                stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
+            if (oldStage != null) {
+                stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
+                stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
             }
-            new MoveStage().moveWindow(stage, oldWindow);
+            new MoveStage().moveStage(stage, oldStage);
         });
-        stage.show();
+        stage.showAndWait();
     }
 }

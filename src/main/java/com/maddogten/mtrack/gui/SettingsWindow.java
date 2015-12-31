@@ -43,19 +43,15 @@ public class SettingsWindow {
         GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);
-
         Pane root = FXMLLoader.load(getClass().getResource("/gui/Settings.fxml"));
         Scene scene = new Scene(root);
         scene.setFill(Color.WHITESMOKE);
-
         stage.setResizable(false);
         stage.setScene(scene);
         Platform.runLater(() -> {
             stage.setX(Main.stage.getX() + (Main.stage.getWidth() / 2) - (stage.getWidth() / 2));
             stage.setY(Main.stage.getY() + (Main.stage.getHeight() / 2) - (stage.getHeight() / 2));
-            if (tab != -2) {
-                Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab);
-            }
+            if (tab != -2) Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab);
         });
         stage.showAndWait();
         stage = null;

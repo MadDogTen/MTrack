@@ -69,7 +69,7 @@
                 <Tooltip id="tooltip" fx:id="isCurrentlyRecheckingTooltip"/>
             </tooltip>
         </ProgressIndicator>
-        <Button fx:id="changesAlert" layoutX="190.0" layoutY="3.0" mnemonicParsing="false" prefHeight="1.0" prefWidth="1.0" text="!" visible="false"/>
+        <Button id="changesAlert" fx:id="changesAlert" layoutX="190.0" layoutY="3.0" mnemonicParsing="false" prefHeight="1.0" prefWidth="1.0" text="!" visible="false"/>
         <Pane fx:id="pingingDirectoryPane" layoutX="164.0" layoutY="6.0" mouseTransparent="true" prefHeight="18.0" prefWidth="18.0">
             <children>
                 <ImageView fx:id="pingingDirectory" fitHeight="18.0" fitWidth="18.0" layoutX="2.0" layoutY="-1.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" visible="false">

@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
@@ -26,16 +25,14 @@ import java.util.logging.Logger;
 public class ConfirmBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
 
-    public boolean display(StringProperty message, Window oldWindow) {
+    public boolean display(StringProperty message, Stage oldStage) {
         log.finest("ConfirmBox has been ran.");
         Stage stage = new Stage();
         GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
-
         Label label = new Label();
         label.textProperty().bind(message);
-
         Button yesButton = new Button(), noButton = new Button();
         yesButton.textProperty().bind(Strings.Yes);
         noButton.textProperty().bind(Strings.No);
@@ -43,7 +40,6 @@ public class ConfirmBox {
         yesButton.setMinWidth(30);
         noButton.setMinHeight(20);
         noButton.setMinWidth(30);
-
         final boolean[] answer = new boolean[1];
         yesButton.setOnAction(e -> {
             answer[0] = true;
@@ -53,29 +49,24 @@ public class ConfirmBox {
             answer[0] = false;
             stage.close();
         });
-
         HBox layout2 = new HBox();
         layout2.getChildren().addAll(yesButton, noButton);
         layout2.setAlignment(Pos.CENTER);
         layout2.setPadding(new Insets(4, 6, 6, 6));
-
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
-
         Scene scene = new Scene(layout);
-
         stage.setScene(scene);
         Platform.runLater(() -> {
-            if (oldWindow != null) {
-                stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
-                stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
+            if (oldStage != null) {
+                stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
+                stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
             }
-            new MoveStage().moveWindow(stage, oldWindow);
+            new MoveStage().moveStage(stage, oldStage);
         });
         stage.showAndWait();
-
         return answer[0];
     }
 }

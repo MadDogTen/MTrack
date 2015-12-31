@@ -19,9 +19,7 @@ public class FileManager {
     private final Logger log = Logger.getLogger(FileManager.class.getName());
 
     public void save(Serializable objectToSerialise, String folder, String filename, String extension, boolean overWrite) {
-        if (!new File(Variables.dataFolder + folder).isDirectory()) {
-            createFolder(folder);
-        }
+        if (!new File(Variables.dataFolder + folder).isDirectory()) createFolder(folder);
         if (overWrite || !checkFileExists(folder, filename, extension)) {
             try {
                 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension));
@@ -63,26 +61,20 @@ public class FileManager {
     @SuppressWarnings("AccessOfSystemProperties")
     private OperatingSystem getOS() {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("windows")) {
-            return OperatingSystem.WINDOWS;
-        } else if (os.contains("mac")) {
-            return OperatingSystem.MAC;
-        } else if (os.contains("nix")) {
-            return OperatingSystem.NIX;
-        } else if (os.contains("nux")) {
-            return OperatingSystem.NUX;
-        } else if (os.contains("aix")) {
-            return OperatingSystem.AIX;
-        } else {
-            log.severe("Your operating system is unknown, Assuming linux based, Using nix...");
+        if (os.contains("windows")) return OperatingSystem.WINDOWS;
+        else if (os.contains("mac")) return OperatingSystem.MAC;
+        else if (os.contains("nix")) return OperatingSystem.NIX;
+        else if (os.contains("nux")) return OperatingSystem.NUX;
+        else if (os.contains("aix")) return OperatingSystem.AIX;
+        else {
+            log.warning("Your operating system is unknown, Assuming linux based, Using nix...");
             return OperatingSystem.NIX;
         }
     }
 
     public void createFolder(String folder) {
-        if (!new File(Variables.dataFolder + folder).mkdir()) {
+        if (!new File(Variables.dataFolder + folder).mkdir())
             log.warning("Cannot make: " + Variables.dataFolder + folder);
-        }
         log.info("Created folder: " + folder);
     }
 
@@ -90,13 +82,9 @@ public class FileManager {
     public File getAppDataFolder() {
         String home = System.getProperty("user.home");
         OperatingSystem os = getOS();
-        if (os == OperatingSystem.WINDOWS) {
-            home = System.getenv("appdata");
-        } else if (os == OperatingSystem.MAC) {
-            home += "~/Library/Application Support";
-        } else if (os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) {
-            home += "";
-        }
+        if (os == OperatingSystem.WINDOWS) home = System.getenv("appdata");
+        else if (os == OperatingSystem.MAC) home += "~/Library/Application Support";
+        else if (os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) home += "";
         File dir = new File(home, Variables.ProgramRootFolder);
         return new File(dir.getAbsolutePath());
     }
@@ -106,52 +94,38 @@ public class FileManager {
         String converted = Strings.EmptyString;
         String[] split = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
         for (int x = 0; x <= split.length - 2; x++) {
-            if (x == 0) {
-                converted = split[x];
-            } else converted += Strings.FileSeparator + split[x];
+            if (x == 0) converted = split[x];
+            else converted += Strings.FileSeparator + split[x];
         }
         return new File(converted);
     }
 
     public void deleteFile(String folder, String filename, String extension) {
-        String file = (folder + Strings.FileSeparator + filename + extension);
-        if (!checkFileExists(folder, filename, extension)) {
-            log.warning("File " + file + " does not exist!");
-        }
-        File toDelete = new File(file);
-        if (toDelete.canWrite()) {
-            if (!toDelete.delete()) {
-                log.warning("Cannot delete: " + toDelete);
-            }
-        } else log.warning("File " + file + " is write protected!");
+        if (checkFileExists(folder, filename, extension)) {
+            File toDelete = new File(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension);
+            if (toDelete.canWrite() && toDelete.delete() && !toDelete.exists())
+                log.info("\"" + toDelete + "\" was successfully deleted.");
+            else log.warning("Cannot delete: " + toDelete);
+        } else
+            log.warning("File " + Variables.dataFolder + folder + Strings.FileSeparator + filename + extension + " does not exist!");
     }
 
     public void deleteFolder(File toDeleteFolder) {
-        if (!checkFolderExistsAndReadable(toDeleteFolder)) {
-            log.warning(toDeleteFolder + " does not exist!");
-        }
+        if (!checkFolderExistsAndReadable(toDeleteFolder)) log.warning(toDeleteFolder + " does not exist!");
         if (toDeleteFolder.canWrite()) {
             if (toDeleteFolder.list().length == 0) {
-                if (!toDeleteFolder.delete()) {
-                    log.warning("Cannot delete: " + toDeleteFolder);
-                }
+                if (!toDeleteFolder.delete()) log.warning("Cannot delete: " + toDeleteFolder);
             } else {
                 File[] files = toDeleteFolder.listFiles();
                 if (files != null) {
                     for (File aFile : files) {
                         if (aFile.isFile()) {
-                            if (!aFile.delete()) {
-                                log.warning("Cannot delete: " + aFile);
-                            }
+                            if (!aFile.delete()) log.warning("Cannot delete: " + aFile);
                         }
-                        if (aFile.isDirectory()) {
-                            deleteFolder(aFile);
-                        }
+                        if (aFile.isDirectory()) deleteFolder(aFile);
                     }
                 }
-                if (!toDeleteFolder.delete()) {
-                    log.warning("Cannot delete: " + toDeleteFolder);
-                }
+                if (!toDeleteFolder.delete()) log.warning("Cannot delete: " + toDeleteFolder);
             }
         } else log.warning(toDeleteFolder + " is write protected!");
     }
@@ -169,9 +143,7 @@ public class FileManager {
                 });
             } else {
                 // Unknown Desktop
-                if (Desktop.isDesktopSupported()) {
-                    Desktop.getDesktop().open(file);
-                }
+                if (Desktop.isDesktopSupported()) Desktop.getDesktop().open(file);
                 log.warning("FileManager- Your OS is Unknown, Attempting to open file anyways, But it may fail.");
             }
         } catch (IOException e) {

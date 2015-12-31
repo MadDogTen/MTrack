@@ -25,7 +25,7 @@ public class ProgramSettingsController {
 
     @SuppressWarnings("unchecked")
     public void loadProgramSettingsFile() {
-        this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension);
+        this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
     }
 
     public void setDefaultLanguage(String language) {
@@ -58,9 +58,7 @@ public class ProgramSettingsController {
         } else {
             settingsFile.setMainDirectoryVersion(version);
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
-            if (!Main.getMainRun().firstRun) {
-                userInfoController.getUserSettings().setUserDirectoryVersion(version);
-            }
+            if (!Main.getMainRun().firstRun) userInfoController.getUserSettings().setUserDirectoryVersion(version);
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;
@@ -78,7 +76,7 @@ public class ProgramSettingsController {
     // Save the file
     public void saveSettingsFile() {
         if (settingsFile != null) {
-            new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingsExtension, true);
+            new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension, true);
             log.info("settingsFile has been saved!");
         }
     }

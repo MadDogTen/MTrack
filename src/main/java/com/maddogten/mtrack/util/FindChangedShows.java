@@ -32,9 +32,8 @@ public class FindChangedShows {
         final boolean[] hasChanged = {false};
         ArrayList<String> showsFound = new ArrayList<>();
         showsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
-            if (newShowsFile.containsKey(aShow)) {
-                showsFound.add(aShow);
-            } else {
+            if (newShowsFile.containsKey(aShow)) showsFound.add(aShow);
+            else {
                 log.info(aShow + " Removed");
                 ChangeReporter.addChange("- " + aShow);
                 hasChanged[0] = true;
@@ -66,9 +65,8 @@ public class FindChangedShows {
         });
         ArrayList<String> showsFoundOld = new ArrayList<>();
         newShowsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
-            if (showsFile.containsKey(aShow)) {
-                showsFoundOld.add(aShow);
-            } else {
+            if (showsFile.containsKey(aShow)) showsFoundOld.add(aShow);
+            else {
                 log.info(aShow + " Added");
                 ChangeReporter.addChange("+ " + aShow);
                 hasChanged[0] = true;
@@ -98,11 +96,8 @@ public class FindChangedShows {
                 }
             }));
         });
-        if (hasChanged[0]) {
-            log.info("Some files have been changed.");
-        } else {
-            log.info("No files have changed.");
-        }
+        if (hasChanged[0]) log.info("Some files have been changed.");
+        else log.info("No files have changed.");
         log.info("Finished running findShowFileDifferences.");
     }
 }

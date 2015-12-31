@@ -26,18 +26,17 @@ public class UserInfoController {
 
     @SuppressWarnings("unchecked")
     public void loadUserInfo() {
-        this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UsersExtension);
+        this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension);
     }
 
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
     public ArrayList<String> getAllUsers() {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
         ArrayList<String> users = new ArrayList<>();
-        if (new FileManager().checkFolderExistsAndReadable(folder)) {
-            Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UsersExtension) && !name.toLowerCase().matches("Program"))));
-        }
+        if (new FileManager().checkFolderExistsAndReadable(folder))
+            Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UserFileExtension) && !name.toLowerCase().matches("Program"))));
         ArrayList<String> usersCleaned = new ArrayList<>();
-        users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UsersExtension, Strings.EmptyString)));
+        users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UserFileExtension, Strings.EmptyString)));
         return usersCleaned;
     }
 
@@ -50,9 +49,7 @@ public class UserInfoController {
     public ArrayList<String> getIgnoredShows() {
         ArrayList<String> ignoredShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
-            if (showSettings.isIgnored()) {
-                ignoredShows.add(showSettings.getShowName());
-            }
+            if (showSettings.isIgnored()) ignoredShows.add(showSettings.getShowName());
         });
         return ignoredShows;
     }
@@ -69,9 +66,8 @@ public class UserInfoController {
     public ArrayList<String> getActiveShows() {
         ArrayList<String> activeShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
-            if (showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden()) {
+            if (showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden())
                 activeShows.add(showSettings.getShowName());
-            }
         });
         return activeShows;
     }
@@ -80,9 +76,8 @@ public class UserInfoController {
     public ArrayList<String> getInactiveShows() {
         ArrayList<String> inActiveShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
-            if (!showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden()) {
+            if (!showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden())
                 inActiveShows.add(showSettings.getShowName());
-            }
         });
         return inActiveShows;
     }
@@ -91,9 +86,7 @@ public class UserInfoController {
     public ArrayList<String> getAllNonIgnoredShows() {
         ArrayList<String> nonIgnoredShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
-            if (!showSettings.isIgnored()) {
-                nonIgnoredShows.add(showSettings.getShowName());
-            }
+            if (!showSettings.isIgnored()) nonIgnoredShows.add(showSettings.getShowName());
         });
         return nonIgnoredShows;
     }
@@ -107,15 +100,13 @@ public class UserInfoController {
     public ArrayList<String> getHiddenShows() {
         ArrayList<String> hiddenShows = new ArrayList<>();
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
-            if (showSettings.isHidden() && !showSettings.isIgnored()) {
-                hiddenShows.add(showSettings.getShowName());
-            }
+            if (showSettings.isHidden() && !showSettings.isIgnored()) hiddenShows.add(showSettings.getShowName());
         });
         return hiddenShows;
     }
 
     // Attempts to play the file using the default program for the extension.
-    public void playAnyEpisode(String aShow, int aSeason, int aEpisode) { // TODO Look for a better place to put this
+    public void playAnyEpisode(String aShow, int aSeason, int aEpisode) {
         log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
         String showLocation = showInfoController.getEpisode(aShow, aSeason, aEpisode);
         log.info("Known show location: " + showLocation);
@@ -133,9 +124,7 @@ public class UserInfoController {
         if (episode == -2) {
             int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason();
             int currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
-            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) {
-                ++currentEpisode;
-            }
+            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) ++currentEpisode;
             boolean[] isAnotherEpisodeResult = isAnotherEpisode(aShow, currentSeason, currentEpisode);
             if (isAnotherEpisodeResult[0]) {
                 userSettings.getAShowSettings(aShow).setCurrentEpisode(++currentEpisode);
@@ -149,9 +138,8 @@ public class UserInfoController {
                 log.info(aShow + " is now on episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
             }
         } else {
-            if (doesEpisodeExistInShowFile(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), episode)) {
+            if (doesEpisodeExistInShowFile(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason(), episode))
                 userSettings.getAShowSettings(aShow).setCurrentEpisode(episode);
-            }
         }
     }
 
@@ -167,12 +155,8 @@ public class UserInfoController {
         boolean[] result = {false, false};
         Set<Integer> episodes = new HashSet<>();
         showInfoController.getEpisodesList(aShow, aSeason).stream().filter(episodeInt -> episodeInt >= aEpisode).forEach(episodes::add);
-        if (episodes.contains(aEpisode)) {
-            result[0] = true;
-        }
-        if (!result[0] && episodes.isEmpty()) {
-            result[1] = true;
-        }
+        if (episodes.contains(aEpisode)) result[0] = true;
+        if (!result[0] && episodes.isEmpty()) result[1] = true;
         return result;
     }
 
@@ -221,9 +205,7 @@ public class UserInfoController {
         episode -= 1;
         for (int aEpisode : showInfoController.getEpisodesList(aShow, currentSeason)) {
             seasonEpisodeReturn[1] = aEpisode;
-            if (aEpisode == episode) {
-                return seasonEpisodeReturn;
-            }
+            if (aEpisode == episode) return seasonEpisodeReturn;
         }
         if (episode == 0) {
             log.info(String.valueOf(episode));
@@ -266,19 +248,13 @@ public class UserInfoController {
         Set<Integer> allSeasons = showInfoController.getSeasonsList(aShow);
         ArrayList<Integer> allSeasonAllowed = new ArrayList<>();
         allSeasons.forEach(aSeason -> {
-            if (aSeason >= currentSeason) {
-                allSeasonAllowed.add(aSeason);
-            }
+            if (aSeason >= currentSeason) allSeasonAllowed.add(aSeason);
         });
         if (!allSeasonAllowed.isEmpty()) {
-            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) {
-                currentEpisode++;
-            }
+            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) currentEpisode++;
             for (int aSeason : allSeasonAllowed) {
                 int episode = 1;
-                if (aSeason == currentSeason) {
-                    episode = currentEpisode;
-                }
+                if (aSeason == currentSeason) episode = currentEpisode;
                 Set<Integer> episodes = showInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                 if (!episodes.isEmpty()) {
                     ArrayList<Integer> episodesArray = new ArrayList<>();
@@ -289,13 +265,9 @@ public class UserInfoController {
                     if (aSeason == currentSeason) {
                         while (episodesIterator.hasNext()) {
                             int next = episodesIterator.next();
-                            if (next >= currentEpisode) {
-                                episodesAllowed.add(next);
-                            }
+                            if (next >= currentEpisode) episodesAllowed.add(next);
                         }
-                    } else {
-                        episodesArray.forEach(episodesAllowed::add);
-                    }
+                    } else episodesArray.forEach(episodesAllowed::add);
                     Collections.sort(episodesAllowed);
                     Iterator<Integer> episodesIterator2 = episodesAllowed.iterator();
                     while (episodesIterator2.hasNext()) {
@@ -306,9 +278,7 @@ public class UserInfoController {
                             episodesIterator2.remove();
                         } else return remaining;
                     }
-                    if (!episodesAllowed.isEmpty()) {
-                        return remaining;
-                    }
+                    if (!episodesAllowed.isEmpty()) return remaining;
                 }
             }
         }
@@ -338,7 +308,7 @@ public class UserInfoController {
 
     public void saveUserSettingsFile() {
         if (userSettings != null) {
-            new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UsersExtension, true);
+            new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension, true);
             log.info("userSettingsFile has been saved!");
         }
     }

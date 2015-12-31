@@ -41,18 +41,13 @@ public class ChangeReporter {
     }
 
     public static void setChanges(String[] newChangeList) {
-        if (changes.length == 0) {
-            changes = newChangeList;
-        } else {
+        if (changes.length == 0) changes = newChangeList;
+        else {
             String[] tempSave = changes;
             changes = newChangeList;
-            for (int i = tempSave.length - 1; i >= 0; i--) {
-                addChange(tempSave[i]);
-            }
+            for (int i = tempSave.length - 1; i >= 0; i--) addChange(tempSave[i]);
         }
-        if (changes.length > 0 && !isChanges) {
-            isChanges = true;
-        }
+        if (changes.length > 0 && !isChanges) isChanges = true;
     }
 
     public static boolean getIsChanges() {

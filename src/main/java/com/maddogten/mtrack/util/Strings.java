@@ -173,7 +173,8 @@ public class Strings {
     public static final StringProperty CodedUsingFull = new SimpleStringProperty();
     public static final StringProperty ThereAreNoHiddenShows = new SimpleStringProperty();
     public static final StringProperty PickShowToUnHide = new SimpleStringProperty();
-
+    // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
+    public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
     // All Other Text
     public static String DefaultUsername;
     // Strings set by program

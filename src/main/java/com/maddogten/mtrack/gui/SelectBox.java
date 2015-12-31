@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -22,24 +21,17 @@ import java.util.logging.Logger;
 public class SelectBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
 
-    public String display(String message, String[] buttonsText, Window oldWindow) {
+    public String display(String message, String[] buttonsText, Stage oldStage) {
         log.finest("SelectBox has been opened.");
         Stage stage = new Stage();
         GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
-
         Label label = new Label();
         label.setText(message);
-
         ArrayList<Button> buttons = new ArrayList<>();
-
-        for (String aString : buttonsText) {
-            buttons.add(new Button(aString));
-        }
-
+        for (String aString : buttonsText) buttons.add(new Button(aString));
         Button close = new Button(Strings.ExitButtonText);
-
         final String[] answer = new String[1];
         HBox layout2 = new HBox();
         buttons.forEach(aButton -> {
@@ -49,31 +41,25 @@ public class SelectBox {
             });
             layout2.getChildren().add(aButton);
         });
-
         close.setOnAction(e -> {
             answer[0] = Strings.EmptyString;
             stage.close();
         });
-
         layout2.getChildren().add(close);
         layout2.setAlignment(Pos.CENTER);
         layout2.setPadding(new Insets(4, 6, 6, 6));
-
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
-
         Scene scene = new Scene(layout);
-
         stage.setScene(scene);
         Platform.runLater(() -> {
-            stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
-            new MoveStage().moveWindow(stage, oldWindow);
+            stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
+            new MoveStage().moveStage(stage, oldStage);
         });
         stage.showAndWait();
-
         return answer[0];
     }
 }

@@ -16,7 +16,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
@@ -29,17 +28,15 @@ public class ShowConfirmBox {
     private static final Logger log = Logger.getLogger(ShowConfirmBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public int display(StringProperty message, Window oldWindow, boolean disableNextEpisodeButton) {
+    public int display(StringProperty message, boolean disableNextEpisodeButton, Stage oldStage) {
         log.finest("ShowConfirmBox has been opened.");
         Stage stage = new Stage();
-        stage.initOwner(Main.stage); // TODO - Decide if I want to do it this way? Works for now.
+        stage.initOwner(Main.stage);
         GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
-
         Label label = new Label();
         label.textProperty().bind(message);
-
         Button yesButton = new Button(), noButton = new Button();
         yesButton.textProperty().bind(Strings.Yes);
         noButton.textProperty().bind(Strings.No);
@@ -47,23 +44,19 @@ public class ShowConfirmBox {
         yesButton.setMinWidth(30);
         noButton.setMinHeight(20);
         noButton.setMinWidth(30);
-
         final int[] answer = new int[1];
         yesButton.setOnAction(e -> {
             answer[0] = 1;
             stage.close();
         });
-
         noButton.setOnAction(e -> {
             answer[0] = 0;
             stage.close();
         });
-
         HBox layout2 = new HBox();
         layout2.getChildren().addAll(yesButton, noButton);
         layout2.setAlignment(Pos.CENTER);
         layout2.setPadding(new Insets(4, 6, 6, 6));
-
         Button nextEpisode = new Button();
         nextEpisode.textProperty().bind(Strings.NextEpisode);
         nextEpisode.setMinHeight(20);
@@ -72,24 +65,19 @@ public class ShowConfirmBox {
             answer[0] = 2;
             stage.close();
         });
-        if (disableNextEpisodeButton) {
-            nextEpisode.setDisable(true);
-        }
-
+        if (disableNextEpisodeButton) nextEpisode.setDisable(true);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2, nextEpisode);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
-
         Scene scene = new Scene(layout);
         stage.setScene(scene);
         Platform.runLater(() -> {
-            stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
-            new MoveStage().moveWindow(stage, oldWindow);
+            stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
+            new MoveStage().moveStage(stage, oldStage);
         });
         stage.showAndWait();
-
         return answer[0];
     }
 }

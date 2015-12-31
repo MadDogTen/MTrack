@@ -4,8 +4,7 @@ import com.maddogten.mtrack.io.FileManager;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,29 +21,17 @@ public class FindShows {
     private final Logger log = Logger.getLogger(FindShows.class.getName());
 
     public final ArrayList<String> findShows(File dir) {
-        ArrayList<String> result = new ArrayList<>();
-        Collections.addAll(result, dir.list());
-        Iterator<String> stringIterator = result.iterator();
-        while (stringIterator.hasNext()) {
-            if (!new File(dir + Strings.FileSeparator + stringIterator.next()).isDirectory()) {
-                stringIterator.remove();
-            }
-        }
-        return result;
+        return new ArrayList<>(Arrays.asList(dir.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
     }
 
     public final ArrayList<Integer> findSeasons(File dir, String show) {
         log.finest("Searching for seasons...");
-        ArrayList<String> showFolder = new ArrayList<>();
-        Collections.addAll(showFolder, new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1, name).isDirectory()));
+        ArrayList<String> showFolder = new ArrayList<>(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
         ArrayList<Integer> seasonNumber = new ArrayList<>();
-        Pattern pattern = Pattern.compile("[s][e][a][s][o][n]\\s\\d{1,4}");
+        Pattern pattern = Pattern.compile(Strings.seasonRegex);
         showFolder.forEach(aShowFolder -> {
             Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());
-            if (matcher.find()) {
-                String[] seasonsList = matcher.group().toLowerCase().split(" ");
-                seasonNumber.add(Integer.parseInt(seasonsList[1]));
-            }
+            if (matcher.find()) seasonNumber.add(Integer.parseInt(matcher.group().toLowerCase().split(" ")[1]));
         });
         log.finest("Finished searching for seasons.");
         return seasonNumber;
@@ -52,13 +39,16 @@ public class FindShows {
 
     public final ArrayList<String> findEpisodes(File dir, String ShowName, Integer Season) {
         log.finest("Searching for episodes...");
-        ArrayList<String> episodes = new ArrayList<>();
-        File folder = new File(dir + Strings.FileSeparator + ShowName + "/Season" + ' ' + Season);
-        if (new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0) {
-            Collections.addAll(episodes, folder.list((dir1, name) -> name.toLowerCase().endsWith(".mkv") || name.toLowerCase().endsWith(".avi") || name.toLowerCase().endsWith(".mp4") || name.toLowerCase().endsWith(".ts")));
-            return episodes;
-        }
+        File folder = new File(dir + Strings.FileSeparator + ShowName + Strings.FileSeparator + Strings.Season.getValue() + ' ' + Season);
+        if (new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
+            return new ArrayList<>(Arrays.asList(folder.list((dir1, name) -> {
+                for (String extension : Variables.showExtensions)
+                    if (new File(dir1 + Strings.FileSeparator + name).isFile() && name.toLowerCase().endsWith(extension)) {
+                        return true;
+                    }
+                return false;
+            })));
         log.finest("Finished searching for episodes.");
-        return episodes;
+        return new ArrayList<>();
     }
 }

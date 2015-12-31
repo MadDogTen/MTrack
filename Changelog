@@ -2,56 +2,71 @@ Changes:
 
 Alpha 1.0.0 - || Running changelog, Nothing finalized + Things may be missing. The development branch is constantly being updated which may break things, So make sure to backup you settings if you want to try it out.
 General Fixes/Changes/Cleanup.
+
+Changes:
 Changed Shows file storage to a much better storage format. Makes everything cleaner / better. Old files will convert to the new one.
 Changed Settings file storage to a much better storage format. Old files will convert to the new one.
 Episodes Number are no longer stored as a string, double episodes are stored as each being a single episode.
-Added options to display which Season / Episode your on in a Column.
+Added options to display which Season / Episode your on in a Column. Defaults to hidden.
 All Column's width & visibility settings are saved.
-Changed most files to not static, Controller now handles most of them.
+Changed most files to be non-static, Main now handles most of them.
 Pulled FirstRun method from MainRun into a FirstRun class.
 Further refinements on the percentage on the progress indicator.
-Made an Abstract Language class and use that in LanguageHandler to load the languages.
-Added Option to have the files stored in AppData or at the location of the Jar.
-Added option (Programmer option, Will default to true until Beta) to Toggle DevMode while program is running.
+Finished up basic multilingual support. Added some missing strings. Added a method in LanguageHandler to check if any strings are missing after being set, and if any are missing, set them to TextMissing. ~~Warning- Language's are not yet fully supported.~~
 ChangeBox will automatically refresh when new changes are added. (Checks once a second).
 ChangeBox now shows additions with a '+' and removals with a '-'. (Easier to notice at a glace and saves on space)
-Finished up multilingual support. Added some missing strings. Added a method in LanguageHandler to check if any strings are missing after being set, and if any are missing, set them to TextMissing.
 Converted to Maven build structure.
-Added ability to close the program before it is fully started.
-Added comments to quite a bit more.
-Directory information is no longer stored in the program settings file, They are instead gotten on program load from the folder. You can add or remove directories freely and it will properly handle it.
-Will now properly switch to new seasons when found.
-Selecting show season & episode is now done on one window.
+Directory information is no longer stored in the program settings file, They are instead gotten on program load from the folder. You can add or remove directories freely and the program will properly handle it. (Only add files directly to the folders while the program is off)
+Selecting show season & episode is now done on one Stage.
 If watching the last sequential episode, The "Next Episode" button is disabled.
-"Properly" checks if a directory is found, and active (Plugged in and accessible), and has a timeout period (20 Second by default, Configurable)
-Added fields in settings to directly change 'Update Time' (& removed the old button for it) & directory timeout time without opening another window.
+"Properly" checks if a directory is found, and active (Plugged in and accessible), and has a timeout period (20 Second by default, Configurable). Please suggest any better ways of doing this.
 MessageBox now supports multiline messages.
-Fixed the search field text not being applied on list changes.
 ChangeList is now saved and reloaded next run.
 Show rechecking will now recheck older seasons on program start, every 5th recheck, and when doing a forceRun; and added option to show related found changes on the changelog. Defaults off.
 Show rechecking will now recheck all nonIgnored shows on program start, every 10th recheck, and when doing a forceRun; and added option to show related found changes on the changelog. Defaults off.
-Fixed rechecking not searching for ignored shows.
 ProgressIndicator isCurrentlyRechecking is not shown until pingingDirectory is finished.
 pingingDirectory is now a symbol and will rotate instead of fading in and out.
 Changed the "X" and "-" buttons to a image.
 Moved Clock Methods to a GenericMethods class and removed the Clock class.
-Added UI Settings to allow parent windows to be clicked (Only currently available with Settings) + unlock window movement (Both settings are locked together, As it would be pointless to have one without the other).
-settingsTab is now disabled while the settings window is open (To go along with above change).
-Added setting to disable automatic show rechecking.
+settingsTab is now disabled while the settings stage is open (To go along with above change).
 Moved "Change Language" to UI tab in the settings stage.
-Added slight delay when moving the window to prevent unintentionally moving it.
 Changed "ChangeLanguage" to have changes take effect immediately. Note- Needs more testing to make I didn't break anything while implementing this.
 Renamed MoveWindow to MoveStage.
+Changed Tooltip Style.
+Changed most buttons to become disabled when you click them, and are re-enabled when you / they have finished the task.
+Changed some buttons to disable and re-enable their "pair" button as well (Ex. Adding / Removing a Directory).
+
+Additions:
+Made an Abstract Language class and use that in LanguageHandler to load the languages.
+Added Option to have the files stored in AppData or at the location of the Jar.
+Added option (Programmer option, Will default to true until Beta) to Toggle DevMode while program is running.
+Added ability to close the program before it is fully started.
+*Fully* commented everything. Please tell me if anything needs to be corrected / added.
+Added fields in settings to directly change 'Update Time' (& removed the old button for it) & directory timeout without opening another Stage.
+Added UI Settings to allow parent stages to be clicked (Only currently available with Settings) + unlock stage movement (Both settings are locked together, As it would be pointless to have one without the other).
+Added setting to disable automatic show rechecking.
+Added slight delay when moving the stage to prevent unintentionally moving it.
 Added a Main Comment to each Class, explaining the basic use of it. They still need more work, Some are quite basic.
 Added Button to clear the text on the main stage. It's hidden until you type something.
-Added the Logo as the background on the About window.
-Changed Tooltip Style.
+Added the Logo as the background on the About stage.
 Added Custom ContextMenu to the search box, Which fixes the clear button not appearing when using it to paste, or not disappearing when using it to cut everything.
 Added Settings Button to UnHide shows. (Under "Show" tab)
 Added ability to set the language as default during startup.
 Added ability to set the default user during startup.
+Added Exit button to Settings Add User.
 
-Note- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
+Fixes:
+Will now properly switch to new seasons when found.
+Fixed the search field text not being applied on list changes.
+Fixed rechecking not searching for ignored shows.
+Fixed deleting users.
+Fixed removing directories.
+Fixed bug with adding new directories.
+
+
+Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
+       Removed all long term "To\do" statements.
+       Added Notes file which currently contains my To\do list.
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).
 
 Known Bugs:

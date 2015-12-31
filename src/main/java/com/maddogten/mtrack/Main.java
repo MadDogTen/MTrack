@@ -3,6 +3,7 @@ package com.maddogten.mtrack;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -40,9 +41,7 @@ public class Main extends Application implements Runnable {
     public synchronized static void stop(Stage stage, boolean forceStop, boolean saveSettings) {
         ConfirmBox confirmBox = new ConfirmBox();
         boolean answer = true;
-        if (!forceStop) {
-            answer = confirmBox.display(Strings.AreYouSure, stage.getScene().getWindow());
-        }
+        if (!forceStop) answer = confirmBox.display(Strings.AreYouSure, stage);
         if (answer) {
             if (saveSettings) {
                 programSettingsController.getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
@@ -61,9 +60,8 @@ public class Main extends Application implements Runnable {
             programFullyRunning = false;
             programRunning = false;
             int timeRan = GenericMethods.timeTakenSeconds(timer);
-            if (timeRan > 60) {
-                log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
-            } else log.info("The program has been running for " + timeRan + " Seconds.");
+            if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
+            else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
             Controller.closeChangeBoxStage();
             Controller.getSettingsWindow().closeSettings();
@@ -123,6 +121,7 @@ public class Main extends Application implements Runnable {
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
+            new MoveStage().moveStage(primaryStage, null);
             start();
         } else stop(null, true, false);
     }

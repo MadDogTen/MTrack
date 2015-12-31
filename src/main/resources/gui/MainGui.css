@@ -3,7 +3,7 @@
 }
 
 #isCurrentlyRechecking .progress {
-    -fx-progress-color: green;
+    -fx-progress-color: blue;
 }
 
 #clearTextField {
@@ -12,6 +12,21 @@
     -fx-min-height: 12px;
     -fx-max-width: 12px;
     -fx-max-height: 12px;
+}
+
+#changesAlert {
+    -fx-background-radius: 5em;
+    -fx-min-width: 20px;
+    -fx-min-height: 20px;
+    -fx-max-width: 20px;
+    -fx-max-height: 20px;
+    -fx-background-color: -fx-body-color;
+    -fx-background-insets: 0px;
+    -fx-padding: 0px;
+}
+
+#isCurrentlyRechecking {
+
 }
 
 .tooltip {

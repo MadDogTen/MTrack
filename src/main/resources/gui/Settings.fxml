@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" stylesheets="@Settings.css" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.FXMLControllers.Settings">
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" stylesheets="@Settings.css" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.FXMLControllers.Settings">
     <children>
         <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="319.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
@@ -56,6 +56,16 @@
                         </AnchorPane>
                     </content>
                 </Tab>
+                <Tab fx:id="uiTab" text="UI">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <CheckBox fx:id="unlockParentScene" layoutX="18.0" layoutY="38.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0" text="Allow Full Window Movement/Use"/>
+                                <Button fx:id="changeLanguage" layoutX="69.0" layoutY="224.0" mnemonicParsing="false" text="Change Language"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
                 <Tab fx:id="otherTab" closable="false" text="Other">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -67,16 +77,6 @@
                                 <TextField fx:id="directoryTimeoutTextField" layoutX="79.0" layoutY="103.0" prefHeight="25.0" prefWidth="36.0"/>
                                 <Text fx:id="directoryTimeoutText" layoutX="45.0" layoutY="91.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
                                 <ToggleButton fx:id="toggleDevMode" layoutX="74.0" layoutY="211.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
-                            </children>
-                        </AnchorPane>
-                    </content>
-                </Tab>
-                <Tab fx:id="uiTab" text="UI">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                            <children>
-                                <CheckBox fx:id="unlockParentScene" layoutX="18.0" layoutY="38.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0" text="Allow Full Window Movement/Use"/>
-                                <Button fx:id="changeLanguage" layoutX="69.0" layoutY="224.0" mnemonicParsing="false" text="Change Language"/>
                             </children>
                         </AnchorPane>
                     </content>

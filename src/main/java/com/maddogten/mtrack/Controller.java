@@ -116,9 +116,8 @@ public class Controller implements Initializable {
             if (currentList.matches("active") && !show0Remaining) {
                 showList.forEach(aShow -> {
                     int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController);
-                    if (remaining != 0) {
+                    if (remaining != 0)
                         list.add(new DisplayShows(aShow, remaining, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow)));
-                    }
                 });
             } else
                 list.addAll(showList.stream().map(aShow -> new DisplayShows(aShow, userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow))).collect(Collectors.toList()));
@@ -130,15 +129,11 @@ public class Controller implements Initializable {
     public static void setTableViewFields(String type) {
         switch (type) {
             case "active":
-                if (!currentList.matches("active")) {
-                    currentList = "active";
-                }
+                if (!currentList.matches("active")) currentList = "active";
                 tableViewFields = MakeTableViewFields(userInfoController.getActiveShows());
                 break;
             case "inactive":
-                if (!currentList.matches("inactive")) {
-                    currentList = "inactive";
-                }
+                if (!currentList.matches("inactive")) currentList = "inactive";
                 tableViewFields = MakeTableViewFields(userInfoController.getInactiveShows());
                 break;
         }
@@ -154,20 +149,16 @@ public class Controller implements Initializable {
             }
         }
         boolean isShowActive = (userInfoController.isShowActive(aShow) && showExists), remove = false;
-        if (currentList.matches("active") && !isShowActive || currentList.matches("inactive") && isShowActive) {
+        if (currentList.matches("active") && !isShowActive || currentList.matches("inactive") && isShowActive)
             remove = true;
-        }
-        if (index != -2) {
-            removeShowField(index);
-        }
+        if (index != -2) removeShowField(index);
         if (!remove) {
             int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), season = userInfoController.getCurrentSeason(aShow), episode = userInfoController.getCurrentEpisode(aShow);
             DisplayShows show = new DisplayShows(aShow, remaining, season, episode);
-            if (((show0Remaining || currentList.contains("inactive")) || remaining != 0) && index != -2) {
+            if (((show0Remaining || currentList.contains("inactive")) || remaining != 0) && index != -2)
                 tableViewFields.add(index, show);
-            } else if (index == -2 && ((show0Remaining) || currentList.contains("inactive") || remaining != 0)) {
+            else if (index == -2 && ((show0Remaining) || currentList.contains("inactive") || remaining != 0))
                 tableViewFields.add(show);
-            }
         }
     }
 
@@ -257,18 +248,12 @@ public class Controller implements Initializable {
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
         newFilteredData.setPredicate(show -> textField.getText() == null || textField.getText().isEmpty() || show.getShow().toLowerCase().contains(textField.getText().toLowerCase()));
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            newFilteredData.setPredicate(show -> newValue == null || newValue.isEmpty() || show.getShow().toLowerCase().contains(newValue.toLowerCase()));
-        });
+        textField.textProperty().addListener((observable, oldValue, newValue) -> newFilteredData.setPredicate(show -> newValue == null || newValue.isEmpty() || show.getShow().toLowerCase().contains(newValue.toLowerCase())));
         SortedList<DisplayShows> newSortedData = new SortedList<>(newFilteredData);
         newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(newSortedData);
-
-        if (currentList.matches("active")) {
-            show0RemainingCheckBox.setVisible(true);
-        } else if (currentList.matches("inactive")) {
-            show0RemainingCheckBox.setVisible(false);
-        }
+        if (currentList.matches("active")) show0RemainingCheckBox.setVisible(true);
+        else if (currentList.matches("inactive")) show0RemainingCheckBox.setVisible(false);
     }
 
     @Override
@@ -312,21 +297,18 @@ public class Controller implements Initializable {
                     final TableRow<DisplayShows> row = new TableRow<>();
                     final ContextMenu rowMenuActive = new ContextMenu();
                     final ContextMenu rowMenuInactive = new ContextMenu();
-
                     MenuItem setSeasonEpisode = new MenuItem();
                     setSeasonEpisode.textProperty().bind(Strings.SetSeasonEpisode);
                     setSeasonEpisode.setOnAction(e -> {
                         log.info("\"Set Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(show, showInfoController, pane.getScene().getWindow());
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(show, showInfoController, (Stage) pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
                             userInfoController.setSeasonEpisode(show, seasonEpisode[0], seasonEpisode[1]);
                             updateShowField(row.getItem().getShow(), true);
                             tableView.getSelectionModel().clearSelection();
-                        } else {
-                            log.info("Season & Episode weren't valid.");
-                        }
+                        } else log.info("Season & Episode weren't valid.");
                         log.info("\"Set Season + Episode\" is finished running.");
                     });
                     MenuItem playSeasonEpisode = new MenuItem();
@@ -334,22 +316,18 @@ public class Controller implements Initializable {
                     playSeasonEpisode.setOnAction(e -> {
                         log.info("\"Play Season + Episode\" is now running...");
                         String show = row.getItem().getShow();
-                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(show, showInfoController, pane.getScene().getWindow());
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(show, showInfoController, (Stage) pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
                             userInfoController.playAnyEpisode(show, seasonEpisode[0], seasonEpisode[1]);
-                        } else {
-                            log.info("Season & Episode weren't valid.");
-                        }
+                        } else log.info("Season & Episode weren't valid.");
                         log.info("\"Play Season + Episode\" is finished running.");
                     });
                     MenuItem toggleActive = new MenuItem();
                     toggleActive.setOnAction(e -> {
                         if (currentList.matches("inactive")) {
                             userInfoController.setActiveStatus(row.getItem().getShow(), true);
-                            if (!wereShowsChanged) {
-                                wereShowsChanged = true;
-                            }
+                            if (!wereShowsChanged) wereShowsChanged = true;
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             tableView.getSelectionModel().clearSelection();
                         } else if (currentList.matches("active")) {
@@ -370,7 +348,7 @@ public class Controller implements Initializable {
                     resetShow.setOnAction(e -> {
                         log.info("Reset to running...");
                         String[] choices = {Strings.Beginning.getValue(), Strings.End.getValue()};
-                        String answer = new SelectBox().display(Strings.WhatShould + row.getItem().getShow() + Strings.BeResetTo, choices, pane.getScene().getWindow());
+                        String answer = new SelectBox().display(Strings.WhatShould + row.getItem().getShow() + Strings.BeResetTo, choices, (Stage) pane.getScene().getWindow());
                         log.info(answer);
                         if (answer.matches(Strings.Beginning.getValue())) {
                             userInfoController.setToBeginning(row.getItem().getShow());
@@ -385,31 +363,28 @@ public class Controller implements Initializable {
                         }
                         log.info("Reset to finished running.");
                     });
-                    MenuItem openDirectory = new MenuItem();
+                    MenuItem openDirectory = new MenuItem(); // TODO Make this use only 1 window.
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
                         ArrayList<Directory> directories = directoryController.getDirectories();
-                        ArrayList<File> folders = new ArrayList<>();
+                        ArrayList<Directory> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
                             File fileName = new File(aDirectory.getDirectory() + Strings.FileSeparator + row.getItem().getShow());
                             if (fileName.exists()) {
-                                folders.add(fileName);
+                                folders.add(new Directory(fileName, fileName.toString(), -2, -2, null, -2));
                             }
                         });
-                        if (folders.size() == 1) {
-                            fileManager.open(folders.get(0));
-                        } else {
+                        if (folders.size() == 1) fileManager.open(folders.get(0).getDirectory());
+                        else {
                             ConfirmBox confirmBox = new ConfirmBox();
-                            boolean openAll = confirmBox.display(Strings.DoYouWantToOpenAllAssociatedFolders, pane.getScene().getWindow());
-                            if (openAll) {
-                                folders.forEach(fileManager::open);
-                            } else {
-                                ListSelectBox listSelectBox = new ListSelectBox();
-                                File file = listSelectBox.pickDirectory(Strings.PickTheFolderYouWantToOpen, folders, pane.getScene().getWindow());
-                                if (!file.toString().isEmpty()) {
-                                    fileManager.open(file);
+                            boolean openAll = confirmBox.display(Strings.DoYouWantToOpenAllAssociatedFolders, (Stage) pane.getScene().getWindow());
+                            if (openAll) folders.forEach(aDirectory -> fileManager.open(aDirectory.getDirectory()));
+                            else {
+                                Directory file = new ListSelectBox().pickDirectory(Strings.PickTheFolderYouWantToOpen, folders, (Stage) pane.getScene().getWindow());
+                                if (!file.getDirectory().toString().isEmpty()) {
+                                    fileManager.open(file.getDirectory());
                                 }
                             }
                         }
@@ -424,10 +399,9 @@ public class Controller implements Initializable {
                         log.info("Attempting to play previous episode...");
                         int[] seasonEpisode = userInfoController.getPreviousEpisodeIfExists(row.getItem().getShow());
                         if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3) {
-                            new MessageBox().display(new StringProperty[]{Strings.NoDirectlyPrecedingEpisodesFound}, tabPane.getScene().getWindow());
-                        } else {
+                            new MessageBox().display(new StringProperty[]{Strings.NoDirectlyPrecedingEpisodesFound}, (Stage) tabPane.getScene().getWindow());
+                        } else
                             userInfoController.playAnyEpisode(row.getItem().getShow(), seasonEpisode[0], seasonEpisode[1]);
-                        }
                         log.info("Finished attempting to play previous episode.");
                     });
                     MenuItem printCurrentSeasonEpisode = new MenuItem();
@@ -437,9 +411,9 @@ public class Controller implements Initializable {
                         if (e.getButton().equals(MouseButton.SECONDARY) && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
                                 toggleActive.textProperty().bind(Strings.SetInactive);
-                                if (Variables.devMode) {
+                                if (Variables.devMode)
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode);
-                                } else
+                                else
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
                             } else if (currentList.matches("inactive")) {
@@ -457,7 +431,7 @@ public class Controller implements Initializable {
                             while (keepPlaying) {
                                 if (userInfoController.doesEpisodeExistInShowFile(aShow)) {
                                     userInfoController.playAnyEpisode(aShow, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow));
-                                    int userChoice = new ShowConfirmBox().display(Strings.HaveYouWatchedTheShow, pane.getScene().getWindow(), userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController) == 1);
+                                    int userChoice = new ShowConfirmBox().display(Strings.HaveYouWatchedTheShow, userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController) == 1, (Stage) pane.getScene().getWindow());
                                     if (userChoice == 1) {
                                         userInfoController.changeEpisode(aShow, -2);
                                         updateShowField(aShow, true);
@@ -506,14 +480,12 @@ public class Controller implements Initializable {
                 clearTextField.setVisible(true);
             }
         });
-
         MenuItem textFieldCopy = new MenuItem();
         textFieldCopy.textProperty().bind(Strings.Copy);
         textFieldCopy.setOnAction(e -> {
             //noinspection unchecked
             Toolkit.getToolkit().getSystemClipboard().putContent(new Pair<>(DataFormat.PLAIN_TEXT, textField.getSelectedText()));
         });
-
         MenuItem textFieldPaste = new MenuItem();
         textFieldPaste.textProperty().bind(Strings.Paste);
         textFieldPaste.setOnAction(e -> {
@@ -551,7 +523,6 @@ public class Controller implements Initializable {
         // ~~~~ Buttons ~~~~ \\
         exit.setOnAction(e -> Main.stop(Main.stage, false, true));
         minimize.setOnAction(e -> Main.stage.setIconified(true));
-
         menuButton.textProperty().bind(Strings.Options);
         changeTableView.setOnAction(event -> {
             if (currentList.matches("active")) {
@@ -575,20 +546,9 @@ public class Controller implements Initializable {
             this.setTableView();
         });
         changeTableView.textProperty().bind(Strings.SwitchBetweenActiveInactiveList);
-
         viewChanges.textProperty().bind(Strings.OpenChangesWindow);
         viewChanges.setOnAction(e -> openChangeBox());
         changesAlert.setOnAction(e -> openChangeBox());
-        changesAlert.setStyle(
-                "-fx-background-radius: 5em; " +
-                        "-fx-min-width: 20px; " +
-                        "-fx-min-height: 20px; " +
-                        "-fx-max-width: 20px; " +
-                        "-fx-max-height: 20px; " +
-                        "-fx-background-color: -fx-body-color;" +
-                        "-fx-background-insets: 0px; " +
-                        "-fx-padding: 0px;"
-        );
         show0RemainingCheckBox.setSelected(show0Remaining);
         if (show0Remaining) {
             setTableViewFields(currentList);
@@ -597,11 +557,9 @@ public class Controller implements Initializable {
         show0RemainingCheckBox.setOnAction(e -> {
             show0Remaining = show0RemainingCheckBox.isSelected();
             programSettingsController.getSettingsFile().setShow0Remaining(show0Remaining);
-            if (show0Remaining && currentList.matches("active")) {
+            if (show0Remaining && currentList.matches("active"))
                 log.info("Now showing shows with 0 episodes remaining.");
-            } else if (currentList.matches("active")) {
-                log.info("No longer showing shows with 0 episodes remaining.");
-            }
+            else if (currentList.matches("active")) log.info("No longer showing shows with 0 episodes remaining.");
             setTableViewFields(currentList);
             setTableView();
         });
@@ -629,13 +587,10 @@ public class Controller implements Initializable {
         });
 
         // Allow the undecorated stage to be moved.
-        new MoveStage().moveWindow(tabPane, null);
+        new MoveStage().moveStage(tabPane, null);
 
         // Shows an indicator when its rechecking the shows.
         isCurrentlyRecheckingTooltip.textProperty().bind(Strings.CurrentlyRechecking);
-        isCurrentlyRechecking.setStyle(
-                "-fx-progress-color: blue;"
-        );
         Task<Void> mainTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -674,16 +629,10 @@ public class Controller implements Initializable {
             protected Void call() throws Exception {
                 while (Main.programRunning) {
                     if (settingsWindow.isSettingsOpen()) {
-                        if (!settingsTab.isDisable()) {
-                            settingsTab.setDisable(true);
-                        }
-                        while (settingsWindow.isSettingsOpen()) {
-                            Thread.sleep(80);
-                        }
+                        if (!settingsTab.isDisable()) settingsTab.setDisable(true);
+                        while (settingsWindow.isSettingsOpen()) Thread.sleep(80);
                         settingsTab.setDisable(false);
-                    } else if (settingsTab.isDisable()) {
-                        settingsTab.setDisable(false);
-                    }
+                    } else if (settingsTab.isDisable()) settingsTab.setDisable(false);
                     Thread.sleep(800);
                 }
                 return null;
@@ -705,16 +654,13 @@ public class Controller implements Initializable {
             } while (keepOpen);
             changesBox = null;
         } else {
-            changesBox.openChanges(pane.getScene().getWindow());
+            changesBox.openChanges((Stage) pane.getScene().getWindow());
         }
     }
 
     private void checkIfChangesListIsPopulated() {
-        if (ChangeReporter.getIsChanges()) {
-            changesAlert.setVisible(true);
-        } else if (changesAlert.isVisible()) {
-            changesAlert.setVisible(false);
-        }
+        if (ChangeReporter.getIsChanges()) changesAlert.setVisible(true);
+        else if (changesAlert.isVisible()) changesAlert.setVisible(false);
     }
 
     private void setController() {

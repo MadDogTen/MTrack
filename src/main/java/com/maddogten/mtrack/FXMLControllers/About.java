@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 /*
       About is the About Stage that displays the program name, version, and other related information.
+      Has the MTrack logo in the background.
  */
 
 @SuppressWarnings("WeakerAccess")
@@ -49,9 +50,8 @@ public class About implements Initializable {
         programName.setAlignment(Pos.CENTER);
         versionNumber.setText(Strings.MTrackVersion);
         versionNumber.setAlignment(Pos.CENTER);
-        if (Variables.showInternalVersion) {
-            versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
-        } else versionNumber.setTooltip(null);
+        if (Variables.showInternalVersion) versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
+        else versionNumber.setTooltip(null);
         codedBy.setText(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);
         codedUsing.textProperty().bind(Strings.CodedUsingFull);
@@ -63,7 +63,7 @@ public class About implements Initializable {
             Stage stage = (Stage) pane.getScene().getWindow();
             stage.close();
         });
-        // Allow the undecorated stage to be moved.
-        new MoveStage().moveWindow(pane);
+        // Allows the undecorated stage to be moved.
+        new MoveStage().moveStage(pane);
     }
 }

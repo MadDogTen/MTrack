@@ -5,7 +5,6 @@ import com.maddogten.mtrack.util.Variables;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
@@ -16,29 +15,28 @@ public class MoveStage {
     private static final Logger log = Logger.getLogger(MoveStage.class.getName());
     private final int moveWaitTime = 120;
 
-    public void moveWindow(Window window, Window parent) {
-        log.finest("moveWindow is now running.");
+    public void moveStage(final Stage stage, final Stage parentStage) {
+        log.finest("moveStage is now running.");
         final double[] offset = new double[2];
         final long[] timePressed = new long[1];
-        window.getScene().setOnMousePressed(e -> {
+        stage.getScene().setOnMousePressed(e -> {
             timePressed[0] = GenericMethods.getTimeMilliSeconds();
             if (e.isPrimaryButtonDown()) {
                 offset[0] = e.getSceneX();
                 offset[1] = e.getSceneY();
             }
         });
-        window.getScene().setOnMouseDragged(e -> {
+        stage.getScene().setOnMouseDragged(e -> {
             if (e.isPrimaryButtonDown() && GenericMethods.timeTakenMilli(timePressed[0]) > moveWaitTime) {
-                window.setX(e.getScreenX() - offset[0]);
-                window.setY(e.getScreenY() - offset[1]);
-
-                if (parent != null && Variables.moveStageWithParent) {
-                    parent.getScene().getWindow().setX(window.getScene().getWindow().getX() - (parent.getWidth() / 2) + (window.getWidth() / 2));
-                    parent.getScene().getWindow().setY(window.getScene().getWindow().getY() - (parent.getHeight() / 2) + (window.getHeight() / 2));
+                stage.setX(e.getScreenX() - offset[0]);
+                stage.setY(e.getScreenY() - offset[1]);
+                if (parentStage != null && Variables.moveStageWithParent) {
+                    parentStage.getScene().getWindow().setX(stage.getScene().getWindow().getX() - (parentStage.getWidth() / 2) + (stage.getWidth() / 2));
+                    parentStage.getScene().getWindow().setY(stage.getScene().getWindow().getY() - (parentStage.getHeight() / 2) + (stage.getHeight() / 2));
                 }
             }
         });
-        window.getScene().setOnMouseReleased(e -> {
+        stage.getScene().setOnMouseReleased(e -> {
             if (!e.isPrimaryButtonDown()) {
                 offset[0] = 0;
                 offset[1] = 0;
@@ -47,8 +45,8 @@ public class MoveStage {
         });
     }
 
-    public void moveWindow(TabPane tabPane, Stage parent) {
-        log.finest("moveWindow TabPane is now running.");
+    public void moveStage(final TabPane tabPane, final Stage parentStage) {
+        log.finest("moveStage TabPane is now running.");
         final double[] offset = new double[2];
         final long[] timePressed = new long[1];
         tabPane.setOnMousePressed(e -> {
@@ -62,10 +60,9 @@ public class MoveStage {
             if (e.isPrimaryButtonDown() && GenericMethods.timeTakenMilli(timePressed[0]) > moveWaitTime) {
                 tabPane.getScene().getWindow().setX(e.getScreenX() - offset[0]);
                 tabPane.getScene().getWindow().setY(e.getScreenY() - offset[1]);
-
-                if (parent != null && Variables.moveStageWithParent) {
-                    parent.getScene().getWindow().setX(tabPane.getScene().getWindow().getX() - (parent.getWidth() / 2) + (tabPane.getWidth() / 2));
-                    parent.getScene().getWindow().setY(tabPane.getScene().getWindow().getY() - (parent.getHeight() / 2) + (tabPane.getHeight() / 2));
+                if (parentStage != null && Variables.moveStageWithParent) {
+                    parentStage.getScene().getWindow().setX(tabPane.getScene().getWindow().getX() - (parentStage.getWidth() / 2) + (tabPane.getWidth() / 2));
+                    parentStage.getScene().getWindow().setY(tabPane.getScene().getWindow().getY() - (parentStage.getHeight() / 2) + (tabPane.getHeight() / 2));
                 }
             }
         });
@@ -78,8 +75,8 @@ public class MoveStage {
         });
     }
 
-    public void moveWindow(Pane pane) {
-        log.finest("moveWindow Pane is now running.");
+    public void moveStage(final Pane pane) {
+        log.finest("moveStage Pane is now running.");
         final double[] offset = new double[2];
         final long[] timePressed = new long[1];
         pane.setOnMousePressed(e -> {

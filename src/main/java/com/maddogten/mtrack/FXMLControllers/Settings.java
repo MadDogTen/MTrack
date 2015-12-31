@@ -20,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -28,11 +29,14 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 /*
-      Settings handles pretty much ALL the programs settings.
+      Settings handles pretty much ALL the programs settings. Goto ProgramSetting for information about which each setting does.
  */
 
 @SuppressWarnings("WeakerAccess")
@@ -45,6 +49,8 @@ public class Settings implements Initializable {
     private DirectoryController directoryController;
     private CheckShowFiles checkShowFiles;
     @SuppressWarnings("unused")
+    @FXML
+    private Pane pane;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -177,9 +183,9 @@ public class Settings implements Initializable {
         setUpdateTime.textProperty().bind(Strings.Set);
         setUpdateTime.setOnAction(e -> {
             if (isNumberValid(updateTimeTextField.getText(), 10)) {
-                if (updateTimeTextField.getText().isEmpty()) {
+                if (updateTimeTextField.getText().isEmpty())
                     updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
-                } else programSettingsController.setUpdateSpeed(Integer.valueOf(updateTimeTextField.getText()));
+                else programSettingsController.setUpdateSpeed(Integer.valueOf(updateTimeTextField.getText()));
             }
         });
         disableAutomaticShowUpdating.textProperty().bind(Strings.DisableAutomaticShowSearching);
@@ -210,11 +216,13 @@ public class Settings implements Initializable {
         });
         about.textProperty().bind(Strings.About);
         about.setOnAction(e -> {
+            about.setDisable(true);
             try {
-                new AboutBox().display(tabPane.getScene().getWindow());
+                new AboutBox().display((Stage) tabPane.getScene().getWindow());
             } catch (Exception e1) {
                 GenericMethods.printStackTrace(log, e1);
             }
+            about.setDisable(false);
         });
 
         // User
@@ -224,54 +232,68 @@ public class Settings implements Initializable {
         });
         setDefaultUsername.textProperty().bind(Strings.SetDefaultUser);
         setDefaultUsername.setOnAction(e -> {
+            setDefaultUsername.setDisable(true);
+            clearDefaultUsername.setDisable(true);
             ListSelectBox listSelectBox = new ListSelectBox();
             ArrayList<String> Users = userInfoController.getAllUsers();
-            String defaultUsername = listSelectBox.pickDefaultUser(Strings.PleaseChooseADefaultUser, Users, programSettingsController.getSettingsFile().getDefaultUser(), tabPane.getScene().getWindow());
-            if (defaultUsername != null && !defaultUsername.isEmpty()) {
+            String defaultUsername = listSelectBox.pickDefaultUser(Strings.PleaseChooseADefaultUser, Users, programSettingsController.getSettingsFile().getDefaultUser(), (Stage) tabPane.getScene().getWindow());
+            if (defaultUsername != null && !defaultUsername.isEmpty())
                 programSettingsController.setDefaultUsername(defaultUsername, true);
-            }
+            clearDefaultUsername.setDisable(false);
+            setDefaultUsername.setDisable(false);
         });
         clearDefaultUsername.textProperty().bind(Strings.Reset);
         clearDefaultUsername.setOnAction(e -> programSettingsController.setDefaultUsername(Strings.EmptyString, false));
         addUser.textProperty().bind(Strings.AddUser);
         addUser.setOnAction(e -> {
-            String userName = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, userInfoController.getAllUsers(), tabPane.getScene().getWindow());
-            Map<String, UserShowSettings> showSettings = new HashMap<>();
-            ArrayList<String> showsList = showInfoController.getShowsList();
-            for (String aShow : showsList) {
-                int lowestSeason = showInfoController.findLowestSeason(aShow);
-                showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
+            addUser.setDisable(true);
+            deleteUser.setDisable(true);
+            String userName = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, userInfoController.getAllUsers(), (Stage) tabPane.getScene().getWindow());
+            if (userName.isEmpty()) log.info("New user wasn't added.");
+            else {
+                Map<String, UserShowSettings> showSettings = new HashMap<>();
+                ArrayList<String> showsList = showInfoController.getShowsList();
+                for (String aShow : showsList) {
+                    int lowestSeason = showInfoController.findLowestSeason(aShow);
+                    showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
+                }
+                new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
+                log.info(userName + " was added.");
             }
-            new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UsersExtension, false);
+            deleteUser.setDisable(false);
+            addUser.setDisable(false);
         });
         deleteUser.textProperty().bind(Strings.DeleteUser);
         deleteUser.setOnAction(e -> {
+            deleteUser.setDisable(true);
+            addDirectory.setDisable(true);
             ArrayList<String> users = userInfoController.getAllUsers();
             users.remove(Strings.UserName);
-            if (users.isEmpty()) {
-                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoOtherUsersToDelete}, tabPane.getScene().getWindow());
-            } else {
-                ListSelectBox listSelectBox = new ListSelectBox();
-                String userToDelete = listSelectBox.pickDefaultUser(Strings.UserToDelete, users, programSettingsController.getSettingsFile().getDefaultUser(), tabPane.getScene().getWindow());
-                if (userToDelete != null) {
-                    ConfirmBox confirmBox = new ConfirmBox();
-                    boolean confirm = confirmBox.display(new SimpleStringProperty(Strings.AreYouSureToWantToDelete + userToDelete + Strings.QuestionMark), tabPane.getScene().getWindow());
-                    if (confirm && !userToDelete.isEmpty()) {
-                        new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UsersExtension);
-                    }
+            if (users.isEmpty())
+                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoOtherUsersToDelete}, (Stage) tabPane.getScene().getWindow());
+            else {
+                String userToDelete = new ListSelectBox().pickDefaultUser(Strings.UserToDelete, users, Strings.EmptyString, (Stage) tabPane.getScene().getWindow());
+                if (userToDelete != null && !userToDelete.isEmpty()) {
+                    boolean confirm = new ConfirmBox().display(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + userToDelete + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
+                    if (confirm)
+                        new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UserFileExtension);
                 }
             }
+            addUser.setDisable(false);
+            deleteUser.setDisable(false);
         });
         deleteUserTooltip.textProperty().bind(Strings.DeleteUsersNoteCantDeleteCurrentUser);
 
         // Show
         forceRecheck.textProperty().bind(Strings.ForceRecheckShows);
         forceRecheck.setOnAction(e -> {
+            forceRecheck.setDisable(true);
             Task<Void> task = new Task<Void>() {
                 @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     checkShowFiles.recheckShowFile(true);
+                    forceRecheck.setDisable(false);
                     return null;
                 }
             };
@@ -279,24 +301,28 @@ public class Settings implements Initializable {
         });
         unHideShow.textProperty().bind(Strings.UnHideShow);
         unHideShow.setOnAction(e -> {
+            unHideShow.setDisable(true);
             ArrayList<String> hiddenShows = userInfoController.getHiddenShows();
             if (hiddenShows.isEmpty())
-                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoHiddenShows}, tabPane.getScene().getWindow());
+                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoHiddenShows}, (Stage) tabPane.getScene().getWindow());
             else {
-                String showToUnHide = new ListSelectBox().pickShow(userInfoController.getHiddenShows(), tabPane.getScene().getWindow());
+                String showToUnHide = new ListSelectBox().pickShow(userInfoController.getHiddenShows(), (Stage) tabPane.getScene().getWindow());
                 if (showToUnHide != null && !showToUnHide.isEmpty()) {
                     userInfoController.setHiddenStatus(showToUnHide, false);
                     Controller.updateShowField(showToUnHide, true);
                     log.info(showToUnHide + " was unhidden.");
                 } else log.info("No show was unhidden.");
             }
+            unHideShow.setDisable(false);
         });
 
         // Other
         addDirectory.textProperty().bind(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
+            addDirectory.setDisable(true);
+            removeDirectory.setDisable(true);
             int index = directoryController.getLowestFreeDirectoryIndex();
-            boolean[] wasAdded = directoryController.addDirectory(index, new TextBox().addDirectory(directoryController.getDirectories(), tabPane.getScene().getWindow()));
+            boolean[] wasAdded = directoryController.addDirectory(index, new TextBox().addDirectory(directoryController.getDirectories(), (Stage) tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
                 FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile(), userInfoController);
@@ -317,54 +343,52 @@ public class Settings implements Initializable {
                 }
                 showInfoController.loadShowsFile();
                 findChangedShows.findShowFileDifferences(showInfoController.getShowsFile());
-                Directory aDirectory = directoryController.getDirectory(index);
-                aDirectory.getShows().keySet().forEach(aShow -> {
+                directoryController.getDirectory(index).getShows().keySet().forEach(aShow -> {
                     userInfoController.addNewShow(aShow);
                     Controller.updateShowField(aShow, true);
                 });
                 programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
             } else log.info("Directory wasn't added.");
+            removeDirectory.setDisable(false);
+            addDirectory.setDisable(false);
         });
         removeDirectory.textProperty().bind(Strings.RemoveDirectory);
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
-            ArrayList<File> directories = new ArrayList<>();
-            directoryController.getDirectories().forEach(aDirectory -> directories.add(aDirectory.getDirectory()));
+            removeDirectory.setDisable(true);
+            addDirectory.setDisable(true);
+            ArrayList<Directory> directories = directoryController.getDirectories();
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
-                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoDirectoriesToDelete}, tabPane.getScene().getWindow());
+                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoDirectoriesToDelete}, (Stage) tabPane.getScene().getWindow());
             } else {
-                ListSelectBox listSelectBox = new ListSelectBox();
-                File directoryToDelete = listSelectBox.pickDirectory(Strings.DirectoryToDelete, directories, tabPane.getScene().getWindow());
+                Directory directoryToDelete = new ListSelectBox().pickDirectory(Strings.DirectoryToDelete, directories, (Stage) tabPane.getScene().getWindow());
                 if (directoryToDelete != null && !directoryToDelete.toString().isEmpty()) {
-                    log.info("Directory selected for deletion: " + directoryToDelete);
-                    ConfirmBox confirmBox = new ConfirmBox();
-                    boolean confirm = confirmBox.display(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + directoryToDelete + Strings.QuestionMark.getValue()), tabPane.getScene().getWindow());
+                    log.info("Directory selected for deletion: " + directoryToDelete.getFileName());
+                    boolean confirm = new ConfirmBox().display(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + directoryToDelete.getFileName() + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     if (confirm) {
-                        for (Directory directory : directoryController.getDirectories()) {
-                            if (directory.getDirectory().equals(directoryToDelete)) {
-                                int index = directory.getIndex();
-                                ArrayList<Directory> showsFileArray = directoryController.getDirectories(index);
-                                Set<String> showsSet = directoryController.getDirectory(index).getShows().keySet();
-                                showsSet.forEach(aShow -> {
-                                    log.info("Currently checking: " + aShow);
-                                    boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, showsFileArray);
-                                    if (!showExistsElsewhere) {
-                                        userInfoController.setIgnoredStatus(aShow, true);
-                                        ChangeReporter.addChange("- " + aShow);
-                                    }
-                                    Controller.updateShowField(aShow, showExistsElsewhere);
-                                });
-                                directoryController.removeDirectory(directory);
-                                programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
-                                break;
+                        ArrayList<Directory> otherDirectories = directoryController.getDirectories(directoryToDelete.getIndex());
+                        Map<String, Boolean> showsToUpdate = new HashMap<>();
+                        directoryToDelete.getShows().keySet().forEach(aShow -> {
+                            log.info("Currently checking: " + aShow);
+                            boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, otherDirectories);
+                            if (!showExistsElsewhere) {
+                                userInfoController.setIgnoredStatus(aShow, true);
+                                ChangeReporter.addChange("- " + aShow);
                             }
-                        }
-                        log.info("\"" + directoryToDelete + "\" has been deleted!");
+                            showsToUpdate.put(aShow, showExistsElsewhere);
+                        });
+                        directoryController.removeDirectory(directoryToDelete);
+                        showInfoController.loadShowsFile();
+                        showsToUpdate.forEach(Controller::updateShowField);
+                        programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
+                        log.info('"' + directoryToDelete.getFileName() + "\" has been deleted!");
                     } else log.info("No directory has been deleted.");
                 }
             }
             log.info("Remove Directory Finished!");
+            addDirectory.setDisable(false);
+            removeDirectory.setDisable(false);
         });
         directoryTimeoutText.textProperty().bind(Strings.DirectoryTimeout);
         directoryTimeoutText.setTextAlignment(TextAlignment.CENTER);
@@ -372,16 +396,14 @@ public class Settings implements Initializable {
         setDirectoryTimeout.textProperty().bind(Strings.Set);
         setDirectoryTimeout.setOnAction(e -> {
             if (isNumberValid(directoryTimeoutTextField.getText(), 2)) {
-                if (directoryTimeoutTextField.getText().isEmpty()) {
+                if (directoryTimeoutTextField.getText().isEmpty())
                     directoryTimeoutTextField.setText(String.valueOf(Variables.timeToWaitForDirectory));
-                } else
+                else
                     programSettingsController.setTimeToWaitForDirectory(Integer.valueOf(directoryTimeoutTextField.getText()));
             }
         });
         if (Variables.showOptionToToggleDevMode) {
-            if (Variables.devMode) {
-                toggleDevMode.setSelected(true);
-            }
+            if (Variables.devMode) toggleDevMode.setSelected(true);
             toggleDevMode.textProperty().bind(Strings.ToggleDevMode);
             toggleDevMode.setOnAction(e -> {
                 Variables.devMode = !Variables.devMode;
@@ -421,12 +443,12 @@ public class Settings implements Initializable {
         });
         changeLanguage.textProperty().bind(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {
+            changeLanguage.setDisable(true);
             LanguageHandler languageHandler = new LanguageHandler();
             Map<String, String> languages = languageHandler.getLanguageNames();
-            if (languages.containsKey(programSettingsController.getSettingsFile().getLanguage())) {
+            if (languages.containsKey(programSettingsController.getSettingsFile().getLanguage()))
                 languages.remove(programSettingsController.getSettingsFile().getLanguage());
-            }
-            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), tabPane.getScene().getWindow());
+            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), (Stage) tabPane.getScene().getWindow());
             String languageReadable = (String) pickLanguageResult[0];
             if (!languageReadable.contains("-2")) {
                 String internalName = Strings.EmptyString;
@@ -440,6 +462,7 @@ public class Settings implements Initializable {
                 Variables.language = programSettingsController.getSettingsFile().getLanguage();
                 languageHandler.setLanguage(Variables.language);
             }
+            changeLanguage.setDisable(false);
         });
 
         // Developer
@@ -457,9 +480,8 @@ public class Settings implements Initializable {
                 directories.forEach(aDirectory -> {
                     ArrayList<String> emptyShowsDir = new ArrayList<>();
                     emptyShows.forEach(aShow -> {
-                        if (new FileManager().checkFolderExistsAndReadable(new File(aDirectory + Strings.FileSeparator + aShow)) && !aDirectory.getShows().containsKey(aShow)) {
+                        if (new FileManager().checkFolderExistsAndReadable(new File(aDirectory + Strings.FileSeparator + aShow)) && !aDirectory.getShows().containsKey(aShow))
                             emptyShowsDir.add(aShow);
-                        }
                     });
                     log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
                 });
@@ -480,7 +502,6 @@ public class Settings implements Initializable {
             ArrayList<String> hiddenShows = userInfoController.getHiddenShows();
             if (hiddenShows.isEmpty()) log.info("No hidden shows.");
             else hiddenShows.forEach(log::info);
-
             log.info("Finished printing hidden shows.");
         });
         unHideAll.textProperty().bind(Strings.UnHideAll);
@@ -531,40 +552,34 @@ public class Settings implements Initializable {
         add1ToDirectoryVersion.setOnAction(e -> programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1));
         clearFile.textProperty().bind(Strings.ClearFile);
         clearFile.setOnAction(e -> {
-            ArrayList<File> directories = new ArrayList<>();
-            directoryController.getDirectories().forEach(aDirectory -> directories.add(aDirectory.getDirectory()));
-            if (directories.isEmpty()) {
-                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, tabPane.getScene().getWindow());
-            } else {
-                ListSelectBox listSelectBox = new ListSelectBox();
-                String directoryToClear = String.valueOf(listSelectBox.pickDirectory(Strings.DirectoryToClear, directories, tabPane.getScene().getWindow()));
-                if (directoryToClear != null) {
-                    ConfirmBox confirmBox = new ConfirmBox();
-                    boolean confirm = confirmBox.display(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), tabPane.getScene().getWindow());
-                    if (confirm && !directoryToClear.isEmpty()) {
-                        for (Directory aDirectory : directoryController.getDirectories(-2)) {
-                            if (aDirectory.getDirectory() == new File(directoryToClear)) {
-                                aDirectory.getShows().keySet().forEach(aShow -> {
-                                    boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, directoryController.getDirectories(aDirectory.getIndex()));
-                                    if (!showExistsElsewhere) {
-                                        userInfoController.setIgnoredStatus(aShow, true);
-                                    }
-                                });
-                                aDirectory.setShows(new HashMap<>());
-                                directoryController.saveDirectory(aDirectory, true);
-                                programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
-                                break;
+            clearFile.setDisable(true);
+            ArrayList<Directory> directories = directoryController.getDirectories();
+            if (directories.isEmpty())
+                new MessageBox().display(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, (Stage) tabPane.getScene().getWindow());
+            else {
+                Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, directories, (Stage) tabPane.getScene().getWindow());
+                if (directoryToClear != null && !directoryToClear.getDirectory().toString().isEmpty()) {
+                    boolean confirm = new ConfirmBox().display(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
+                    if (confirm) {
+                        directoryToClear.getShows().keySet().forEach(aShow -> {
+                            boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, directoryController.getDirectories(directoryToClear.getIndex()));
+                            if (!showExistsElsewhere) {
+                                userInfoController.setIgnoredStatus(aShow, true);
                             }
-                        }
+                        });
+                        directoryToClear.setShows(new HashMap<>());
+                        directoryController.saveDirectory(directoryToClear, true);
+                        programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
                     }
                 }
             }
+            clearFile.setDisable(false);
         });
         deleteEverythingAndClose.textProperty().bind(Strings.ResetProgram);
         deleteEverythingAndCloseTooltip.textProperty().bind(Strings.WarningUnrecoverable);
         deleteEverythingAndClose.setOnAction(e -> {
             ConfirmBox confirmBox = new ConfirmBox();
-            if (confirmBox.display(Strings.AreYouSureThisWillDeleteEverything, tabPane.getScene().getWindow())) {
+            if (confirmBox.display(Strings.AreYouSureThisWillDeleteEverything, (Stage) tabPane.getScene().getWindow())) {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
                 new FileManager().deleteFolder(Variables.dataFolder);
@@ -572,15 +587,15 @@ public class Settings implements Initializable {
             }
         });
         // Allow the undecorated stage to be moved.
-        new MoveStage().moveWindow(tabPane, Main.stage);
+        new MoveStage().moveStage(tabPane, Main.stage);
     }
 
     private boolean isNumberValid(String textFieldValue, int minValue) {
         log.finest("isNumberValid has been called.");
-        if (textFieldValue.isEmpty()) {
-            return new ConfirmBox().display(Strings.LeaveItAsIs, this.tabPane.getScene().getWindow());
-        } else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) > Variables.maxWaitTimeSeconds || Integer.parseInt(textFieldValue) < minValue) {
-            new MessageBox().display(new StringProperty[]{new SimpleStringProperty(Strings.MustBeANumberBetween.getValue() + minValue + " - " + Variables.maxWaitTimeSeconds)}, this.tabPane.getScene().getWindow());
+        if (textFieldValue.isEmpty())
+            return new ConfirmBox().display(Strings.LeaveItAsIs, (Stage) this.tabPane.getScene().getWindow());
+        else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) > Variables.maxWaitTimeSeconds || Integer.parseInt(textFieldValue) < minValue) {
+            new MessageBox().display(new StringProperty[]{new SimpleStringProperty(Strings.MustBeANumberBetween.getValue() + minValue + " - " + Variables.maxWaitTimeSeconds)}, (Stage) this.tabPane.getScene().getWindow());
             return false;
         } else return true;
     }

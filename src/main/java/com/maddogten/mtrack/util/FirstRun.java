@@ -58,11 +58,8 @@ public class FirstRun {
             }
             File appData = fileManager.getAppDataFolder();
             StringProperty answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString(), null);
-            if (answer.getValue().matches(Strings.InAppData.getValue())) {
-                Variables.setDataFolder(appData);
-            } else if (answer.getValue().matches(Strings.WithTheJar.getValue())) {
-                Variables.setDataFolder(jarLocation);
-            }
+            if (answer.getValue().matches(Strings.InAppData.getValue())) Variables.setDataFolder(appData);
+            else if (answer.getValue().matches(Strings.WithTheJar.getValue())) Variables.setDataFolder(jarLocation);
             fileManager.createFolder(Strings.EmptyString);
             generateProgramSettingsFile();
             programSettingsController.loadProgramSettingsFile();
@@ -80,6 +77,7 @@ public class FirstRun {
             generateShowFilesThread.start();
             TextBox textBox = new TextBox();
             Strings.UserName = textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
+            if (Strings.UserName.isEmpty()) Strings.UserName = Strings.DefaultUsername;
             try {
                 generateShowFilesThread.join();
             } catch (InterruptedException e) {
@@ -96,7 +94,7 @@ public class FirstRun {
     // Generates the program settings file.
     public void generateProgramSettingsFile() {
         log.info("Attempting to generate program settings file.");
-        new FileManager().save(new ProgramSettings(), Strings.EmptyString, com.maddogten.mtrack.util.Strings.SettingsFileName, Variables.SettingsExtension, true);
+        new FileManager().save(new ProgramSettings(), Strings.EmptyString, com.maddogten.mtrack.util.Strings.SettingsFileName, Variables.SettingFileExtension, true);
     }
 
     // Generates the ShowFiles (If a directory is added, otherwise this is skipped).
@@ -118,7 +116,7 @@ public class FirstRun {
             int lowestSeason = showInfoController.findLowestSeason(aShow);
             showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
         }
-        new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UsersExtension, false);
+        new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
     }
 
     // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
@@ -130,22 +128,18 @@ public class FirstRun {
         while (addAnother) {
             boolean[] matched = directoryController.addDirectory(index, textBox.addDirectory(directoryController.getDirectories(), null));
             index++;
-            if (!matched[0] && !matched[1]) {
+            if (!matched[0] && !matched[1])
                 new MessageBox().display(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
-            } else if (matched[1]) {
-                break;
-            }
-            if (!confirmBox.display(Strings.AddAnotherDirectory, null)) {
-                addAnother = false;
-            }
+            else if (matched[1]) break;
+            if (!confirmBox.display(Strings.AddAnotherDirectory, null)) addAnother = false;
         }
     }
 
-    // This generates a new showsFile for the given folder, then saves it as "Directory-[index].[ShowsExtension].
+    // This generates a new showsFile for the given folder, then saves it as "Directory-[index].[ShowFileExtension].
     public void generateShowsFile(Directory directory) {
         FileManager fileManager = new FileManager();
         String fileName = "";
-        if (!fileManager.checkFileExists(Variables.DirectoriesFolder, fileName, Variables.ShowsExtension)) {
+        if (!fileManager.checkFileExists(Variables.DirectoriesFolder, fileName, Variables.ShowFileExtension)) {
             log.info("Generating ShowsFile for: " + directory.getDirectory());
             FindShows findShows = new FindShows();
             Map<String, Show> shows = new HashMap<>();
@@ -163,25 +157,20 @@ public class FirstRun {
                         log.info("Episode: " + aEpisode);
                         int[] episode = showInfoController.getEpisodeInfo(aEpisode);
                         if (episode != null && episode.length > 0) {
-                            if (episode.length == 1) {
+                            if (episode.length == 1)
                                 episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
-                            } else if (episode.length == 2) {
+                            else if (episode.length == 2) {
                                 episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
                                 episodes.put(episode[1], new Episode(episode[1], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
-                            } else if (episode.length >= 3) {
+                            } else if (episode.length >= 3)
                                 log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
-                            }
                         }
                     });
-                    if (!episodes.isEmpty()) {
-                        seasons.put(aSeason, new Season(aSeason, episodes));
-                    }
+                    if (!episodes.isEmpty()) seasons.put(aSeason, new Season(aSeason, episodes));
                 });
                 if (!seasons.isEmpty()) {
                     shows.put(aShow, new Show(aShow, seasons));
-                    if (ignoredShows.contains(aShow)) {
-                        userInfoController.setIgnoredStatus(aShow, false);
-                    }
+                    if (ignoredShows.contains(aShow)) userInfoController.setIgnoredStatus(aShow, false);
                 }
             });
             directory.setShows(shows);

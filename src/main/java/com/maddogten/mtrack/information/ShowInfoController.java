@@ -30,9 +30,7 @@ public class ShowInfoController {
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile() {
-        if (directoryController.isReloadShowsFile()) {
-            directoryController.setReloadShowsFile(false);
-        }
+        if (directoryController.isReloadShowsFile()) directoryController.setReloadShowsFile(false);
         if (directoryController.getDirectories().isEmpty()) {
             showsFile = new HashMap<>();
             log.info("showsFile was loaded blank, No directories found.");
@@ -68,9 +66,7 @@ public class ShowInfoController {
     // Returns an arrayList of all shows.
     public ArrayList<String> getShowsList() {
         ArrayList<String> showsList = new ArrayList<>();
-        if (showsFile != null) {
-            showsList.addAll(showsFile.keySet().stream().collect(Collectors.toList()));
-        }
+        if (showsFile != null) showsList.addAll(showsFile.keySet().stream().collect(Collectors.toList()));
         return showsList;
     }
 
@@ -88,9 +84,9 @@ public class ShowInfoController {
 
     // Returns a given episode from a given season in a given show.
     public String getEpisode(String show, int season, int episode) {
-        if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode)) {
+        if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode))
             return showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename();
-        } else {
+        else {
             log.warning("Error for: " + show + " - Season " + season + " - Episode " + episode + ", Please report.");
             return Strings.EmptyString;
         }
@@ -98,18 +94,16 @@ public class ShowInfoController {
 
     // Returns whether or not an episode is part of a double episode.
     public boolean isDoubleEpisode(String show, int season, int episode) {
-        if (showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode)) {
+        if (showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode))
             return showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
-        } else return false;
+        else return false;
     }
 
     // Returns the lowest found season in a show.
     public int findLowestSeason(String aShow) {
         final int[] lowestSeason = {-1};
         getSeasonsList(aShow).forEach(aSeason -> {
-            if (lowestSeason[0] == -1 || aSeason < lowestSeason[0]) {
-                lowestSeason[0] = aSeason;
-            }
+            if (lowestSeason[0] == -1 || aSeason < lowestSeason[0]) lowestSeason[0] = aSeason;
         });
         return lowestSeason[0];
     }
@@ -119,9 +113,7 @@ public class ShowInfoController {
         final int[] highestSeason = {-1};
         Set<Integer> seasons = getSeasonsList(aShow);
         seasons.forEach(aSeason -> {
-            if (highestSeason[0] == -1 || aSeason > highestSeason[0]) {
-                highestSeason[0] = aSeason;
-            }
+            if (highestSeason[0] == -1 || aSeason > highestSeason[0]) highestSeason[0] = aSeason;
         });
         return highestSeason[0];
     }
@@ -146,9 +138,7 @@ public class ShowInfoController {
         final int[] highestEpisode = {-1};
         if (episodes != null) {
             episodes.forEach(aEpisode -> {
-                if (highestEpisode[0] == -1 || aEpisode > highestEpisode[0]) {
-                    highestEpisode[0] = aEpisode;
-                }
+                if (highestEpisode[0] == -1 || aEpisode > highestEpisode[0]) highestEpisode[0] = aEpisode;
             });
         }
         return highestEpisode[0];
@@ -159,16 +149,11 @@ public class ShowInfoController {
         final boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
             showsFileArray.forEach(aDirectory -> {
-                if (aDirectory.getShows().containsKey(aShow)) {
-                    showExistsElsewhere[0] = true;
-                }
+                if (aDirectory.getShows().containsKey(aShow)) showExistsElsewhere[0] = true;
             });
         }
-        if (showExistsElsewhere[0]) {
-            log.info(aShow + " exists elsewhere.");
-        } else {
-            log.info(aShow + " doesn't exists elsewhere.");
-        }
+        if (showExistsElsewhere[0]) log.info(aShow + " exists elsewhere.");
+        else log.info(aShow + " doesn't exists elsewhere.");
         return showExistsElsewhere[0];
     }
 
@@ -196,9 +181,7 @@ public class ShowInfoController {
                 numberOfShows[0]++;
             });
             log.info("Total Number of Shows: " + numberOfShows[0]);
-        } else {
-            log.info("No shows.");
-        }
+        } else log.info("No shows.");
         log.info("Finished printing out all Shows and Episodes.");
     }
 
@@ -215,25 +198,17 @@ public class ShowInfoController {
             if (match.find()) {
                 info = match.group();
                 isDouble = true;
-            } else {
-                info = MainM.group();
-            }
+            } else info = MainM.group();
             String splitResult = info.toLowerCase().replaceFirst("s", Strings.EmptyString);
             splitResult = splitResult.toLowerCase().replaceFirst("e", " ");
-
             if (isDouble) {
                 bothInt = new int[2];
-                if (splitResult.contains("-")) {
-                    splitResult = splitResult.replaceFirst("-", " ");
-                } else if (splitResult.contains("e")) {
-                    splitResult = splitResult.replaceFirst("e", " ");
-                }
+                if (splitResult.contains("-")) splitResult = splitResult.replaceFirst("-", " ");
+                else if (splitResult.contains("e")) splitResult = splitResult.replaceFirst("e", " ");
             }
             String[] bothString = splitResult.split(" ");
             bothInt[0] = Integer.valueOf(bothString[1]);
-            if (isDouble) {
-                bothInt[1] = Integer.valueOf(bothString[2]);
-            }
+            if (isDouble) bothInt[1] = Integer.valueOf(bothString[2]);
             return bothInt;
         }
         Pattern MainP2 = Pattern.compile("\\d{1,4}x\\d{1,4}");

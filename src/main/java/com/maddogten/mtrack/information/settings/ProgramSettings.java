@@ -15,44 +15,47 @@ public class ProgramSettings implements Serializable {
 
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 3699693145859359106L;
-    private final long programGeneratedID;
+    private final long programGeneratedID; /*programGeneratedID is generated per programs file. It is used to compare against the programGeneratedID's in UserSettings and Directory, and if they are different,
+    do the appropriate tasks, and set it to this one.*/
+
 
     // Versions
-    private int programSettingsFileVersion;
-    private int mainDirectoryVersion;
-    private int showFileVersion;
+    private int programSettingsFileVersion; /*Used to check if the saved ProgramSettings file is up to date with the program, and if not, update it.*/
+    private int mainDirectoryVersion; /*If multiple users use the program and new shows are found, this number is used to check if the other users files are outdated on next run, and update them.
+    This number only update if changes are found.*/
+    private int showFileVersion; /*Needs to be moved the Directory*/
 
     // General
-    private int updateSpeed;
-    private boolean disableAutomaticShowUpdating;
-    private int timeToWaitForDirectory;
-    private boolean show0Remaining;
-    private String language;
+    private int updateSpeed; /*How long it waits in-between searching for new files.*/
+    private boolean disableAutomaticShowUpdating; /*Stops the program from automatically searching for new files. You must do it manually then*/
+    private int timeToWaitForDirectory; /*How long the program will wait before reporting the directory as failed to load*/
+    private boolean show0Remaining; /*Saves the last state of show0Remaining, Which changes whether it shows active shows with no further episodes to currently watch*/
+    private String language; /*Saves the default language*/
 
     // ChangeList Settings
-    private boolean recordChangesForNonActiveShows;
-    private boolean recordChangedSeasonsLowerThanCurrent;
+    private boolean recordChangesForNonActiveShows; /*Controls whether the program will show changes for non-active shows on the changelog or not. It will still search for them.*/
+    private boolean recordChangedSeasonsLowerThanCurrent; /*Controls whether the program will show changes for seasons lower than the one you are currently on, on the changelog or not. It will still search for them.*/
 
     // UI Settings
-    private boolean moveStageWithParent;
-    private boolean haveStageBlockParentStage;
+    private boolean moveStageWithParent; /*Changes whether or not you can freely move stages or not. Otherwise the parent stays locked to them*/
+    private boolean haveStageBlockParentStage; /*Changes whether the child stage will block the parent stage. Not fully supported currently*/
 
     // Default User
-    private boolean useDefaultUser;
-    private String defaultUser;
+    private boolean useDefaultUser; /*True if the default user is used.*/
+    private String defaultUser; /*The default user used for the above setting*/
 
-    private int numberOfDirectories;
+    private int numberOfDirectories; /*Stores the number of directories it last ended with, and if different, handles adding them to the program. */
 
     // ---- Gui Values ---- \\
 
     // Default Widths
-    private double showColumnWidth;
+    private double showColumnWidth; /*These 4 simply save the width of the columns */
     private double remainingColumnWidth;
     private double seasonColumnWidth;
     private double episodeColumnWidth;
 
     // Visibility
-    private boolean showColumnVisibility;
+    private boolean showColumnVisibility; /*These 4 simple save if the columns are showing or not*/
     private boolean remainingColumnVisibility;
     private boolean seasonColumnVisibility;
     private boolean episodeColumnVisibility;
@@ -61,7 +64,7 @@ public class ProgramSettings implements Serializable {
         this.programGeneratedID = new Random().nextLong();
         this.programSettingsFileVersion = Variables.ProgramSettingsFileVersion;
         this.mainDirectoryVersion = 0;
-        this.showFileVersion = Variables.ShowFileVersion;
+        this.showFileVersion = Variables.DirectoryFileVersion;
         this.updateSpeed = Variables.defaultUpdateSpeed;
         this.disableAutomaticShowUpdating = false;
         this.timeToWaitForDirectory = Variables.defaultTimeToWaitForDirectory;
@@ -83,37 +86,6 @@ public class ProgramSettings implements Serializable {
         episodeColumnVisibility = false;
         this.numberOfDirectories = 0;
     }
-
-    @SuppressWarnings("SameParameterValue")
-    public ProgramSettings(int programSettingsFileVersion, int mainDirectoryVersion, int showFileVersion, int updateSpeed, boolean disableAutomaticShowUpdating, int timeToWaitForDirectory, boolean show0Remaining, String language, boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, boolean StageMoveWithParentAndBlockParent, Boolean useDefaultUser, String defaultUser, double showColumnWidth, double remainingColumnWidth, double seasonColumnWidth, double episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility, boolean seasonColumnVisibility, boolean episodeColumnVisibility) {
-        this.programGeneratedID = new Random().nextLong();
-        this.programSettingsFileVersion = programSettingsFileVersion;
-        this.mainDirectoryVersion = mainDirectoryVersion;
-        this.showFileVersion = showFileVersion;
-        this.updateSpeed = updateSpeed;
-        this.disableAutomaticShowUpdating = disableAutomaticShowUpdating;
-        this.timeToWaitForDirectory = timeToWaitForDirectory;
-        this.show0Remaining = show0Remaining;
-        this.language = language;
-        this.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
-        this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
-        this.moveStageWithParent = StageMoveWithParentAndBlockParent;
-        this.haveStageBlockParentStage = StageMoveWithParentAndBlockParent;
-        this.useDefaultUser = useDefaultUser;
-        this.defaultUser = defaultUser;
-        this.showColumnWidth = showColumnWidth;
-        this.remainingColumnWidth = remainingColumnWidth;
-        this.seasonColumnWidth = seasonColumnWidth;
-        this.episodeColumnWidth = episodeColumnWidth;
-        this.showColumnVisibility = showColumnVisibility;
-        this.remainingColumnVisibility = remainingColumnVisibility;
-        this.seasonColumnVisibility = seasonColumnVisibility;
-        this.episodeColumnVisibility = episodeColumnVisibility;
-        this.numberOfDirectories = 0;
-    }
-
-    // Basic Getters and Setters
-
 
     public long getProgramSettingsID() {
         return programGeneratedID;

@@ -23,8 +23,8 @@ public class LanguageHandler {
 
     public LanguageHandler() {
         languages.put("en_US", new en_US());
-        languages.put("lipsum", new lipsum()); // Only temporary, For demonstration purposes. TODO <- Eventually Remove
-        languages.put("template", new template());  // Only temporary, For demonstration purposes. TODO <- Eventually Remove
+        languages.put("lipsum", new lipsum()); // Only temporary, For demonstration purposes. Note- Remove
+        languages.put("template", new template());  // Only temporary, For demonstration purposes. Note- Remove
     }
 
     public Map<String, String> getLanguageNames() {
@@ -37,9 +37,8 @@ public class LanguageHandler {
         log.info("Attempting to set language to " + name);
         if (languages.containsKey(name)) {
             languages.get(name).setAllStrings();
-            if (!name.matches("template")) { // Only temporary, For demonstration purposes. TODO <- Eventually Remove
-                addMissingTextForAllMissingStrings();
-            }
+            if (!name.matches("template"))
+                addMissingTextForAllMissingStrings(); // Only temporary, For demonstration purposes. Note- Remove if statement
             return true;
         }
         return false;

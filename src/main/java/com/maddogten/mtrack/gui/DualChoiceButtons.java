@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 
 import java.util.logging.Logger;
 
@@ -28,17 +27,15 @@ public class DualChoiceButtons {
     private static final Logger log = Logger.getLogger(DualChoiceButtons.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public StringProperty display(StringProperty message, StringProperty message2, StringProperty choice1, StringProperty choice2, String tooltip1, String tooltip2, Window oldWindow) {
+    public StringProperty display(StringProperty message, StringProperty message2, StringProperty choice1, StringProperty choice2, String tooltip1, String tooltip2, Stage oldStage) {
         log.finest("DualChoiceButtons has been ran.");
         Stage stage = new Stage();
         GenericMethods.setIcon(stage);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initModality(Modality.APPLICATION_MODAL);
-
         Label label = new Label();
         label.textProperty().bind(message);
         label.setPadding(new Insets(0, 0, 4, 0));
-
         Button button1 = new Button(), button2 = new Button();
         button1.textProperty().bind(choice1);
         button2.textProperty().bind(choice2);
@@ -51,12 +48,10 @@ public class DualChoiceButtons {
             answer[0] = choice2;
             stage.close();
         });
-
         if (!tooltip1.isEmpty() && !tooltip2.isEmpty()) {
             button1.setTooltip(new Tooltip(tooltip1));
             button2.setTooltip(new Tooltip(tooltip2));
         }
-
         VBox button1Box = new VBox();
         button1Box.getChildren().add(button1);
         button1Box.setPadding(new Insets(0, 3, 0, 0));
@@ -66,7 +61,6 @@ public class DualChoiceButtons {
         HBox layout = new HBox();
         layout.getChildren().addAll(button1Box, button2Box);
         layout.setAlignment(Pos.CENTER);
-
         VBox mainLayout = new VBox();
         if (message2.getValue().isEmpty()) mainLayout.getChildren().addAll(label, layout);
         else {
@@ -77,21 +71,17 @@ public class DualChoiceButtons {
             vBox.setAlignment(Pos.CENTER);
             mainLayout.getChildren().addAll(vBox, layout);
         }
-
         mainLayout.setPadding(new Insets(6, 6, 6, 6));
-
         Scene scene = new Scene(mainLayout);
         stage.setScene(scene);
-
         Platform.runLater(() -> {
-            if (oldWindow != null) {
-                stage.setX(oldWindow.getX() + (oldWindow.getWidth() / 2) - (stage.getWidth() / 2));
-                stage.setY(oldWindow.getY() + (oldWindow.getHeight() / 2) - (stage.getHeight() / 2));
+            if (oldStage != null) {
+                stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
+                stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
             }
-            new MoveStage().moveWindow(stage, oldWindow);
+            new MoveStage().moveStage(stage, oldStage);
         });
         stage.showAndWait();
-
         return answer[0];
     }
 }
