@@ -25,14 +25,15 @@ import java.util.logging.Logger;
 
 public class DualChoiceButtons {
     private static final Logger log = Logger.getLogger(DualChoiceButtons.class.getName());
+    private Stage dualChoiceStage;
 
     @SuppressWarnings("SameParameterValue")
-    public StringProperty display(StringProperty message, StringProperty message2, StringProperty choice1, StringProperty choice2, String tooltip1, String tooltip2, Stage oldStage) {
+    public StringProperty dualChoiceButton(StringProperty message, StringProperty message2, StringProperty choice1, StringProperty choice2, String tooltip1, String tooltip2) {
         log.finest("DualChoiceButtons has been ran.");
-        Stage stage = new Stage();
-        GenericMethods.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        dualChoiceStage = new Stage();
+        GenericMethods.setIcon(dualChoiceStage);
+        dualChoiceStage.initStyle(StageStyle.UNDECORATED);
+        dualChoiceStage.initModality(Modality.APPLICATION_MODAL);
         Label label = new Label();
         label.textProperty().bind(message);
         label.setPadding(new Insets(0, 0, 4, 0));
@@ -42,11 +43,11 @@ public class DualChoiceButtons {
         final StringProperty[] answer = new StringProperty[1];
         button1.setOnAction(e -> {
             answer[0] = choice1;
-            stage.close();
+            dualChoiceStage.close();
         });
         button2.setOnAction(e -> {
             answer[0] = choice2;
-            stage.close();
+            dualChoiceStage.close();
         });
         if (!tooltip1.isEmpty() && !tooltip2.isEmpty()) {
             button1.setTooltip(new Tooltip(tooltip1));
@@ -73,15 +74,10 @@ public class DualChoiceButtons {
         }
         mainLayout.setPadding(new Insets(6, 6, 6, 6));
         Scene scene = new Scene(mainLayout);
-        stage.setScene(scene);
-        Platform.runLater(() -> {
-            if (oldStage != null) {
-                stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
-                stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
-            }
-            new MoveStage().moveStage(stage, oldStage);
-        });
-        stage.showAndWait();
+        dualChoiceStage.setScene(scene);
+        Platform.runLater(() -> new MoveStage().moveStage(layout, null));
+        dualChoiceStage.showAndWait();
+        dualChoiceStage = null;
         return answer[0];
     }
 }

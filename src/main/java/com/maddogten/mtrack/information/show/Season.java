@@ -31,5 +31,4 @@ public class Season implements Serializable {
     public Map<Integer, Episode> getEpisodes() {
         return episodes;
     }
-
 }

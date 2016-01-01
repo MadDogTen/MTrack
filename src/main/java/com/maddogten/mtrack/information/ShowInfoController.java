@@ -222,6 +222,7 @@ public class ShowInfoController {
             bothInt[1] = Integer.valueOf(bothString[1]);
             return bothInt;
         }
+        log.info("Couldn't find episode information");
         return bothInt;
     }
 }

@@ -3,11 +3,11 @@ package com.maddogten.mtrack;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
-import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -41,7 +41,7 @@ public class Main extends Application implements Runnable {
     public synchronized static void stop(Stage stage, boolean forceStop, boolean saveSettings) {
         ConfirmBox confirmBox = new ConfirmBox();
         boolean answer = true;
-        if (!forceStop) answer = confirmBox.display(Strings.AreYouSure, stage);
+        if (!forceStop) answer = confirmBox.confirm(Strings.AreYouSure, stage);
         if (answer) {
             if (saveSettings) {
                 programSettingsController.getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
@@ -63,6 +63,14 @@ public class Main extends Application implements Runnable {
             if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
+            while (checkShowFiles.getRecheckShowFileRunning()) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    GenericMethods.printStackTrace(log, e, Main.class);
+                }
+            }
+            Platform.exit();
             Controller.closeChangeBoxStage();
             Controller.getSettingsWindow().closeSettings();
             if (stage != null) stage.close();
@@ -70,7 +78,7 @@ public class Main extends Application implements Runnable {
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
-                    GenericMethods.printStackTrace(log, e);
+                    GenericMethods.printStackTrace(log, e, Main.class);
                 }
             }
         }
@@ -121,7 +129,6 @@ public class Main extends Application implements Runnable {
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
-            new MoveStage().moveStage(primaryStage, null);
             start();
         } else stop(null, true, false);
     }
@@ -141,7 +148,7 @@ public class Main extends Application implements Runnable {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                GenericMethods.printStackTrace(log, e);
+                GenericMethods.printStackTrace(log, e, this.getClass());
             }
         }
     }

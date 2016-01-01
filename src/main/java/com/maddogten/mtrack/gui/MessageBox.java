@@ -23,13 +23,15 @@ import java.util.logging.Logger;
 
 public class MessageBox {
     private final Logger log = Logger.getLogger(MessageBox.class.getName());
+    private Stage messageStage;
 
-    public void display(StringProperty[] message, Stage oldStage) {
+    public void message(StringProperty[] message, Stage oldStage) {
         log.finest("MessageBox has been opened.");
-        Stage stage = new Stage();
-        GenericMethods.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        messageStage = new Stage();
+        GenericMethods.setIcon(messageStage);
+        if (oldStage != null) messageStage.initOwner(oldStage);
+        messageStage.initStyle(StageStyle.UNDECORATED);
+        messageStage.initModality(Modality.APPLICATION_MODAL);
         VBox layout = new VBox();
         if (message.length == 1) {
             Label messageLabel = new Label();
@@ -46,19 +48,20 @@ public class MessageBox {
         close.textProperty().bind(Strings.Close);
         close.setMinHeight(20);
         close.setMinWidth(30);
-        close.setOnAction(e -> stage.close());
+        close.setOnAction(e -> messageStage.close());
         layout.getChildren().add(close);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
         Scene scene = new Scene(layout);
-        stage.setScene(scene);
+        messageStage.setScene(scene);
         Platform.runLater(() -> {
-            if (oldStage != null) {
-                stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
-                stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
+            if (messageStage.getOwner() != null) {
+                messageStage.setX(messageStage.getOwner().getX() + (messageStage.getOwner().getWidth() / 2) - (messageStage.getWidth() / 2));
+                messageStage.setY(messageStage.getOwner().getY() + (messageStage.getOwner().getHeight() / 2) - (messageStage.getHeight() / 2));
             }
-            new MoveStage().moveStage(stage, oldStage);
+            new MoveStage().moveStage(layout, oldStage);
         });
-        stage.showAndWait();
+        messageStage.showAndWait();
+        messageStage = null;
     }
 }

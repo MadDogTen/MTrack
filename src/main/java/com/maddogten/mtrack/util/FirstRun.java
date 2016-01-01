@@ -54,10 +54,10 @@ public class FirstRun {
             try {
                 jarLocation = fileManager.getJarLocationFolder();
             } catch (UnsupportedEncodingException e) {
-                GenericMethods.printStackTrace(log, e);
+                GenericMethods.printStackTrace(log, e, this.getClass());
             }
             File appData = fileManager.getAppDataFolder();
-            StringProperty answer = new DualChoiceButtons().display(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString(), null);
+            StringProperty answer = new DualChoiceButtons().dualChoiceButton(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString());
             if (answer.getValue().matches(Strings.InAppData.getValue())) Variables.setDataFolder(appData);
             else if (answer.getValue().matches(Strings.WithTheJar.getValue())) Variables.setDataFolder(jarLocation);
             fileManager.createFolder(Strings.EmptyString);
@@ -81,7 +81,7 @@ public class FirstRun {
             try {
                 generateShowFilesThread.join();
             } catch (InterruptedException e) {
-                GenericMethods.printStackTrace(log, e);
+                GenericMethods.printStackTrace(log, e, this.getClass());
             }
             log.info(Strings.UserName);
             showInfoController.loadShowsFile();
@@ -129,9 +129,9 @@ public class FirstRun {
             boolean[] matched = directoryController.addDirectory(index, textBox.addDirectory(directoryController.getDirectories(), null));
             index++;
             if (!matched[0] && !matched[1])
-                new MessageBox().display(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
+                new MessageBox().message(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
             else if (matched[1]) break;
-            if (!confirmBox.display(Strings.AddAnotherDirectory, null)) addAnother = false;
+            if (!confirmBox.confirm(Strings.AddAnotherDirectory, null)) addAnother = false;
         }
     }
 
@@ -157,10 +157,8 @@ public class FirstRun {
                         log.info("Episode: " + aEpisode);
                         int[] episode = showInfoController.getEpisodeInfo(aEpisode);
                         if (episode != null && episode.length > 0) {
-                            if (episode.length == 1)
-                                episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
-                            else if (episode.length == 2) {
-                                episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
+                            episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
+                            if (episode.length == 2) {
                                 episodes.put(episode[1], new Episode(episode[1], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
                             } else if (episode.length >= 3)
                                 log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));

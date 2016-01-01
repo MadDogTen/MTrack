@@ -68,6 +68,5 @@ public class Variables {
         haveStageBlockParentStage = stageMoveWithParentAndBlockParent;
     }
 
-
     //---------- Temp Variables ----------\\
 }

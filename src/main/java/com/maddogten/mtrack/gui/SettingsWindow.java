@@ -49,8 +49,8 @@ public class SettingsWindow {
         stage.setResizable(false);
         stage.setScene(scene);
         Platform.runLater(() -> {
-            stage.setX(Main.stage.getX() + (Main.stage.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(Main.stage.getY() + (Main.stage.getHeight() / 2) - (stage.getHeight() / 2));
+            stage.setX(stage.getOwner().getX() + (stage.getOwner().getWidth() / 2) - (stage.getWidth() / 2));
+            stage.setY(stage.getOwner().getY() + (stage.getOwner().getHeight() / 2) - (stage.getHeight() / 2));
             if (tab != -2) Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab);
         });
         stage.showAndWait();

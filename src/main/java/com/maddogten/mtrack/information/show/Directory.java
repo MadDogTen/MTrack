@@ -17,6 +17,7 @@ public class Directory implements Serializable {
     private final String fileName;
     private final int index;
     @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
+    // The idea for priority is that once this is implemented you will be able to choose which directory the program will prefer to play an episode from, if found in multiple locations. To be implemented at a later time.
     private int priority;
     private Map<String, Show> shows;
     private long lastProgramID;
@@ -42,16 +43,6 @@ public class Directory implements Serializable {
         return index;
     }
 
-
-    // The idea here is that once this is implemented you will be able to choose which directory the program will prefer to play an episode from, if found in multiple locations.
-    /*public int getPriority() { //TODO Implement Priority
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }*/
-
     public Map<String, Show> getShows() {
         return shows;
     }
@@ -66,5 +57,9 @@ public class Directory implements Serializable {
 
     public void setLastProgramID(long lastProgramID) {
         this.lastProgramID = lastProgramID;
+    }
+
+    public String toString() {
+        return directory.toString();
     }
 }

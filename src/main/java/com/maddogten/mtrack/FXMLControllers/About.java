@@ -64,6 +64,6 @@ public class About implements Initializable {
             stage.close();
         });
         // Allows the undecorated stage to be moved.
-        new MoveStage().moveStage(pane);
+        new MoveStage().moveStage(pane, null);
     }
 }

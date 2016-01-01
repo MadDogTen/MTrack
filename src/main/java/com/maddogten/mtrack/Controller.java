@@ -58,7 +58,7 @@ public class Controller implements Initializable {
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
     private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
-    private ChangesBox changesBox;
+    private final ChangesBox changesBox = new ChangesBox();
     @SuppressWarnings("unused")
     @FXML
     private Pane pane;
@@ -224,7 +224,7 @@ public class Controller implements Initializable {
     }
 
     public static void closeChangeBoxStage() {
-        if (controller != null && controller.changesBox != null) {
+        if (controller != null) {
             log.fine("ChangeBox was open, closing...");
             controller.changesBox.closeStage();
         }
@@ -236,7 +236,7 @@ public class Controller implements Initializable {
         try {
             settingsWindow.display(tab);
         } catch (Exception e) {
-            GenericMethods.printStackTrace(log, e);
+            GenericMethods.printStackTrace(log, e, Controller.class);
         }
     }
 
@@ -348,7 +348,7 @@ public class Controller implements Initializable {
                     resetShow.setOnAction(e -> {
                         log.info("Reset to running...");
                         String[] choices = {Strings.Beginning.getValue(), Strings.End.getValue()};
-                        String answer = new SelectBox().display(Strings.WhatShould + row.getItem().getShow() + Strings.BeResetTo, choices, (Stage) pane.getScene().getWindow());
+                        String answer = new SelectBox().select(Strings.WhatShould + row.getItem().getShow() + Strings.BeResetTo, choices, (Stage) pane.getScene().getWindow());
                         log.info(answer);
                         if (answer.matches(Strings.Beginning.getValue())) {
                             userInfoController.setToBeginning(row.getItem().getShow());
@@ -372,20 +372,17 @@ public class Controller implements Initializable {
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
                             File fileName = new File(aDirectory.getDirectory() + Strings.FileSeparator + row.getItem().getShow());
-                            if (fileName.exists()) {
+                            if (fileName.exists())
                                 folders.add(new Directory(fileName, fileName.toString(), -2, -2, null, -2));
-                            }
                         });
                         if (folders.size() == 1) fileManager.open(folders.get(0).getDirectory());
                         else {
                             ConfirmBox confirmBox = new ConfirmBox();
-                            boolean openAll = confirmBox.display(Strings.DoYouWantToOpenAllAssociatedFolders, (Stage) pane.getScene().getWindow());
+                            boolean openAll = confirmBox.confirm(Strings.DoYouWantToOpenAllAssociatedFolders, (Stage) pane.getScene().getWindow());
                             if (openAll) folders.forEach(aDirectory -> fileManager.open(aDirectory.getDirectory()));
                             else {
                                 Directory file = new ListSelectBox().pickDirectory(Strings.PickTheFolderYouWantToOpen, folders, (Stage) pane.getScene().getWindow());
-                                if (!file.getDirectory().toString().isEmpty()) {
-                                    fileManager.open(file.getDirectory());
-                                }
+                                if (!file.getDirectory().toString().isEmpty()) fileManager.open(file.getDirectory());
                             }
                         }
                         log.info("Finished opening show directory...");
@@ -398,9 +395,9 @@ public class Controller implements Initializable {
                     playPreviousEpisode.setOnAction(e -> {
                         log.info("Attempting to play previous episode...");
                         int[] seasonEpisode = userInfoController.getPreviousEpisodeIfExists(row.getItem().getShow());
-                        if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3) {
-                            new MessageBox().display(new StringProperty[]{Strings.NoDirectlyPrecedingEpisodesFound}, (Stage) tabPane.getScene().getWindow());
-                        } else
+                        if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3)
+                            new MessageBox().message(new StringProperty[]{Strings.NoDirectlyPrecedingEpisodesFound}, (Stage) tabPane.getScene().getWindow());
+                        else
                             userInfoController.playAnyEpisode(row.getItem().getShow(), seasonEpisode[0], seasonEpisode[1]);
                         log.info("Finished attempting to play previous episode.");
                     });
@@ -418,9 +415,9 @@ public class Controller implements Initializable {
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
                             } else if (currentList.matches("inactive")) {
                                 toggleActive.textProperty().bind(Strings.SetActive);
-                                if (Variables.devMode) {
+                                if (Variables.devMode)
                                     rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory);
-                                } else rowMenuInactive.getItems().addAll(toggleActive, setHidden, openDirectory);
+                                else rowMenuInactive.getItems().addAll(toggleActive, setHidden, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuInactive).otherwise((ContextMenu) null));
                             }
                         }
@@ -431,7 +428,7 @@ public class Controller implements Initializable {
                             while (keepPlaying) {
                                 if (userInfoController.doesEpisodeExistInShowFile(aShow)) {
                                     userInfoController.playAnyEpisode(aShow, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow));
-                                    int userChoice = new ShowConfirmBox().display(Strings.HaveYouWatchedTheShow, userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController) == 1, (Stage) pane.getScene().getWindow());
+                                    int userChoice = new ShowConfirmBox().showConfirm(Strings.HaveYouWatchedTheShow, userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController) == 1, (Stage) pane.getScene().getWindow());
                                     if (userChoice == 1) {
                                         userInfoController.changeEpisode(aShow, -2);
                                         updateShowField(aShow, true);
@@ -474,11 +471,8 @@ public class Controller implements Initializable {
             String cutText = textField.getText().substring(0, textField.getSelection().getStart()) + textField.getText().substring(textField.getSelection().getEnd(), textField.getText().length());
             textField.setText(cutText);
             textField.positionCaret(caretPosition);
-            if (clearTextField.isVisible() && textField.getText().isEmpty()) {
-                clearTextField.setVisible(false);
-            } else if (!clearTextField.isVisible() && !textField.getText().isEmpty()) {
-                clearTextField.setVisible(true);
-            }
+            if (clearTextField.isVisible() && textField.getText().isEmpty()) clearTextField.setVisible(false);
+            else if (!clearTextField.isVisible() && !textField.getText().isEmpty()) clearTextField.setVisible(true);
         });
         MenuItem textFieldCopy = new MenuItem();
         textFieldCopy.textProperty().bind(Strings.Copy);
@@ -491,11 +485,8 @@ public class Controller implements Initializable {
         textFieldPaste.setOnAction(e -> {
             String pasteTextAdded = textField.getText().substring(0, textField.getCaretPosition()) + Toolkit.getToolkit().getSystemClipboard().getContent(DataFormat.PLAIN_TEXT) + textField.getText().substring(textField.getCaretPosition(), textField.getText().length());
             textField.setText(pasteTextAdded);
-            if (clearTextField.isVisible() && textField.getText().isEmpty()) {
-                clearTextField.setVisible(false);
-            } else if (!clearTextField.isVisible() && !textField.getText().isEmpty()) {
-                clearTextField.setVisible(true);
-            }
+            if (clearTextField.isVisible() && textField.getText().isEmpty()) clearTextField.setVisible(false);
+            else if (!clearTextField.isVisible() && !textField.getText().isEmpty()) clearTextField.setVisible(true);
             textField.positionCaret(textField.getText().length());
         });
         ContextMenu textFieldContextMenu = new ContextMenu();
@@ -505,9 +496,7 @@ public class Controller implements Initializable {
 
         clearTextField.setText(Strings.EmptyString);
         textField.setOnKeyTyped(e -> {
-            if (!e.getCharacter().matches("") && !clearTextField.isVisible()) {
-                clearTextField.setVisible(true);
-            }
+            if (!e.getCharacter().matches("") && !clearTextField.isVisible()) clearTextField.setVisible(true);
         });
         textField.setOnKeyReleased(e -> {
             if (textField.getText().isEmpty() && clearTextField.isVisible()) clearTextField.setVisible(false);
@@ -550,10 +539,6 @@ public class Controller implements Initializable {
         viewChanges.setOnAction(e -> openChangeBox());
         changesAlert.setOnAction(e -> openChangeBox());
         show0RemainingCheckBox.setSelected(show0Remaining);
-        if (show0Remaining) {
-            setTableViewFields(currentList);
-            setTableView();
-        }
         show0RemainingCheckBox.setOnAction(e -> {
             show0Remaining = show0RemainingCheckBox.isSelected();
             programSettingsController.getSettingsFile().setShow0Remaining(show0Remaining);
@@ -576,13 +561,13 @@ public class Controller implements Initializable {
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
         settingsTab.setOnSelectionChanged(e -> {
             selectionModel.select(showsTab);
-            try {
-                if (!settingsWindow.isSettingsOpen()) {
-                    settingsTab.setDisable(true);
+            if (!settingsWindow.isSettingsOpen()) {
+                settingsTab.setDisable(true);
+                try {
                     settingsWindow.display(-2);
+                } catch (Exception e1) {
+                    GenericMethods.printStackTrace(log, e1, this.getClass());
                 }
-            } catch (Exception e1) {
-                GenericMethods.printStackTrace(log, e1);
             }
         });
 
@@ -642,20 +627,7 @@ public class Controller implements Initializable {
     }
 
     private void openChangeBox() {
-        if (changesBox == null || changesBox.getStage() == null) {
-            if (changesBox == null) {
-                changesBox = new ChangesBox();
-            }
-            boolean keepOpen;
-            Object[] answer = {false, pane.getScene().getWindow()};
-            do {
-                answer = changesBox.openChanges((Stage) answer[1]);
-                keepOpen = Main.programRunning && (boolean) answer[0];
-            } while (keepOpen);
-            changesBox = null;
-        } else {
-            changesBox.openChanges((Stage) pane.getScene().getWindow());
-        }
+        changesBox.openChanges((Stage) pane.getScene().getWindow());
     }
 
     private void checkIfChangesListIsPopulated() {

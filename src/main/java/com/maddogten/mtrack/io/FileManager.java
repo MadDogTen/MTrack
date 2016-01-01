@@ -27,21 +27,21 @@ public class FileManager {
                 oos.flush();
                 oos.close();
             } catch (IOException e) {
-                GenericMethods.printStackTrace(log, e);
+                GenericMethods.printStackTrace(log, e, this.getClass());
             }
         } else log.info(filename + " save already exists.");
     }
 
     @SuppressWarnings("unchecked")
     public Object loadFile(String folder, String theFile, String extension) {
-        Object loadedFile = null;
         if (checkFileExists(folder, theFile, extension)) {
+            Object loadedFile = null;
             try {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension)));
                 loadedFile = ois.readObject();
                 ois.close();
             } catch (ClassNotFoundException | IOException e) {
-                GenericMethods.printStackTrace(log, e);
+                GenericMethods.printStackTrace(log, e, this.getClass());
             }
             return loadedFile;
         }
@@ -82,9 +82,19 @@ public class FileManager {
     public File getAppDataFolder() {
         String home = System.getProperty("user.home");
         OperatingSystem os = getOS();
-        if (os == OperatingSystem.WINDOWS) home = System.getenv("appdata");
-        else if (os == OperatingSystem.MAC) home += "~/Library/Application Support";
-        else if (os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) home += "";
+        switch (os) {
+            case WINDOWS:
+                home = System.getenv("appdata");
+                break;
+            case MAC:
+                home += "~/Library/Application Support";
+                break;
+            case NIX:
+            case NUX:
+            case AIX:
+                home += Strings.EmptyString;
+                break;
+        }
         File dir = new File(home, Variables.ProgramRootFolder);
         return new File(dir.getAbsolutePath());
     }
@@ -93,9 +103,9 @@ public class FileManager {
         File file = new File(URLDecoder.decode(FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
         String converted = Strings.EmptyString;
         String[] split = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
-        for (int x = 0; x <= split.length - 2; x++) {
-            if (x == 0) converted = split[x];
-            else converted += Strings.FileSeparator + split[x];
+        for (String splitPart : split) {
+            if (converted.isEmpty()) converted = splitPart;
+            else converted += Strings.FileSeparator + splitPart;
         }
         return new File(converted);
     }
@@ -119,9 +129,7 @@ public class FileManager {
                 File[] files = toDeleteFolder.listFiles();
                 if (files != null) {
                     for (File aFile : files) {
-                        if (aFile.isFile()) {
-                            if (!aFile.delete()) log.warning("Cannot delete: " + aFile);
-                        }
+                        if (!aFile.isFile() || !aFile.delete()) log.warning("Cannot delete: " + aFile);
                         if (aFile.isDirectory()) deleteFolder(aFile);
                     }
                 }
@@ -147,7 +155,7 @@ public class FileManager {
                 log.warning("FileManager- Your OS is Unknown, Attempting to open file anyways, But it may fail.");
             }
         } catch (IOException e) {
-            GenericMethods.printStackTrace(log, e);
+            GenericMethods.printStackTrace(log, e, this.getClass());
         }
     }
 }

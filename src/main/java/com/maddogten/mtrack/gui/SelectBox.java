@@ -20,13 +20,15 @@ import java.util.logging.Logger;
 
 public class SelectBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
+    private Stage selectStage;
 
-    public String display(String message, String[] buttonsText, Stage oldStage) {
+    public String select(String message, String[] buttonsText, Stage oldStage) {
         log.finest("SelectBox has been opened.");
-        Stage stage = new Stage();
-        GenericMethods.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        selectStage = new Stage();
+        GenericMethods.setIcon(selectStage);
+        selectStage.initOwner(oldStage);
+        selectStage.initStyle(StageStyle.UNDECORATED);
+        selectStage.initModality(Modality.APPLICATION_MODAL);
         Label label = new Label();
         label.setText(message);
         ArrayList<Button> buttons = new ArrayList<>();
@@ -37,13 +39,13 @@ public class SelectBox {
         buttons.forEach(aButton -> {
             aButton.setOnAction(e -> {
                 answer[0] = aButton.getText();
-                stage.close();
+                selectStage.close();
             });
             layout2.getChildren().add(aButton);
         });
         close.setOnAction(e -> {
             answer[0] = Strings.EmptyString;
-            stage.close();
+            selectStage.close();
         });
         layout2.getChildren().add(close);
         layout2.setAlignment(Pos.CENTER);
@@ -53,13 +55,14 @@ public class SelectBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
         Scene scene = new Scene(layout);
-        stage.setScene(scene);
+        selectStage.setScene(scene);
         Platform.runLater(() -> {
-            stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
-            new MoveStage().moveStage(stage, oldStage);
+            selectStage.setX(selectStage.getOwner().getX() + (selectStage.getOwner().getWidth() / 2) - (selectStage.getWidth() / 2));
+            selectStage.setY(selectStage.getOwner().getY() + (selectStage.getOwner().getHeight() / 2) - (selectStage.getHeight() / 2));
+            new MoveStage().moveStage(layout, oldStage);
         });
-        stage.showAndWait();
+        selectStage.showAndWait();
+        selectStage = null;
         return answer[0];
     }
 }

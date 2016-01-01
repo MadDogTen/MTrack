@@ -46,10 +46,12 @@ public class GenericMethods {
     }
 
     // Handles Exceptions
-    public static void printStackTrace(Logger log, Exception exception) {
-        String[] StackTrace = new String[exception.getStackTrace().length];
-        for (int i = 0; i < exception.getStackTrace().length; i++)
-            StackTrace[i] = '\n' + exception.getStackTrace()[i].toString();
-        log.severe(Arrays.toString(StackTrace));
+    public static void printStackTrace(Logger log, Exception exception, Class exceptionClass) {
+        String[] stackTrace = new String[exception.getStackTrace().length + 2];
+        stackTrace[0] = '\n' + exceptionClass.getName();
+        stackTrace[1] = '\n' + exception.toString();
+        for (int i = 2; i < exception.getStackTrace().length; i++)
+            stackTrace[i] = '\n' + exception.getStackTrace()[i].toString();
+        log.severe(Arrays.toString(stackTrace));
     }
 }

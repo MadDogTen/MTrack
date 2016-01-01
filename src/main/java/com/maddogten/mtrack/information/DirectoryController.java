@@ -86,7 +86,7 @@ public class DirectoryController {
                 try { // This is to give the Thread a chance to finish before the while loop starts. Mainly to avoid the "Time remaining" message without using a boolean.
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    GenericMethods.printStackTrace(log, e);
+                    GenericMethods.printStackTrace(log, e, this.getClass());
                 }
                 int timer = GenericMethods.getTimeSeconds();
                 while (thread.isAlive()) {
@@ -99,7 +99,7 @@ public class DirectoryController {
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            GenericMethods.printStackTrace(log, e);
+                            GenericMethods.printStackTrace(log, e, this.getClass());
                         }
                     }
                     if (!Main.programRunning) thread.interrupt();
@@ -122,7 +122,7 @@ public class DirectoryController {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        GenericMethods.printStackTrace(log, e);
+                        GenericMethods.printStackTrace(log, e, this.getClass());
                     }
                     int timer = GenericMethods.getTimeSeconds();
                     while (thread.isAlive()) {
@@ -135,7 +135,7 @@ public class DirectoryController {
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
-                                GenericMethods.printStackTrace(log, e);
+                                GenericMethods.printStackTrace(log, e, this.getClass());
                             }
                         }
                         if (!Main.programRunning) thread.interrupt();
@@ -151,7 +151,7 @@ public class DirectoryController {
                     activeDirectories.add(directory);
                 } else {
                     activeStatus = "inactive.";
-                    Platform.runLater(() -> new MessageBox().display(new StringProperty[]{new SimpleStringProperty(Strings.Warning.getValue() + directory.getDirectory() + Strings.WasFoundToBeInactive.getValue()), Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
+                    Platform.runLater(() -> new MessageBox().message(new StringProperty[]{new SimpleStringProperty(Strings.Warning.getValue() + directory.getDirectory() + Strings.WasFoundToBeInactive.getValue()), Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
                     if (!inactiveDirectories.contains(directory.getDirectory())) {
                         log.info(directory.getDirectory() + " was added to the inactiveDirectories list.");
                         inactiveDirectories.add(directory.getDirectory());

@@ -24,13 +24,15 @@ import java.util.logging.Logger;
 
 public class ConfirmBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
+    private Stage confirmStage;
 
-    public boolean display(StringProperty message, Stage oldStage) {
+    public boolean confirm(StringProperty message, Stage oldStage) {
         log.finest("ConfirmBox has been ran.");
-        Stage stage = new Stage();
-        GenericMethods.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        confirmStage = new Stage();
+        GenericMethods.setIcon(confirmStage);
+        confirmStage.initOwner(oldStage);
+        confirmStage.initStyle(StageStyle.UNDECORATED);
+        confirmStage.initModality(Modality.APPLICATION_MODAL);
         Label label = new Label();
         label.textProperty().bind(message);
         Button yesButton = new Button(), noButton = new Button();
@@ -43,11 +45,11 @@ public class ConfirmBox {
         final boolean[] answer = new boolean[1];
         yesButton.setOnAction(e -> {
             answer[0] = true;
-            stage.close();
+            confirmStage.close();
         });
         noButton.setOnAction(e -> {
             answer[0] = false;
-            stage.close();
+            confirmStage.close();
         });
         HBox layout2 = new HBox();
         layout2.getChildren().addAll(yesButton, noButton);
@@ -58,15 +60,16 @@ public class ConfirmBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 0, 0, 0));
         Scene scene = new Scene(layout);
-        stage.setScene(scene);
+        confirmStage.setScene(scene);
         Platform.runLater(() -> {
-            if (oldStage != null) {
-                stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
-                stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
+            if (confirmStage.getOwner() != null) {
+                confirmStage.setX(confirmStage.getOwner().getX() + (confirmStage.getOwner().getWidth() / 2) - (confirmStage.getWidth() / 2));
+                confirmStage.setY(confirmStage.getOwner().getY() + (confirmStage.getOwner().getHeight() / 2) - (confirmStage.getHeight() / 2));
             }
-            new MoveStage().moveStage(stage, oldStage);
+            new MoveStage().moveStage(layout, oldStage);
         });
-        stage.showAndWait();
+        confirmStage.showAndWait();
+        confirmStage = null;
         return answer[0];
     }
 }

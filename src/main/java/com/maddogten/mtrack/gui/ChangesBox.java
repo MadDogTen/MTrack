@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -31,50 +32,44 @@ public class ChangesBox {
 
     // This is true when the openChanges stage is open. If it open, then you are unable to open another instance of it.
     private boolean currentlyOpen = false;
-    private Stage stage;
+    private Stage changesStage;
 
     public void closeStage() {
-        if (stage != null) stage.close();
-    }
-
-    public Stage getStage() {
-        return stage;
+        if (changesStage != null) changesStage.close();
     }
 
     // Displays a stage showing everything contained in the changes String[]. It will automatically updated when changes are found.
-    public Object[] openChanges(Stage oldStage) {
+    public void openChanges(Stage oldStage) {
         log.finest("ChangesBox has been opened.");
         if (currentlyOpen) {
-            stage.toFront();
-            stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
-            return new Object[]{false};
+            changesStage.toFront();
+            changesStage.setX(changesStage.getOwner().getX() + (changesStage.getOwner().getWidth() / 2) - (changesStage.getWidth() / 2));
+            changesStage.setY(changesStage.getOwner().getY() + (changesStage.getOwner().getHeight() / 2) - (changesStage.getHeight() / 2));
+            return;
         } else currentlyOpen = true;
-        stage = new Stage();
-        GenericMethods.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setWidth(Variables.SIZE_WIDTH - 30);
+        changesStage = new Stage();
+        GenericMethods.setIcon(changesStage);
+        changesStage.initOwner(oldStage);
+        changesStage.initStyle(StageStyle.UNDECORATED);
+        changesStage.setWidth(Variables.SIZE_WIDTH - 30);
         ListView<String> listView = new ListView<>();
+        listView.setMaxHeight(Variables.SIZE_HEIGHT / 1.5);
         listView.setEditable(false);
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        final String[][] changes = {ChangeReporter.getChanges()};
-        observableList.addAll(changes[0]);
+        final ArrayList<String[]> changes = new ArrayList<>();
+        changes.add(0, ChangeReporter.getChanges());
+        observableList.addAll(changes.get(0));
         listView.setItems(observableList);
-        listView.setMaxHeight(Variables.SIZE_HEIGHT / 1.5);
         Button clear = new Button();
         clear.textProperty().bind(Strings.Clear);
         Button close = new Button();
         close.textProperty().bind(Strings.Close);
-        Object[] answer = new Object[2];
         VBox layout = new VBox();
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();
             listView.getItems().clear();
         });
-        close.setOnAction(e -> {
-            answer[0] = false;
-            stage.close();
-        });
+        close.setOnAction(e -> changesStage.close());
         HBox hBox = new HBox();
         hBox.getChildren().addAll(clear, close);
         hBox.setAlignment(Pos.CENTER);
@@ -87,11 +82,11 @@ public class ChangesBox {
             public Void call() throws Exception {
                 while (currentlyOpen) {
                     Thread.sleep(1000);
-                    if (stage.isShowing() && !Arrays.equals(changes[0], ChangeReporter.getChanges())) {
-                        changes[0] = ChangeReporter.getChanges();
+                    if (changesStage.isShowing() && !Arrays.equals(changes.get(0), ChangeReporter.getChanges())) {
+                        changes.set(0, ChangeReporter.getChanges());
                         Platform.runLater(() -> {
                             observableList.clear();
-                            observableList.addAll(changes[0][0]);
+                            observableList.addAll(changes.get(0));
                         });
                     }
                 }
@@ -100,15 +95,14 @@ public class ChangesBox {
             }
         };
         new Thread(task).start();
-        stage.setScene(scene);
+        changesStage.setScene(scene);
         Platform.runLater(() -> {
-            stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
-            new MoveStage().moveStage(stage, null);
+            changesStage.setX(changesStage.getOwner().getX() + (changesStage.getOwner().getWidth() / 2) - (changesStage.getWidth() / 2));
+            changesStage.setY(changesStage.getOwner().getY() + (changesStage.getOwner().getHeight() / 2) - (changesStage.getHeight() / 2));
+            new MoveStage().moveStage(layout, null);
         });
-        stage.showAndWait();
+        changesStage.showAndWait();
         currentlyOpen = false;
-        stage = null;
-        return answer;
+        changesStage = null;
     }
 }

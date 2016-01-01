@@ -10,7 +10,6 @@ import javafx.concurrent.Task;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -42,33 +41,27 @@ public class MainRun {
     public boolean startBackend() {
         FileManager fileManager = new FileManager();
         // First it checks if the folder that contains the jar has the settings file.
-        boolean folderFound = false;
         try {
             File path = new File(URLDecoder.decode(MainRun.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
             File[] files = path.listFiles();
             if (files != null) {
                 for (File file : files) {
                     String[] splitFile = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
-                    if (splitFile[splitFile.length - 1].matches(Strings.SettingsFileName + Variables.SettingFileExtension)) {
+                    if (splitFile[splitFile.length - 1].matches(Strings.SettingsFileName + Variables.SettingFileExtension))
                         Variables.setDataFolder(path);
-                        folderFound = true;
-                    }
                 }
             }
         } catch (UnsupportedEncodingException e) {
-            GenericMethods.printStackTrace(log, e);
+            GenericMethods.printStackTrace(log, e, this.getClass());
         }
         // If the above isn't the correct folder, it then checks if the Roaming Appdata folder is the correct one.
-        if (!folderFound) {
+        if (Variables.dataFolder.toString().isEmpty()) {
             File path = fileManager.getAppDataFolder();
-            if (fileManager.checkFolderExistsAndReadable(path)) {
-                Variables.setDataFolder(path);
-                folderFound = true;
-            }
+            if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
         }
         // If one above is found and both Variables devMode & StartFresh are true, It will Delete ALL Files each time the program is ran.
         //noinspection PointlessBooleanExpression,ConstantConditions
-        if (Variables.devMode && Variables.startFresh && folderFound) {
+        if (Variables.devMode && Variables.startFresh && !Variables.dataFolder.toString().isEmpty()) {
             log.warning("Starting Fresh...");
             if (Variables.dataFolder.toString().matches(Pattern.quote(String.valueOf(fileManager.getAppDataFolder())))) {
                 log.info("Deleting " + Variables.dataFolder + " in AppData...");
@@ -86,11 +79,10 @@ public class MainRun {
                     }
                 }
             }
-            folderFound = false;
         }
         boolean runFinished = false;
         // If both of those failed or it deleted the files,  Then it starts firstRun.
-        if (!folderFound) {
+        if (Variables.dataFolder.toString().isEmpty()) {
             firstRun = true;
             new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).programFirstRun();
             firstRun = false;
@@ -134,6 +126,11 @@ public class MainRun {
         }
         log.info("Username is set: " + Strings.UserName);
         updateManager.updateMainDirectoryVersion();
+        loadSettings();
+        return continueStarting;
+    }
+
+    private void loadSettings() {
         Variables.updateSpeed = programSettingsController.getSettingsFile().getUpdateSpeed();
         Variables.timeToWaitForDirectory = programSettingsController.getSettingsFile().getTimeToWaitForDirectory();
         Variables.recordChangesForNonActiveShows = programSettingsController.getSettingsFile().isRecordChangesForNonActiveShows();
@@ -141,7 +138,6 @@ public class MainRun {
         Variables.disableAutomaticRechecking = programSettingsController.getSettingsFile().isDisableAutomaticShowUpdating();
         Variables.setStageMoveWithParentAndBlockParent(programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
         ChangeReporter.setChanges(userInfoController.getUserSettings().getChanges());
-        return continueStarting;
     }
 
     public void tick() {
@@ -170,7 +166,7 @@ public class MainRun {
             try {
                 recheckThread.join();
             } catch (InterruptedException e) {
-                GenericMethods.printStackTrace(log, e);
+                GenericMethods.printStackTrace(log, e, this.getClass());
             }
             timer = GenericMethods.getTimeSeconds();
             forceRun = false;
@@ -180,12 +176,11 @@ public class MainRun {
     // This first checks if a DefaultUser currently exists, and if not, prompts the user to choose / create one.
     private String getUser() {
         log.info("getUser Running...");
-        ArrayList<String> Users = userInfoController.getAllUsers();
         if (programSettingsController.getSettingsFile().isUseDefaultUser()) {
             log.info("Using default user.");
             return programSettingsController.getSettingsFile().getDefaultUser();
         } else {
-            Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, Users, null);
+            Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, userInfoController.getAllUsers());
             String user = (String) pickUserResult[0];
             if (user.matches(Strings.AddNewUsername.getValue())) continueStarting = false;
             if ((boolean) pickUserResult[1]) programSettingsController.setDefaultUsername(user, true);
@@ -197,12 +192,12 @@ public class MainRun {
     public void getLanguage() {
         LanguageHandler languageHandler = new LanguageHandler();
         Map<String, String> languages = languageHandler.getLanguageNames();
-        String language = null;
+        String language = Strings.EmptyString;
         if (!firstRun) language = programSettingsController.getSettingsFile().getLanguage();
         if (languages.size() == 1)
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
         else {
-            if (language != null && !language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove
+            if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove
                 Boolean wasSet = languageHandler.setLanguage(language);
                 Variables.makeLanguageDefault = true;
                 if (wasSet) {
@@ -223,8 +218,7 @@ public class MainRun {
                         }
                     }
                     Variables.makeLanguageDefault = (boolean) pickLanguageResult[1];
-                    Boolean wasSet = languageHandler.setLanguage(internalName);
-                    if (wasSet) {
+                    if (languageHandler.setLanguage(internalName)) {
                         Variables.language = internalName;
                         log.info("Language is set: " + languageReadable);
                     } else log.severe("Language was not set for some reason, Please report.");

@@ -1,6 +1,5 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -15,23 +14,25 @@ import java.util.logging.Logger;
 
 public class AboutBox {
     private static final Logger log = Logger.getLogger(AboutBox.class.getName());
+    private Stage aboutStage;
 
     public void display(Stage oldStage) throws Exception {
         log.finest("AboutBox has been opened.");
-        Stage stage = new Stage();
-        GenericMethods.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        aboutStage = new Stage();
+        GenericMethods.setIcon(aboutStage);
+        aboutStage.initOwner(oldStage);
+        aboutStage.initStyle(StageStyle.UNDECORATED);
+        aboutStage.initModality(Modality.APPLICATION_MODAL);
         Pane root = FXMLLoader.load(getClass().getResource("/gui/About.fxml"));
         Scene scene = new Scene(root);
         scene.setFill(Color.WHITESMOKE);
-        stage.setResizable(false);
-        stage.setScene(scene);
+        aboutStage.setResizable(false);
+        aboutStage.setScene(scene);
         Platform.runLater(() -> {
-            stage.setX(oldStage.getX() + (oldStage.getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(oldStage.getY() + (oldStage.getHeight() / 2) - (stage.getHeight() / 2));
-            new MoveStage().moveStage(stage, oldStage);
+            aboutStage.setX(aboutStage.getOwner().getX() + (aboutStage.getOwner().getWidth() / 2) - (aboutStage.getWidth() / 2));
+            aboutStage.setY(aboutStage.getOwner().getY() + (aboutStage.getOwner().getHeight() / 2) - (aboutStage.getHeight() / 2));
         });
-        stage.showAndWait();
+        aboutStage.showAndWait();
+        aboutStage = null;
     }
 }

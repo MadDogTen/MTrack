@@ -64,7 +64,6 @@ public class UpdateManager {
         }
     }
 
-
     public void updateUserSettingsFile() {
         if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
             log.info("Attempting to generate settings file for " + Strings.UserName + '.');
@@ -263,7 +262,6 @@ public class UpdateManager {
             log.info("Program settings file was successfully updated to version " + newVersion + '.');
         } else log.info("Program settings file was not updated. This is an error, please report.");
     }
-
 
     @SuppressWarnings("SameParameterValue")
     private void convertUserSettingsFile(int oldVersion, int newVersion) {
