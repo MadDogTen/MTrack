@@ -14,7 +14,7 @@ public class Show implements Serializable {
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 3665902196971811148L;
     private final String name;
-    @SuppressWarnings("CanBeFinal")
+    @SuppressWarnings({"CanBeFinal", "FieldMayBeFinal"})
     private Map<Integer, Season> seasons;
 
     public Show(String name, Map<Integer, Season> seasons) {

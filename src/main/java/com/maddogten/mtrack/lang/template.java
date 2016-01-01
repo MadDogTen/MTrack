@@ -46,6 +46,9 @@ public class template extends Language {
         Strings.Warning.setValue("");
         Strings.Show.setValue("");
         Strings.UI.setValue("");
+        Strings.Cut.setValue("");
+        Strings.Copy.setValue("");
+        Strings.Paste.setValue("");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("");
@@ -85,9 +88,8 @@ public class template extends Language {
         Strings.UpdateTime.setValue("");
         Strings.DirectoryTimeout.setValue("");
         Strings.UnHideShow.setValue("");
-        Strings.Cut.setValue("");
-        Strings.Copy.setValue("");
-        Strings.Paste.setValue("");
+        Strings.OpenAll.setValue("");
+        Strings.OpenSelected.setValue("");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("");

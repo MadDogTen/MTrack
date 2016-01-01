@@ -332,7 +332,8 @@ public class UpdateManager {
         } else log.info("User settings file was not updated. This is an error, please report.");
     }
 
-    private void convertShowFile(int oldVersion, @SuppressWarnings("SameParameterValue") int newVersion) {
+    @SuppressWarnings("SameParameterValue")
+    private void convertShowFile(int oldVersion, int newVersion) {
         boolean updated = false;
         String fileType = "ShowsFile";
         switch (oldVersion) {

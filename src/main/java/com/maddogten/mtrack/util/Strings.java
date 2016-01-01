@@ -56,7 +56,6 @@ public class Strings {
     public static final StringProperty Cut = new SimpleStringProperty();
     public static final StringProperty Copy = new SimpleStringProperty();
     public static final StringProperty Paste = new SimpleStringProperty();
-
     // Button Text
     public static final StringProperty SetSeasonEpisode = new SimpleStringProperty();
     public static final StringProperty PlaySeasonEpisode = new SimpleStringProperty();
@@ -95,6 +94,8 @@ public class Strings {
     public static final StringProperty UpdateTime = new SimpleStringProperty();
     public static final StringProperty DirectoryTimeout = new SimpleStringProperty();
     public static final StringProperty UnHideShow = new SimpleStringProperty();
+    public static final StringProperty OpenAll = new SimpleStringProperty();
+    public static final StringProperty OpenSelected = new SimpleStringProperty();
     // Checkbox Text
     public static final StringProperty InactiveShows = new SimpleStringProperty();
     public static final StringProperty OlderSeasons = new SimpleStringProperty();

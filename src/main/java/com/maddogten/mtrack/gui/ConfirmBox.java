@@ -55,6 +55,7 @@ public class ConfirmBox {
         layout2.getChildren().addAll(yesButton, noButton);
         layout2.setAlignment(Pos.CENTER);
         layout2.setPadding(new Insets(4, 6, 6, 6));
+        layout2.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2);
         layout.setAlignment(Pos.CENTER);

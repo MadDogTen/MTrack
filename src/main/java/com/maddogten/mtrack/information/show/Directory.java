@@ -16,7 +16,7 @@ public class Directory implements Serializable {
     private final File directory;
     private final String fileName;
     private final int index;
-    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
+    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused", "FieldMayBeFinal"})
     // The idea for priority is that once this is implemented you will be able to choose which directory the program will prefer to play an episode from, if found in multiple locations. To be implemented at a later time.
     private int priority;
     private Map<String, Show> shows;

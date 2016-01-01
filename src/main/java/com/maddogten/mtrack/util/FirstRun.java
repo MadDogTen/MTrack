@@ -23,7 +23,6 @@ import javafx.concurrent.Task;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -66,7 +65,6 @@ public class FirstRun {
             if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
             addDirectories();
             Task<Void> task = new Task<Void>() {
-                @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     generateShowFiles();
@@ -160,8 +158,7 @@ public class FirstRun {
                             episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
                             if (episode.length == 2) {
                                 episodes.put(episode[1], new Episode(episode[1], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
-                            } else if (episode.length >= 3)
-                                log.warning("Error 1 if at this point!" + " + " + Arrays.toString(episode));
+                            }
                         }
                     });
                     if (!episodes.isEmpty()) seasons.put(aSeason, new Season(aSeason, episodes));

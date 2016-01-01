@@ -32,7 +32,6 @@ public class FileManager {
         } else log.info(filename + " save already exists.");
     }
 
-    @SuppressWarnings("unchecked")
     public Object loadFile(String folder, String theFile, String extension) {
         if (checkFileExists(folder, theFile, extension)) {
             Object loadedFile = null;

@@ -35,6 +35,7 @@ Renamed MoveWindow to MoveStage.
 Changed Tooltip Style.
 Changed most buttons to become disabled when you click them, and are re-enabled when you / they have finished the task.
 Changed some buttons to disable and re-enable their "pair" button as well (Ex. Adding / Removing a Directory).
+Changed the Open File Location to only be one stage.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -62,6 +63,7 @@ Fixed rechecking not searching for ignored shows.
 Fixed deleting users.
 Fixed removing directories.
 Fixed bug with adding new directories.
+Fixed button spacing on stages.
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

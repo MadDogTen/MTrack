@@ -88,6 +88,8 @@ public class en_US extends Language {
         Strings.UpdateTime.setValue("Searching Wait Time (Seconds):");
         Strings.DirectoryTimeout.setValue("Directory Timeout (Seconds):");
         Strings.UnHideShow.setValue("UnHide Show");
+        Strings.OpenAll.setValue("Open All");
+        Strings.OpenSelected.setValue("Open Selected");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("Inactive Shows");

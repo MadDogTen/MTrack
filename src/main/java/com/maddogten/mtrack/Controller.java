@@ -73,7 +73,7 @@ public class Controller implements Initializable {
     private Button exit;
     @FXML
     private Button minimize;
-    @SuppressWarnings("CanBeFinal")
+    @SuppressWarnings("FieldMayBeFinal")
     @FXML
     private TableView<DisplayShows> tableView = new TableView<>();
     @FXML
@@ -148,11 +148,11 @@ public class Controller implements Initializable {
                 break;
             }
         }
-        boolean isShowActive = (userInfoController.isShowActive(aShow) && showExists), remove = false;
+        boolean isShowActive = (userInfoController.isShowActive(aShow) && showExists), keep = true;
         if (currentList.matches("active") && !isShowActive || currentList.matches("inactive") && isShowActive)
-            remove = true;
+            keep = false;
         if (index != -2) removeShowField(index);
-        if (!remove) {
+        if (keep) {
             int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), season = userInfoController.getCurrentSeason(aShow), episode = userInfoController.getCurrentEpisode(aShow);
             DisplayShows show = new DisplayShows(aShow, remaining, season, episode);
             if (((show0Remaining || currentList.contains("inactive")) || remaining != 0) && index != -2)
@@ -363,7 +363,7 @@ public class Controller implements Initializable {
                         }
                         log.info("Reset to finished running.");
                     });
-                    MenuItem openDirectory = new MenuItem(); // TODO Make this use only 1 window.
+                    MenuItem openDirectory = new MenuItem();
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
@@ -377,13 +377,7 @@ public class Controller implements Initializable {
                         });
                         if (folders.size() == 1) fileManager.open(folders.get(0).getDirectory());
                         else {
-                            ConfirmBox confirmBox = new ConfirmBox();
-                            boolean openAll = confirmBox.confirm(Strings.DoYouWantToOpenAllAssociatedFolders, (Stage) pane.getScene().getWindow());
-                            if (openAll) folders.forEach(aDirectory -> fileManager.open(aDirectory.getDirectory()));
-                            else {
-                                Directory file = new ListSelectBox().pickDirectory(Strings.PickTheFolderYouWantToOpen, folders, (Stage) pane.getScene().getWindow());
-                                if (!file.getDirectory().toString().isEmpty()) fileManager.open(file.getDirectory());
-                            }
+                            new ListSelectBox().openDirectory(folders, (Stage) tabPane.getScene().getWindow());
                         }
                         log.info("Finished opening show directory...");
                     });
@@ -405,7 +399,7 @@ public class Controller implements Initializable {
                     printCurrentSeasonEpisode.textProperty().bind(Strings.PrintCurrentSeasonEpisode);
                     printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + userInfoController.getCurrentSeason(row.getItem().getShow()) + " - Episode: " + userInfoController.getCurrentEpisode(row.getItem().getShow())));
                     row.setOnMouseClicked(e -> {
-                        if (e.getButton().equals(MouseButton.SECONDARY) && (!row.isEmpty())) {
+                        if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
                                 toggleActive.textProperty().bind(Strings.SetInactive);
                                 if (Variables.devMode)
@@ -421,7 +415,7 @@ public class Controller implements Initializable {
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuInactive).otherwise((ContextMenu) null));
                             }
                         }
-                        if (e.getButton().equals(MouseButton.PRIMARY) && e.getClickCount() == 2 && (!row.isEmpty()) && currentList.matches("active")) {
+                        if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && (!row.isEmpty()) && currentList.matches("active")) {
                             String aShow = row.getItem().getShow();
                             boolean keepPlaying = true;
                             isShowCurrentlyPlaying = true;
@@ -520,7 +514,6 @@ public class Controller implements Initializable {
             } else if (currentList.matches("inactive")) {
                 if (wereShowsChanged) {
                     Task<Void> task = new Task<Void>() {
-                        @SuppressWarnings("ReturnOfNull")
                         @Override
                         protected Void call() throws Exception {
                             checkShowFiles.recheckShowFile(true);
@@ -604,7 +597,6 @@ public class Controller implements Initializable {
                     checkIfChangesListIsPopulated();
                     Thread.sleep(800);
                 }
-                //noinspection ReturnOfNull
                 return null;
             }
         };

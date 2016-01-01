@@ -178,14 +178,14 @@ public class DirectoryController {
         ArrayList<Directory> directories = getDirectories();
         boolean[] answer = {false, false};
         if (directories == null) directories = new ArrayList<>();
-        boolean directoryAlreadyExists = false;
+        boolean directoryDoesNotExist = true;
         for (Directory aDirectory : directories) {
             if (aDirectory.getDirectory() == directory) {
-                directoryAlreadyExists = true;
+                directoryDoesNotExist = false;
                 break;
             }
         }
-        if (!directory.toString().isEmpty() && !directoryAlreadyExists) {
+        if (!directory.toString().isEmpty() && directoryDoesNotExist) {
             log.info("Added Directory");
             String[] splitResult = String.valueOf(directory).split(Pattern.quote(Strings.FileSeparator));
             String fileName = "";
@@ -229,7 +229,6 @@ public class DirectoryController {
     }
 
     // Gets a single directory map using the given index.
-    @SuppressWarnings("unchecked")
     public Directory getDirectory(int index) {
         for (Directory directory : getDirectories()) {
             if (directory.getIndex() == index) return directory;

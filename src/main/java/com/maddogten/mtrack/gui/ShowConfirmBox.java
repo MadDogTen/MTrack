@@ -57,6 +57,7 @@ public class ShowConfirmBox {
         layout2.getChildren().addAll(yesButton, noButton);
         layout2.setAlignment(Pos.CENTER);
         layout2.setPadding(new Insets(4, 6, 6, 6));
+        layout2.setSpacing(3);
         Button nextEpisode = new Button();
         nextEpisode.textProperty().bind(Strings.NextEpisode);
         nextEpisode.setMinHeight(20);
@@ -69,7 +70,7 @@ public class ShowConfirmBox {
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2, nextEpisode);
         layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(6, 0, 0, 0));
+        layout.setPadding(new Insets(6, 6, 0, 6));
         Scene scene = new Scene(layout);
         showConfirmStage.setScene(scene);
         Platform.runLater(() -> {

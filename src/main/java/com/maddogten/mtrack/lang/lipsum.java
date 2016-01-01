@@ -48,6 +48,9 @@ public class lipsum extends Language {
         Strings.Warning.setValue("murta");
         Strings.Show.setValue("vitae");
         Strings.UI.setValue("gula");
+        Strings.Cut.setValue("tu");
+        Strings.Copy.setValue("ta");
+        Strings.Paste.setValue("te");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("malesuada");
@@ -87,9 +90,8 @@ public class lipsum extends Language {
         Strings.UpdateTime.setValue("nunula");
         Strings.DirectoryTimeout.setValue("termula");
         Strings.UnHideShow.setValue("mutalu");
-        Strings.Cut.setValue("tu");
-        Strings.Copy.setValue("ta");
-        Strings.Paste.setValue("te");
+        Strings.OpenAll.setValue("tarimi");
+        Strings.OpenSelected.setValue("dorire");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("miterra");

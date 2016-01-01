@@ -69,6 +69,7 @@ public class TextBox {
         buttonLayout.getChildren().addAll(submit, exitButton);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+        buttonLayout.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, textField, buttonLayout);
         layout.setAlignment(Pos.CENTER);
@@ -100,7 +101,6 @@ public class TextBox {
         } else return true;
     }
 
-    @SuppressWarnings("SameParameterValue")
     public File addDirectory(ArrayList<Directory> currentDirectories, Stage oldStage) {
         log.finest("TextBox addDirectory has been opened.");
         textStages[1] = new Stage();
@@ -132,9 +132,12 @@ public class TextBox {
         HBox hBox = new HBox();
         hBox.getChildren().addAll(submit, exit);
         hBox.setAlignment(Pos.CENTER);
+        hBox.setPadding(new Insets(3, 0, 6, 0));
+        hBox.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, textField, hBox);
         layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(6, 6, 0, 6));
         Scene scene = new Scene(layout);
         textStages[1].setScene(scene);
         Platform.runLater(() -> {

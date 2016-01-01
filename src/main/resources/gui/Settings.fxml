@@ -34,8 +34,8 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
                             <children>
-                                <Button fx:id="setDefaultUsername" layoutX="45.0" layoutY="31.0" mnemonicParsing="false" text="Set Default user"/>
-                                <Button fx:id="clearDefaultUsername" layoutX="147.0" layoutY="31.0" mnemonicParsing="false" text="Reset"/>
+                                <Button fx:id="setDefaultUsername" layoutX="47.0" layoutY="31.0" mnemonicParsing="false" text="Set Default User"/>
+                                <Button fx:id="clearDefaultUsername" layoutX="151.0" layoutY="31.0" mnemonicParsing="false" text="Reset"/>
                                 <Button fx:id="deleteUser" layoutX="118.0" layoutY="114.0" mnemonicParsing="false" text="Delete User">
                                     <tooltip>
                                         <Tooltip id="tooltip" fx:id="deleteUserTooltip"/>

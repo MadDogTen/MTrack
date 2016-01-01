@@ -22,13 +22,13 @@ public class UserSettings implements Serializable {
     private int userDirectoryVersion;
 
     // Show Settings
-    @SuppressWarnings("CanBeFinal")
+    @SuppressWarnings({"CanBeFinal", "FieldMayBeFinal"})
     private Map<String, UserShowSettings> showSettings;
 
     // Changes List
     private String[] changes;
 
-    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused"})
+    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused", "FieldMayBeFinal"})
     private long lastProgramID;
 
     public UserSettings(String userName, Map<String, UserShowSettings> showSettings, String[] changes, long lastProgramID) {

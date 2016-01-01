@@ -23,7 +23,6 @@ public class ProgramSettingsController {
         this.userInfoController = userInfoController;
     }
 
-    @SuppressWarnings("unchecked")
     public void loadProgramSettingsFile() {
         this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
     }

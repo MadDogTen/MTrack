@@ -26,7 +26,7 @@ public class MainRun {
     private final CheckShowFiles checkShowFiles;
     private final DirectoryController directoryController;
     public boolean firstRun = false, continueStarting = true;
-    private boolean hasRan = false, forceRun = true;
+    private boolean hasNotRan = true, forceRun = true;
     private int timer = GenericMethods.getTimeSeconds();
 
     @SuppressWarnings("SameParameterValue")
@@ -60,7 +60,7 @@ public class MainRun {
             if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
         }
         // If one above is found and both Variables devMode & StartFresh are true, It will Delete ALL Files each time the program is ran.
-        //noinspection PointlessBooleanExpression,ConstantConditions
+        // noinspection PointlessBooleanExpression
         if (Variables.devMode && Variables.startFresh && !Variables.dataFolder.toString().isEmpty()) {
             log.warning("Starting Fresh...");
             if (Variables.dataFolder.toString().matches(Pattern.quote(String.valueOf(fileManager.getAppDataFolder())))) {
@@ -80,18 +80,18 @@ public class MainRun {
                 }
             }
         }
-        boolean runFinished = false;
+        boolean needsToRun = true;
         // If both of those failed or it deleted the files,  Then it starts firstRun.
         if (Variables.dataFolder.toString().isEmpty()) {
             firstRun = true;
             new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).programFirstRun();
             firstRun = false;
-            runFinished = true;
+            needsToRun = false;
         }
         if (!continueStarting) return false;
         UpdateManager updateManager = new UpdateManager(programSettingsController, showInfoController, userInfoController, directoryController);
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
-        if (!runFinished) {
+        if (needsToRun) {
             if (fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingFileExtension)) {
                 updateManager.updateProgramSettingsFile();
                 programSettingsController.loadProgramSettingsFile();
@@ -141,20 +141,19 @@ public class MainRun {
     }
 
     public void tick() {
-        if (!hasRan) {
+        if (hasNotRan) {
             log.info("MainRun Running...");
             timer = GenericMethods.getTimeSeconds();
-            hasRan = true;
+            hasNotRan = false;
         }
         if (directoryController.isReloadShowsFile()) showInfoController.loadShowsFile();
         recheck();
     }
 
     private void recheck() {
-        //noinspection PointlessBooleanExpression,ConstantConditions
+        // noinspection PointlessBooleanExpression
         if (!(Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(timer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(timer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
             Task<Void> task = new Task<Void>() {
-                @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     checkShowFiles.recheckShowFile(forceRun);

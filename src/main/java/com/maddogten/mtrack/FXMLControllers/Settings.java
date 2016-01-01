@@ -39,7 +39,6 @@ import java.util.logging.Logger;
       Settings handles pretty much ALL the programs settings. Goto ProgramSetting for information about which each setting does.
  */
 
-@SuppressWarnings("WeakerAccess")
 public class Settings implements Initializable {
     private static final Logger log = Logger.getLogger(Settings.class.getName());
     private static Settings settings;
@@ -288,7 +287,6 @@ public class Settings implements Initializable {
         forceRecheck.setOnAction(e -> {
             setButtonDisable(forceRecheck, null, true);
             Task<Void> task = new Task<Void>() {
-                @SuppressWarnings("ReturnOfNull")
                 @Override
                 protected Void call() throws Exception {
                     checkShowFiles.recheckShowFile(true);
@@ -325,7 +323,6 @@ public class Settings implements Initializable {
                 log.info("Directory was added.");
                 FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile(), userInfoController);
                 Task<Void> task = new Task<Void>() {
-                    @SuppressWarnings("ReturnOfNull")
                     @Override
                     protected Void call() throws Exception {
                         new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, Main.getMainRun()).generateShowsFile(directoryController.getDirectory(index));
@@ -419,7 +416,6 @@ public class Settings implements Initializable {
                 GenericMethods.printStackTrace(log, e1, this.getClass());
             }
         });
-        //noinspection PointlessBooleanExpression
         if (!Variables.devMode) {
             developerTab.setDisable(true);
             tabPane.getTabs().remove(developerTab);
@@ -557,10 +553,8 @@ public class Settings implements Initializable {
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     if (confirm) {
                         directoryToClear.getShows().keySet().forEach(aShow -> {
-                            boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, directoryController.getDirectories(directoryToClear.getIndex()));
-                            if (!showExistsElsewhere) {
+                            if (!showInfoController.doesShowExistElsewhere(aShow, directoryController.getDirectories(directoryToClear.getIndex())))
                                 userInfoController.setIgnoredStatus(aShow, true);
-                            }
                         });
                         directoryToClear.setShows(new HashMap<>());
                         directoryController.saveDirectory(directoryToClear, true);

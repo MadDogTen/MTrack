@@ -24,7 +24,6 @@ public class UserInfoController {
         this.showInfoController = showInfoController;
     }
 
-    @SuppressWarnings("unchecked")
     public void loadUserInfo() {
         this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension);
     }

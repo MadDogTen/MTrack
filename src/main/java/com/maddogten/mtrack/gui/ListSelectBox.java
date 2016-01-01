@@ -2,6 +2,7 @@ package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.information.ShowInfoController;
 import com.maddogten.mtrack.information.show.Directory;
+import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 
 public class ListSelectBox {
     private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
-    private final Stage[] listSelectStages = new Stage[6];
+    private final Stage[] listSelectStages = new Stage[7];
 
     @SuppressWarnings("SameParameterValue")
     public Object[] pickUser(StringProperty message, ArrayList<String> users) {
@@ -85,6 +86,7 @@ public class ListSelectBox {
         buttonLayout.getChildren().addAll(makeLanguageDefault, submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+        buttonLayout.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
@@ -134,6 +136,7 @@ public class ListSelectBox {
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+        buttonLayout.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
@@ -147,6 +150,54 @@ public class ListSelectBox {
         listSelectStages[1].showAndWait();
         listSelectStages[1] = null;
         return userName[0];
+    }
+
+    public void openDirectory(ArrayList<Directory> directories, Stage oldStage) {
+        listSelectStages[6] = new Stage();
+        listSelectStages[6].initOwner(oldStage);
+        listSelectStages[6].initStyle(StageStyle.UNDECORATED);
+        listSelectStages[6].initModality(Modality.APPLICATION_MODAL);
+        GenericMethods.setIcon(listSelectStages[6]);
+        Label label = new Label();
+        label.textProperty().bind(Strings.PickTheFolderYouWantToOpen);
+        label.setPadding(new Insets(0, 0, 5, 0));
+        ObservableList<Directory> directoriesObservable = FXCollections.observableArrayList(directories);
+        directoriesObservable.sorted();
+        ComboBox<Directory> directoryComboBox = new ComboBox<>(directoriesObservable);
+        Button openAllButton = new Button();
+        openAllButton.textProperty().bind(Strings.OpenAll);
+        Button openSelectedButton = new Button();
+        openSelectedButton.textProperty().bind(Strings.OpenSelected);
+        Button exitButton = new Button();
+        exitButton.setText(Strings.ExitButtonText);
+        openAllButton.setOnAction(e -> {
+            FileManager fileManager = new FileManager();
+            directories.forEach(directory -> fileManager.open(directory.getDirectory()));
+            listSelectStages[6].close();
+        });
+        openSelectedButton.setOnAction(event -> {
+            new FileManager().open(directoryComboBox.getValue().getDirectory());
+            listSelectStages[6].close();
+        });
+        exitButton.setOnAction(e -> listSelectStages[6].close());
+        HBox buttonHBox = new HBox();
+        buttonHBox.getChildren().addAll(openAllButton, openSelectedButton, exitButton);
+        buttonHBox.setAlignment(Pos.BOTTOM_CENTER);
+        buttonHBox.setPadding(new Insets(5, 5, 5, 5));
+        buttonHBox.setSpacing(3);
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, directoryComboBox, buttonHBox);
+        layout.setAlignment(Pos.TOP_CENTER);
+        layout.setPadding(new Insets(5, 5, 0, 5));
+        Scene scene = new Scene(layout);
+        listSelectStages[6].setScene(scene);
+        Platform.runLater(() -> {
+            listSelectStages[6].setX(listSelectStages[6].getOwner().getX() + (listSelectStages[6].getOwner().getWidth() / 2) - (listSelectStages[6].getWidth() / 2));
+            listSelectStages[6].setY(listSelectStages[6].getOwner().getY() + (listSelectStages[6].getOwner().getHeight() / 2) - (listSelectStages[6].getHeight() / 2));
+            new MoveStage().moveStage(layout, oldStage);
+        });
+        listSelectStages[6].showAndWait();
+        listSelectStages[6] = null;
     }
 
     public Directory pickDirectory(StringProperty message, ArrayList<Directory> files, Stage oldStage) {
@@ -163,7 +214,7 @@ public class ListSelectBox {
         fileList.sorted();
         ComboBox<Directory> comboBox = new ComboBox<>(fileList);
         Button submit = new Button();
-        submit.textProperty().bind(Strings.Submit);
+        submit.setText("Open Selected");
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty())
@@ -180,6 +231,7 @@ public class ListSelectBox {
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+        buttonLayout.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
@@ -195,7 +247,6 @@ public class ListSelectBox {
         return directory[0];
     }
 
-    @SuppressWarnings("SameParameterValue")
     public int[] pickSeasonEpisode(String aShow, ShowInfoController showInfoController, Stage oldStage) {
         final int[] choice = new int[2];
         listSelectStages[3] = new Stage();
@@ -237,6 +288,7 @@ public class ListSelectBox {
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 5, 5, 5));
+        buttonLayout.setSpacing(3);
         HBox comboBoxLayout = new HBox();
         comboBoxLayout.getChildren().addAll(seasonsComboBox, episodesComboBox);
         comboBoxLayout.setAlignment(Pos.CENTER);
@@ -312,6 +364,7 @@ public class ListSelectBox {
         buttonLayout.getChildren().addAll(makeLanguageDefault, submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+        buttonLayout.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
@@ -356,6 +409,7 @@ public class ListSelectBox {
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
+        buttonLayout.setSpacing(3);
         VBox layout = new VBox();
         layout.getChildren().addAll(label, showComboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);

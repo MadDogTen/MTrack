@@ -35,7 +35,6 @@ public class ShowInfoController {
             showsFile = new HashMap<>();
             log.info("showsFile was loaded blank, No directories found.");
         } else if (directoryController.getDirectories().size() == 1) {
-            //noinspection unchecked
             showsFile = directoryController.getDirectories().get(0).getShows();
             log.info("showsFile was loaded, Only one Directory.");
         } else if (directoryController.getDirectories().size() > 1) {

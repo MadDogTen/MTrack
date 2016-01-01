@@ -74,6 +74,7 @@ public class ChangesBox {
         hBox.getChildren().addAll(clear, close);
         hBox.setAlignment(Pos.CENTER);
         hBox.setPadding(new Insets(12, 12, 12, 12));
+        hBox.setSpacing(3);
         layout.getChildren().addAll(hBox, listView);
         layout.setAlignment(Pos.CENTER);
         Scene scene = new Scene(layout);
@@ -90,7 +91,6 @@ public class ChangesBox {
                         });
                     }
                 }
-                //noinspection ReturnOfNull
                 return null;
             }
         };
