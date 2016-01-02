@@ -40,44 +40,50 @@ public class ChangesBox {
 
     // Displays a stage showing everything contained in the changes String[]. It will automatically updated when changes are found.
     public void openChanges(Stage oldStage) {
-        log.finest("ChangesBox has been opened.");
+        log.finest("openChanges has been opened.");
         if (currentlyOpen) {
             changesStage.toFront();
             changesStage.setX(changesStage.getOwner().getX() + (changesStage.getOwner().getWidth() / 2) - (changesStage.getWidth() / 2));
             changesStage.setY(changesStage.getOwner().getY() + (changesStage.getOwner().getHeight() / 2) - (changesStage.getHeight() / 2));
             return;
         } else currentlyOpen = true;
+
         changesStage = new Stage();
-        GenericMethods.setIcon(changesStage);
         changesStage.initOwner(oldStage);
         changesStage.initStyle(StageStyle.UNDECORATED);
         changesStage.setWidth(Variables.SIZE_WIDTH - 30);
+        GenericMethods.setIcon(changesStage);
+
         ListView<String> listView = new ListView<>();
         listView.setMaxHeight(Variables.SIZE_HEIGHT / 1.5);
         listView.setEditable(false);
+
         ObservableList<String> observableList = FXCollections.observableArrayList();
         final ArrayList<String[]> changes = new ArrayList<>();
         changes.add(0, ChangeReporter.getChanges());
         observableList.addAll(changes.get(0));
         listView.setItems(observableList);
-        Button clear = new Button();
+
+        Button clear = new Button(), close = new Button();
         clear.textProperty().bind(Strings.Clear);
-        Button close = new Button();
         close.textProperty().bind(Strings.Close);
-        VBox layout = new VBox();
         clear.setOnAction(e -> {
             ChangeReporter.resetChanges();
             listView.getItems().clear();
         });
         close.setOnAction(e -> changesStage.close());
-        HBox hBox = new HBox();
-        hBox.getChildren().addAll(clear, close);
-        hBox.setAlignment(Pos.CENTER);
-        hBox.setPadding(new Insets(12, 12, 12, 12));
-        hBox.setSpacing(3);
-        layout.getChildren().addAll(hBox, listView);
+
+        HBox buttonHBox = new HBox();
+        buttonHBox.getChildren().addAll(clear, close);
+        buttonHBox.setAlignment(Pos.CENTER);
+        buttonHBox.setPadding(new Insets(12, 12, 12, 12));
+        buttonHBox.setSpacing(3);
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(buttonHBox, listView);
         layout.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(layout);
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
         Task<Void> task = new Task<Void>() {
             @Override
             public Void call() throws Exception {
@@ -95,14 +101,18 @@ public class ChangesBox {
             }
         };
         new Thread(task).start();
-        changesStage.setScene(scene);
-        Platform.runLater(() -> {
-            changesStage.setX(changesStage.getOwner().getX() + (changesStage.getOwner().getWidth() / 2) - (changesStage.getWidth() / 2));
-            changesStage.setY(changesStage.getOwner().getY() + (changesStage.getOwner().getHeight() / 2) - (changesStage.getHeight() / 2));
-            new MoveStage().moveStage(layout, null);
-        });
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, null));
+
+        changesStage.setScene(new Scene(layout));
+        changesStage.show();
+        changesStage.hide();
+        changesStage.setX(changesStage.getOwner().getX() + (changesStage.getOwner().getWidth() / 2) - (changesStage.getWidth() / 2));
+        changesStage.setY(changesStage.getOwner().getY() + (changesStage.getOwner().getHeight() / 2) - (changesStage.getHeight() / 2));
         changesStage.showAndWait();
+
         currentlyOpen = false;
+        log.finest("openChanges has been closed.");
         changesStage = null;
     }
 }

@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.gui;
 
+import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -14,11 +15,10 @@ import java.util.logging.Logger;
 
 public class AboutBox {
     private static final Logger log = Logger.getLogger(AboutBox.class.getName());
-    private Stage aboutStage;
 
     public void display(Stage oldStage) throws Exception {
-        log.finest("AboutBox has been opened.");
-        aboutStage = new Stage();
+        log.fine("AboutBox has been opened.");
+        Stage aboutStage = new Stage();
         GenericMethods.setIcon(aboutStage);
         aboutStage.initOwner(oldStage);
         aboutStage.initStyle(StageStyle.UNDECORATED);
@@ -28,11 +28,12 @@ public class AboutBox {
         scene.setFill(Color.WHITESMOKE);
         aboutStage.setResizable(false);
         aboutStage.setScene(scene);
-        Platform.runLater(() -> {
-            aboutStage.setX(aboutStage.getOwner().getX() + (aboutStage.getOwner().getWidth() / 2) - (aboutStage.getWidth() / 2));
-            aboutStage.setY(aboutStage.getOwner().getY() + (aboutStage.getOwner().getHeight() / 2) - (aboutStage.getHeight() / 2));
-        });
+        Platform.runLater(() -> new MoveStage().moveStage(root, oldStage));
+        aboutStage.show();
+        aboutStage.hide();
+        aboutStage.setX(aboutStage.getOwner().getX() + (aboutStage.getOwner().getWidth() / 2) - (aboutStage.getWidth() / 2));
+        aboutStage.setY(aboutStage.getOwner().getY() + (aboutStage.getOwner().getHeight() / 2) - (aboutStage.getHeight() / 2));
         aboutStage.showAndWait();
-        aboutStage = null;
+        log.fine("AboutBox has been closed.");
     }
 }

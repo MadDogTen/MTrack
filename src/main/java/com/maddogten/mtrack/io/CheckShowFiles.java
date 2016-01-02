@@ -91,7 +91,7 @@ public class CheckShowFiles {
             if (!recheckShowFileRunning) recheckShowFileRunning = true;
             final double[] percentagePerDirectory = {100};
             if (!directoryController.getDirectories().isEmpty())
-                percentagePerDirectory[0] = 100 / (directoryController.getDirectories().size() + 2);
+                percentagePerDirectory[0] = 100 / directoryController.getDirectories().size();
             // Just so the user knows when it is a directory that is delaying the search, and not the program hanging.
             currentlyCheckingDirectories = true;
             ArrayList<Directory> activeDirectories = directoryController.getActiveDirectories(!forceRun);
@@ -99,10 +99,10 @@ public class CheckShowFiles {
             if (Main.programFullyRunning) {
                 activeDirectories.forEach(aDirectory -> {
                     boolean checkAllShows = forceRun || runNumber % Variables.checkAllNonIgnoredShowsInterval == 0;
-                    double percentagePerShow;
+                    double percentageSplit = percentagePerDirectory[0] / 6, percentagePerShow;
                     if (checkAllShows)
-                        percentagePerShow = percentagePerDirectory[0] / userInfoController.getAllNonIgnoredShows().size();
-                    else percentagePerShow = percentagePerDirectory[0] / userInfoController.getActiveShows().size();
+                        percentagePerShow = (percentageSplit * 4) / userInfoController.getAllNonIgnoredShows().size();
+                    else percentagePerShow = (percentageSplit * 4) / userInfoController.getActiveShows().size();
                     log.info("Directory currently being rechecked: \"" + aDirectory.getDirectory() + "\".");
                     ArrayList<String> removedShows = new ArrayList<>();
                     // Check if any shows were removed.
@@ -120,7 +120,6 @@ public class CheckShowFiles {
                     else
                         updatedShows.addAll(checkShows(aDirectory, fileManager, aDirectory.getDirectory(), percentagePerShow, hasChanged, aDirectory.getShows(), showsToBeChecked, forceRun));
                     if ((Main.programFullyRunning && forceRun) || !stopRunning) {
-                        double percentageSplit = percentagePerDirectory[0] / 2;
                         Map<String, Show> changedShows = hasShowsChanged(aDirectory.getDirectory(), aDirectory.getShows(), percentageSplit, forceRun);
                         if (changedShows.isEmpty()) recheckShowFilePercentage += percentageSplit;
                         else {
@@ -147,12 +146,11 @@ public class CheckShowFiles {
                 });
 
                 if ((Main.programFullyRunning && forceRun) || !stopRunning) {
-                    if ((int) recheckShowFilePercentage == 100)
+                    if (recheckShowFilePercentage > 99 && recheckShowFilePercentage <= 100)
                         log.info("recheckShowFilePercentage was within proper range.");
-                    else {
+                    else
                         log.warning("recheckShowFilePercentage was: \"" + (int) recheckShowFilePercentage + "\" and not 100, Must be an error in the calculation, Please correct.");
-                        recheckShowFilePercentage = 100;
-                    }
+                    recheckShowFilePercentage = 100;
                     if (hasChanged[0] && Main.programFullyRunning) {
                         showInfoController.loadShowsFile();
                         if (!updatedShows.isEmpty())

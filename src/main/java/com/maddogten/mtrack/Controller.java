@@ -73,7 +73,7 @@ public class Controller implements Initializable {
     private Button exit;
     @FXML
     private Button minimize;
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     @FXML
     private TableView<DisplayShows> tableView = new TableView<>();
     @FXML
@@ -234,7 +234,7 @@ public class Controller implements Initializable {
     public static void openSettingsWindow(int tab) {
         settingsWindow.closeSettings();
         try {
-            settingsWindow.display(tab);
+            settingsWindow.settings(tab);
         } catch (Exception e) {
             GenericMethods.printStackTrace(log, e, Controller.class);
         }
@@ -557,16 +557,13 @@ public class Controller implements Initializable {
             if (!settingsWindow.isSettingsOpen()) {
                 settingsTab.setDisable(true);
                 try {
-                    settingsWindow.display(-2);
+                    settingsWindow.settings(-2);
                 } catch (Exception e1) {
                     GenericMethods.printStackTrace(log, e1, this.getClass());
                 }
             }
         });
-
-        // Allow the undecorated stage to be moved.
         new MoveStage().moveStage(tabPane, null);
-
         // Shows an indicator when its rechecking the shows.
         isCurrentlyRecheckingTooltip.textProperty().bind(Strings.CurrentlyRechecking);
         Task<Void> mainTask = new Task<Void>() {

@@ -7,7 +7,6 @@ import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -36,25 +35,30 @@ public class SettingsWindow {
         return stage != null;
     }
 
-    public void display(int tab) throws Exception {
-        log.info("SettingsWindow has been opened.");
+    public void settings(int tab) throws Exception {
+        log.fine("settings has been opened.");
+
         stage = new Stage();
-        stage.initOwner(Main.stage);
-        GenericMethods.setIcon(stage);
-        stage.initStyle(StageStyle.UNDECORATED);
         if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);
-        Pane root = FXMLLoader.load(getClass().getResource("/gui/Settings.fxml"));
-        Scene scene = new Scene(root);
+        stage.initOwner(Main.stage);
+        stage.initStyle(StageStyle.UNDECORATED);
+        GenericMethods.setIcon(stage);
+
+        Scene scene = new Scene(FXMLLoader.load(getClass().getResource("/gui/Settings.fxml")));
         scene.setFill(Color.WHITESMOKE);
         stage.setResizable(false);
         stage.setScene(scene);
-        Platform.runLater(() -> {
-            stage.setX(stage.getOwner().getX() + (stage.getOwner().getWidth() / 2) - (stage.getWidth() / 2));
-            stage.setY(stage.getOwner().getY() + (stage.getOwner().getHeight() / 2) - (stage.getHeight() / 2));
-            if (tab != -2) Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab);
-        });
+
+        if (tab != -2)
+            Platform.runLater(() -> Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab));
+
+        stage.show();
+        stage.hide();
+        stage.setX(stage.getOwner().getX() + (stage.getOwner().getWidth() / 2) - (stage.getWidth() / 2));
+        stage.setY(stage.getOwner().getY() + (stage.getOwner().getHeight() / 2) - (stage.getHeight() / 2));
         stage.showAndWait();
+
+        log.fine("settings has been closed.");
         stage = null;
-        log.info("SettingsWindow has been closed.");
     }
 }

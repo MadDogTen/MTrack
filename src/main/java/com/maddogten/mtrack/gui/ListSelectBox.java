@@ -39,42 +39,46 @@ import java.util.stream.Collectors;
 
 public class ListSelectBox {
     private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
-    private final Stage[] listSelectStages = new Stage[7];
 
     @SuppressWarnings("SameParameterValue")
     public Object[] pickUser(StringProperty message, ArrayList<String> users) {
-        Object[] result = new Object[]{Strings.DefaultUsername, false};
-        listSelectStages[0] = new Stage();
-        listSelectStages[0].getIcons().add(GenericMethods.getImage(Variables.Logo));
-        listSelectStages[0].initStyle(StageStyle.UNDECORATED);
-        listSelectStages[0].initModality(Modality.APPLICATION_MODAL);
-        listSelectStages[0].setMinWidth(250);
+        log.fine("pickUser has been opened.");
+
+        Stage pickUserStage = new Stage();
+        pickUserStage.initStyle(StageStyle.UNDECORATED);
+        pickUserStage.initModality(Modality.APPLICATION_MODAL);
+        pickUserStage.setMinWidth(250);
+        GenericMethods.setIcon(pickUserStage);
+
         Label label = new Label();
         label.textProperty().bind(message);
         log.info(String.valueOf(users));
+
         ObservableList<String> usersList = FXCollections.observableArrayList(users);
         usersList.sorted();
         usersList.add(Strings.AddNewUsername.getValue());
         ComboBox<String> comboBox = new ComboBox<>(usersList);
         comboBox.setValue(Strings.AddNewUsername.getValue());
-        Button submit = new Button();
+
+        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
         submit.textProperty().bind(Strings.Submit);
+        Object[] result = new Object[]{Strings.DefaultUsername, false};
         submit.setOnAction(e -> {
             if (comboBox.getValue().contentEquals(Strings.AddNewUsername.getValue())) {
-                result[0] = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, users, listSelectStages[0]);
+                result[0] = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, users, pickUserStage);
                 if (!result[0].toString().isEmpty()) {
-                    listSelectStages[0].close();
+                    pickUserStage.close();
                 }
             } else if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 result[0] = comboBox.getValue();
-                listSelectStages[0].close();
+                pickUserStage.close();
             }
         });
-        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             result[0] = Strings.AddNewUsername.getValue();
-            listSelectStages[0].close();
+            pickUserStage.close();
         });
+
         CheckBox makeLanguageDefault = new CheckBox();
         makeLanguageDefault.setPadding(new Insets(0, 6, 0, 0));
         Tooltip makeLanguageDefaultTooltip = new Tooltip();
@@ -82,181 +86,215 @@ public class ListSelectBox {
         makeLanguageDefaultTooltip.textProperty().bind(Strings.MakeUserDefault);
         makeLanguageDefault.setTooltip(makeLanguageDefaultTooltip);
         makeLanguageDefault.setOnAction(e -> result[1] = !(boolean) result[1]);
+
         HBox buttonLayout = new HBox();
         buttonLayout.getChildren().addAll(makeLanguageDefault, submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
         buttonLayout.setSpacing(3);
+
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
-        listSelectStages[0].setScene(scene);
+        pickUserStage.setScene(scene);
+
         Platform.runLater(() -> new MoveStage().moveStage(layout, null));
-        listSelectStages[0].showAndWait();
-        listSelectStages[0] = null;
+
+        pickUserStage.showAndWait();
+
+        log.fine("pickUser has been Closed.");
         return result;
     }
 
     public String pickDefaultUser(StringProperty message, ArrayList<String> users, String currentDefaultUser, Stage oldStage) {
-        final String[] userName = new String[1];
-        userName[0] = Strings.EmptyString;
-        listSelectStages[1] = new Stage();
-        GenericMethods.setIcon(listSelectStages[1]);
-        listSelectStages[1].initOwner(oldStage);
-        listSelectStages[1].initStyle(StageStyle.UNDECORATED);
-        listSelectStages[1].initModality(Modality.APPLICATION_MODAL);
-        listSelectStages[1].setMinWidth(250);
+        log.fine("pickDefaultUser has been opened.");
+
+        Stage pickDefaultUserStage = new Stage();
+        pickDefaultUserStage.initOwner(oldStage);
+        pickDefaultUserStage.initStyle(StageStyle.UNDECORATED);
+        pickDefaultUserStage.initModality(Modality.APPLICATION_MODAL);
+        pickDefaultUserStage.setMinWidth(250);
+        GenericMethods.setIcon(pickDefaultUserStage);
+
         Label label = new Label();
         label.textProperty().bind(message);
+
         ObservableList<String> usersList = FXCollections.observableArrayList(users);
         usersList.sorted();
         ComboBox<String> comboBox = new ComboBox<>(usersList);
         if (currentDefaultUser != null && !currentDefaultUser.isEmpty()) comboBox.setValue(currentDefaultUser);
-        Button submit = new Button();
+
+        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
         submit.textProperty().bind(Strings.Submit);
+        final String[] userName = new String[]{Strings.EmptyString};
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
-                    new MessageBox().message(new StringProperty[]{Strings.DefaultUserNotSet}, listSelectStages[1]);
-                    listSelectStages[1].close();
+                    new MessageBox().message(new StringProperty[]{Strings.DefaultUserNotSet}, pickDefaultUserStage);
+                    pickDefaultUserStage.close();
                 } else {
                     userName[0] = comboBox.getValue();
-                    listSelectStages[1].close();
+                    pickDefaultUserStage.close();
                 }
             }
         });
-        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             userName[0] = null;
-            listSelectStages[1].close();
+            pickDefaultUserStage.close();
         });
+
         HBox buttonLayout = new HBox();
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
         buttonLayout.setSpacing(3);
+
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(layout);
-        listSelectStages[1].setScene(scene);
-        Platform.runLater(() -> {
-            listSelectStages[1].setX(listSelectStages[1].getOwner().getX() + (listSelectStages[1].getOwner().getWidth() / 2) - (listSelectStages[1].getWidth() / 2));
-            listSelectStages[1].setY(listSelectStages[1].getOwner().getY() + (listSelectStages[1].getOwner().getHeight() / 2) - (listSelectStages[1].getHeight() / 2));
-            new MoveStage().moveStage(layout, oldStage);
-        });
-        listSelectStages[1].showAndWait();
-        listSelectStages[1] = null;
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+
+        pickDefaultUserStage.setScene(new Scene(layout));
+        pickDefaultUserStage.show();
+        pickDefaultUserStage.hide();
+        pickDefaultUserStage.setX(pickDefaultUserStage.getOwner().getX() + (pickDefaultUserStage.getOwner().getWidth() / 2) - (pickDefaultUserStage.getWidth() / 2));
+        pickDefaultUserStage.setY(pickDefaultUserStage.getOwner().getY() + (pickDefaultUserStage.getOwner().getHeight() / 2) - (pickDefaultUserStage.getHeight() / 2));
+        pickDefaultUserStage.showAndWait();
+
+        log.fine("pickDefaultUser has been closed.");
         return userName[0];
     }
 
     public void openDirectory(ArrayList<Directory> directories, Stage oldStage) {
-        listSelectStages[6] = new Stage();
-        listSelectStages[6].initOwner(oldStage);
-        listSelectStages[6].initStyle(StageStyle.UNDECORATED);
-        listSelectStages[6].initModality(Modality.APPLICATION_MODAL);
-        GenericMethods.setIcon(listSelectStages[6]);
+        log.fine("openDirectory has been opened.");
+
+        Stage openDirectoryStage = new Stage();
+        openDirectoryStage.initOwner(oldStage);
+        openDirectoryStage.initStyle(StageStyle.UNDECORATED);
+        openDirectoryStage.initModality(Modality.APPLICATION_MODAL);
+        GenericMethods.setIcon(openDirectoryStage);
+
         Label label = new Label();
         label.textProperty().bind(Strings.PickTheFolderYouWantToOpen);
         label.setPadding(new Insets(0, 0, 5, 0));
+
         ObservableList<Directory> directoriesObservable = FXCollections.observableArrayList(directories);
         directoriesObservable.sorted();
         ComboBox<Directory> directoryComboBox = new ComboBox<>(directoriesObservable);
-        Button openAllButton = new Button();
+
+        Button openAllButton = new Button(), openSelectedButton = new Button(), exitButton = new Button();
         openAllButton.textProperty().bind(Strings.OpenAll);
-        Button openSelectedButton = new Button();
         openSelectedButton.textProperty().bind(Strings.OpenSelected);
-        Button exitButton = new Button();
         exitButton.setText(Strings.ExitButtonText);
         openAllButton.setOnAction(e -> {
             FileManager fileManager = new FileManager();
             directories.forEach(directory -> fileManager.open(directory.getDirectory()));
-            listSelectStages[6].close();
+            openDirectoryStage.close();
         });
         openSelectedButton.setOnAction(event -> {
             new FileManager().open(directoryComboBox.getValue().getDirectory());
-            listSelectStages[6].close();
+            openDirectoryStage.close();
         });
-        exitButton.setOnAction(e -> listSelectStages[6].close());
+        exitButton.setOnAction(e -> openDirectoryStage.close());
+
         HBox buttonHBox = new HBox();
         buttonHBox.getChildren().addAll(openAllButton, openSelectedButton, exitButton);
         buttonHBox.setAlignment(Pos.BOTTOM_CENTER);
         buttonHBox.setPadding(new Insets(5, 5, 5, 5));
         buttonHBox.setSpacing(3);
+
         VBox layout = new VBox();
         layout.getChildren().addAll(label, directoryComboBox, buttonHBox);
         layout.setAlignment(Pos.TOP_CENTER);
-        layout.setPadding(new Insets(5, 5, 0, 5));
-        Scene scene = new Scene(layout);
-        listSelectStages[6].setScene(scene);
-        Platform.runLater(() -> {
-            listSelectStages[6].setX(listSelectStages[6].getOwner().getX() + (listSelectStages[6].getOwner().getWidth() / 2) - (listSelectStages[6].getWidth() / 2));
-            listSelectStages[6].setY(listSelectStages[6].getOwner().getY() + (listSelectStages[6].getOwner().getHeight() / 2) - (listSelectStages[6].getHeight() / 2));
-            new MoveStage().moveStage(layout, oldStage);
-        });
-        listSelectStages[6].showAndWait();
-        listSelectStages[6] = null;
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+
+        openDirectoryStage.setScene(new Scene(layout));
+        openDirectoryStage.show();
+        openDirectoryStage.hide();
+        openDirectoryStage.setX(openDirectoryStage.getOwner().getX() + (openDirectoryStage.getOwner().getWidth() / 2) - (openDirectoryStage.getWidth() / 2));
+        openDirectoryStage.setY(openDirectoryStage.getOwner().getY() + (openDirectoryStage.getOwner().getHeight() / 2) - (openDirectoryStage.getHeight() / 2));
+        openDirectoryStage.showAndWait();
+
+        log.fine("openDirectory has been closed.");
     }
 
     public Directory pickDirectory(StringProperty message, ArrayList<Directory> files, Stage oldStage) {
-        final Directory[] directory = new Directory[1];
-        listSelectStages[2] = new Stage();
-        GenericMethods.setIcon(listSelectStages[2]);
-        listSelectStages[2].initOwner(oldStage);
-        listSelectStages[2].initStyle(StageStyle.UNDECORATED);
-        listSelectStages[2].initModality(Modality.APPLICATION_MODAL);
-        listSelectStages[2].setMinWidth(250);
+        log.fine("pickDirectory has been opened.");
+
+        Stage pickDirectoryStage = new Stage();
+        pickDirectoryStage.initOwner(oldStage);
+        pickDirectoryStage.initStyle(StageStyle.UNDECORATED);
+        pickDirectoryStage.initModality(Modality.APPLICATION_MODAL);
+        pickDirectoryStage.setMinWidth(250);
+        GenericMethods.setIcon(pickDirectoryStage);
+
         Label label = new Label();
         label.textProperty().bind(message);
+
         ObservableList<Directory> fileList = FXCollections.observableArrayList(files);
         fileList.sorted();
         ComboBox<Directory> comboBox = new ComboBox<>(fileList);
-        Button submit = new Button();
+
+        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
         submit.setText("Open Selected");
+        final Directory[] directory = new Directory[1];
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty())
-                    new MessageBox().message(new StringProperty[]{Strings.PleaseChooseAFolder}, listSelectStages[2]);
+                    new MessageBox().message(new StringProperty[]{Strings.PleaseChooseAFolder}, pickDirectoryStage);
                 else {
                     directory[0] = comboBox.getValue();
-                    listSelectStages[2].close();
+                    pickDirectoryStage.close();
                 }
             }
         });
-        Button exit = new Button(Strings.ExitButtonText);
-        exit.setOnAction(e -> listSelectStages[2].close());
+        exit.setOnAction(e -> pickDirectoryStage.close());
+
         HBox buttonLayout = new HBox();
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
         buttonLayout.setSpacing(3);
+
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(layout);
-        listSelectStages[2].setScene(scene);
-        Platform.runLater(() -> {
-            listSelectStages[2].setX(listSelectStages[2].getOwner().getX() + (listSelectStages[2].getOwner().getWidth() / 2) - (listSelectStages[2].getWidth() / 2));
-            listSelectStages[2].setY(listSelectStages[2].getOwner().getY() + (listSelectStages[2].getOwner().getHeight() / 2) - (listSelectStages[2].getHeight() / 2));
-            new MoveStage().moveStage(layout, oldStage);
-        });
-        listSelectStages[2].showAndWait();
-        listSelectStages[2] = null;
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+
+        pickDirectoryStage.setScene(new Scene(layout));
+        pickDirectoryStage.show();
+        pickDirectoryStage.hide();
+        pickDirectoryStage.setX(pickDirectoryStage.getOwner().getX() + (pickDirectoryStage.getOwner().getWidth() / 2) - (pickDirectoryStage.getWidth() / 2));
+        pickDirectoryStage.setY(pickDirectoryStage.getOwner().getY() + (pickDirectoryStage.getOwner().getHeight() / 2) - (pickDirectoryStage.getHeight() / 2));
+        pickDirectoryStage.showAndWait();
+
+        log.fine("pickDirectory has been closed.");
         return directory[0];
     }
 
     public int[] pickSeasonEpisode(String aShow, ShowInfoController showInfoController, Stage oldStage) {
-        final int[] choice = new int[2];
-        listSelectStages[3] = new Stage();
-        listSelectStages[3].initOwner(oldStage);
-        listSelectStages[3].getIcons().add(GenericMethods.getImage(Variables.Logo));
-        listSelectStages[3].initStyle(StageStyle.UNDECORATED);
-        listSelectStages[3].initModality(Modality.APPLICATION_MODAL);
-        listSelectStages[3].setMinWidth(250);
+        log.fine("pickSeasonEpisode has been opened.");
+
+        Stage pickSeasonEpisodeStage = new Stage();
+        pickSeasonEpisodeStage.initOwner(oldStage);
+        pickSeasonEpisodeStage.initStyle(StageStyle.UNDECORATED);
+        pickSeasonEpisodeStage.initModality(Modality.APPLICATION_MODAL);
+        pickSeasonEpisodeStage.setMinWidth(250);
+        GenericMethods.setIcon(pickSeasonEpisodeStage);
+
         Label label = new Label();
         label.textProperty().bind(Strings.PickTheSeasonAndEpisode);
+
         ArrayList<Integer> seasonsString = new ArrayList<>();
         seasonsString.addAll(showInfoController.getSeasonsList(aShow).stream().collect(Collectors.toList()));
         Collections.sort(seasonsString);
@@ -266,43 +304,47 @@ public class ListSelectBox {
         ObservableList<Integer> episodesList = FXCollections.observableArrayList(episodesArrayList);
         ComboBox<Integer> episodesComboBox = new ComboBox<>(episodesList);
         episodesComboBox.setDisable(true);
-        Button submit = new Button();
+
+        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
         submit.textProperty().bind(Strings.Submit);
+        final int[] choice = new int[2];
         submit.setOnAction(e -> {
             if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty()) {
                 if (episodesComboBox.getValue() != null && !episodesComboBox.getValue().toString().isEmpty()) {
                     choice[0] = seasonsComboBox.getValue();
                     choice[1] = episodesComboBox.getValue();
-                    listSelectStages[3].close();
+                    pickSeasonEpisodeStage.close();
                 } else
-                    new MessageBox().message(new StringProperty[]{Strings.YouHaveToPickAEpisode}, listSelectStages[3]);
-            } else new MessageBox().message(new StringProperty[]{Strings.YouHaveToPickASeason}, listSelectStages[3]);
+                    new MessageBox().message(new StringProperty[]{Strings.YouHaveToPickAEpisode}, pickSeasonEpisodeStage);
+            } else new MessageBox().message(new StringProperty[]{Strings.YouHaveToPickASeason}, pickSeasonEpisodeStage);
         });
-        Button exit = new Button(Strings.ExitButtonText);
         exit.setOnAction(e -> {
             choice[0] = -1;
             choice[1] = -1;
-            listSelectStages[3].close();
+            pickSeasonEpisodeStage.close();
         });
+
         HBox buttonLayout = new HBox();
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 5, 5, 5));
         buttonLayout.setSpacing(3);
+
         HBox comboBoxLayout = new HBox();
         comboBoxLayout.getChildren().addAll(seasonsComboBox, episodesComboBox);
         comboBoxLayout.setAlignment(Pos.CENTER);
         comboBoxLayout.setPadding(new Insets(5, 5, 0, 5));
+
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBoxLayout, buttonLayout);
         layout.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(layout);
-        listSelectStages[3].setScene(scene);
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
         final int[] oldValue = {-1};
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                while (listSelectStages[3].isShowing()) {
+                while (pickSeasonEpisodeStage.isShowing()) {
                     if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty() && seasonsComboBox.getValue() != oldValue[0]) {
                         oldValue[0] = seasonsComboBox.getValue();
                         episodesArrayList.clear();
@@ -318,41 +360,52 @@ public class ListSelectBox {
                 return null;
             }
         };
+
         Platform.runLater(() -> {
-            listSelectStages[3].setX(listSelectStages[3].getOwner().getX() + (listSelectStages[3].getOwner().getWidth() / 2) - (listSelectStages[3].getWidth() / 2));
-            listSelectStages[3].setY(listSelectStages[3].getOwner().getY() + (listSelectStages[3].getOwner().getHeight() / 2) - (listSelectStages[3].getHeight() / 2));
             new MoveStage().moveStage(layout, oldStage);
             new Thread(task).start();
         });
-        listSelectStages[3].showAndWait();
-        listSelectStages[3] = null;
+
+        pickSeasonEpisodeStage.setScene(new Scene(layout));
+        pickSeasonEpisodeStage.show();
+        pickSeasonEpisodeStage.hide();
+        pickSeasonEpisodeStage.setX(pickSeasonEpisodeStage.getOwner().getX() + (pickSeasonEpisodeStage.getOwner().getWidth() / 2) - (pickSeasonEpisodeStage.getWidth() / 2));
+        pickSeasonEpisodeStage.setY(pickSeasonEpisodeStage.getOwner().getY() + (pickSeasonEpisodeStage.getOwner().getHeight() / 2) - (pickSeasonEpisodeStage.getHeight() / 2));
+        pickSeasonEpisodeStage.showAndWait();
+
+        log.fine("pickSeasonEpisode has been closed.");
         return choice;
     }
 
     public Object[] pickLanguage(Collection<String> languages, Stage oldStage) {
-        Object[] result = {"-2", false};
-        listSelectStages[4] = new Stage();
-        if (oldStage != null) listSelectStages[4].initOwner(oldStage);
-        listSelectStages[4].getIcons().add(GenericMethods.getImage(Variables.Logo));
-        listSelectStages[4].initStyle(StageStyle.UNDECORATED);
-        listSelectStages[4].initModality(Modality.APPLICATION_MODAL);
-        listSelectStages[4].setMinWidth(250);
+        log.fine("pickLanguage has been opened.");
+
+        Stage pickLanguageStage = new Stage();
+        if (oldStage != null) pickLanguageStage.initOwner(oldStage);
+        pickLanguageStage.getIcons().add(GenericMethods.getImage(Variables.Logo));
+        pickLanguageStage.initStyle(StageStyle.UNDECORATED);
+        pickLanguageStage.initModality(Modality.APPLICATION_MODAL);
+        pickLanguageStage.setMinWidth(250);
+
         Label label = new Label();
         label.textProperty().bind(Strings.PleaseChooseYourLanguage);
+
         log.info(String.valueOf(languages));
         ObservableList<String> languageList = FXCollections.observableArrayList(languages);
         languageList.sorted();
         ComboBox<String> comboBox = new ComboBox<>(languageList);
-        Button submit = new Button();
+
+        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
         submit.textProperty().bind(Strings.Submit);
+        Object[] result = {"-2", false};
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null && !comboBox.getValue().isEmpty()) {
                 result[0] = comboBox.getValue();
-                listSelectStages[4].close();
+                pickLanguageStage.close();
             }
         });
-        Button exit = new Button(Strings.ExitButtonText);
-        exit.setOnAction(e -> listSelectStages[4].close());
+        exit.setOnAction(e -> pickLanguageStage.close());
+
         CheckBox makeLanguageDefault = new CheckBox();
         makeLanguageDefault.setPadding(new Insets(0, 6, 0, 0));
         Tooltip makeLanguageDefaultTooltip = new Tooltip();
@@ -360,67 +413,83 @@ public class ListSelectBox {
         makeLanguageDefaultTooltip.textProperty().bind(Strings.MakeLanguageDefault);
         makeLanguageDefault.setTooltip(makeLanguageDefaultTooltip);
         makeLanguageDefault.setOnAction(e -> result[1] = !(boolean) result[1]);
+
         HBox buttonLayout = new HBox();
         buttonLayout.getChildren().addAll(makeLanguageDefault, submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
         buttonLayout.setSpacing(3);
+
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
-        listSelectStages[4].setScene(scene);
-        Platform.runLater(() -> {
-            if (listSelectStages[4].getOwner() != null) {
-                listSelectStages[4].setX(listSelectStages[4].getOwner().getX() + (listSelectStages[4].getOwner().getWidth() / 2) - (listSelectStages[4].getWidth() / 2));
-                listSelectStages[4].setY(listSelectStages[4].getOwner().getY() + (listSelectStages[4].getOwner().getHeight() / 2) - (listSelectStages[4].getHeight() / 2));
-            }
-            new MoveStage().moveStage(layout, oldStage);
-        });
-        listSelectStages[4].showAndWait();
-        listSelectStages[4] = null;
+        pickLanguageStage.setScene(scene);
+        pickLanguageStage.show();
+        pickLanguageStage.hide();
+        if (pickLanguageStage.getOwner() != null) {
+            pickLanguageStage.setX(pickLanguageStage.getOwner().getX() + (pickLanguageStage.getOwner().getWidth() / 2) - (pickLanguageStage.getWidth() / 2));
+            pickLanguageStage.setY(pickLanguageStage.getOwner().getY() + (pickLanguageStage.getOwner().getHeight() / 2) - (pickLanguageStage.getHeight() / 2));
+        }
+        pickLanguageStage.showAndWait();
+
+        log.fine("pickLanguage has been closed.");
         return result;
     }
 
     public String pickShow(ArrayList<String> shows, Stage oldStage) {
-        String[] returnShow = {Strings.EmptyString};
-        listSelectStages[5] = new Stage();
-        listSelectStages[5].initOwner(oldStage);
-        listSelectStages[5].getIcons().add(GenericMethods.getImage(Variables.Logo));
-        listSelectStages[5].initStyle(StageStyle.UNDECORATED);
-        listSelectStages[5].initModality(Modality.APPLICATION_MODAL);
+        log.fine("pickShow has been opened.");
+
+        Stage pickShowStage = new Stage();
+        pickShowStage.initOwner(oldStage);
+        pickShowStage.initStyle(StageStyle.UNDECORATED);
+        pickShowStage.initModality(Modality.APPLICATION_MODAL);
+        GenericMethods.setIcon(pickShowStage);
+
         Label label = new Label();
         label.textProperty().bind(Strings.PickShowToUnHide);
+
         ObservableList<String> showsList = FXCollections.observableList(shows);
         showsList.sorted();
         ComboBox<String> showComboBox = new ComboBox<>(showsList);
-        Button submit = new Button();
+
+        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
         submit.textProperty().bind(Strings.Submit);
+        String[] returnShow = {Strings.EmptyString};
         submit.setOnAction(e -> {
             if (showComboBox.getValue() != null && !showComboBox.getValue().isEmpty()) {
                 returnShow[0] = showComboBox.getValue();
-                listSelectStages[5].close();
+                pickShowStage.close();
             }
         });
-        Button exit = new Button(Strings.ExitButtonText);
-        exit.setOnAction(e -> listSelectStages[5].close());
+        exit.setOnAction(e -> pickShowStage.close());
+
         HBox buttonLayout = new HBox();
         buttonLayout.getChildren().addAll(submit, exit);
         buttonLayout.setAlignment(Pos.CENTER);
         buttonLayout.setPadding(new Insets(5, 0, 0, 0));
         buttonLayout.setSpacing(3);
+
         VBox layout = new VBox();
         layout.getChildren().addAll(label, showComboBox, buttonLayout);
         layout.setAlignment(Pos.CENTER);
-        listSelectStages[5].setScene(new Scene(layout));
-        Platform.runLater(() -> {
-            listSelectStages[5].setX(listSelectStages[5].getX() + (listSelectStages[5].getWidth() / 2) - (listSelectStages[5].getWidth() / 2));
-            listSelectStages[5].setY(listSelectStages[5].getY() + (listSelectStages[5].getHeight() / 2) - (listSelectStages[5].getHeight() / 2));
-            new MoveStage().moveStage(layout, oldStage);
-        });
-        listSelectStages[5].showAndWait();
-        listSelectStages[5] = null;
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+
+        pickShowStage.setScene(new Scene(layout));
+        pickShowStage.show();
+        pickShowStage.hide();
+        pickShowStage.setX(pickShowStage.getX() + (pickShowStage.getWidth() / 2) - (pickShowStage.getWidth() / 2));
+        pickShowStage.setY(pickShowStage.getY() + (pickShowStage.getHeight() / 2) - (pickShowStage.getHeight() / 2));
+        pickShowStage.showAndWait();
+
+        log.fine("pickShow has been closed.");
         return returnShow[0];
     }
 }

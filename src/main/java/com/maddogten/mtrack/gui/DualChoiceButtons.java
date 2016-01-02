@@ -25,18 +25,20 @@ import java.util.logging.Logger;
 
 public class DualChoiceButtons {
     private static final Logger log = Logger.getLogger(DualChoiceButtons.class.getName());
-    private Stage dualChoiceStage;
 
     @SuppressWarnings("SameParameterValue")
     public StringProperty dualChoiceButton(StringProperty message, StringProperty message2, StringProperty choice1, StringProperty choice2, String tooltip1, String tooltip2) {
-        log.finest("DualChoiceButtons has been ran.");
-        dualChoiceStage = new Stage();
-        GenericMethods.setIcon(dualChoiceStage);
+        log.fine("dualChoiceButtons has been opened.");
+
+        Stage dualChoiceStage = new Stage();
         dualChoiceStage.initStyle(StageStyle.UNDECORATED);
         dualChoiceStage.initModality(Modality.APPLICATION_MODAL);
+        GenericMethods.setIcon(dualChoiceStage);
+
         Label label = new Label();
         label.textProperty().bind(message);
         label.setPadding(new Insets(0, 0, 4, 0));
+
         Button button1 = new Button(), button2 = new Button();
         button1.textProperty().bind(choice1);
         button2.textProperty().bind(choice2);
@@ -49,20 +51,22 @@ public class DualChoiceButtons {
             answer[0] = choice2;
             dualChoiceStage.close();
         });
+
         if (!tooltip1.isEmpty() && !tooltip2.isEmpty()) {
             button1.setTooltip(new Tooltip(tooltip1));
             button2.setTooltip(new Tooltip(tooltip2));
         }
-        VBox button1Box = new VBox();
-        button1Box.getChildren().add(button1);
-        button1Box.setPadding(new Insets(0, 3, 0, 0));
-        VBox button2Box = new VBox();
-        button2Box.getChildren().add(button2);
-        button2Box.setPadding(new Insets(0, 0, 0, 3));
+
+        VBox buttonVBox1 = new VBox(), buttonVBox2 = new VBox(), mainLayout = new VBox();
+        buttonVBox1.getChildren().add(button1);
+        buttonVBox1.setPadding(new Insets(0, 3, 0, 0));
+        buttonVBox2.getChildren().add(button2);
+        buttonVBox2.setPadding(new Insets(0, 0, 0, 3));
+
         HBox layout = new HBox();
-        layout.getChildren().addAll(button1Box, button2Box);
+        layout.getChildren().addAll(buttonVBox1, buttonVBox2);
         layout.setAlignment(Pos.CENTER);
-        VBox mainLayout = new VBox();
+
         if (message2.getValue().isEmpty()) mainLayout.getChildren().addAll(label, layout);
         else {
             Label label1 = new Label();
@@ -72,12 +76,16 @@ public class DualChoiceButtons {
             vBox.setAlignment(Pos.CENTER);
             mainLayout.getChildren().addAll(vBox, layout);
         }
+
         mainLayout.setPadding(new Insets(6, 6, 6, 6));
-        Scene scene = new Scene(mainLayout);
-        dualChoiceStage.setScene(scene);
+
         Platform.runLater(() -> new MoveStage().moveStage(layout, null));
+
+        dualChoiceStage.setScene(new Scene(mainLayout));
+
         dualChoiceStage.showAndWait();
-        dualChoiceStage = null;
+
+        log.fine("dualChoiceButtons has been closed.");
         return answer[0];
     }
 }

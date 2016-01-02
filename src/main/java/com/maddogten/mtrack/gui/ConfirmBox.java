@@ -24,17 +24,19 @@ import java.util.logging.Logger;
 
 public class ConfirmBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
-    private Stage confirmStage;
 
     public boolean confirm(StringProperty message, Stage oldStage) {
-        log.finest("ConfirmBox has been ran.");
-        confirmStage = new Stage();
-        GenericMethods.setIcon(confirmStage);
+        log.finest("confirm has been opened.");
+
+        Stage confirmStage = new Stage();
         confirmStage.initOwner(oldStage);
         confirmStage.initStyle(StageStyle.UNDECORATED);
         confirmStage.initModality(Modality.APPLICATION_MODAL);
+        GenericMethods.setIcon(confirmStage);
+
         Label label = new Label();
         label.textProperty().bind(message);
+
         Button yesButton = new Button(), noButton = new Button();
         yesButton.textProperty().bind(Strings.Yes);
         noButton.textProperty().bind(Strings.No);
@@ -51,26 +53,30 @@ public class ConfirmBox {
             answer[0] = false;
             confirmStage.close();
         });
-        HBox layout2 = new HBox();
-        layout2.getChildren().addAll(yesButton, noButton);
-        layout2.setAlignment(Pos.CENTER);
-        layout2.setPadding(new Insets(4, 6, 6, 6));
-        layout2.setSpacing(3);
+
+        HBox buttonHBox = new HBox();
+        buttonHBox.getChildren().addAll(yesButton, noButton);
+        buttonHBox.setAlignment(Pos.CENTER);
+        buttonHBox.setPadding(new Insets(4, 6, 6, 6));
+        buttonHBox.setSpacing(3);
+
         VBox layout = new VBox();
-        layout.getChildren().addAll(label, layout2);
+        layout.getChildren().addAll(label, buttonHBox);
         layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(6, 0, 0, 0));
-        Scene scene = new Scene(layout);
-        confirmStage.setScene(scene);
-        Platform.runLater(() -> {
-            if (confirmStage.getOwner() != null) {
-                confirmStage.setX(confirmStage.getOwner().getX() + (confirmStage.getOwner().getWidth() / 2) - (confirmStage.getWidth() / 2));
-                confirmStage.setY(confirmStage.getOwner().getY() + (confirmStage.getOwner().getHeight() / 2) - (confirmStage.getHeight() / 2));
-            }
-            new MoveStage().moveStage(layout, oldStage);
-        });
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+
+        confirmStage.setScene(new Scene(layout));
+        confirmStage.show();
+        confirmStage.hide();
+        if (confirmStage.getOwner() != null) {
+            confirmStage.setX(confirmStage.getOwner().getX() + (confirmStage.getOwner().getWidth() / 2) - (confirmStage.getWidth() / 2));
+            confirmStage.setY(confirmStage.getOwner().getY() + (confirmStage.getOwner().getHeight() / 2) - (confirmStage.getHeight() / 2));
+        }
         confirmStage.showAndWait();
-        confirmStage = null;
+
+        log.finest("confirm has been closed.");
         return answer[0];
     }
 }

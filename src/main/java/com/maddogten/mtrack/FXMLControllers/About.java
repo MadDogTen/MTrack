@@ -1,6 +1,5 @@
 package com.maddogten.mtrack.FXMLControllers;
 
-import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.fxml.FXML;
@@ -63,7 +62,5 @@ public class About implements Initializable {
             Stage stage = (Stage) pane.getScene().getWindow();
             stage.close();
         });
-        // Allows the undecorated stage to be moved.
-        new MoveStage().moveStage(pane, null);
     }
 }

@@ -577,7 +577,6 @@ public class Settings implements Initializable {
             }
             setButtonDisable(deleteEverythingAndClose, null, false);
         });
-        // Allow the undecorated stage to be moved.
         new MoveStage().moveStage(tabPane, Main.stage);
     }
 

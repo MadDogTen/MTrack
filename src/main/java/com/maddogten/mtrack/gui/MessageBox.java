@@ -23,15 +23,16 @@ import java.util.logging.Logger;
 
 public class MessageBox {
     private final Logger log = Logger.getLogger(MessageBox.class.getName());
-    private Stage messageStage;
 
     public void message(StringProperty[] message, Stage oldStage) {
-        log.finest("MessageBox has been opened.");
-        messageStage = new Stage();
-        GenericMethods.setIcon(messageStage);
+        log.fine("message has been opened.");
+
+        Stage messageStage = new Stage();
         if (oldStage != null) messageStage.initOwner(oldStage);
         messageStage.initStyle(StageStyle.UNDECORATED);
         messageStage.initModality(Modality.APPLICATION_MODAL);
+        GenericMethods.setIcon(messageStage);
+
         VBox layout = new VBox();
         if (message.length == 1) {
             Label messageLabel = new Label();
@@ -44,24 +45,28 @@ public class MessageBox {
                 layout.getChildren().add(messageLabel);
             }
         }
+
         Button close = new Button();
         close.textProperty().bind(Strings.Close);
         close.setMinHeight(20);
         close.setMinWidth(30);
         close.setOnAction(e -> messageStage.close());
+
         layout.getChildren().add(close);
         layout.setAlignment(Pos.CENTER);
-        layout.setPadding(new Insets(6, 0, 0, 0));
-        Scene scene = new Scene(layout);
-        messageStage.setScene(scene);
-        Platform.runLater(() -> {
-            if (messageStage.getOwner() != null) {
-                messageStage.setX(messageStage.getOwner().getX() + (messageStage.getOwner().getWidth() / 2) - (messageStage.getWidth() / 2));
-                messageStage.setY(messageStage.getOwner().getY() + (messageStage.getOwner().getHeight() / 2) - (messageStage.getHeight() / 2));
-            }
-            new MoveStage().moveStage(layout, oldStage);
-        });
+        layout.setPadding(new Insets(6, 6, 6, 6));
+
+        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+
+        messageStage.setScene(new Scene(layout));
+        messageStage.show();
+        messageStage.hide();
+        if (messageStage.getOwner() != null) {
+            messageStage.setX(messageStage.getOwner().getX() + (messageStage.getOwner().getWidth() / 2) - (messageStage.getWidth() / 2));
+            messageStage.setY(messageStage.getOwner().getY() + (messageStage.getOwner().getHeight() / 2) - (messageStage.getHeight() / 2));
+        }
         messageStage.showAndWait();
-        messageStage = null;
+
+        log.fine("message has been closed.");
     }
 }
