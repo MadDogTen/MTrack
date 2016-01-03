@@ -3,6 +3,7 @@
 
 ~~~~~~~~TODO~~~~~~~~
 
+
 Current:
 Code Cleanup.
 Add comments to more things.
@@ -13,7 +14,6 @@ Add console to see log output.
 
 
 Long Term:
-Add UI options to user and give user option to use global or personal settings.
 Make a show flash when the amount remaining is changed.
 Save log files in a log directory.
 Handle all "Note-" tasks.
@@ -21,6 +21,7 @@ Remove lipsum fully and template from loading.
 
 
 May Add:
+Add UI options to user and give user option to use global or personal settings.
 Saving the last sorted state.
 Make the shows flash a different color depending on if more were found (Blue) or removed (Red).
 Option to have it automatically sensor parts of the log (Username's, Directories, etc).
