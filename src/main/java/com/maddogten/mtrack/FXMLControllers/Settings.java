@@ -255,8 +255,9 @@ public class Settings implements Initializable {
                 Map<String, UserShowSettings> showSettings = new HashMap<>();
                 ArrayList<String> showsList = showInfoController.getShowsList();
                 for (String aShow : showsList) {
-                    int lowestSeason = showInfoController.findLowestSeason(aShow);
-                    showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
+                    if (Variables.genUserShowInfoAtFirstFound)
+                        showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
+                    else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
                 }
                 new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
                 log.info(userName + " was added.");
@@ -355,7 +356,7 @@ public class Settings implements Initializable {
                 log.info("No directories to delete.");
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToDelete}, (Stage) tabPane.getScene().getWindow());
             } else {
-                Directory directoryToDelete = new ListSelectBox().pickDirectory(Strings.DirectoryToDelete, directories, (Stage) tabPane.getScene().getWindow());
+                Directory directoryToDelete = new ListSelectBox().pickDirectory(Strings.DirectoryToDelete, Strings.OpenSelected, directories, (Stage) tabPane.getScene().getWindow());
                 if (directoryToDelete != null && !directoryToDelete.toString().isEmpty()) {
                     log.info("Directory selected for deletion: " + directoryToDelete.getFileName());
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + directoryToDelete.getFileName() + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
@@ -548,7 +549,7 @@ public class Settings implements Initializable {
             if (directories.isEmpty())
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, (Stage) tabPane.getScene().getWindow());
             else {
-                Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, directories, (Stage) tabPane.getScene().getWindow());
+                Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, Strings.Submit, directories, (Stage) tabPane.getScene().getWindow());
                 if (directoryToClear != null && !directoryToClear.getDirectory().toString().isEmpty()) {
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     if (confirm) {

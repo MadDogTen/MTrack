@@ -288,8 +288,9 @@ public class UserInfoController {
     public void addNewShow(String aShow) {
         if (!userSettings.getShowSettings().containsKey(aShow)) {
             log.info("Adding " + aShow + " to user settings file.");
-            int lowestSeason = showInfoController.findLowestSeason(aShow);
-            userSettings.addShowSettings(new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
+            if (Variables.genUserShowInfoAtFirstFound)
+                userSettings.addShowSettings(new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
+            else userSettings.addShowSettings(new UserShowSettings(aShow, 1, 1));
         }
     }
 

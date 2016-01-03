@@ -70,8 +70,9 @@ public class UpdateManager {
             Map<String, UserShowSettings> showSettings = new HashMap<>();
             ArrayList<String> showsList = showInfoController.getShowsList();
             for (String aShow : showsList) {
-                int lowestSeason = showInfoController.findLowestSeason(aShow);
-                showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
+                if (Variables.genUserShowInfoAtFirstFound)
+                    showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
+                else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
             }
             new FileManager().save(new UserSettings(Strings.UserName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension, false);
             log.info("User settings file was generated, skipping version check.");
@@ -313,14 +314,14 @@ public class UpdateManager {
                     updatedText(fileType, 1001, 1002);
                     oldVersion = 1002;
             }
-        }
-        if (userSettings == null) {
+        } else {
             userInfoController.loadUserInfo();
             userSettings = userInfoController.getUserSettings();
         }
         switch (oldVersion) {
             case 1002:
-                if (userSettings.getChanges() == null) userSettings.setChanges(new String[0]);
+                assert userSettings != null;
+                userSettings.setChanges(new String[0]);
                 updatedText(fileType, 1002, 1003);
                 updated = true;
         }

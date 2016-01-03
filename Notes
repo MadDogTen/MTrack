@@ -1,6 +1,5 @@
 
 
-
 ~~~~~~~~TODO~~~~~~~~
 
 
@@ -29,3 +28,11 @@ Option to have it automatically sensor parts of the log (Username's, Directories
 
 Think On:
 Find a better way to getActiveDirectories
+
+
+~~~~~~~~Bugs~~~~~~~~
+All-
+If a show starts on episode 0, and !genUserShowInfoAtFirstFound, Then it won't start there.
+
+Windows-
+Clicking the TaskBar icon doesn't minimize the program.

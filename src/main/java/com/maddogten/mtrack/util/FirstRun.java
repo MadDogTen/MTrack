@@ -111,8 +111,9 @@ public class FirstRun {
         log.info("Attempting to generate settings file for " + userName + '.');
         Map<String, UserShowSettings> showSettings = new HashMap<>();
         for (String aShow : showInfoController.getShowsList()) {
-            int lowestSeason = showInfoController.findLowestSeason(aShow);
-            showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, lowestSeason))));
+            if (Variables.genUserShowInfoAtFirstFound)
+                showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
+            else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
         }
         new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
     }

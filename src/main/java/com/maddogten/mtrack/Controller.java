@@ -224,10 +224,8 @@ public class Controller implements Initializable {
     }
 
     public static void closeChangeBoxStage() {
-        if (controller != null) {
-            log.fine("ChangeBox was open, closing...");
-            controller.changesBox.closeStage();
-        }
+        log.fine("ChangeBox was open, closing...");
+        controller.changesBox.closeStage();
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -398,19 +396,22 @@ public class Controller implements Initializable {
                     MenuItem printCurrentSeasonEpisode = new MenuItem();
                     printCurrentSeasonEpisode.textProperty().bind(Strings.PrintCurrentSeasonEpisode);
                     printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + userInfoController.getCurrentSeason(row.getItem().getShow()) + " - Episode: " + userInfoController.getCurrentEpisode(row.getItem().getShow())));
+                    MenuItem printShowInformation = new MenuItem();
+                    printShowInformation.setText("Print Show Information"); //TODO Add Localization
+                    printShowInformation.setOnAction(e -> showInfoController.printShowInformation(row.getItem().getShow()));
                     row.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
                                 toggleActive.textProperty().bind(Strings.SetInactive);
                                 if (Variables.devMode)
-                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode);
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode, printShowInformation);
                                 else
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
                             } else if (currentList.matches("inactive")) {
                                 toggleActive.textProperty().bind(Strings.SetActive);
                                 if (Variables.devMode)
-                                    rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory);
+                                    rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory, printShowInformation);
                                 else rowMenuInactive.getItems().addAll(toggleActive, setHidden, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuInactive).otherwise((ContextMenu) null));
                             }

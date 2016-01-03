@@ -177,7 +177,6 @@ public class DirectoryController {
     public boolean[] addDirectory(int index, File directory) {
         ArrayList<Directory> directories = getDirectories();
         boolean[] answer = {false, false};
-        if (directories == null) directories = new ArrayList<>();
         boolean directoryDoesNotExist = true;
         for (Directory aDirectory : directories) {
             if (aDirectory.getDirectory() == directory) {

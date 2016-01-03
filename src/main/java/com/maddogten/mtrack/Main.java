@@ -136,6 +136,15 @@ public class Main extends Application implements Runnable {
         if (!programFullyRunning) {
             programFullyRunning = true;
             thread = new Thread(this);
+            Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+                /*String[] stackTrace = new String[exception.getStackTrace().length + 1];
+                stackTrace[0] = exception.toString();
+                for (int i = 1; i < exception.getStackTrace().length; i++)
+                    stackTrace[i] = exception.getStackTrace()[i].toString();
+                log.severe(Arrays.toString(stackTrace));
+
+                //Note- Temporarily suppressing these until I figure out how to solve the issue.*/
+            });
             thread.start();
         }
     }

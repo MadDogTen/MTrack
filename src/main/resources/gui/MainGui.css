@@ -1,5 +1,5 @@
 #isCurrentlyRechecking .percentage {
-     -fx-fill: null;
+     -fx-fill: transparent;
 }
 
 #isCurrentlyRechecking .progress {

@@ -233,7 +233,7 @@ public class ListSelectBox {
         log.fine("openDirectory has been closed.");
     }
 
-    public Directory pickDirectory(StringProperty message, ArrayList<Directory> files, Stage oldStage) {
+    public Directory pickDirectory(StringProperty message, StringProperty submitButtonText, ArrayList<Directory> files, Stage oldStage) {
         log.fine("pickDirectory has been opened.");
 
         Stage pickDirectoryStage = new Stage();
@@ -251,7 +251,7 @@ public class ListSelectBox {
         ComboBox<Directory> comboBox = new ComboBox<>(fileList);
 
         Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
-        submit.setText("Open Selected");
+        submit.textProperty().bind(submitButtonText);
         final Directory[] directory = new Directory[1];
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {

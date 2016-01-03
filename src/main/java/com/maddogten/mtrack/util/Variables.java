@@ -46,6 +46,7 @@ public class Variables {
     public static final int checkSeasonsLowerThanCurrentInterval = 5;
     public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
     /**/public static final boolean forceDisableAutomaticRechecking = false; // false
+    public static final boolean genUserShowInfoAtFirstFound = false; // Add to user settings // Add choice when creating user
     public static boolean disableAutomaticRechecking;
     /**/public static boolean devMode = true; // false
     public static int updateSpeed;

@@ -74,9 +74,7 @@ public class ProgramSettingsController {
 
     // Save the file
     public void saveSettingsFile() {
-        if (settingsFile != null) {
-            new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension, true);
-            log.info("settingsFile has been saved!");
-        }
+        new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension, true);
+        log.info("settingsFile has been saved!");
     }
 }

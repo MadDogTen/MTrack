@@ -74,10 +74,6 @@ Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. 
        Added Notes file which currently contains my To\do list.
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).
 
-Known Bugs:
-Windows-
-Clicking the TaskBar icon doesn't minimize the program.
-
 Pre-Alpha 0.9.8 -
 Added comments. Still tons more to add.
 Cleaned up unnecessary code.
