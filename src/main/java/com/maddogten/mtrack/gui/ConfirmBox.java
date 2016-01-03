@@ -67,7 +67,10 @@ public class ConfirmBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        confirmStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/GenericStyle.css");
+
+        confirmStage.setScene(scene);
         confirmStage.show();
         confirmStage.hide();
         if (confirmStage.getOwner() != null) {

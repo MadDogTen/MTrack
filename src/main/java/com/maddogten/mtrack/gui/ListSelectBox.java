@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -60,7 +61,7 @@ public class ListSelectBox {
         ComboBox<String> comboBox = new ComboBox<>(usersList);
         comboBox.setValue(Strings.AddNewUsername.getValue());
 
-        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
+        Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
         Object[] result = new Object[]{Strings.DefaultUsername, false};
         submit.setOnAction(e -> {
@@ -100,6 +101,7 @@ public class ListSelectBox {
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
+
         pickUserStage.setScene(scene);
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, null));
@@ -128,7 +130,7 @@ public class ListSelectBox {
         ComboBox<String> comboBox = new ComboBox<>(usersList);
         if (currentDefaultUser != null && !currentDefaultUser.isEmpty()) comboBox.setValue(currentDefaultUser);
 
-        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
+        Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
         final String[] userName = new String[]{Strings.EmptyString};
         submit.setOnAction(e -> {
@@ -160,7 +162,10 @@ public class ListSelectBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        pickDefaultUserStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/ListSelectBox.css");
+
+        pickDefaultUserStage.setScene(scene);
         pickDefaultUserStage.show();
         pickDefaultUserStage.hide();
         pickDefaultUserStage.setX(pickDefaultUserStage.getOwner().getX() + (pickDefaultUserStage.getOwner().getWidth() / 2) - (pickDefaultUserStage.getWidth() / 2));
@@ -188,10 +193,9 @@ public class ListSelectBox {
         directoriesObservable.sorted();
         ComboBox<Directory> directoryComboBox = new ComboBox<>(directoriesObservable);
 
-        Button openAllButton = new Button(), openSelectedButton = new Button(), exitButton = new Button();
+        Button openAllButton = new Button(), openSelectedButton = new Button(), exitButton = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         openAllButton.textProperty().bind(Strings.OpenAll);
         openSelectedButton.textProperty().bind(Strings.OpenSelected);
-        exitButton.setText(Strings.ExitButtonText);
         openAllButton.setOnAction(e -> {
             FileManager fileManager = new FileManager();
             directories.forEach(directory -> fileManager.open(directory.getDirectory()));
@@ -216,7 +220,10 @@ public class ListSelectBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        openDirectoryStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/ListSelectBox.css");
+
+        openDirectoryStage.setScene(scene);
         openDirectoryStage.show();
         openDirectoryStage.hide();
         openDirectoryStage.setX(openDirectoryStage.getOwner().getX() + (openDirectoryStage.getOwner().getWidth() / 2) - (openDirectoryStage.getWidth() / 2));
@@ -243,7 +250,7 @@ public class ListSelectBox {
         fileList.sorted();
         ComboBox<Directory> comboBox = new ComboBox<>(fileList);
 
-        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
+        Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.setText("Open Selected");
         final Directory[] directory = new Directory[1];
         submit.setOnAction(e -> {
@@ -271,7 +278,10 @@ public class ListSelectBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        pickDirectoryStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/ListSelectBox.css");
+
+        pickDirectoryStage.setScene(scene);
         pickDirectoryStage.show();
         pickDirectoryStage.hide();
         pickDirectoryStage.setX(pickDirectoryStage.getOwner().getX() + (pickDirectoryStage.getOwner().getWidth() / 2) - (pickDirectoryStage.getWidth() / 2));
@@ -305,7 +315,7 @@ public class ListSelectBox {
         ComboBox<Integer> episodesComboBox = new ComboBox<>(episodesList);
         episodesComboBox.setDisable(true);
 
-        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
+        Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
         final int[] choice = new int[2];
         submit.setOnAction(e -> {
@@ -366,7 +376,9 @@ public class ListSelectBox {
             new Thread(task).start();
         });
 
-        pickSeasonEpisodeStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/ListSelectBox.css");
+        pickSeasonEpisodeStage.setScene(scene);
         pickSeasonEpisodeStage.show();
         pickSeasonEpisodeStage.hide();
         pickSeasonEpisodeStage.setX(pickSeasonEpisodeStage.getOwner().getX() + (pickSeasonEpisodeStage.getOwner().getWidth() / 2) - (pickSeasonEpisodeStage.getWidth() / 2));
@@ -377,7 +389,7 @@ public class ListSelectBox {
         return choice;
     }
 
-    public Object[] pickLanguage(Collection<String> languages, Stage oldStage) {
+    public Object[] pickLanguage(Collection<String> languages, boolean preSelectDefault, Stage oldStage) {
         log.fine("pickLanguage has been opened.");
 
         Stage pickLanguageStage = new Stage();
@@ -394,8 +406,10 @@ public class ListSelectBox {
         ObservableList<String> languageList = FXCollections.observableArrayList(languages);
         languageList.sorted();
         ComboBox<String> comboBox = new ComboBox<>(languageList);
+        if (preSelectDefault && comboBox.getItems().contains(Variables.DefaultLanguage[1]))
+            comboBox.getSelectionModel().select(Variables.DefaultLanguage[1]);
 
-        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
+        Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
         Object[] result = {"-2", false};
         submit.setOnAction(e -> {
@@ -429,6 +443,7 @@ public class ListSelectBox {
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
+
         pickLanguageStage.setScene(scene);
         pickLanguageStage.show();
         pickLanguageStage.hide();
@@ -458,7 +473,7 @@ public class ListSelectBox {
         showsList.sorted();
         ComboBox<String> showComboBox = new ComboBox<>(showsList);
 
-        Button submit = new Button(), exit = new Button(Strings.ExitButtonText);
+        Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
         String[] returnShow = {Strings.EmptyString};
         submit.setOnAction(e -> {
@@ -482,7 +497,10 @@ public class ListSelectBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        pickShowStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/ListSelectBox.css");
+
+        pickShowStage.setScene(scene);
         pickShowStage.show();
         pickShowStage.hide();
         pickShowStage.setX(pickShowStage.getX() + (pickShowStage.getWidth() / 2) - (pickShowStage.getWidth() / 2));

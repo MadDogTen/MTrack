@@ -81,7 +81,10 @@ public class DualChoiceButtons {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, null));
 
-        dualChoiceStage.setScene(new Scene(mainLayout));
+        Scene scene = new Scene(mainLayout);
+        scene.getStylesheets().add("/gui/GenericStyle.css");
+
+        dualChoiceStage.setScene(scene);
 
         dualChoiceStage.showAndWait();
 

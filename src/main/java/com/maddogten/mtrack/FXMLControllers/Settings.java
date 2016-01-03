@@ -439,7 +439,7 @@ public class Settings implements Initializable {
             Map<String, String> languages = languageHandler.getLanguageNames();
             if (languages.containsKey(programSettingsController.getSettingsFile().getLanguage()))
                 languages.remove(programSettingsController.getSettingsFile().getLanguage());
-            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), (Stage) tabPane.getScene().getWindow());
+            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), false, (Stage) tabPane.getScene().getWindow());
             String languageReadable = (String) pickLanguageResult[0];
             if (!languageReadable.contains("-2")) {
                 String internalName = Strings.EmptyString;

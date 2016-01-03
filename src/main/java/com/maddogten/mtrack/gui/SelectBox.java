@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -35,7 +36,7 @@ public class SelectBox {
 
         ArrayList<Button> buttons = new ArrayList<>();
         for (String aString : buttonsText) buttons.add(new Button(aString));
-        Button close = new Button(Strings.ExitButtonText);
+        Button close = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         final String[] answer = new String[1];
         HBox layout2 = new HBox();
         buttons.forEach(aButton -> {
@@ -61,7 +62,10 @@ public class SelectBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        selectStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/GenericStyle.css");
+
+        selectStage.setScene(scene);
         selectStage.show();
         selectStage.hide();
         selectStage.setX(selectStage.getOwner().getX() + (selectStage.getOwner().getWidth() / 2) - (selectStage.getWidth() / 2));

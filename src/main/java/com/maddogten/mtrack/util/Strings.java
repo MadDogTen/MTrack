@@ -24,7 +24,6 @@ public class Strings {
     // Other
     public static final String EmptyString = "";
     public static final String FileSeparator = File.separator;
-    public static final String ExitButtonText = "X";
     @SuppressWarnings("unused")
     public static final StringProperty TextMissing = new SimpleStringProperty();
     // Single Words

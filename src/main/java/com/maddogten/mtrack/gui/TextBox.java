@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -60,8 +61,7 @@ public class TextBox {
                 addUserStage.close();
             }
         });
-        Button exitButton = new Button();
-        exitButton.setText(Strings.ExitButtonText);
+        Button exitButton = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         exitButton.setOnAction(e -> {
             userName[0] = Strings.EmptyString;
             addUserStage.close();
@@ -79,7 +79,10 @@ public class TextBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        addUserStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/GenericStyle.css");
+
+        addUserStage.setScene(scene);
         addUserStage.show();
         addUserStage.hide();
         if (addUserStage.getOwner() != null) {
@@ -131,7 +134,7 @@ public class TextBox {
                 addDirectoryStage.close();
             }
         });
-        Button exit = new Button(Strings.ExitButtonText);
+        Button exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         exit.setOnAction(e -> {
             directories[0] = new File(Strings.EmptyString);
             addDirectoryStage.close();
@@ -153,7 +156,10 @@ public class TextBox {
             addDirectoryStage.requestFocus();
         });
 
-        addDirectoryStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/GenericStyle.css");
+
+        addDirectoryStage.setScene(scene);
         addDirectoryStage.show();
         addDirectoryStage.hide();
         if (addDirectoryStage.getOwner() != null) {

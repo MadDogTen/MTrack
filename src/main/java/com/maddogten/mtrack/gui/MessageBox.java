@@ -58,7 +58,10 @@ public class MessageBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
 
-        messageStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/GenericStyle.css");
+
+        messageStage.setScene(scene);
         messageStage.show();
         messageStage.hide();
         if (messageStage.getOwner() != null) {

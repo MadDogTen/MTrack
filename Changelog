@@ -36,6 +36,8 @@ Changed Tooltip Style.
 Changed most buttons to become disabled when you click them, and are re-enabled when you / they have finished the task.
 Changed some buttons to disable and re-enable their "pair" button as well (Ex. Adding / Removing a Directory).
 Changed the Open File Location to only be one stage.
+Changed MainRun getLanguage select to preselect the default language when choosing.
+Changed Program font. Not final.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.

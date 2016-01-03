@@ -24,7 +24,8 @@ public class Variables {
     public static final String ShowFileExtension = ".shows";
     public static final String UserFileExtension = ".user";
     public static final String SettingFileExtension = ".settings";
-    public static final String DefaultLanguage = "en_US";
+    @SuppressWarnings("PublicStaticArrayField")
+    public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
@@ -32,7 +33,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1003; // Was Changed
     public static final int DirectoryFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 11; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 12; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.

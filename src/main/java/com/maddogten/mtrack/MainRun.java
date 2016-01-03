@@ -204,8 +204,8 @@ public class MainRun {
                     log.info("Language is set: " + language);
                 } else log.severe("Language was not set for some reason, Please report.");
             } else {
-                languageHandler.setLanguage(Variables.DefaultLanguage);
-                Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), null);
+                languageHandler.setLanguage(Variables.DefaultLanguage[0]);
+                Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), true, null);
                 String languageReadable = (String) pickLanguageResult[0];
                 if (languageReadable.matches("-2")) continueStarting = false;
                 else {

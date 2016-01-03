@@ -104,7 +104,10 @@ public class ChangesBox {
 
         Platform.runLater(() -> new MoveStage().moveStage(layout, null));
 
-        changesStage.setScene(new Scene(layout));
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/GenericStyle.css");
+
+        changesStage.setScene(scene);
         changesStage.show();
         changesStage.hide();
         changesStage.setX(changesStage.getOwner().getX() + (changesStage.getOwner().getWidth() / 2) - (changesStage.getWidth() / 2));
