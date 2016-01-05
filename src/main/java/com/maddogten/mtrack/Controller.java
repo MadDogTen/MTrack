@@ -225,7 +225,7 @@ public class Controller implements Initializable {
 
     public static void closeChangeBoxStage() {
         log.fine("ChangeBox was open, closing...");
-        controller.changesBox.closeStage();
+        if (controller != null) controller.changesBox.closeStage();
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -346,7 +346,7 @@ public class Controller implements Initializable {
                     resetShow.setOnAction(e -> {
                         log.info("Reset to running...");
                         String[] choices = {Strings.Beginning.getValue(), Strings.End.getValue()};
-                        String answer = new SelectBox().select(Strings.WhatShould + row.getItem().getShow() + Strings.BeResetTo, choices, (Stage) pane.getScene().getWindow());
+                        String answer = new SelectBox().select(Strings.WhatShould.getValue() + row.getItem().getShow() + Strings.BeResetTo.getValue(), choices, (Stage) pane.getScene().getWindow());
                         log.info(answer);
                         if (answer.matches(Strings.Beginning.getValue())) {
                             userInfoController.setToBeginning(row.getItem().getShow());

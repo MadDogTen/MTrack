@@ -169,8 +169,13 @@ public class DirectoryController {
     public void printAllDirectories() {
         log.info("Printing out all directories:");
         if (getDirectories().isEmpty()) log.info("No directories.");
-        else getDirectories().forEach(directory -> log.info(directory.getDirectory().toString()));
-        log.info("Finished printing out all directories:");
+        else {
+            String[] print = new String[getDirectories().size()];
+            final int[] i = {0};
+            getDirectories().forEach(directory -> print[i[0]++] = '\n' + directory.getDirectory().toString());
+            log.info(Arrays.toString(print));
+        }
+        log.info("Finished printing out all directories.");
     }
 
     // Add a new directory.

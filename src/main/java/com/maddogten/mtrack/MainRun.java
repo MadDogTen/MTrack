@@ -56,29 +56,15 @@ public class MainRun {
         }
         // If the above isn't the correct folder, it then checks if the Roaming Appdata folder is the correct one.
         if (Variables.dataFolder.toString().isEmpty()) {
-            File path = fileManager.getAppDataFolder();
+            File path = fileManager.findProgramFolder();
             if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
         }
         // If one above is found and both Variables devMode & StartFresh are true, It will Delete ALL Files each time the program is ran.
         // noinspection PointlessBooleanExpression
         if (Variables.devMode && Variables.startFresh && !Variables.dataFolder.toString().isEmpty()) {
             log.warning("Starting Fresh...");
-            if (Variables.dataFolder.toString().matches(Pattern.quote(String.valueOf(fileManager.getAppDataFolder())))) {
-                log.info("Deleting " + Variables.dataFolder + " in AppData...");
-                fileManager.deleteFolder(Variables.dataFolder);
-            } else {
-                log.info("Deleting appropriate files found in folder jar is contained in...");
-                File[] files = Variables.dataFolder.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        if (!file.toString().contains(".jar") && (file.isDirectory() || file.toString().contains(Variables.SettingFileExtension))) {
-                            if (file.isDirectory() && (file.toString().matches(Variables.DirectoriesFolder) || file.toString().matches(Variables.UsersFolder)))
-                                fileManager.deleteFolder(file);
-                            else fileManager.deleteFile("", String.valueOf(file), "");
-                        }
-                    }
-                }
-            }
+            fileManager.clearProgramFiles();
+            Variables.setDataFolder(new File(Strings.EmptyString));
         }
         boolean needsToRun = true;
         // If both of those failed or it deleted the files,  Then it starts firstRun.

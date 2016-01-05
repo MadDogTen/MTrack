@@ -76,8 +76,7 @@ public class en_US extends Language {
         Strings.UnHideAll.setValue("UnHide All");
         Strings.SetAllActive.setValue("Set All Active");
         Strings.SetAllInactive.setValue("Set All Inactive");
-        Strings.PrintPSFV.setValue("Print PSFV");
-        Strings.PrintUSFV.setValue("Print USFV");
+        Strings.PrintPsfvAndUsfv.setValue("Print PSFV & USFV");
         Strings.PrintAllUserInfo.setValue("Print All User Info");
         Strings.DirectoryVersionPlus1.setValue("Directory Version +1");
         Strings.ClearFile.setValue("Clear File");
@@ -167,8 +166,8 @@ public class en_US extends Language {
         Strings.PleaseCorrectTheIssueThenForceRefresh.setValue("Please correct the issue then force refresh.");
         Strings.NotifyChangesFor.setValue("Notify Changes For:");
         Strings.OnlyChecksEveryRuns.setValue("Only checks every 5 runs");
-        Strings.JavaVersionFull.setValue("Coded In " + Strings.CodedIn + "\nVersion: " + Strings.JavaVersion);
-        Strings.CodedUsingFull.setValue("Coded With: " + Strings.CodedUsing);
+        Strings.JavaVersionFull.setValue("Coded In " + Strings.CodedIn.getValue() + "\nVersion: " + Strings.JavaVersion.getValue());
+        Strings.CodedUsingFull.setValue("Coded With: " + Strings.CodedUsing.getValue());
         Strings.ThereAreNoHiddenShows.setValue("There are no hidden shows.");
         Strings.PickShowToUnHide.setValue("Pick show to UnHide...");
     }

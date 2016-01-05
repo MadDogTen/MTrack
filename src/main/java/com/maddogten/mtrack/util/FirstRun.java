@@ -17,6 +17,7 @@ import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.io.FileManager;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
@@ -55,11 +56,13 @@ public class FirstRun {
             } catch (UnsupportedEncodingException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
-            File appData = fileManager.getAppDataFolder();
-            StringProperty answer = new DualChoiceButtons().dualChoiceButton(Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath, Strings.InAppData, Strings.WithTheJar, appData.toString(), jarLocation.toString());
-            if (answer.getValue().matches(Strings.InAppData.getValue())) Variables.setDataFolder(appData);
+            File appData = fileManager.findProgramFolder();
+            StringProperty answer = new DualChoiceButtons().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
+            if (answer.getValue().matches(Strings.InAppData.getValue())) {
+                Variables.setDataFolder(appData);
+                fileManager.createFolder(Variables.ProgramRootFolder);
+            }
             else if (answer.getValue().matches(Strings.WithTheJar.getValue())) Variables.setDataFolder(jarLocation);
-            fileManager.createFolder(Strings.EmptyString);
             generateProgramSettingsFile();
             programSettingsController.loadProgramSettingsFile();
             if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
@@ -75,7 +78,8 @@ public class FirstRun {
             generateShowFilesThread.start();
             TextBox textBox = new TextBox();
             Strings.UserName = textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
-            if (Strings.UserName.isEmpty()) Strings.UserName = Strings.DefaultUsername;
+            if (Strings.UserName.isEmpty()) mainRun.continueStarting = false;
+            else {
             try {
                 generateShowFilesThread.join();
             } catch (InterruptedException e) {
@@ -85,6 +89,7 @@ public class FirstRun {
             showInfoController.loadShowsFile();
             generateUserSettingsFile(Strings.UserName);
             userInfoController.loadUserInfo();
+            }
         }
     }
 
@@ -125,7 +130,7 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectory(directoryController.getDirectories(), null));
+            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(), null));
             index++;
             if (!matched[0] && !matched[1])
                 new MessageBox().message(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);

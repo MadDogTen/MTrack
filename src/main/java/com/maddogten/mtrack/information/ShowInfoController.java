@@ -67,7 +67,7 @@ public class ShowInfoController {
     // Returns an arrayList of all shows.
     public ArrayList<String> getShowsList() {
         ArrayList<String> showsList = new ArrayList<>();
-        showsList.addAll(showsFile.keySet().stream().collect(Collectors.toList()));
+        if (showsFile != null) showsList.addAll(showsFile.keySet().stream().collect(Collectors.toList()));
         return showsList;
     }
 

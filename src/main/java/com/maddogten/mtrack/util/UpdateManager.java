@@ -59,7 +59,7 @@ public class UpdateManager {
                 convertProgramSettingsFile(currentVersion, Variables.ProgramSettingsFileVersion);
             }
         } else {
-            log.severe("Was unable to load program file, Forcing shut down.");
+            log.severe("Unable to load program file, Forcing shut down.");
             System.exit(0);
         }
     }
@@ -68,8 +68,7 @@ public class UpdateManager {
         if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
             log.info("Attempting to generate settings file for " + Strings.UserName + '.');
             Map<String, UserShowSettings> showSettings = new HashMap<>();
-            ArrayList<String> showsList = showInfoController.getShowsList();
-            for (String aShow : showsList) {
+            for (String aShow : showInfoController.getShowsList()) {
                 if (Variables.genUserShowInfoAtFirstFound)
                     showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
                 else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));

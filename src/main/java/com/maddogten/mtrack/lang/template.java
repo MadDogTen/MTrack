@@ -76,8 +76,7 @@ public class template extends Language {
         Strings.UnHideAll.setValue("");
         Strings.SetAllActive.setValue("");
         Strings.SetAllInactive.setValue("");
-        Strings.PrintPSFV.setValue("");
-        Strings.PrintUSFV.setValue("");
+        Strings.PrintPsfvAndUsfv.setValue("");
         Strings.PrintAllUserInfo.setValue("");
         Strings.DirectoryVersionPlus1.setValue("");
         Strings.ClearFile.setValue("");

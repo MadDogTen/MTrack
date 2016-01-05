@@ -90,8 +90,8 @@ public class CheckShowFiles {
             }
             if (!recheckShowFileRunning) recheckShowFileRunning = true;
             final double[] percentagePerDirectory = {100};
-            if (!directoryController.getDirectories().isEmpty())
-                percentagePerDirectory[0] = 100 / directoryController.getDirectories().size();
+            if (directoryController.getDirectories().isEmpty()) recheckShowFilePercentage = percentagePerDirectory[0];
+            else percentagePerDirectory[0] = percentagePerDirectory[0] / directoryController.getDirectories().size();
             // Just so the user knows when it is a directory that is delaying the search, and not the program hanging.
             currentlyCheckingDirectories = true;
             ArrayList<Directory> activeDirectories = directoryController.getActiveDirectories(!forceRun);

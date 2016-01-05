@@ -77,6 +77,7 @@
                                 <TextField fx:id="directoryTimeoutTextField" layoutX="79.0" layoutY="110.0" prefHeight="25.0" prefWidth="36.0"/>
                                 <Text fx:id="directoryTimeoutText" layoutX="45.0" layoutY="98.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
                                 <ToggleButton fx:id="toggleDevMode" layoutX="74.0" layoutY="209.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
+                                <Button fx:id="exportSettings" layoutX="67.0" layoutY="160.0" mnemonicParsing="false" text="Export Settings"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -94,10 +95,10 @@
                                                         <Button fx:id="printAllShows" layoutX="8.0" layoutY="8.0" mnemonicParsing="false" text="Print All Show Info"/>
                                                         <Button fx:id="printAllDirectories" layoutX="8.0" layoutY="35.0" mnemonicParsing="false" text="Print All Directories"/>
                                                         <Button fx:id="printEmptyShowFolders" layoutX="8.0" layoutY="62.0" mnemonicParsing="false" text="Print Empty Shows"/>
-                                                        <Button fx:id="setAllActive" layoutX="8.0" layoutY="222.0" mnemonicParsing="false" text="Set All Active"/>
-                                                        <Button fx:id="setAllInactive" layoutX="96.0" layoutY="222.0" mnemonicParsing="false" text="Set All Inactive"/>
                                                         <Button fx:id="printIgnoredShows" layoutX="8.0" layoutY="89.0" mnemonicParsing="false" text="Print Ignored Shows"/>
                                                         <Button fx:id="printHiddenShows" layoutX="8.0" layoutY="131.0" mnemonicParsing="false" text="Print Hidden Shows"/>
+                                                        <Button fx:id="printProgramSettingsFileVersion" layoutX="8.0" layoutY="180.0" mnemonicParsing="false" text="Print PSFV &amp; USFV"/>
+                                                        <Button fx:id="printAllUserInfo" layoutX="8.0" layoutY="207.0" mnemonicParsing="false" text="Print All User Info"/>
                                                         <Button fx:id="unHideAll" layoutX="130.0" layoutY="131.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="73.0" text="UnHide All" wrapText="true"/>
                                                     </children>
                                                 </AnchorPane>
@@ -107,16 +108,15 @@
                                             <content>
                                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                     <children>
-                                                        <Button fx:id="printProgramSettingsFileVersion" layoutX="8.0" layoutY="8.0" mnemonicParsing="false" text="Print PSFV"/>
-                                                        <Button fx:id="printUserSettingsFileVersion" layoutX="8.0" layoutY="35.0" mnemonicParsing="false" text="Print USFV"/>
-                                                        <Button fx:id="clearFile" layoutX="11.0" layoutY="160.0" mnemonicParsing="false" text="Clear File"/>
+                                                        <Button fx:id="setAllActive" layoutX="8.0" layoutY="8.0" mnemonicParsing="false" text="Set All Active"/>
+                                                        <Button fx:id="setAllInactive" layoutX="100.0" layoutY="8.0" mnemonicParsing="false" text="Set All Inactive"/>
+                                                        <Button fx:id="clearFile" layoutX="8.0" layoutY="222.0" mnemonicParsing="false" text="Clear File"/>
                                                         <Button fx:id="deleteEverythingAndClose" layoutX="146.0" layoutY="222.0" mnemonicParsing="false" text="Reset Program">
                                                             <tooltip>
                                                                 <Tooltip id="tooltip" fx:id="deleteEverythingAndCloseTooltip"/>
                                                             </tooltip>
                                                         </Button>
-                                                        <Button fx:id="printAllUserInfo" layoutX="8.0" layoutY="80.0" mnemonicParsing="false" text="Print All User Info"/>
-                                                        <Button fx:id="add1ToDirectoryVersion" layoutX="8.0" layoutY="120.0" mnemonicParsing="false" text="Directory Version +1"/>
+                                                        <Button fx:id="add1ToDirectoryVersion" layoutX="10.0" layoutY="50.0" mnemonicParsing="false" text="Directory Version +1"/>
                                                     </children>
                                                 </AnchorPane>
                                             </content>

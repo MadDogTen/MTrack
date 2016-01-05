@@ -301,15 +301,16 @@ public class UserInfoController {
     // Debug setting to print out all the current users settings.
     public void printAllUserInfo() {
         log.info("Printing all user info for " + Strings.UserName + "...");
-        log.info(String.valueOf(userSettings.getUserSettingsFileVersion()) + " - " + String.valueOf(userSettings.getUserDirectoryVersion()));
-        userSettings.getShowSettings().values().forEach(aShowSettings -> log.info(aShowSettings.getShowName() + " - " + aShowSettings.isActive() + ", " + aShowSettings.isIgnored() + ", " + aShowSettings.isHidden() + " - Season: " + aShowSettings.getCurrentSeason() + " | Episode: " + aShowSettings.getCurrentEpisode()));
+        String[] print = new String[1 + userSettings.getShowSettings().values().size()];
+        final int[] i = {0};
+        print[i[0]++] = '\n' + String.valueOf(userSettings.getUserSettingsFileVersion()) + " - " + String.valueOf(userSettings.getUserDirectoryVersion());
+        userSettings.getShowSettings().values().forEach(aShowSettings -> print[i[0]++] = '\n' + aShowSettings.getShowName() + " - " + aShowSettings.isActive() + ", " + aShowSettings.isIgnored() + ", " + aShowSettings.isHidden() + " - Season: " + aShowSettings.getCurrentSeason() + " | Episode: " + aShowSettings.getCurrentEpisode());
+        log.info(Arrays.toString(print));
         log.info("Finished printing all user info.");
     }
 
     public void saveUserSettingsFile() {
-        if (userSettings != null) {
-            new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension, true);
-            log.info("userSettingsFile has been saved!");
-        }
+        new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension, true);
+        log.info("userSettingsFile has been saved!");
     }
 }

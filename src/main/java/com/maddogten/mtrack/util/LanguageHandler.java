@@ -104,8 +104,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.UnHideAll);
         findAndSetMissingStrings(Strings.SetAllActive);
         findAndSetMissingStrings(Strings.SetAllInactive);
-        findAndSetMissingStrings(Strings.PrintPSFV);
-        findAndSetMissingStrings(Strings.PrintUSFV);
+        findAndSetMissingStrings(Strings.PrintPsfvAndUsfv);
         findAndSetMissingStrings(Strings.PrintAllUserInfo);
         findAndSetMissingStrings(Strings.DirectoryVersionPlus1);
         findAndSetMissingStrings(Strings.ClearFile);

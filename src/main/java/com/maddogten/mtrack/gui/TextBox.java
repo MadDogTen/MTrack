@@ -107,7 +107,7 @@ public class TextBox {
         return false;
     }
 
-    public File addDirectory(ArrayList<Directory> currentDirectories, Stage oldStage) {
+    public File addDirectory(StringProperty message, ArrayList<Directory> currentDirectories, Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage addDirectoryStage = new Stage();
@@ -118,7 +118,7 @@ public class TextBox {
         GenericMethods.setIcon(addDirectoryStage);
 
         Label label = new Label();
-        label.textProperty().bind(Strings.PleaseEnterShowsDirectory);
+        label.textProperty().bind(message);
 
         TextField textField = new TextField();
         textField.setPromptText(Strings.FileSeparator + Strings.PathToDirectory.getValue() + Strings.FileSeparator + Strings.Shows.getValue());

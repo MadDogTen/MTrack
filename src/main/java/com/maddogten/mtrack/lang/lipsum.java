@@ -78,8 +78,7 @@ public class lipsum extends Language {
         Strings.UnHideAll.setValue("vitae");
         Strings.SetAllActive.setValue("commodo");
         Strings.SetAllInactive.setValue("ultrices");
-        Strings.PrintPSFV.setValue("morbi");
-        Strings.PrintUSFV.setValue("bibendum");
+        Strings.PrintPsfvAndUsfv.setValue("morbi");
         Strings.PrintAllUserInfo.setValue("magna");
         Strings.DirectoryVersionPlus1.setValue("sagittis");
         Strings.ClearFile.setValue("vehicula");

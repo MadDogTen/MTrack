@@ -12,13 +12,13 @@ import java.io.File;
 @SuppressWarnings("ClassWithoutLogger")
 public class Strings {
     // Program Info
-    public static final String ProgramTitle = "MTrack";
+    public static final StringProperty ProgramTitle = new SimpleStringProperty("MTrack");
     //---------- Main Strings ----------\\
-    public static final String MTrackVersion = "Alpha 1.0.0";
-    public static final String CodedBy = "MadDogTen";
-    public static final String CodedUsing = "Intellij IDEA 15.0.2";
-    public static final String CodedIn = "Java";
-    public static final String JavaVersion = "1.8.0_60";
+    public static final StringProperty MTrackVersion = new SimpleStringProperty("Alpha 1.0.0");
+    public static final StringProperty CodedBy = new SimpleStringProperty("MadDogTen");
+    public static final StringProperty CodedUsing = new SimpleStringProperty("Intellij IDEA 15.0.2");
+    public static final StringProperty CodedIn = new SimpleStringProperty("Java");
+    public static final StringProperty JavaVersion = new SimpleStringProperty("1.8.0_60");
     //Other
     public static final String SettingsFileName = "Program";
     // Other
@@ -81,8 +81,7 @@ public class Strings {
     public static final StringProperty UnHideAll = new SimpleStringProperty();
     public static final StringProperty SetAllActive = new SimpleStringProperty();
     public static final StringProperty SetAllInactive = new SimpleStringProperty();
-    public static final StringProperty PrintPSFV = new SimpleStringProperty();
-    public static final StringProperty PrintUSFV = new SimpleStringProperty();
+    public static final StringProperty PrintPsfvAndUsfv = new SimpleStringProperty();
     public static final StringProperty PrintAllUserInfo = new SimpleStringProperty();
     public static final StringProperty DirectoryVersionPlus1 = new SimpleStringProperty();
     public static final StringProperty ClearFile = new SimpleStringProperty();

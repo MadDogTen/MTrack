@@ -45,13 +45,13 @@ public class About implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         log.finest("About has been opened.");
-        programName.setText(Strings.ProgramTitle);
+        programName.textProperty().bind(Strings.ProgramTitle);
         programName.setAlignment(Pos.CENTER);
-        versionNumber.setText(Strings.MTrackVersion);
+        versionNumber.textProperty().bind(Strings.MTrackVersion);
         versionNumber.setAlignment(Pos.CENTER);
         if (Variables.showInternalVersion) versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
         else versionNumber.setTooltip(null);
-        codedBy.setText(Strings.CodedBy);
+        codedBy.textProperty().bind(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);
         codedUsing.textProperty().bind(Strings.CodedUsingFull);
         codedUsing.setAlignment(Pos.CENTER);

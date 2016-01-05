@@ -2,7 +2,9 @@ package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
+import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,12 +12,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /*
@@ -27,67 +31,82 @@ public class DualChoiceButtons {
     private static final Logger log = Logger.getLogger(DualChoiceButtons.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public StringProperty dualChoiceButton(StringProperty message, StringProperty message2, StringProperty choice1, StringProperty choice2, String tooltip1, String tooltip2) {
+    public StringProperty multipleButtons(StringProperty[] messages, StringProperty[] choices, StringProperty[] tooltips, Stage parentStage) {
         log.fine("dualChoiceButtons has been opened.");
 
         Stage dualChoiceStage = new Stage();
+        dualChoiceStage.initOwner(parentStage);
         dualChoiceStage.initStyle(StageStyle.UNDECORATED);
         dualChoiceStage.initModality(Modality.APPLICATION_MODAL);
         GenericMethods.setIcon(dualChoiceStage);
 
         Label label = new Label();
-        label.textProperty().bind(message);
+        label.textProperty().bind(messages[0]);
         label.setPadding(new Insets(0, 0, 4, 0));
 
-        Button button1 = new Button(), button2 = new Button();
-        button1.textProperty().bind(choice1);
-        button2.textProperty().bind(choice2);
-        final StringProperty[] answer = new StringProperty[1];
-        button1.setOnAction(e -> {
-            answer[0] = choice1;
-            dualChoiceStage.close();
-        });
-        button2.setOnAction(e -> {
-            answer[0] = choice2;
-            dualChoiceStage.close();
-        });
-
-        if (!tooltip1.isEmpty() && !tooltip2.isEmpty()) {
-            button1.setTooltip(new Tooltip(tooltip1));
-            button2.setTooltip(new Tooltip(tooltip2));
+        final StringProperty[] answer = new StringProperty[]{new SimpleStringProperty(Strings.EmptyString)};
+        ArrayList<Button> buttons = new ArrayList<>(choices.length);
+        HBox layout = new HBox();
+        int i = 0;
+        for (StringProperty button : choices) {
+            buttons.add(i, new Button());
+            buttons.get(i).textProperty().bind(button);
+            buttons.get(i).setOnAction(e -> {
+                answer[0] = button;
+                dualChoiceStage.close();
+            });
+            layout.getChildren().add(i, buttons.get(i));
+            i++;
         }
 
-        VBox buttonVBox1 = new VBox(), buttonVBox2 = new VBox(), mainLayout = new VBox();
-        buttonVBox1.getChildren().add(button1);
-        buttonVBox1.setPadding(new Insets(0, 3, 0, 0));
-        buttonVBox2.getChildren().add(button2);
-        buttonVBox2.setPadding(new Insets(0, 0, 0, 3));
+        if (tooltips != null && tooltips.length == buttons.size()) {
+            buttons.forEach(button -> {
+                int index = buttons.indexOf(button);
+                if (tooltips[index] != null && !tooltips[index].getValue().isEmpty())
+                    button.setTooltip(new Tooltip(tooltips[buttons.indexOf(button)].getValue()));
+            });
+        }
 
-        HBox layout = new HBox();
-        layout.getChildren().addAll(buttonVBox1, buttonVBox2);
+        layout.setSpacing(3);
         layout.setAlignment(Pos.CENTER);
 
-        if (message2.getValue().isEmpty()) mainLayout.getChildren().addAll(label, layout);
+        VBox mainLayout = new VBox();
+        if (messages.length == 1) mainLayout.getChildren().addAll(label, layout);
         else {
-            Label label1 = new Label();
-            label1.textProperty().bind(message2);
-            VBox vBox = new VBox();
-            vBox.getChildren().addAll(label, label1);
-            vBox.setAlignment(Pos.CENTER);
-            mainLayout.getChildren().addAll(vBox, layout);
+            if (messages.length == buttons.size()) {
+                VBox vBox = new VBox();
+                buttons.forEach(button -> {
+                    int index = buttons.indexOf(button);
+                    if (messages[index] != null && !messages[index].getValue().isEmpty()) {
+                        Label label1 = new Label();
+                        label1.textProperty().bind(messages[index]);
+                        vBox.getChildren().add(index, label1);
+                    }
+                });
+                mainLayout.getChildren().addAll(vBox, layout);
+            } else mainLayout.getChildren().addAll(label, layout);
         }
+        Button exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
+        exit.setOnAction(e -> dualChoiceStage.close());
 
+        mainLayout.getChildren().add(exit);
         mainLayout.setPadding(new Insets(6, 6, 6, 6));
+        mainLayout.setSpacing(3);
+        mainLayout.setAlignment(Pos.CENTER);
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, null));
+        Platform.runLater(() -> new MoveStage().moveStage(mainLayout, parentStage));
 
         Scene scene = new Scene(mainLayout);
         scene.getStylesheets().add("/gui/GenericStyle.css");
 
         dualChoiceStage.setScene(scene);
-
+        dualChoiceStage.show();
+        dualChoiceStage.hide();
+        if (dualChoiceStage.getOwner() != null) {
+            dualChoiceStage.setX(dualChoiceStage.getOwner().getX() + (dualChoiceStage.getOwner().getWidth() / 2) - (dualChoiceStage.getWidth() / 2));
+            dualChoiceStage.setY(dualChoiceStage.getOwner().getY() + (dualChoiceStage.getOwner().getHeight() / 2) - (dualChoiceStage.getHeight() / 2));
+        }
         dualChoiceStage.showAndWait();
-
         log.fine("dualChoiceButtons has been closed.");
         return answer[0];
     }

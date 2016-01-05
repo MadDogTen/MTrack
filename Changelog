@@ -57,6 +57,7 @@ Added Settings Button to UnHide shows. (Under "Show" tab)
 Added ability to set the language as default during startup.
 Added ability to set the default user during startup.
 Added Exit button to Settings Add User.
+Added ability to export Program Related Settings (All, Program Settings, Users, or Directories). Cannot currently import them.
 
 Fixes:
 Will now properly switch to new seasons when found.
@@ -67,6 +68,7 @@ Fixed removing directories.
 Fixed bug with adding new directories.
 Fixed button spacing on stages.
 Fixed Stages appearing in the center of the screen before moving.
+Fixed Reset Program not properly removing files if stored in jar's location. (Dev only until I'm confident that any issues with it are solved)
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
