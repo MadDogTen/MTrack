@@ -78,6 +78,9 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.Cut);
         findAndSetMissingStrings(Strings.Copy);
         findAndSetMissingStrings(Strings.Paste);
+        findAndSetMissingStrings(Strings.All);
+        findAndSetMissingStrings(Strings.Program);
+        findAndSetMissingStrings(Strings.Directories);
         // Button Text
         findAndSetMissingStrings(Strings.SetSeasonEpisode);
         findAndSetMissingStrings(Strings.PlaySeasonEpisode);
@@ -195,7 +198,9 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.CodedUsingFull);
         findAndSetMissingStrings(Strings.ThereAreNoHiddenShows);
         findAndSetMissingStrings(Strings.PickShowToUnHide);
-
+        findAndSetMissingStrings(Strings.DirectoryToSaveExportIn);
+        findAndSetMissingStrings(Strings.PrintShowInformation);
+        findAndSetMissingStrings(Strings.ChooseWhatToExport);
         log.info("Finished checking for missing strings.");
     }
 

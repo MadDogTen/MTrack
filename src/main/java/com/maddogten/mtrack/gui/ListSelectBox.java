@@ -83,7 +83,7 @@ public class ListSelectBox {
         CheckBox makeLanguageDefault = new CheckBox();
         makeLanguageDefault.setPadding(new Insets(0, 6, 0, 0));
         Tooltip makeLanguageDefaultTooltip = new Tooltip();
-        makeLanguageDefaultTooltip.setStyle("tooltip");
+        makeLanguageDefaultTooltip.setId("tooltip");
         makeLanguageDefaultTooltip.textProperty().bind(Strings.MakeUserDefault);
         makeLanguageDefault.setTooltip(makeLanguageDefaultTooltip);
         makeLanguageDefault.setOnAction(e -> result[1] = !(boolean) result[1]);
@@ -233,7 +233,7 @@ public class ListSelectBox {
         log.fine("openDirectory has been closed.");
     }
 
-    public Directory pickDirectory(StringProperty message, StringProperty submitButtonText, ArrayList<Directory> files, Stage oldStage) {
+    public Directory pickDirectory(StringProperty message, ArrayList<Directory> files, Stage oldStage) {
         log.fine("pickDirectory has been opened.");
 
         Stage pickDirectoryStage = new Stage();
@@ -251,7 +251,7 @@ public class ListSelectBox {
         ComboBox<Directory> comboBox = new ComboBox<>(fileList);
 
         Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
-        submit.textProperty().bind(submitButtonText);
+        submit.textProperty().bind(Strings.Submit);
         final Directory[] directory = new Directory[1];
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
@@ -423,7 +423,7 @@ public class ListSelectBox {
         CheckBox makeLanguageDefault = new CheckBox();
         makeLanguageDefault.setPadding(new Insets(0, 6, 0, 0));
         Tooltip makeLanguageDefaultTooltip = new Tooltip();
-        makeLanguageDefaultTooltip.setStyle("tooltip");
+        makeLanguageDefaultTooltip.setId("tooltip");
         makeLanguageDefaultTooltip.textProperty().bind(Strings.MakeLanguageDefault);
         makeLanguageDefault.setTooltip(makeLanguageDefaultTooltip);
         makeLanguageDefault.setOnAction(e -> result[1] = !(boolean) result[1]);

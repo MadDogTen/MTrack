@@ -3,7 +3,7 @@
     -fx-font-family: "Times New Roman";
 }
 
-.tooltip {
+#tooltip {
     -fx-background-color: #E8E8E8;
     -fx-text-fill: black;
     -fx-background-radius: 6 6 6 6;

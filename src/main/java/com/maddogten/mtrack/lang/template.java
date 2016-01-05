@@ -89,6 +89,9 @@ public class template extends Language {
         Strings.UnHideShow.setValue("");
         Strings.OpenAll.setValue("");
         Strings.OpenSelected.setValue("");
+        Strings.All.setValue("");
+        Strings.Program.setValue("");
+        Strings.Directories.setValue("");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("");
@@ -169,5 +172,8 @@ public class template extends Language {
         Strings.CodedUsingFull.setValue("");
         Strings.ThereAreNoHiddenShows.setValue("");
         Strings.PickShowToUnHide.setValue("");
+        Strings.DirectoryToSaveExportIn.setValue("");
+        Strings.PrintShowInformation.setValue("");
+        Strings.ChooseWhatToExport.setValue("");
     }
 }

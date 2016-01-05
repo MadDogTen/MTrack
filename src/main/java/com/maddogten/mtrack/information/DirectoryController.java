@@ -14,6 +14,7 @@ import javafx.concurrent.Task;
 
 import java.io.File;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -170,10 +171,7 @@ public class DirectoryController {
         log.info("Printing out all directories:");
         if (getDirectories().isEmpty()) log.info("No directories.");
         else {
-            String[] print = new String[getDirectories().size()];
-            final int[] i = {0};
-            getDirectories().forEach(directory -> print[i[0]++] = '\n' + directory.getDirectory().toString());
-            log.info(Arrays.toString(print));
+            GenericMethods.printArrayList(Level.INFO, log, getDirectories(), true);
         }
         log.info("Finished printing out all directories.");
     }
@@ -249,7 +247,8 @@ public class DirectoryController {
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
     public void removeDirectory(Directory aDirectory) {
         log.info("Currently processing removal of: " + aDirectory.getFileName());
-        new FileManager().deleteFile(Variables.DirectoriesFolder, aDirectory.getFileName(), Variables.ShowFileExtension);
+        if (!new FileManager().deleteFile(Variables.DirectoriesFolder, aDirectory.getFileName(), Variables.ShowFileExtension))
+            log.info("Wasn't able to delete directory.");
         log.info("Finished processing removal of the directory.");
     }
 

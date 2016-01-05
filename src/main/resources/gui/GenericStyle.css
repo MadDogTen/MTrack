@@ -1,4 +1,12 @@
-.root{
+.root {
     -fx-font-size: 12px;
     -fx-font-family: "Times New Roman";
+}
+
+.filePicker {
+    -fx-background-radius: 8em;
+    -fx-min-width: 12px;
+    -fx-min-height: 12px;
+    -fx-max-width: 12px;
+    -fx-max-height: 12px;
 }

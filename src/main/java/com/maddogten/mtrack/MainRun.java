@@ -26,7 +26,7 @@ public class MainRun {
     private final CheckShowFiles checkShowFiles;
     private final DirectoryController directoryController;
     public boolean firstRun = false, continueStarting = true;
-    private boolean hasNotRan = true, forceRun = true;
+    private boolean hasRan = false, forceRun = true;
     private int timer = GenericMethods.getTimeSeconds();
 
     @SuppressWarnings("SameParameterValue")
@@ -127,10 +127,10 @@ public class MainRun {
     }
 
     public void tick() {
-        if (hasNotRan) {
+        if (!hasRan) {
             log.info("MainRun Running...");
             timer = GenericMethods.getTimeSeconds();
-            hasNotRan = false;
+            hasRan = true;
         }
         if (directoryController.isReloadShowsFile()) showInfoController.loadShowsFile();
         recheck();

@@ -6,7 +6,6 @@ import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.OperatingSystem;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
 
@@ -206,21 +205,21 @@ public class FileManager {
 
     public void exportSettings(Stage stage) {
         log.info("exportSettings has been started.");
-        StringProperty choice = new DualChoiceButtons().multipleButtons(new StringProperty[]{new SimpleStringProperty("Choose what to export:")}, new StringProperty[]{new SimpleStringProperty("All"), new SimpleStringProperty("Program"), new SimpleStringProperty("Users"), new SimpleStringProperty("Directories")}, null, stage); //Todo Add localizations
+        StringProperty choice = new DualChoiceButtons().multipleButtons(new StringProperty[]{Strings.ChooseWhatToExport}, new StringProperty[]{Strings.All, Strings.Program, Strings.Users, Strings.Directories}, null, stage);
         if (choice.getValue().isEmpty()) log.info("No choice was selected, Noting exported");
         else {
             byte[] buffer = new byte[1024];
             try {
-                File file = new File(new TextBox().addDirectory(new SimpleStringProperty("Directory to save export in: "), new ArrayList<>(), stage) + Strings.FileSeparator + "MTackExport.zip"); // Todo Add localization
+                File file = new File(new TextBox().addDirectory(Strings.DirectoryToSaveExportIn, new ArrayList<>(), stage) + Strings.FileSeparator + "MTackExport.zip"); // Todo Add option to name file
                 log.info("Directory to save export in: \"" + file + "\'.");
                 ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
                 ZipEntry zipEntry = new ZipEntry("MTrackSettings");
                 zipOutputStream.putNextEntry(zipEntry);
                 ArrayList<FileInputStream> fileInputStreams = new ArrayList<>();
 
-                if (choice.getValue().matches("All") || choice.getValue().matches("Program Settings"))
+                if (choice.getValue().matches(Strings.All.getValue()) || choice.getValue().matches(Strings.Program.getValue()))
                     fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension));
-                if (choice.getValue().matches("All") || choice.getValue().matches("Directory")) {
+                if (choice.getValue().matches(Strings.All.getValue()) || choice.getValue().matches(Strings.Directories.getValue())) {
                     Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
                         if (aFile.endsWith(Variables.ShowFileExtension)) {
                             try {
@@ -231,7 +230,7 @@ public class FileManager {
                         }
                     });
                 }
-                if (choice.getValue().matches("All") || choice.getValue().matches("User")) {
+                if (choice.getValue().matches(Strings.All.getValue()) || choice.getValue().matches(Strings.Users.getValue())) {
                     Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
                         log.info(aFile);
                         if (aFile.endsWith(Variables.UserFileExtension)) {

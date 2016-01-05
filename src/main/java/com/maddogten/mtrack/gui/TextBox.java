@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -126,7 +127,16 @@ public class TextBox {
         ArrayList<String> directoryPaths = new ArrayList<>();
         currentDirectories.forEach(aDirectory -> directoryPaths.add(String.valueOf(aDirectory.getDirectory())));
         final File[] directories = new File[1];
-        Button submit = new Button();
+        DirectoryChooser DirectoryChooser = new DirectoryChooser();
+
+        Button filePicker = new Button(), submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
+        filePicker.setId("filePicker");
+        filePicker.setOnAction(e -> {
+            File file = DirectoryChooser.showDialog(addDirectoryStage);
+            if (file != null && !file.toString().isEmpty()) {
+                textField.setText(String.valueOf(file));
+            }
+        });
         submit.textProperty().bind(Strings.Submit);
         submit.setOnAction(e -> {
             if (isDirectoryValid(directoryPaths, textField.getText(), addDirectoryStage)) {
@@ -134,22 +144,24 @@ public class TextBox {
                 addDirectoryStage.close();
             }
         });
-        Button exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         exit.setOnAction(e -> {
             directories[0] = new File(Strings.EmptyString);
             addDirectoryStage.close();
         });
 
-        HBox hBox = new HBox();
-        hBox.getChildren().addAll(submit, exit);
+        HBox hBox = new HBox(), hBox1 = new HBox();
+        hBox.getChildren().addAll(textField, filePicker);
         hBox.setAlignment(Pos.CENTER);
-        hBox.setPadding(new Insets(3, 0, 6, 0));
         hBox.setSpacing(3);
+        hBox1.getChildren().addAll(submit, exit);
+        hBox1.setAlignment(Pos.CENTER);
+        hBox1.setSpacing(3);
 
         VBox layout = new VBox();
-        layout.getChildren().addAll(label, textField, hBox);
+        layout.getChildren().addAll(label, hBox, hBox1);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
+        layout.setSpacing(3);
 
         Platform.runLater(() -> {
             new MoveStage().moveStage(layout, oldStage);
@@ -157,7 +169,7 @@ public class TextBox {
         });
 
         Scene scene = new Scene(layout);
-        scene.getStylesheets().add("/gui/GenericStyle.css");
+        scene.getStylesheets().add("/gui/TextBox.css");
 
         addDirectoryStage.setScene(scene);
         addDirectoryStage.show();

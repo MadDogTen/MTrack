@@ -29,7 +29,11 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -272,8 +276,8 @@ public class Settings implements Initializable {
                 String userToDelete = new ListSelectBox().pickDefaultUser(Strings.UserToDelete, users, Strings.EmptyString, (Stage) tabPane.getScene().getWindow());
                 if (userToDelete != null && !userToDelete.isEmpty()) {
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + userToDelete + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
-                    if (confirm)
-                        new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UserFileExtension);
+                    if (confirm && !new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UserFileExtension))
+                        log.info("Wasn't able to delete user file.");
                 }
             }
             setButtonDisable(deleteUser, addDirectory, false);
@@ -353,7 +357,7 @@ public class Settings implements Initializable {
                 log.info("No directories to delete.");
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToDelete}, (Stage) tabPane.getScene().getWindow());
             } else {
-                Directory directoryToDelete = new ListSelectBox().pickDirectory(Strings.DirectoryToDelete, Strings.OpenSelected, directories, (Stage) tabPane.getScene().getWindow());
+                Directory directoryToDelete = new ListSelectBox().pickDirectory(Strings.DirectoryToDelete, directories, (Stage) tabPane.getScene().getWindow());
                 if (directoryToDelete != null && !directoryToDelete.toString().isEmpty()) {
                     log.info("Directory selected for deletion: " + directoryToDelete.getFileName());
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + directoryToDelete.getFileName() + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
@@ -484,10 +488,7 @@ public class Settings implements Initializable {
             ArrayList<String> ignoredShows = userInfoController.getIgnoredShows();
             if (ignoredShows.isEmpty()) log.info("No ignored shows.");
             else {
-                String[] print = new String[ignoredShows.size()];
-                final int[] i = {0};
-                ignoredShows.forEach(ignoredShow -> print[i[0]++] = ignoredShow);
-                log.info(Arrays.toString(print));
+                GenericMethods.printArrayList(Level.INFO, log, ignoredShows, false);
             }
             log.info("Finished printing ignored shows.");
         });
@@ -497,10 +498,7 @@ public class Settings implements Initializable {
             ArrayList<String> hiddenShows = userInfoController.getHiddenShows();
             if (hiddenShows.isEmpty()) log.info("No hidden shows.");
             else {
-                String[] print = new String[hiddenShows.size()];
-                final int[] i = {0};
-                hiddenShows.forEach(hiddenShow -> print[i[0]++] = hiddenShow);
-                log.info(Arrays.toString(print));
+                GenericMethods.printArrayList(Level.INFO, log, hiddenShows, false);
             }
             log.info("Finished printing hidden shows.");
         });
@@ -555,7 +553,7 @@ public class Settings implements Initializable {
             if (directories.isEmpty())
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, (Stage) tabPane.getScene().getWindow());
             else {
-                Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, Strings.Submit, directories, (Stage) tabPane.getScene().getWindow());
+                Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, directories, (Stage) tabPane.getScene().getWindow());
                 if (directoryToClear != null && !directoryToClear.getDirectory().toString().isEmpty()) {
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     if (confirm) {

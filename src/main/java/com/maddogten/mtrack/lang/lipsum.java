@@ -51,6 +51,9 @@ public class lipsum extends Language {
         Strings.Cut.setValue("tu");
         Strings.Copy.setValue("ta");
         Strings.Paste.setValue("te");
+        Strings.All.setValue("frulu");
+        Strings.Program.setValue("datlu");
+        Strings.Directories.setValue("gutma");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("malesuada");
@@ -171,5 +174,8 @@ public class lipsum extends Language {
         Strings.CodedUsingFull.setValue("mecala: " + Strings.CodedUsing);
         Strings.ThereAreNoHiddenShows.setValue("utala");
         Strings.PickShowToUnHide.setValue("hulva");
+        Strings.DirectoryToSaveExportIn.setValue("hulava");
+        Strings.PrintShowInformation.setValue("juluta");
+        Strings.ChooseWhatToExport.setValue("tulima");
     }
 }

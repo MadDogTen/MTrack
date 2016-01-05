@@ -55,6 +55,9 @@ public class Strings {
     public static final StringProperty Cut = new SimpleStringProperty();
     public static final StringProperty Copy = new SimpleStringProperty();
     public static final StringProperty Paste = new SimpleStringProperty();
+    public static final StringProperty All = new SimpleStringProperty();
+    public static final StringProperty Program = new SimpleStringProperty();
+    public static final StringProperty Directories = new SimpleStringProperty();
     // Button Text
     public static final StringProperty SetSeasonEpisode = new SimpleStringProperty();
     public static final StringProperty PlaySeasonEpisode = new SimpleStringProperty();
@@ -172,6 +175,9 @@ public class Strings {
     public static final StringProperty CodedUsingFull = new SimpleStringProperty();
     public static final StringProperty ThereAreNoHiddenShows = new SimpleStringProperty();
     public static final StringProperty PickShowToUnHide = new SimpleStringProperty();
+    public static final StringProperty DirectoryToSaveExportIn = new SimpleStringProperty();
+    public static final StringProperty PrintShowInformation = new SimpleStringProperty();
+    public static final StringProperty ChooseWhatToExport = new SimpleStringProperty();
     // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
     public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
     // All Other Text

@@ -49,6 +49,9 @@ public class en_US extends Language {
         Strings.Cut.setValue("Cut");
         Strings.Copy.setValue("Copy");
         Strings.Paste.setValue("Paste");
+        Strings.All.setValue("All");
+        Strings.Program.setValue("Program");
+        Strings.Directories.setValue("Directories");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("Set Season + Episode");
@@ -170,5 +173,8 @@ public class en_US extends Language {
         Strings.CodedUsingFull.setValue("Coded With: " + Strings.CodedUsing.getValue());
         Strings.ThereAreNoHiddenShows.setValue("There are no hidden shows.");
         Strings.PickShowToUnHide.setValue("Pick show to UnHide...");
+        Strings.DirectoryToSaveExportIn.setValue("Directory to save export in: ");
+        Strings.PrintShowInformation.setValue("Print Show Information");
+        Strings.ChooseWhatToExport.setValue("Choose what to export:");
     }
 }

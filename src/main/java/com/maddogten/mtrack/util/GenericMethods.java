@@ -3,7 +3,9 @@ package com.maddogten.mtrack.util;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -39,6 +41,18 @@ public class GenericMethods {
 
     public static void setIcon(Stage stage) {
         stage.getIcons().add(getImage(Variables.Logo));
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    public static void printArrayList(Level level, Logger log, ArrayList arrayList, boolean splitWithNewLine) {
+        String[] print = new String[arrayList.size()];
+        final int[] i = {0};
+        String newLine;
+        if (splitWithNewLine) newLine = "\n";
+        else newLine = Strings.EmptyString;
+        //noinspection unchecked
+        arrayList.forEach(printString -> print[i[0]++] = newLine + printString.toString());
+        log.log(level, Arrays.toString(print));
     }
 
     // Handles Exceptions

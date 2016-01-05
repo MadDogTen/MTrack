@@ -347,7 +347,8 @@ public class UpdateManager {
                     FileManager fileManager = new FileManager();
                     //noinspection unchecked
                     showsFileHashMap.put(aString, (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowFileExtension));
-                    fileManager.deleteFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowFileExtension);
+                    if (!fileManager.deleteFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowFileExtension))
+                        log.info("Wasn't able to delete directory.");
                 });
                 showsFileHashMap.forEach((directory, aHashMap) -> {
                     Map<String, Show> showsMap = new HashMap<>();
