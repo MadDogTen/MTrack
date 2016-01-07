@@ -63,7 +63,11 @@ public class FirstRun {
                 fileManager.createFolder("");
                 fileManager.createFolder(Variables.DirectoriesFolder);
                 fileManager.createFolder(Variables.UsersFolder);
-            } else if (answer.getValue().matches(Strings.WithTheJar.getValue())) Variables.setDataFolder(jarLocation);
+            } else if (answer.getValue().matches(Strings.WithTheJar.getValue())) {
+                Variables.setDataFolder(jarLocation);
+                fileManager.createFolder(Variables.DirectoriesFolder);
+                fileManager.createFolder(Variables.UsersFolder);
+            }
             boolean hasImportedFiles = false;
             if (new ConfirmBox().confirm(Strings.DoYouWantToImportFiles, null)) {
                 if (fileManager.importSettings(true, null)) {

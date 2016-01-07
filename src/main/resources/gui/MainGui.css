@@ -43,7 +43,3 @@
     -fx-font-size: .92em;
     -fx-font-weight: bold;
 }
-
-.userNameText {
-    -fx-text-fill: red;
-}
