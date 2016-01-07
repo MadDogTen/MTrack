@@ -25,7 +25,7 @@ public class UserInfoController {
     }
 
     public void loadUserInfo() {
-        this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension);
+        this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension);
     }
 
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
@@ -300,7 +300,7 @@ public class UserInfoController {
 
     // Debug setting to print out all the current users settings.
     public void printAllUserInfo() {
-        log.info("Printing all user info for " + Strings.UserName + "...");
+        log.info("Printing all user info for " + Strings.UserName.getValue() + "...");
         String[] print = new String[1 + userSettings.getShowSettings().values().size()];
         final int[] i = {0};
         print[i[0]++] = '\n' + String.valueOf(userSettings.getUserSettingsFileVersion()) + " - " + String.valueOf(userSettings.getUserDirectoryVersion());
@@ -310,7 +310,7 @@ public class UserInfoController {
     }
 
     public void saveUserSettingsFile() {
-        new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension, true);
+        new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, true);
         log.info("userSettingsFile has been saved!");
     }
 }

@@ -177,9 +177,18 @@ public class lipsum extends Language {
         Strings.DirectoryToSaveExportIn.setValue("hulava");
         Strings.PrintShowInformation.setValue("juluta");
         Strings.ChooseWhatToExport.setValue("tulima");
-        Strings.EnterFilename.setValue("Hituma:");
+        Strings.EnterLocationToSaveExport.setValue("Hituma:");
         Strings.FileAlreadyExistsOverwriteIt.setValue("nufva");
         Strings.FilenameMustEndIn.setValue("kiku");
         Strings.YouMustSelectACheckbox.setValue("rulima");
+        Strings.DoYouWantToImportFiles.setValue("chulatu");
+        Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved.setValue("hivaka");
+        Strings.MTrackHasNowImportedTheFiles.setValue("");
+        Strings.AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile.setValue("rania");
+        Strings.AlreadyExistsOverwriteIt.setValue("hucaka");
+        Strings.EnterFileLocation.setValue("nerka");
+        Strings.ExportSettings.setValue("buka");
+        Strings.ImportSettings.setValue("hinu");
+        Strings.FileDoesNotExists.setValue("guluka");
     }
 }

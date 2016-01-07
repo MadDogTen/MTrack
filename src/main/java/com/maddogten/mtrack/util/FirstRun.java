@@ -45,7 +45,7 @@ public class FirstRun {
         this.mainRun = mainRun;
     }
 
-    public void programFirstRun() {
+    public boolean programFirstRun() {
         log.info("First Run, Generating Files...");
         mainRun.getLanguage();
         if (mainRun.continueStarting) {
@@ -60,37 +60,58 @@ public class FirstRun {
             StringProperty answer = new MultiChoice().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
             if (answer.getValue().matches(Strings.InAppData.getValue())) {
                 Variables.setDataFolder(appData);
-                fileManager.createFolder(Variables.ProgramRootFolder);
+                fileManager.createFolder("");
+                fileManager.createFolder(Variables.DirectoriesFolder);
+                fileManager.createFolder(Variables.UsersFolder);
+            } else if (answer.getValue().matches(Strings.WithTheJar.getValue())) Variables.setDataFolder(jarLocation);
+            boolean hasImportedFiles = false;
+            if (new ConfirmBox().confirm(Strings.DoYouWantToImportFiles, null)) {
+                if (fileManager.importSettings(true, null)) {
+                    programSettingsController.loadProgramSettingsFile();
+                    if (programSettingsController.getSettingsFile() != null) {
+                        return true;
+                    } else hasImportedFiles = true;
+                }
             }
-            else if (answer.getValue().matches(Strings.WithTheJar.getValue())) Variables.setDataFolder(jarLocation);
             generateProgramSettingsFile();
             programSettingsController.loadProgramSettingsFile();
             if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
-            addDirectories();
-            Task<Void> task = new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
-                    generateShowFiles();
-                    return null;
-                }
-            };
-            Thread generateShowFilesThread = new Thread(task);
-            generateShowFilesThread.start();
+            boolean directoriesAlreadyAdded = hasImportedFiles && !directoryController.getDirectories().isEmpty();
+            Thread generateShowFilesThread = null;
+            if (!directoriesAlreadyAdded) {
+                addDirectories();
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        generateShowFiles();
+                        return null;
+                    }
+                };
+                generateShowFilesThread = new Thread(task);
+                generateShowFilesThread.start();
+            }
             TextBox textBox = new TextBox();
-            Strings.UserName = textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null);
-            if (Strings.UserName.isEmpty()) mainRun.continueStarting = false;
+            boolean usersAlreadyAdd = hasImportedFiles && !userInfoController.getAllUsers().isEmpty();
+            if (usersAlreadyAdd) Strings.UserName.setValue(mainRun.getUser());
+            else
+                Strings.UserName.setValue(textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null));
+            if (Strings.UserName.getValue().isEmpty()) mainRun.continueStarting = false;
             else {
-            try {
-                generateShowFilesThread.join();
-            } catch (InterruptedException e) {
-                GenericMethods.printStackTrace(log, e, this.getClass());
+                if (!directoriesAlreadyAdded) {
+                    try {
+                        generateShowFilesThread.join();
+                    } catch (InterruptedException e) {
+                        GenericMethods.printStackTrace(log, e, this.getClass());
+                    }
+                }
+                log.info(Strings.UserName.getValue());
+                showInfoController.loadShowsFile();
+                if (!usersAlreadyAdd) generateUserSettingsFile(Strings.UserName.getValue());
+                userInfoController.loadUserInfo();
             }
-            log.info(Strings.UserName);
-            showInfoController.loadShowsFile();
-            generateUserSettingsFile(Strings.UserName);
-            userInfoController.loadUserInfo();
-            }
+
         }
+        return false;
     }
 
     // File Generators

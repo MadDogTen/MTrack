@@ -70,9 +70,8 @@ public class MainRun {
         // If both of those failed or it deleted the files,  Then it starts firstRun.
         if (Variables.dataFolder.toString().isEmpty()) {
             firstRun = true;
-            new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).programFirstRun();
+            needsToRun = new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).programFirstRun();
             firstRun = false;
-            needsToRun = false;
         }
         if (!continueStarting) return false;
         UpdateManager updateManager = new UpdateManager(programSettingsController, showInfoController, userInfoController, directoryController);
@@ -85,10 +84,10 @@ public class MainRun {
                 getLanguage();
                 if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
                 if (!continueStarting) return false;
-                Strings.UserName = getUser();
+                Strings.UserName.setValue(getUser());
                 if (!continueStarting) return false;
-                if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
-                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).generateUserSettingsFile(Strings.UserName);
+                if (!userInfoController.getAllUsers().contains(Strings.UserName.getValue())) {
+                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).generateUserSettingsFile(Strings.UserName.getValue());
                 }
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();
@@ -100,17 +99,17 @@ public class MainRun {
                 getLanguage();
                 if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
                 if (!continueStarting) return false;
-                Strings.UserName = getUser();
+                Strings.UserName.setValue(getUser());
                 if (!continueStarting) return false;
-                if (!userInfoController.getAllUsers().contains(Strings.UserName))
-                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).generateUserSettingsFile(Strings.UserName);
+                if (!userInfoController.getAllUsers().contains(Strings.UserName.getValue()))
+                    new FirstRun(programSettingsController, showInfoController, userInfoController, directoryController, this).generateUserSettingsFile(Strings.UserName.getValue());
                 showInfoController.loadShowsFile();
                 updateManager.updateUserSettingsFile();
                 userInfoController.loadUserInfo();
                 // If those both exists, then it starts normally.
             }
         }
-        log.info("Username is set: " + Strings.UserName);
+        log.info("Username is set: " + Strings.UserName.getValue());
         updateManager.updateMainDirectoryVersion();
         loadSettings();
         return continueStarting;
@@ -159,7 +158,7 @@ public class MainRun {
     }
 
     // This first checks if a DefaultUser currently exists, and if not, prompts the user to choose / create one.
-    private String getUser() {
+    public String getUser() {
         log.info("getUser Running...");
         if (programSettingsController.getSettingsFile().isUseDefaultUser()) {
             log.info("Using default user.");

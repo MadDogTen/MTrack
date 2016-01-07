@@ -152,6 +152,8 @@ public class Settings implements Initializable {
     private Tooltip deleteEverythingAndCloseTooltip;
     @FXML
     private Button exportSettings;
+    @FXML
+    private Button importSettings;
 
     public static Settings getSettings() {
         return settings;
@@ -269,7 +271,7 @@ public class Settings implements Initializable {
         deleteUser.setOnAction(e -> {
             setButtonDisable(deleteUser, addDirectory, true);
             ArrayList<String> users = userInfoController.getAllUsers();
-            users.remove(Strings.UserName);
+            users.remove(Strings.UserName.getValue());
             if (users.isEmpty())
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoOtherUsersToDelete}, (Stage) tabPane.getScene().getWindow());
             else {
@@ -396,7 +398,10 @@ public class Settings implements Initializable {
                     programSettingsController.setTimeToWaitForDirectory(Integer.valueOf(directoryTimeoutTextField.getText()));
             }
         });
-        exportSettings.setOnAction(e -> new FileManager().exportSettings((Stage) tabPane.getScene().getWindow())); // Add text & localizations
+        exportSettings.textProperty().bind(Strings.ExportSettings);
+        exportSettings.setOnAction(e -> new FileManager().exportSettings((Stage) tabPane.getScene().getWindow()));
+        importSettings.textProperty().bind(Strings.ImportSettings);
+        importSettings.setOnAction(e -> new FileManager().importSettings(false, (Stage) tabPane.getScene().getWindow()));
         if (Variables.showOptionToToggleDevMode) {
             if (Variables.devMode) toggleDevMode.setSelected(true);
             toggleDevMode.textProperty().bind(Strings.ToggleDevMode);

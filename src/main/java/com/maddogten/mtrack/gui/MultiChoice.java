@@ -76,6 +76,7 @@ public class MultiChoice {
         else {
             if (messages.length == buttons.size()) {
                 VBox vBox = new VBox();
+                vBox.setAlignment(Pos.CENTER);
                 buttons.forEach(button -> {
                     int index = buttons.indexOf(button);
                     if (messages[index] != null && !messages[index].getValue().isEmpty()) {

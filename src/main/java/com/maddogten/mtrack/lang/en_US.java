@@ -176,9 +176,18 @@ public class en_US extends Language {
         Strings.DirectoryToSaveExportIn.setValue("Directory to save export in: ");
         Strings.PrintShowInformation.setValue("Print Show Information");
         Strings.ChooseWhatToExport.setValue("Choose what to export:");
-        Strings.EnterFilename.setValue("Enter Filename:");
+        Strings.EnterLocationToSaveExport.setValue("Enter Location to save export:");
         Strings.FileAlreadyExistsOverwriteIt.setValue("File already exists, Overwrite it?");
         Strings.FilenameMustEndIn.setValue("Filename must end in: ");
         Strings.YouMustSelectACheckbox.setValue("You must select a checkbox.");
+        Strings.DoYouWantToImportFiles.setValue("Do you want to import files?");
+        Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved.setValue("Do you want to restart the program for the import to take full effect? (Warning: Settings changed outside of import won't be saved)");
+        Strings.MTrackHasNowImportedTheFiles.setValue("MTrack has now imported the files.");
+        Strings.AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile.setValue("Automatically overwrite files? (If no, You will be asked for each existing file)");
+        Strings.AlreadyExistsOverwriteIt.setValue("already exists, Overwrite it?");
+        Strings.EnterFileLocation.setValue("Enter File Location:");
+        Strings.ExportSettings.setValue("Export Settings");
+        Strings.ImportSettings.setValue("Import Settings");
+        Strings.FileDoesNotExists.setValue("File doesn't exists.");
     }
 }

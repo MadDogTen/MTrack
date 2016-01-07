@@ -65,19 +65,19 @@ public class UpdateManager {
     }
 
     public void updateUserSettingsFile() {
-        if (!userInfoController.getAllUsers().contains(Strings.UserName)) {
-            log.info("Attempting to generate settings file for " + Strings.UserName + '.');
+        if (!userInfoController.getAllUsers().contains(Strings.UserName.getValue())) {
+            log.info("Attempting to generate settings file for " + Strings.UserName.getValue() + '.');
             Map<String, UserShowSettings> showSettings = new HashMap<>();
             for (String aShow : showInfoController.getShowsList()) {
                 if (Variables.genUserShowInfoAtFirstFound)
                     showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
                 else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
             }
-            new FileManager().save(new UserSettings(Strings.UserName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension, false);
+            new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
             log.info("User settings file was generated, skipping version check.");
             return;
         }
-        Object userSettingsFile = new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension);
+        Object userSettingsFile = new FileManager().loadFile(Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension);
         if (userSettingsFile instanceof UserSettings) {
             UserSettings userSettings = (UserSettings) userSettingsFile;
             if (Variables.UserSettingsFileVersion == userSettings.getUserSettingsFileVersion())
@@ -268,7 +268,7 @@ public class UpdateManager {
         boolean updated = false;
         String fileType = "User settings";
         if (oldVersion <= 1001) {
-            @SuppressWarnings("unchecked") HashMap<String, HashMap<String, HashMap<String, String>>> oldUserSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension);
+            @SuppressWarnings("unchecked") HashMap<String, HashMap<String, HashMap<String, String>>> oldUserSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension);
             switch (oldVersion) {
                 case -2:
                     HashMap<String, HashMap<String, String>> tempPut;
@@ -308,7 +308,7 @@ public class UpdateManager {
                 case 1001:
                     Map<String, UserShowSettings> showsConverted = new HashMap<>();
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
-                    userSettings = new UserSettings(Strings.UserName, showsConverted, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID());
+                    userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID());
                     updatedText(fileType, 1001, 1002);
                     oldVersion = 1002;
             }
@@ -326,7 +326,7 @@ public class UpdateManager {
         if (updated) {
             // Update User Settings File Version
             userSettings.setUserSettingsFileVersion(newVersion);
-            new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName, Variables.UserFileExtension, true);
+            new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, true);
             log.info("User settings file was successfully updated to version " + newVersion + '.');
         } else log.info("User settings file was not updated. This is an error, please report.");
     }

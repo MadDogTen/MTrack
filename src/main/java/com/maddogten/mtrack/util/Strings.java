@@ -178,14 +178,23 @@ public class Strings {
     public static final StringProperty DirectoryToSaveExportIn = new SimpleStringProperty();
     public static final StringProperty PrintShowInformation = new SimpleStringProperty();
     public static final StringProperty ChooseWhatToExport = new SimpleStringProperty();
-    public static final StringProperty EnterFilename = new SimpleStringProperty();
+    public static final StringProperty EnterLocationToSaveExport = new SimpleStringProperty();
     public static final StringProperty FileAlreadyExistsOverwriteIt = new SimpleStringProperty();
     public static final StringProperty FilenameMustEndIn = new SimpleStringProperty();
     public static final StringProperty YouMustSelectACheckbox = new SimpleStringProperty();
+    public static final StringProperty DoYouWantToImportFiles = new SimpleStringProperty();
+    public static final StringProperty DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved = new SimpleStringProperty();
+    public static final StringProperty MTrackHasNowImportedTheFiles = new SimpleStringProperty();
+    public static final StringProperty AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile = new SimpleStringProperty();
+    public static final StringProperty AlreadyExistsOverwriteIt = new SimpleStringProperty();
+    public static final StringProperty EnterFileLocation = new SimpleStringProperty();
+    public static final StringProperty ExportSettings = new SimpleStringProperty();
+    public static final StringProperty ImportSettings = new SimpleStringProperty();
+    public static final StringProperty FileDoesNotExists = new SimpleStringProperty();
     // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
     public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
+    // Strings set by program
+    public static final StringProperty UserName = new SimpleStringProperty();
     // All Other Text
     public static String DefaultUsername;
-    // Strings set by program
-    public static String UserName;
 }

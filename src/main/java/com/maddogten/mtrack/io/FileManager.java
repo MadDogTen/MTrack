@@ -1,5 +1,8 @@
 package com.maddogten.mtrack.io;
 
+import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.gui.ConfirmBox;
+import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
 import com.maddogten.mtrack.util.GenericMethods;
@@ -18,6 +21,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /*
@@ -209,69 +213,101 @@ public class FileManager {
         ArrayList<String> choices = new MultiChoice().multipleCheckbox(new StringProperty[]{Strings.ChooseWhatToExport}, new StringProperty[]{Strings.All, Strings.Program, Strings.Users, Strings.Directories}, null, Strings.All, false, stage);
         if (choices.isEmpty()) log.info("No choices were selected, Noting exported");
         else {
-            byte[] buffer = new byte[1024];
-            try {
-                File file = new TextBox().pickFile(Strings.EnterFilename, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("Zip File (*.zip)")}, new String[]{".zip"}, stage);
-                if (!file.toString().isEmpty()) {
-                    log.info("Directory to save export in: \"" + file + "\'.");
-                    ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
-                    ZipEntry zipEntry = new ZipEntry("MTrackSettings");
-                    zipOutputStream.putNextEntry(zipEntry);
-                    ArrayList<FileInputStream> fileInputStreams = new ArrayList<>();
-
-                    if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Program.getValue()))
-                        fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension));
-                    if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Directories.getValue())) {
-                        Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
-                            if (aFile.endsWith(Variables.ShowFileExtension)) {
-                                try {
-                                    fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder + Strings.FileSeparator + aFile));
-                                } catch (FileNotFoundException e) {
-                                    GenericMethods.printStackTrace(log, e, FileManager.class);
-                                }
-                            }
-                        });
-                    }
-                    if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Users.getValue())) {
-                        Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
-                            if (aFile.endsWith(Variables.UserFileExtension)) {
-                                try {
-                                    fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile));
-                                } catch (FileNotFoundException e) {
-                                    GenericMethods.printStackTrace(log, e, FileManager.class);
-                                }
-                            }
-                        });
-                    }
-                    fileInputStreams.forEach(fileInputStream -> {
-                        int len;
-                        try {
-                            while ((len = fileInputStream.read(buffer)) > 0) zipOutputStream.write(buffer, 0, len);
-                            fileInputStream.close();
-                        } catch (IOException e) {
-                            GenericMethods.printStackTrace(log, e, FileManager.class);
+            ArrayList<String> fileList = new ArrayList<>();
+            if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Program.getValue()))
+                fileList.add(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension);
+            if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Directories.getValue())) {
+                Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
+                            if (aFile.endsWith(Variables.ShowFileExtension))
+                                fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder + Strings.FileSeparator + aFile);
                         }
-                    });
-                    zipOutputStream.closeEntry();
-                    zipOutputStream.close();
+                );
+            }
+            if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Users.getValue())) {
+                Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
+                    if (aFile.endsWith(Variables.UserFileExtension))
+                        fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile);
+                });
+            }
+
+            if (fileList.isEmpty()) log.info("Nothing found to export - Must be an error.");
+            else {
+                try {
+                    File file = new TextBox().pickFile(Strings.EnterLocationToSaveExport, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, true, stage);
+                    if (!file.toString().isEmpty()) {
+                        log.info("Directory to save export in: \"" + file + "\'.");
+                        byte[] buffer = new byte[1024];
+                        FileOutputStream fileOutputStream = new FileOutputStream(file);
+                        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+                        fileList.forEach(file1 -> {
+                            try {
+                                File srcFile = new File(file1);
+                                FileInputStream fileInputStream = new FileInputStream(srcFile);
+                                String nameTrimmed = srcFile.getPath().substring(Variables.dataFolder.getPath().length() + 1, srcFile.getPath().length());
+                                log.info(nameTrimmed);
+                                zipOutputStream.putNextEntry(new ZipEntry(nameTrimmed));
+                                int length;
+                                while ((length = fileInputStream.read(buffer)) > 0) {
+                                    zipOutputStream.write(buffer, 0, length);
+                                }
+                                zipOutputStream.closeEntry();
+                                fileInputStream.close();
+                            } catch (Exception e) {
+                                GenericMethods.printStackTrace(log, e, FileManager.class);
+                            }
+                        });
+                        zipOutputStream.close();
+                        fileOutputStream.close();
+                    }
+                } catch (Exception e) {
+                    GenericMethods.printStackTrace(log, e, FileManager.class);
                 }
-            } catch (IOException e) {
-                GenericMethods.printStackTrace(log, e, FileManager.class);
             }
         }
         log.info("exportSettings has finished.");
     }
 
-    /*public void importSettings() {
-        byte[] buffer = new byte[1024];
-        try {
-            ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(""));
-            ZipEntry zipEntry = zipInputStream.getNextEntry();
-            while (zipEntry != null) {
-                String fileName = zipEntry.getName();
+    public boolean importSettings(boolean firstRun, Stage stage) {
+        log.info("importSettings has been started.");
+        boolean result = false;
+        File importFile = new TextBox().pickFile(Strings.EnterFileLocation, new SimpleStringProperty(Strings.EmptyString), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, false, stage);
+        if (importFile.toString().isEmpty()) log.info("importFile was empty, Nothing imported.");
+        else {
+            try {
+                byte[] buffer = new byte[2048];
+                ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(importFile));
+                ZipEntry zipEntry = zipInputStream.getNextEntry();
+                boolean autoOverwrite = firstRun || new ConfirmBox().confirm(Strings.AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile, stage);
+                while (zipEntry != null) {
+                    String entryName = zipEntry.getName();
+                    File file = new File(Variables.dataFolder + Strings.FileSeparator + entryName);
+                    log.info("Next file to be imported: \"" + file + '\"');
+                    if (!file.exists() || (autoOverwrite || new ConfirmBox().confirm(new SimpleStringProperty(Strings.Warning.getValue() + " \"" + entryName + "\" " + Strings.AlreadyExistsOverwriteIt.getValue()), stage))) {
+                        if (zipEntry.isDirectory()) log.info(file + " is a directory.");
+                        else {
+                            FileOutputStream fileOutputStream = new FileOutputStream(file);
+                            int count;
+                            while ((count = zipInputStream.read(buffer)) > 0) {
+                                fileOutputStream.write(buffer, 0, count);
+                            }
+                            fileOutputStream.close();
+                        }
+                        log.info("File imported successfully.");
+                    } else log.info("File wasn't imported.");
+                    zipInputStream.closeEntry();
+                    zipEntry = zipInputStream.getNextEntry();
+                }
+                zipInputStream.closeEntry();
+                zipInputStream.close();
+                result = true;
+            } catch (Exception e) {
+                GenericMethods.printStackTrace(log, e, FileManager.class);
             }
-        } catch (IOException e) {
-            GenericMethods.printStackTrace(log, e, FileManager.class);
+            if (!firstRun && new ConfirmBox().confirm(Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved, stage))
+                Main.stop(stage, true, false);
+            else new MessageBox().message(new StringProperty[]{Strings.MTrackHasNowImportedTheFiles}, stage);
         }
-    }*/
+        log.info("importSettings has finished.");
+        return result;
+    }
 }

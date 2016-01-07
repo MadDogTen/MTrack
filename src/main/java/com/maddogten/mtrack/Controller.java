@@ -27,6 +27,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -108,6 +110,8 @@ public class Controller implements Initializable {
     private Tooltip show0RemainingCheckBoxTooltip;
     @FXML
     private Tooltip isCurrentlyRecheckingTooltip;
+    @FXML
+    private Text userName;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
@@ -454,6 +458,9 @@ public class Controller implements Initializable {
                     return row;
                 }
         );
+
+        userName.textProperty().bind(Strings.UserName);
+        userName.setFill(Color.DIMGRAY);
 
         // ~~~~ Search TextField ~~~~ \\
         // The ContextMenu *really* isn't needed, But I wanted to make the clearTextField button to properly disappear and appear when needed. Using a Task would have been much easier...

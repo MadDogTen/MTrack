@@ -57,9 +57,11 @@ Added Settings Button to UnHide shows. (Under "Show" tab)
 Added ability to set the language as default during startup.
 Added ability to set the default user during startup.
 Added Exit button to Settings Add User.
-Added ability to export Program Related Settings (All, Program Settings, Users, or Directories). Cannot currently import them.
+Added ability to export Program Related Settings (All, Program Settings, Users, or Directories).
+Added ability to import files that have been exported.
 Added button to directory adder that opens a directory picking dialog.
 Added Stage for multiple checkboxes.
+Added option to import settings on firstRun. |||| It is very satisfying when something works the first time.
 
 Fixes:
 Will now properly switch to new seasons when found.

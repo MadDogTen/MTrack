@@ -201,10 +201,19 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.DirectoryToSaveExportIn);
         findAndSetMissingStrings(Strings.PrintShowInformation);
         findAndSetMissingStrings(Strings.ChooseWhatToExport);
-        findAndSetMissingStrings(Strings.EnterFilename);
+        findAndSetMissingStrings(Strings.EnterLocationToSaveExport);
         findAndSetMissingStrings(Strings.FileAlreadyExistsOverwriteIt);
         findAndSetMissingStrings(Strings.FilenameMustEndIn);
         findAndSetMissingStrings(Strings.YouMustSelectACheckbox);
+        findAndSetMissingStrings(Strings.DoYouWantToImportFiles);
+        findAndSetMissingStrings(Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved);
+        findAndSetMissingStrings(Strings.MTrackHasNowImportedTheFiles);
+        findAndSetMissingStrings(Strings.AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile);
+        findAndSetMissingStrings(Strings.AlreadyExistsOverwriteIt);
+        findAndSetMissingStrings(Strings.EnterFileLocation);
+        findAndSetMissingStrings(Strings.ExportSettings);
+        findAndSetMissingStrings(Strings.ImportSettings);
+        findAndSetMissingStrings(Strings.FileDoesNotExists);
         log.info("Finished checking for missing strings.");
     }
 

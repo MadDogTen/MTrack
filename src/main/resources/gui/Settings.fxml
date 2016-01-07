@@ -77,7 +77,8 @@
                                 <TextField fx:id="directoryTimeoutTextField" layoutX="79.0" layoutY="110.0" prefHeight="25.0" prefWidth="36.0"/>
                                 <Text fx:id="directoryTimeoutText" layoutX="45.0" layoutY="98.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Directory Timeout (Seconds):"/>
                                 <ToggleButton fx:id="toggleDevMode" layoutX="74.0" layoutY="209.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0" text="Toggle Dev"/>
-                                <Button fx:id="exportSettings" layoutX="67.0" layoutY="160.0" mnemonicParsing="false" text="Export Settings"/>
+                                <Button fx:id="exportSettings" layoutX="26.0" layoutY="160.0" mnemonicParsing="false" text="Export Settings"/>
+                                <Button fx:id="importSettings" layoutX="125.0" layoutY="160.0" mnemonicParsing="false" text="Import Settings"/>
                             </children>
                         </AnchorPane>
                     </content>
