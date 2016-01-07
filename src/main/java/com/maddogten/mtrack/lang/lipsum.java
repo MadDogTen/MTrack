@@ -177,5 +177,9 @@ public class lipsum extends Language {
         Strings.DirectoryToSaveExportIn.setValue("hulava");
         Strings.PrintShowInformation.setValue("juluta");
         Strings.ChooseWhatToExport.setValue("tulima");
+        Strings.EnterFilename.setValue("Hituma:");
+        Strings.FileAlreadyExistsOverwriteIt.setValue("nufva");
+        Strings.FilenameMustEndIn.setValue("kiku");
+        Strings.YouMustSelectACheckbox.setValue("rulima");
     }
 }

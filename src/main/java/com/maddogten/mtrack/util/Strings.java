@@ -178,6 +178,10 @@ public class Strings {
     public static final StringProperty DirectoryToSaveExportIn = new SimpleStringProperty();
     public static final StringProperty PrintShowInformation = new SimpleStringProperty();
     public static final StringProperty ChooseWhatToExport = new SimpleStringProperty();
+    public static final StringProperty EnterFilename = new SimpleStringProperty();
+    public static final StringProperty FileAlreadyExistsOverwriteIt = new SimpleStringProperty();
+    public static final StringProperty FilenameMustEndIn = new SimpleStringProperty();
+    public static final StringProperty YouMustSelectACheckbox = new SimpleStringProperty();
     // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
     public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
     // All Other Text

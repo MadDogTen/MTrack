@@ -21,6 +21,7 @@ import javafx.stage.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /*
@@ -193,7 +194,7 @@ public class TextBox {
         return false;
     }
 
-    public File pickFile(StringProperty message, StringProperty defaultFilename, StringProperty extensionText, String[] extensions, Stage oldStage) {
+    public File pickFile(StringProperty message, StringProperty defaultFilename, StringProperty[] extensionText, String[] extensions, Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage pickFile = new Stage();
@@ -212,7 +213,11 @@ public class TextBox {
         final File[] directories = new File[1];
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialFileName(defaultFilename.getValue());
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(extensionText.getValue(), extensions));
+        int i = 0;
+        for (String aExtension : extensions) {
+            fileChooser.getExtensionFilters().add(i, new FileChooser.ExtensionFilter(extensionText[i].getValue(), '*' + aExtension));
+            i++;
+        }
 
         Button filePicker = new Button(), submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         filePicker.setId("filePicker");
@@ -224,7 +229,7 @@ public class TextBox {
         });
         submit.textProperty().bind(Strings.Submit);
         submit.setOnAction(e -> {
-            if (isFileNameValid(textField.getText(), pickFile)) {
+            if (isFileNameValid(textField.getText(), extensions, pickFile)) {
                 directories[0] = new File(textField.getText());
                 pickFile.close();
             }
@@ -269,12 +274,19 @@ public class TextBox {
         return directories[0];
     }
 
-    private boolean isFileNameValid(String fileName, Stage oldStage) {
+    private boolean isFileNameValid(String fileName, String[] extensions, Stage oldStage) {
         log.fine("isDirectoryValid has been called.");
-        if (fileName.endsWith(".zip"))
-            return !new File(fileName).isFile() || new ConfirmBox().confirm(new SimpleStringProperty("File already exists, Overwrite it?"), oldStage); // Todo Add Localizations
+        boolean properExtension = false;
+        for (String extension : extensions) {
+            if (fileName.endsWith(extension)) {
+                properExtension = true;
+                break;
+            }
+        }
+        if (properExtension)
+            return !new File(fileName).isFile() || new ConfirmBox().confirm(Strings.FileAlreadyExistsOverwriteIt, oldStage);
         else
-            new MessageBox().message(new StringProperty[]{new SimpleStringProperty("Filename must end in .zip")}, oldStage); // Todo Make message support multiple file extensions.
+            new MessageBox().message(new StringProperty[]{new SimpleStringProperty(Strings.FilenameMustEndIn.getValue() + Arrays.toString(extensions))}, oldStage);
         return false;
     }
 }

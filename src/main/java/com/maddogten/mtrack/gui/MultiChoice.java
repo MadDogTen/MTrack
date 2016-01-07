@@ -151,6 +151,7 @@ public class MultiChoice {
             layout.getChildren().add(i, checkBoxes.get(i));
             i++;
         }
+        checkBoxes.get(0).setSelected(true);
 
         if (tooltips != null && tooltips.length == checkBoxes.size()) {
             checkBoxes.forEach(button -> {
@@ -185,12 +186,19 @@ public class MultiChoice {
             checkBoxes.forEach(checkBox -> {
                 if (checkBox.isSelected()) result.add(checkBox.textProperty().getValue());
             });
-            multipleCheckbox.close();
+            if (result.isEmpty())
+                new MessageBox().message(new StringProperty[]{Strings.YouMustSelectACheckbox}, multipleCheckbox);
+            else multipleCheckbox.close();
         });
         Button exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         exit.setOnAction(e -> multipleCheckbox.close());
 
-        mainLayout.getChildren().addAll(submit, exit);
+        HBox buttonsHBox = new HBox();
+        buttonsHBox.setAlignment(Pos.CENTER);
+        buttonsHBox.setSpacing(3);
+        buttonsHBox.getChildren().addAll(submit, exit);
+
+        mainLayout.getChildren().add(buttonsHBox);
         mainLayout.setPadding(new Insets(6, 6, 6, 6));
         mainLayout.setSpacing(3);
         mainLayout.setAlignment(Pos.CENTER);

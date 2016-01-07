@@ -211,48 +211,50 @@ public class FileManager {
         else {
             byte[] buffer = new byte[1024];
             try {
-                File file = new TextBox().pickFile(new SimpleStringProperty("Enter Filename"), new SimpleStringProperty("MTrackExport"), new SimpleStringProperty("Zip files (*.zip)"), new String[]{"*.zip"}, stage);// TODO Do this in a better, non-lazy way.
-                log.info("Directory to save export in: \"" + file + "\'.");
-                ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
-                ZipEntry zipEntry = new ZipEntry("MTrackSettings");
-                zipOutputStream.putNextEntry(zipEntry);
-                ArrayList<FileInputStream> fileInputStreams = new ArrayList<>();
+                File file = new TextBox().pickFile(Strings.EnterFilename, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("Zip File (*.zip)")}, new String[]{".zip"}, stage);
+                if (!file.toString().isEmpty()) {
+                    log.info("Directory to save export in: \"" + file + "\'.");
+                    ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
+                    ZipEntry zipEntry = new ZipEntry("MTrackSettings");
+                    zipOutputStream.putNextEntry(zipEntry);
+                    ArrayList<FileInputStream> fileInputStreams = new ArrayList<>();
 
-                if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Program.getValue()))
-                    fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension));
-                if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Directories.getValue())) {
-                    Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
-                        if (aFile.endsWith(Variables.ShowFileExtension)) {
-                            try {
-                                fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder + Strings.FileSeparator + aFile));
-                            } catch (FileNotFoundException e) {
-                                GenericMethods.printStackTrace(log, e, FileManager.class);
+                    if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Program.getValue()))
+                        fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension));
+                    if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Directories.getValue())) {
+                        Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
+                            if (aFile.endsWith(Variables.ShowFileExtension)) {
+                                try {
+                                    fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder + Strings.FileSeparator + aFile));
+                                } catch (FileNotFoundException e) {
+                                    GenericMethods.printStackTrace(log, e, FileManager.class);
+                                }
                             }
-                        }
-                    });
-                }
-                if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Users.getValue())) {
-                    Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
-                        if (aFile.endsWith(Variables.UserFileExtension)) {
-                            try {
-                                fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile));
-                            } catch (FileNotFoundException e) {
-                                GenericMethods.printStackTrace(log, e, FileManager.class);
-                            }
-                        }
-                    });
-                }
-                fileInputStreams.forEach(fileInputStream -> {
-                    int len;
-                    try {
-                        while ((len = fileInputStream.read(buffer)) > 0) zipOutputStream.write(buffer, 0, len);
-                        fileInputStream.close();
-                    } catch (IOException e) {
-                        GenericMethods.printStackTrace(log, e, FileManager.class);
+                        });
                     }
-                });
-                zipOutputStream.closeEntry();
-                zipOutputStream.close();
+                    if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Users.getValue())) {
+                        Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
+                            if (aFile.endsWith(Variables.UserFileExtension)) {
+                                try {
+                                    fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile));
+                                } catch (FileNotFoundException e) {
+                                    GenericMethods.printStackTrace(log, e, FileManager.class);
+                                }
+                            }
+                        });
+                    }
+                    fileInputStreams.forEach(fileInputStream -> {
+                        int len;
+                        try {
+                            while ((len = fileInputStream.read(buffer)) > 0) zipOutputStream.write(buffer, 0, len);
+                            fileInputStream.close();
+                        } catch (IOException e) {
+                            GenericMethods.printStackTrace(log, e, FileManager.class);
+                        }
+                    });
+                    zipOutputStream.closeEntry();
+                    zipOutputStream.close();
+                }
             } catch (IOException e) {
                 GenericMethods.printStackTrace(log, e, FileManager.class);
             }

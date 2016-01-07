@@ -175,5 +175,9 @@ public class template extends Language {
         Strings.DirectoryToSaveExportIn.setValue("");
         Strings.PrintShowInformation.setValue("");
         Strings.ChooseWhatToExport.setValue("");
+        Strings.EnterFilename.setValue("");
+        Strings.FileAlreadyExistsOverwriteIt.setValue("");
+        Strings.FilenameMustEndIn.setValue("");
+        Strings.YouMustSelectACheckbox.setValue("");
     }
 }

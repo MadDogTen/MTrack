@@ -201,6 +201,10 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.DirectoryToSaveExportIn);
         findAndSetMissingStrings(Strings.PrintShowInformation);
         findAndSetMissingStrings(Strings.ChooseWhatToExport);
+        findAndSetMissingStrings(Strings.EnterFilename);
+        findAndSetMissingStrings(Strings.FileAlreadyExistsOverwriteIt);
+        findAndSetMissingStrings(Strings.FilenameMustEndIn);
+        findAndSetMissingStrings(Strings.YouMustSelectACheckbox);
         log.info("Finished checking for missing strings.");
     }
 

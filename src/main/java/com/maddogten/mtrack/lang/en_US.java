@@ -176,5 +176,9 @@ public class en_US extends Language {
         Strings.DirectoryToSaveExportIn.setValue("Directory to save export in: ");
         Strings.PrintShowInformation.setValue("Print Show Information");
         Strings.ChooseWhatToExport.setValue("Choose what to export:");
+        Strings.EnterFilename.setValue("Enter Filename:");
+        Strings.FileAlreadyExistsOverwriteIt.setValue("File already exists, Overwrite it?");
+        Strings.FilenameMustEndIn.setValue("Filename must end in: ");
+        Strings.YouMustSelectACheckbox.setValue("You must select a checkbox.");
     }
 }
