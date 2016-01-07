@@ -16,7 +16,7 @@ public class ChangeReporter {
 
     // This first saves the current list, Reinitialize changes as the the old length + 1, Adds the newInfo to changes[0], then iterates thorough the rest adding them started at changes[1].
     public static void addChange(String newInfo) {
-        log.info("Adding new change...");
+        log.info("Adding new change: \"" + newInfo + "\".");
         String[] currentList = changes;
         changes = new String[currentList.length + 1];
         changes[0] = newInfo;

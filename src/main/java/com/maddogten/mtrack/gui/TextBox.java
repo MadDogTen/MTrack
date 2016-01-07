@@ -107,7 +107,7 @@ public class TextBox {
         return false;
     }
 
-    public File addDirectory(StringProperty message, ArrayList<Directory> currentDirectories, Stage oldStage) {
+    public File addDirectory(@SuppressWarnings("SameParameterValue") StringProperty message, ArrayList<Directory> currentDirectories, Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage addDirectoryStage = new Stage();

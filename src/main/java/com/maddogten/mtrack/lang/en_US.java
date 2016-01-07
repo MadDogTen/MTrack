@@ -92,6 +92,7 @@ public class en_US extends Language {
         Strings.UnHideShow.setValue("UnHide Show");
         Strings.OpenAll.setValue("Open All");
         Strings.OpenSelected.setValue("Open Selected");
+        Strings.NonForceRecheckShows.setValue("Non-Force Recheck Shows");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("Inactive Shows");

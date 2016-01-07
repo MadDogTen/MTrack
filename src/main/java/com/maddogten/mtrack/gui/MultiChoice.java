@@ -113,6 +113,7 @@ public class MultiChoice {
         return answer[0];
     }
 
+    @SuppressWarnings("SameParameterValue")
     public ArrayList<String> multipleCheckbox(StringProperty[] messages, StringProperty[] choices, StringProperty[] tooltips, StringProperty isAll, boolean onlyOneAllowed, Stage parentStage) {
         log.fine("dualChoiceButtons has been opened.");
 

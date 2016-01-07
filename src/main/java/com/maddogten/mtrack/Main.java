@@ -15,6 +15,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.logging.Filter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -110,6 +112,19 @@ public class Main extends Application implements Runnable {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Logger stuff // Logging to a file works, Just need to figure out how exactly I want to do it. Disabled until  then.
+        //FileHandler fileHandler = new FileHandler("");
+        Logger rootLog = Logger.getLogger("");
+        rootLog.setLevel(Level.FINEST);
+        rootLog.getHandlers()[0].setLevel(Level.FINEST);
+        //rootLog.addHandler(fileHandler);
+        //fileHandler.setFormatter(new SimpleFormatter());
+        Filter filter = record -> record.getSourceClassName().contains("com.maddogten.mtrack");
+        //fileHandler.setFilter(filter);
+        rootLog.setFilter(filter);
+        rootLog.getHandlers()[0].setFilter(filter);
+        // End logger stuff
+
         boolean continueStarting = mainRun.startBackend();
         if (continueStarting) {
             stage = primaryStage;

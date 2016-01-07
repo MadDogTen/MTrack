@@ -100,9 +100,11 @@ public class CheckShowFiles {
                 activeDirectories.forEach(aDirectory -> {
                     boolean checkAllShows = forceRun || runNumber % Variables.checkAllNonIgnoredShowsInterval == 0;
                     double percentageSplit = percentagePerDirectory[0] / 6, percentagePerShow;
-                    if (checkAllShows)
-                        percentagePerShow = (percentageSplit * 4) / userInfoController.getAllNonIgnoredShows().size();
-                    else percentagePerShow = (percentageSplit * 4) / userInfoController.getActiveShows().size();
+                    int numberOfShows = 0;
+                    if (checkAllShows) numberOfShows = userInfoController.getAllNonIgnoredShows().size();
+                    else numberOfShows = userInfoController.getActiveShows().size();
+                    if (numberOfShows == 0) numberOfShows = 1;
+                    percentagePerShow = (percentageSplit * 4) / numberOfShows;
                     log.info("Directory currently being rechecked: \"" + aDirectory.getDirectory() + "\".");
                     ArrayList<String> removedShows = new ArrayList<>();
                     // Check if any shows were removed.
@@ -116,7 +118,7 @@ public class CheckShowFiles {
                     ArrayList<String> showsToBeChecked;
                     if (checkAllShows) showsToBeChecked = userInfoController.getAllNonIgnoredShows();
                     else showsToBeChecked = userInfoController.getActiveShows();
-                    if (showsToBeChecked.isEmpty()) recheckShowFilePercentage += percentagePerDirectory[0];
+                    if (showsToBeChecked.isEmpty()) recheckShowFilePercentage += percentagePerShow;
                     else
                         updatedShows.addAll(checkShows(aDirectory, fileManager, aDirectory.getDirectory(), percentagePerShow, hasChanged, aDirectory.getShows(), showsToBeChecked, forceRun));
                     if ((Main.programFullyRunning && forceRun) || !stopRunning) {
@@ -236,7 +238,10 @@ public class CheckShowFiles {
         ArrayList<Integer> newSeasons = new FindShows().findSeasons(folderLocation, aShow);
         Iterator<Integer> newSeasonsIterator = newSeasons.iterator();
         while (newSeasonsIterator.hasNext()) {
-            if (isSeasonEmpty(aShow, newSeasonsIterator.next(), folderLocation)) newSeasonsIterator.remove();
+            int newSeason = newSeasonsIterator.next();
+            if (oldSeasons.contains(newSeason)) {
+                if (showsFile.get(aShow).getSeason(newSeason).getEpisodes().isEmpty()) newSeasonsIterator.remove();
+            } else if (isSeasonEmpty(aShow, newSeason, folderLocation)) newSeasonsIterator.remove();
         }
         Set<Integer> changedSeasons = new HashSet<>();
         changedSeasons.addAll(oldSeasons.stream().filter(aOldSeason -> !newSeasons.contains(aOldSeason)).collect(Collectors.toList()));

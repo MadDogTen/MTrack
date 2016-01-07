@@ -203,12 +203,12 @@ public class UpdateManager {
                     temp2.add(2, "48");
                     temp2.add(3, "50");
                     oldProgramSettingsFile.put("GuiNumberSettings", temp2);
-                    temp2.clear();
-                    temp2.add(0, "true");
-                    temp2.add(1, "true");
-                    temp2.add(2, "false");
-                    temp2.add(3, "false");
-                    oldProgramSettingsFile.put("GuiBooleanSettings", temp2);
+                    ArrayList<String> temp3 = new ArrayList<>();
+                    temp3.add(0, "true");
+                    temp3.add(1, "true");
+                    temp3.add(2, "false");
+                    temp3.add(3, "false");
+                    oldProgramSettingsFile.put("GuiBooleanSettings", temp3);
                     updatedText(fileType, 1007, 1008);
                 case 1008:
                     programSettings.setProgramSettingsFileVersion(newVersion);

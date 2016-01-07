@@ -120,6 +120,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.UnHideShow);
         findAndSetMissingStrings(Strings.OpenAll);
         findAndSetMissingStrings(Strings.OpenSelected);
+        findAndSetMissingStrings(Strings.NonForceRecheckShows);
         // Checkbox Text
         findAndSetMissingStrings(Strings.InactiveShows);
         findAndSetMissingStrings(Strings.OlderSeasons);

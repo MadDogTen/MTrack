@@ -51,6 +51,7 @@ public class Settings implements Initializable {
     @SuppressWarnings("unused")
     @FXML
     private Pane pane;
+    @SuppressWarnings("unused")
     @FXML
     private TabPane tabPane;
     @FXML
@@ -154,6 +155,8 @@ public class Settings implements Initializable {
     private Button exportSettings;
     @FXML
     private Button importSettings;
+    @FXML
+    private Button nonForceRecheckShows;
 
     public static Settings getSettings() {
         return settings;
@@ -551,6 +554,19 @@ public class Settings implements Initializable {
         printAllUserInfo.setOnAction(e -> userInfoController.printAllUserInfo());
         add1ToDirectoryVersion.textProperty().bind(Strings.DirectoryVersionPlus1);
         add1ToDirectoryVersion.setOnAction(e -> programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1));
+        nonForceRecheckShows.textProperty().bind(Strings.NonForceRecheckShows);
+        nonForceRecheckShows.setOnAction(e -> {
+            setButtonDisable(nonForceRecheckShows, null, true);
+            Task<Void> task = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    checkShowFiles.recheckShowFile(false);
+                    setButtonDisable(nonForceRecheckShows, null, false);
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        });
         clearFile.textProperty().bind(Strings.ClearFile);
         clearFile.setOnAction(e -> {
             setButtonDisable(clearFile, null, true);

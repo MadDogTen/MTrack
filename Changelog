@@ -73,6 +73,7 @@ Fixed bug with adding new directories.
 Fixed button spacing on stages.
 Fixed Stages appearing in the center of the screen before moving.
 Fixed Reset Program not properly removing files if stored in jar's location. (Dev only until I'm confident that any issues with it are solved)
+Fixed mistake where it was unnecessarily searching for episodes twice.
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

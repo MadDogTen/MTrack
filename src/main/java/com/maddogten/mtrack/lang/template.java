@@ -92,6 +92,7 @@ public class template extends Language {
         Strings.All.setValue("");
         Strings.Program.setValue("");
         Strings.Directories.setValue("");
+        Strings.NonForceRecheckShows.setValue("");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("");

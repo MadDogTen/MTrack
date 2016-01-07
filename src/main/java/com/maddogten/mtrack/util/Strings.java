@@ -97,6 +97,7 @@ public class Strings {
     public static final StringProperty UnHideShow = new SimpleStringProperty();
     public static final StringProperty OpenAll = new SimpleStringProperty();
     public static final StringProperty OpenSelected = new SimpleStringProperty();
+    public static final StringProperty NonForceRecheckShows = new SimpleStringProperty();
     // Checkbox Text
     public static final StringProperty InactiveShows = new SimpleStringProperty();
     public static final StringProperty OlderSeasons = new SimpleStringProperty();

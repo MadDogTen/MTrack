@@ -25,7 +25,7 @@ public class FindShows {
     }
 
     public final ArrayList<Integer> findSeasons(File dir, String show) {
-        log.finest("Searching for seasons...");
+        log.finest("Searching for seasons for: " + show + '.');
         ArrayList<String> showFolder = new ArrayList<>(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
         ArrayList<Integer> seasonNumber = new ArrayList<>(showFolder.size());
         Pattern pattern = Pattern.compile(Strings.seasonRegex);
@@ -33,13 +33,12 @@ public class FindShows {
             Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());
             if (matcher.find()) seasonNumber.add(Integer.parseInt(matcher.group().toLowerCase().split(" ")[1]));
         });
-        log.finest("Finished searching for seasons.");
         return seasonNumber;
     }
 
-    public final ArrayList<String> findEpisodes(File dir, String ShowName, Integer Season) {
-        log.finest("Searching for episodes...");
-        File folder = new File(dir + Strings.FileSeparator + ShowName + Strings.FileSeparator + Strings.Season.getValue() + ' ' + Season);
+    public final ArrayList<String> findEpisodes(File dir, String ShowName, Integer season) {
+        log.finest("Searching for episodes for: " + ShowName + " || Season: " + season + '.');
+        File folder = new File(dir + Strings.FileSeparator + ShowName + Strings.FileSeparator + Strings.Season.getValue() + ' ' + season);
         if (new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
             return new ArrayList<>(Arrays.asList(folder.list((dir1, name) -> {
                 for (String extension : Variables.showExtensions)
@@ -48,7 +47,6 @@ public class FindShows {
                     }
                 return false;
             })));
-        log.finest("Finished searching for episodes.");
         return new ArrayList<>();
     }
 }
