@@ -40,8 +40,8 @@ public class DirectoryController {
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
     public ArrayList<Directory> getActiveDirectories(boolean skipFoundInactiveDirectories) {
-        ArrayList<Directory> activeDirectories = new ArrayList<>();
         ArrayList<Directory> untestedDirectories = getDirectories();
+        ArrayList<Directory> activeDirectories = new ArrayList<>(untestedDirectories.size());
         if (skipFoundInactiveDirectories) {
             log.info("skipFoundInactiveDirectories was true, Skipping known inactive directories.");
             if (inactiveDirectories.isEmpty()) log.info("inactiveDirectories was empty, checking all directories.");

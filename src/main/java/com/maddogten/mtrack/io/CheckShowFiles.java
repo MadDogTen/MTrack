@@ -30,13 +30,13 @@ public class CheckShowFiles {
     private final UserInfoController userInfoController;
     private final DirectoryController directoryController;
     private final FindShows findShows = new FindShows();
+    // emptyShows - This is populated with folders that the checking has found are empty, and combined with runNumber, prevents these from unnecessarily being checked.
+    private final ArrayList<String> emptyShows = new ArrayList<>();
     // recheckShowFileRunning - If the method is currently running, then this will be true and stop other non-forced checks from running.
     // keepRunning - This will be true if the program is doing a normal run currently, or false if not running, or currently being forced ran. If recheckShowFileRunning is true, and this is false, it will ignore further force run attempts.
     // currentlyCheckingDirectories - This is true when it is checking if the folders exist / is waiting for a response. Otherwise it is false. This is to show a notification when it is running. Used by the Controller.
     // stopRunning - True either when the program is shutting down, or a forceRun is stopping a normal run. When it is true, recheckShowFile stops what it is doing and discards everything.
     private boolean recheckShowFileRunning = false, keepRunning = false, currentlyCheckingDirectories = false, stopRunning = false;
-    // emptyShows - This is populated with folders that the checking has found are empty, and combined with runNumber, prevents these from unnecessarily being checked.
-    private ArrayList<String> emptyShows = new ArrayList<>();
     // runNumber - 1 is added to this each time hasShowsChanged is ran. This is used so that the above emptyShows are only checked when the program is first started, or every 5 runs after that.
     private int runNumber = 0;
     // recheckShowFilePercentage - Is increased as recheckShowFile is running. The percentage is currently split between each directory, and then that is further split by each active show (Plus 2 shows worth is reserved when checking for new shows). Used by the controller.
@@ -224,7 +224,7 @@ public class CheckShowFiles {
             newEpisodesListFixed.add(EpisodeInfo[0]);
             if (EpisodeInfo.length == 2) newEpisodesListFixed.add(EpisodeInfo[1]);
         });
-        ArrayList<Integer> changedEpisodes = new ArrayList<>();
+        ArrayList<Integer> changedEpisodes = new ArrayList<>(oldEpisodeList.size() + newEpisodesListFixed.size());
         changedEpisodes.addAll(oldEpisodeList.stream().filter(aOldEpisode -> !newEpisodesListFixed.contains(aOldEpisode)).collect(Collectors.toList()));
         changedEpisodes.addAll(newEpisodesListFixed.stream().filter(newEpisode -> !oldEpisodeList.contains(newEpisode)).collect(Collectors.toList()));
         return changedEpisodes;
@@ -276,7 +276,7 @@ public class CheckShowFiles {
             double percentagePer = percentIncrease / showsToCheck.size();
             showsToCheck.forEach(aShow -> {
                 if (forceRun || runNumber % Variables.recheckPreviouslyFoundEmptyShowsInterval == 0)
-                    emptyShows = new ArrayList<>();
+                    emptyShows.clear();
                 if (Main.programFullyRunning && !oldShows.contains(aShow) && !emptyShows.contains(aShow) || ignoredShows.contains(aShow) && !emptyShows.contains(aShow)) {
                     log.info("Currently checking if new & valid: " + aShow);
                     Map<Integer, Season> seasonEpisode = putSeasonInMap(aShow, folderLocation);

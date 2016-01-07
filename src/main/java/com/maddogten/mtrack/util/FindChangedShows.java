@@ -30,7 +30,7 @@ public class FindChangedShows {
     public void findShowFileDifferences(Map<String, Show> newShowsFile) {
         log.info("findShowFileDifferences running...");
         final boolean[] hasChanged = {false};
-        ArrayList<String> showsFound = new ArrayList<>();
+        ArrayList<String> showsFound = new ArrayList<>(showsFile.size());
         showsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
             if (newShowsFile.containsKey(aShow)) showsFound.add(aShow);
             else {
@@ -42,7 +42,7 @@ public class FindChangedShows {
         showsFound.forEach(aShowFound -> {
             boolean recordShowInformation = userInfoController.isShowActive(aShowFound) || Variables.recordChangesForNonActiveShows;
             int currentSeason = userInfoController.getCurrentSeason(aShowFound);
-            ArrayList<Integer> seasonsFound = new ArrayList<>();
+            ArrayList<Integer> seasonsFound = new ArrayList<>(showsFile.get(aShowFound).getSeasons().size());
             showsFile.get(aShowFound).getSeasons().forEach((aSeason, aIntegerHashMap) -> {
                 boolean recordSeason = aSeason >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent;
                 if (newShowsFile.get(aShowFound).getSeasons().containsKey(aSeason)) {
@@ -63,7 +63,7 @@ public class FindChangedShows {
                 }
             }));
         });
-        ArrayList<String> showsFoundOld = new ArrayList<>();
+        ArrayList<String> showsFoundOld = new ArrayList<>(newShowsFile.size());
         newShowsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
             if (showsFile.containsKey(aShow)) showsFoundOld.add(aShow);
             else {
@@ -75,7 +75,7 @@ public class FindChangedShows {
         showsFoundOld.forEach(aShowFound -> {
             boolean recordShowInformation = userInfoController.isShowActive(aShowFound) || Variables.recordChangesForNonActiveShows;
             int currentSeason = userInfoController.getCurrentSeason(aShowFound);
-            ArrayList<Integer> seasonsFoundOld = new ArrayList<>();
+            ArrayList<Integer> seasonsFoundOld = new ArrayList<>(newShowsFile.get(aShowFound).getSeasons().size());
             newShowsFile.get(aShowFound).getSeasons().forEach((aSeason, aIntegerHashMap) -> {
                 boolean recordSeason = aSeason >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent;
                 if (showsFile.get(aShowFound).getSeasons().containsKey(aSeason)) {

@@ -59,6 +59,7 @@ Added ability to set the default user during startup.
 Added Exit button to Settings Add User.
 Added ability to export Program Related Settings (All, Program Settings, Users, or Directories). Cannot currently import them.
 Added button to directory adder that opens a directory picking dialog.
+Added Stage for multiple checkboxes.
 
 Fixes:
 Will now properly switch to new seasons when found.

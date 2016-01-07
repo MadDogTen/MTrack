@@ -1,11 +1,12 @@
 package com.maddogten.mtrack.io;
 
-import com.maddogten.mtrack.gui.DualChoiceButtons;
+import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.OperatingSystem;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
 
@@ -205,21 +206,21 @@ public class FileManager {
 
     public void exportSettings(Stage stage) {
         log.info("exportSettings has been started.");
-        StringProperty choice = new DualChoiceButtons().multipleButtons(new StringProperty[]{Strings.ChooseWhatToExport}, new StringProperty[]{Strings.All, Strings.Program, Strings.Users, Strings.Directories}, null, stage);
-        if (choice.getValue().isEmpty()) log.info("No choice was selected, Noting exported");
+        ArrayList<String> choices = new MultiChoice().multipleCheckbox(new StringProperty[]{Strings.ChooseWhatToExport}, new StringProperty[]{Strings.All, Strings.Program, Strings.Users, Strings.Directories}, null, Strings.All, false, stage);
+        if (choices.isEmpty()) log.info("No choices were selected, Noting exported");
         else {
             byte[] buffer = new byte[1024];
             try {
-                File file = new File(new TextBox().addDirectory(Strings.DirectoryToSaveExportIn, new ArrayList<>(), stage) + Strings.FileSeparator + "MTackExport.zip"); // Todo Add option to name file
+                File file = new TextBox().pickFile(new SimpleStringProperty("Enter Filename"), new SimpleStringProperty("MTrackExport"), new SimpleStringProperty("Zip files (*.zip)"), new String[]{"*.zip"}, stage);// TODO Do this in a better, non-lazy way.
                 log.info("Directory to save export in: \"" + file + "\'.");
                 ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(file));
                 ZipEntry zipEntry = new ZipEntry("MTrackSettings");
                 zipOutputStream.putNextEntry(zipEntry);
                 ArrayList<FileInputStream> fileInputStreams = new ArrayList<>();
 
-                if (choice.getValue().matches(Strings.All.getValue()) || choice.getValue().matches(Strings.Program.getValue()))
+                if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Program.getValue()))
                     fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension));
-                if (choice.getValue().matches(Strings.All.getValue()) || choice.getValue().matches(Strings.Directories.getValue())) {
+                if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Directories.getValue())) {
                     Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
                         if (aFile.endsWith(Variables.ShowFileExtension)) {
                             try {
@@ -230,9 +231,8 @@ public class FileManager {
                         }
                     });
                 }
-                if (choice.getValue().matches(Strings.All.getValue()) || choice.getValue().matches(Strings.Users.getValue())) {
+                if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Users.getValue())) {
                     Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
-                        log.info(aFile);
                         if (aFile.endsWith(Variables.UserFileExtension)) {
                             try {
                                 fileInputStreams.add(new FileInputStream(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile));
@@ -245,9 +245,7 @@ public class FileManager {
                 fileInputStreams.forEach(fileInputStream -> {
                     int len;
                     try {
-                        while ((len = fileInputStream.read(buffer)) > 0) {
-                            zipOutputStream.write(buffer, 0, len);
-                        }
+                        while ((len = fileInputStream.read(buffer)) > 0) zipOutputStream.write(buffer, 0, len);
                         fileInputStream.close();
                     } catch (IOException e) {
                         GenericMethods.printStackTrace(log, e, FileManager.class);

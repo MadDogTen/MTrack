@@ -176,7 +176,7 @@ public class UpdateManager {
                     updatedText(fileType, 1001, 1002);
                 case 1002:
                     if (oldProgramSettingsFile.containsKey("Directories")) {
-                        ArrayList<String> directories = new ArrayList<>();
+                        ArrayList<String> directories = new ArrayList<>(oldProgramSettingsFile.get("Directories").size());
                         oldProgramSettingsFile.get("Directories").forEach(aDirectory -> {
                             int index = oldProgramSettingsFile.get("Directories").indexOf(aDirectory);
                             directories.add(index + ">" + aDirectory);
@@ -203,8 +203,7 @@ public class UpdateManager {
                     temp2.add(2, "48");
                     temp2.add(3, "50");
                     oldProgramSettingsFile.put("GuiNumberSettings", temp2);
-                    //noinspection ReuseOfLocalVariable
-                    temp2 = new ArrayList<>();
+                    temp2.clear();
                     temp2.add(0, "true");
                     temp2.add(1, "true");
                     temp2.add(2, "false");

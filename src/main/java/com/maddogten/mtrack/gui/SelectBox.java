@@ -34,7 +34,7 @@ public class SelectBox {
         Label label = new Label();
         label.setText(message);
 
-        ArrayList<Button> buttons = new ArrayList<>();
+        ArrayList<Button> buttons = new ArrayList<>(buttonsText.length);
         for (String aString : buttonsText) buttons.add(new Button(aString));
         Button close = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         final String[] answer = new String[1];

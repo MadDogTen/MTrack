@@ -59,7 +59,7 @@ public class ChangesBox {
         listView.setEditable(false);
 
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        final ArrayList<String[]> changes = new ArrayList<>();
+        final ArrayList<String[]> changes = new ArrayList<>(ChangeReporter.getChanges().length);
         changes.add(0, ChangeReporter.getChanges());
         observableList.addAll(changes.get(0));
         listView.setItems(observableList);

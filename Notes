@@ -6,10 +6,10 @@
 Current:
 Code Cleanup.
 Add comments to more things.
+Add option to import exported files.
 
 
 Short Term:
-Add console to see log output.
 
 
 Long Term:
@@ -17,6 +17,7 @@ Make a show flash when the amount remaining is changed.
 Save log files in a log directory.
 Handle all "Note-" tasks.
 Remove lipsum fully and template from loading.
+Add console to see log output.
 
 
 May Add:

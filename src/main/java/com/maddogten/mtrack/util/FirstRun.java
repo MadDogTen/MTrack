@@ -2,8 +2,8 @@ package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.MainRun;
 import com.maddogten.mtrack.gui.ConfirmBox;
-import com.maddogten.mtrack.gui.DualChoiceButtons;
 import com.maddogten.mtrack.gui.MessageBox;
+import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
 import com.maddogten.mtrack.information.DirectoryController;
 import com.maddogten.mtrack.information.ProgramSettingsController;
@@ -57,7 +57,7 @@ public class FirstRun {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
             File appData = fileManager.findProgramFolder();
-            StringProperty answer = new DualChoiceButtons().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
+            StringProperty answer = new MultiChoice().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
             if (answer.getValue().matches(Strings.InAppData.getValue())) {
                 Variables.setDataFolder(appData);
                 fileManager.createFolder(Variables.ProgramRootFolder);

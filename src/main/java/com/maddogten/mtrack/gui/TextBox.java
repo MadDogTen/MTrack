@@ -6,6 +6,7 @@ import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,10 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -124,7 +122,7 @@ public class TextBox {
         TextField textField = new TextField();
         textField.setPromptText(Strings.FileSeparator + Strings.PathToDirectory.getValue() + Strings.FileSeparator + Strings.Shows.getValue());
 
-        ArrayList<String> directoryPaths = new ArrayList<>();
+        ArrayList<String> directoryPaths = new ArrayList<>(currentDirectories.size());
         currentDirectories.forEach(aDirectory -> directoryPaths.add(String.valueOf(aDirectory.getDirectory())));
         final File[] directories = new File[1];
         DirectoryChooser DirectoryChooser = new DirectoryChooser();
@@ -192,6 +190,91 @@ public class TextBox {
         else if (directory.isEmpty())
             new MessageBox().message(new StringProperty[]{Strings.YouNeedToEnterADirectory}, oldStage);
         else new MessageBox().message(new StringProperty[]{Strings.DirectoryIsInvalid}, oldStage);
+        return false;
+    }
+
+    public File pickFile(StringProperty message, StringProperty defaultFilename, StringProperty extensionText, String[] extensions, Stage oldStage) {
+        log.fine("addDirectory has been opened.");
+
+        Stage pickFile = new Stage();
+        if (oldStage != null) pickFile.initOwner(oldStage);
+        pickFile.initStyle(StageStyle.UNDECORATED);
+        pickFile.initModality(Modality.APPLICATION_MODAL);
+        pickFile.setMinWidth(250);
+        GenericMethods.setIcon(pickFile);
+
+        Label label = new Label();
+        label.textProperty().bind(message);
+
+        TextField textField = new TextField();
+        textField.setPromptText(Strings.FileSeparator + Strings.PathToDirectory.getValue() + Strings.FileSeparator + Strings.Shows.getValue());
+
+        final File[] directories = new File[1];
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName(defaultFilename.getValue());
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(extensionText.getValue(), extensions));
+
+        Button filePicker = new Button(), submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
+        filePicker.setId("filePicker");
+        filePicker.setOnAction(e -> {
+            File file = fileChooser.showSaveDialog(pickFile);
+            if (file != null && !file.toString().isEmpty()) {
+                textField.setText(String.valueOf(file));
+            }
+        });
+        submit.textProperty().bind(Strings.Submit);
+        submit.setOnAction(e -> {
+            if (isFileNameValid(textField.getText(), pickFile)) {
+                directories[0] = new File(textField.getText());
+                pickFile.close();
+            }
+        });
+        exit.setOnAction(e -> {
+            directories[0] = new File(Strings.EmptyString);
+            pickFile.close();
+        });
+
+        HBox hBox = new HBox(), hBox1 = new HBox();
+        hBox.getChildren().addAll(textField, filePicker);
+        hBox.setAlignment(Pos.CENTER);
+        hBox.setSpacing(3);
+        hBox1.getChildren().addAll(submit, exit);
+        hBox1.setAlignment(Pos.CENTER);
+        hBox1.setSpacing(3);
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, hBox, hBox1);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(6, 6, 6, 6));
+        layout.setSpacing(3);
+
+        Platform.runLater(() -> {
+            new MoveStage().moveStage(layout, oldStage);
+            pickFile.requestFocus();
+        });
+
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/TextBox.css");
+
+        pickFile.setScene(scene);
+        pickFile.show();
+        pickFile.hide();
+        if (pickFile.getOwner() != null) {
+            pickFile.setX(pickFile.getOwner().getX() + (pickFile.getOwner().getWidth() / 2) - (pickFile.getWidth() / 2));
+            pickFile.setY(pickFile.getOwner().getY() + (pickFile.getOwner().getHeight() / 2) - (pickFile.getHeight() / 2));
+        }
+        pickFile.showAndWait();
+
+        log.fine("addDirectory has been closed.");
+        return directories[0];
+    }
+
+    private boolean isFileNameValid(String fileName, Stage oldStage) {
+        log.fine("isDirectoryValid has been called.");
+        if (fileName.endsWith(".zip"))
+            return !new File(fileName).isFile() || new ConfirmBox().confirm(new SimpleStringProperty("File already exists, Overwrite it?"), oldStage); // Todo Add Localizations
+        else
+            new MessageBox().message(new StringProperty[]{new SimpleStringProperty("Filename must end in .zip")}, oldStage); // Todo Make message support multiple file extensions.
         return false;
     }
 }

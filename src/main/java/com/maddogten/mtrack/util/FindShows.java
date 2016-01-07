@@ -27,7 +27,7 @@ public class FindShows {
     public final ArrayList<Integer> findSeasons(File dir, String show) {
         log.finest("Searching for seasons...");
         ArrayList<String> showFolder = new ArrayList<>(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
-        ArrayList<Integer> seasonNumber = new ArrayList<>();
+        ArrayList<Integer> seasonNumber = new ArrayList<>(showFolder.size());
         Pattern pattern = Pattern.compile(Strings.seasonRegex);
         showFolder.forEach(aShowFolder -> {
             Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());

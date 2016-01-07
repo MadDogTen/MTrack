@@ -31,10 +31,10 @@ public class UserInfoController {
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
     public ArrayList<String> getAllUsers() {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
-        ArrayList<String> users = new ArrayList<>();
+        ArrayList<String> users = new ArrayList<>(folder.list().length);
         if (new FileManager().checkFolderExistsAndReadable(folder))
             Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UserFileExtension) && !name.toLowerCase().matches("Program"))));
-        ArrayList<String> usersCleaned = new ArrayList<>();
+        ArrayList<String> usersCleaned = new ArrayList<>(users.size());
         users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UserFileExtension, Strings.EmptyString)));
         return usersCleaned;
     }
@@ -46,7 +46,7 @@ public class UserInfoController {
     }
 
     public ArrayList<String> getIgnoredShows() {
-        ArrayList<String> ignoredShows = new ArrayList<>();
+        ArrayList<String> ignoredShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (showSettings.isIgnored()) ignoredShows.add(showSettings.getShowName());
         });
@@ -63,7 +63,7 @@ public class UserInfoController {
     }
 
     public ArrayList<String> getActiveShows() {
-        ArrayList<String> activeShows = new ArrayList<>();
+        ArrayList<String> activeShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden())
                 activeShows.add(showSettings.getShowName());
@@ -73,7 +73,7 @@ public class UserInfoController {
 
     // Returns all the shows that the user isn't currently watching. (Other than ignored or hidden shows)
     public ArrayList<String> getInactiveShows() {
-        ArrayList<String> inActiveShows = new ArrayList<>();
+        ArrayList<String> inActiveShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (!showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden())
                 inActiveShows.add(showSettings.getShowName());
@@ -83,7 +83,7 @@ public class UserInfoController {
 
     // Returns all the shows the program currently has being tracked.
     public ArrayList<String> getAllNonIgnoredShows() {
-        ArrayList<String> nonIgnoredShows = new ArrayList<>();
+        ArrayList<String> nonIgnoredShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (!showSettings.isIgnored()) nonIgnoredShows.add(showSettings.getShowName());
         });
@@ -97,7 +97,7 @@ public class UserInfoController {
     }
 
     public ArrayList<String> getHiddenShows() {
-        ArrayList<String> hiddenShows = new ArrayList<>();
+        ArrayList<String> hiddenShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (showSettings.isHidden() && !showSettings.isIgnored()) hiddenShows.add(showSettings.getShowName());
         });
@@ -245,7 +245,7 @@ public class UserInfoController {
     public int getRemainingNumberOfEpisodes(String aShow, ShowInfoController showInfoController) {
         int remaining = 0, currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
         Set<Integer> allSeasons = showInfoController.getSeasonsList(aShow);
-        ArrayList<Integer> allSeasonAllowed = new ArrayList<>();
+        ArrayList<Integer> allSeasonAllowed = new ArrayList<>(allSeasons.size());
         allSeasons.forEach(aSeason -> {
             if (aSeason >= currentSeason) allSeasonAllowed.add(aSeason);
         });
@@ -256,11 +256,11 @@ public class UserInfoController {
                 if (aSeason == currentSeason) episode = currentEpisode;
                 Set<Integer> episodes = showInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                 if (!episodes.isEmpty()) {
-                    ArrayList<Integer> episodesArray = new ArrayList<>();
+                    ArrayList<Integer> episodesArray = new ArrayList<>(episodes.size());
                     episodes.forEach(episodesArray::add);
                     Collections.sort(episodesArray);
                     Iterator<Integer> episodesIterator = episodesArray.iterator();
-                    ArrayList<Integer> episodesAllowed = new ArrayList<>();
+                    ArrayList<Integer> episodesAllowed = new ArrayList<>(episodesArray.size());
                     if (aSeason == currentSeason) {
                         while (episodesIterator.hasNext()) {
                             int next = episodesIterator.next();
