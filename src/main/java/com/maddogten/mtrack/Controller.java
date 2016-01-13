@@ -463,6 +463,7 @@ public class Controller implements Initializable {
                 }
         );
 
+        userName.setVisible(userInfoController.getUserSettings().isShowUsername());
         userName.textProperty().bind(Strings.UserName);
         userName.setFill(Color.DIMGRAY);
 
@@ -624,7 +625,7 @@ public class Controller implements Initializable {
                 return null;
             }
         };
-        new Thread(secondaryTask).start(); //
+        new Thread(secondaryTask).start();
     }
 
     private void openChangeBox() {
