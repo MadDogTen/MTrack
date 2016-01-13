@@ -126,6 +126,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.OlderSeasons);
         findAndSetMissingStrings(Strings.AllowFullWindowMovementUse);
         findAndSetMissingStrings(Strings.DisableAutomaticShowSearching);
+        findAndSetMissingStrings(Strings.ShowUsername);
         // Tooltip Text
         findAndSetMissingStrings(Strings.ShowHiddenShowsWith0EpisodeLeft);
         findAndSetMissingStrings(Strings.CurrentlyRechecking);

@@ -246,6 +246,10 @@ public class Controller implements Initializable {
         return settingsWindow;
     }
 
+    public static void setShowUsernameVisibility(boolean isVisible) {
+        controller.userName.setVisible(isVisible);
+    }
+
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
     private void setTableView() {
         FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
@@ -620,7 +624,7 @@ public class Controller implements Initializable {
                 return null;
             }
         };
-        new Thread(secondaryTask).start();
+        new Thread(secondaryTask).start(); //
     }
 
     private void openChangeBox() {

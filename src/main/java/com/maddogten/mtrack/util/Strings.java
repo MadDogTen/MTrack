@@ -103,6 +103,7 @@ public class Strings {
     public static final StringProperty OlderSeasons = new SimpleStringProperty();
     public static final StringProperty AllowFullWindowMovementUse = new SimpleStringProperty();
     public static final StringProperty DisableAutomaticShowSearching = new SimpleStringProperty();
+    public static final StringProperty ShowUsername = new SimpleStringProperty();
     // Tooltip Text
     public static final StringProperty ShowHiddenShowsWith0EpisodeLeft = new SimpleStringProperty();
     public static final StringProperty CurrentlyRechecking = new SimpleStringProperty();

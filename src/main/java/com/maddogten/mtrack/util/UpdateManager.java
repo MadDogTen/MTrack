@@ -73,7 +73,7 @@ public class UpdateManager {
                     showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
                 else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
             }
-            new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
+            new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings, true, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
             log.info("User settings file was generated, skipping version check.");
             return;
         }
@@ -308,7 +308,7 @@ public class UpdateManager {
                 case 1001:
                     Map<String, UserShowSettings> showsConverted = new HashMap<>();
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
-                    userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID());
+                    userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted, true, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID());
                     updatedText(fileType, 1001, 1002);
                     oldVersion = 1002;
             }
@@ -318,9 +318,13 @@ public class UpdateManager {
         }
         switch (oldVersion) {
             case 1002:
-                assert userSettings != null;
+                //noinspection ConstantConditions
                 userSettings.setChanges(new String[0]);
                 updatedText(fileType, 1002, 1003);
+            case 1003:
+                //noinspection ConstantConditions
+                userSettings.setShowUsername(true);
+                updatedText(fileType, 1003, 1004);
                 updated = true;
         }
         if (updated) {

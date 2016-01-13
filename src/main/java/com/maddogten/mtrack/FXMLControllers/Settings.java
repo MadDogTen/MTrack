@@ -157,6 +157,8 @@ public class Settings implements Initializable {
     private Button importSettings;
     @FXML
     private Button nonForceRecheckShows;
+    @FXML
+    private CheckBox showUsername;
 
     public static Settings getSettings() {
         return settings;
@@ -265,7 +267,7 @@ public class Settings implements Initializable {
                         showSettings.put(aShow, new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
                     else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
                 }
-                new FileManager().save(new UserSettings(userName, showSettings, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
+                new FileManager().save(new UserSettings(userName, showSettings, true, new String[0], programSettingsController.getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
                 log.info(userName + " was added.");
             }
             setButtonDisable(addUser, deleteUser, false);
@@ -442,6 +444,12 @@ public class Settings implements Initializable {
             stage.close();
             Platform.runLater(() -> Controller.openSettingsWindow(3));
             log.info("MoveAndBlock has been set to: " + programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
+        });
+        showUsername.textProperty().bind(Strings.ShowUsername);
+        showUsername.setSelected(userInfoController.getUserSettings().isShowUsername());
+        showUsername.setOnAction(e -> {
+            userInfoController.getUserSettings().setShowUsername(showUsername.isSelected());
+            Controller.setShowUsernameVisibility(userInfoController.getUserSettings().isShowUsername());
         });
         changeLanguage.textProperty().bind(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {

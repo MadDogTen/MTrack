@@ -99,6 +99,7 @@ public class en_US extends Language {
         Strings.OlderSeasons.setValue("Older Seasons");
         Strings.AllowFullWindowMovementUse.setValue("Allow Full Window Movement/Use");
         Strings.DisableAutomaticShowSearching.setValue("Disable Automatic Show Searching");
+        Strings.ShowUsername.setValue("Show Username");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("Show/Hide shows with 0 episode left.");

@@ -25,17 +25,22 @@ public class UserSettings implements Serializable {
     @SuppressWarnings({"CanBeFinal", "FieldMayBeFinal"})
     private Map<String, UserShowSettings> showSettings;
 
+    // Options
+    private boolean showUsername;
+
     // Changes List
     private String[] changes;
 
     @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused", "FieldMayBeFinal"})
     private long lastProgramID;
 
-    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, String[] changes, long lastProgramID) {
+    @SuppressWarnings("SameParameterValue")
+    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, boolean showUsername, String[] changes, long lastProgramID) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
         this.showSettings = showSettings;
+        this.showUsername = showUsername;
         this.changes = changes;
         this.lastProgramID = lastProgramID;
     }
@@ -72,6 +77,14 @@ public class UserSettings implements Serializable {
 
     public UserShowSettings getAShowSettings(String aShow) {
         return showSettings.get(aShow);
+    }
+
+    public boolean isShowUsername() {
+        return showUsername;
+    }
+
+    public void setShowUsername(boolean showUsername) {
+        this.showUsername = showUsername;
     }
 
     public String[] getChanges() {

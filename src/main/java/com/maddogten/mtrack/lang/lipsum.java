@@ -101,6 +101,7 @@ public class lipsum extends Language {
         Strings.OlderSeasons.setValue("avartu");
         Strings.AllowFullWindowMovementUse.setValue("hula");
         Strings.DisableAutomaticShowSearching.setValue("nomano");
+        Strings.ShowUsername.setValue("numalulu");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("sollicitudin");

@@ -99,6 +99,7 @@ public class template extends Language {
         Strings.OlderSeasons.setValue("");
         Strings.AllowFullWindowMovementUse.setValue("");
         Strings.DisableAutomaticShowSearching.setValue("");
+        Strings.ShowUsername.setValue("");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("");

@@ -50,8 +50,8 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Button fx:id="forceRecheck" layoutX="61.0" layoutY="25.0" mnemonicParsing="false" text="Force Recheck Shows"/>
-                                <Button fx:id="unHideShow" layoutX="81.0" layoutY="73.0" mnemonicParsing="false" text="UnHide Show"/>
+                                <Button fx:id="forceRecheck" layoutX="60.0" layoutY="24.0" mnemonicParsing="false" text="Force Recheck Shows"/>
+                                <Button fx:id="unHideShow" layoutX="81.0" layoutY="72.0" mnemonicParsing="false" text="UnHide Show"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -60,8 +60,9 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <CheckBox fx:id="unlockParentScene" layoutX="18.0" layoutY="35.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0" text="Allow Full Window Movement/Use"/>
+                                <CheckBox fx:id="unlockParentScene" layoutX="19.0" layoutY="24.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0" text="Allow Full Window Movement/Use"/>
                                 <Button fx:id="changeLanguage" layoutX="70.0" layoutY="250.0" mnemonicParsing="false" text="Change Language"/>
+                                <CheckBox fx:id="showUsername" layoutX="73.0" layoutY="60.0" mnemonicParsing="false" text="Show Username"/>
                             </children>
                         </AnchorPane>
                     </content>
