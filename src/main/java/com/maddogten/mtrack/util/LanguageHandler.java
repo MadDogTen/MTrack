@@ -216,6 +216,8 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.ExportSettings);
         findAndSetMissingStrings(Strings.ImportSettings);
         findAndSetMissingStrings(Strings.FileDoesNotExists);
+        findAndSetMissingStrings(Strings.CurrentlyPlaying);
+        findAndSetMissingStrings(Strings.WasUnableToPlayTheEpisode);
         log.info("Finished checking for missing strings.");
     }
 

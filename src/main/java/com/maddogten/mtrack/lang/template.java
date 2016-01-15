@@ -190,5 +190,7 @@ public class template extends Language {
         Strings.ExportSettings.setValue("");
         Strings.ImportSettings.setValue("");
         Strings.FileDoesNotExists.setValue("");
+        Strings.CurrentlyPlaying.setValue("");
+        Strings.WasUnableToPlayTheEpisode.setValue("");
     }
 }

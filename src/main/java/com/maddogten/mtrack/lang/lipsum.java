@@ -192,5 +192,7 @@ public class lipsum extends Language {
         Strings.ExportSettings.setValue("buka");
         Strings.ImportSettings.setValue("hinu");
         Strings.FileDoesNotExists.setValue("guluka");
+        Strings.CurrentlyPlaying.setValue("Nunuwa");
+        Strings.WasUnableToPlayTheEpisode.setValue("Hiculatu");
     }
 }

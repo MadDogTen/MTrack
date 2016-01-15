@@ -45,20 +45,7 @@ public class Main extends Application implements Runnable {
         boolean answer = true;
         if (!forceStop) answer = confirmBox.confirm(Strings.AreYouSure, stage);
         if (answer) {
-            if (saveSettings) {
-                programSettingsController.getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
-                programSettingsController.getSettingsFile().setShowColumnVisibility(Controller.getShowColumnVisibility());
-                programSettingsController.getSettingsFile().setRemainingColumnWidth(Controller.getRemainingColumnWidth());
-                programSettingsController.getSettingsFile().setRemainingColumnVisibility(Controller.getRemainingColumnVisibility());
-                programSettingsController.getSettingsFile().setSeasonColumnWidth(Controller.getSeasonColumnWidth());
-                programSettingsController.getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
-                programSettingsController.getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
-                programSettingsController.getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
-                programSettingsController.getSettingsFile().setNumberOfDirectories(directoryController.getDirectories().size());
-                userInfoController.getUserSettings().setChanges(ChangeReporter.getChanges());
-                programSettingsController.saveSettingsFile();
-                userInfoController.saveUserSettingsFile();
-            }
+            if (saveSettings) saveSettings();
             programFullyRunning = false;
             programRunning = false;
             int timeRan = GenericMethods.timeTakenSeconds(timer);
@@ -75,6 +62,7 @@ public class Main extends Application implements Runnable {
             Platform.exit();
             Controller.closeChangeBoxStage();
             Controller.getSettingsWindow().closeSettings();
+            Controller.closeShowPlayingBoxStage();
             if (stage != null) stage.close();
             if (thread != null) {
                 try {
@@ -84,6 +72,21 @@ public class Main extends Application implements Runnable {
                 }
             }
         }
+    }
+
+    private static void saveSettings() {
+        programSettingsController.getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
+        programSettingsController.getSettingsFile().setShowColumnVisibility(Controller.getShowColumnVisibility());
+        programSettingsController.getSettingsFile().setRemainingColumnWidth(Controller.getRemainingColumnWidth());
+        programSettingsController.getSettingsFile().setRemainingColumnVisibility(Controller.getRemainingColumnVisibility());
+        programSettingsController.getSettingsFile().setSeasonColumnWidth(Controller.getSeasonColumnWidth());
+        programSettingsController.getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
+        programSettingsController.getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
+        programSettingsController.getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
+        programSettingsController.getSettingsFile().setNumberOfDirectories(directoryController.getDirectories().size());
+        userInfoController.getUserSettings().setChanges(ChangeReporter.getChanges());
+        programSettingsController.saveSettingsFile();
+        userInfoController.saveUserSettingsFile();
     }
 
     public static ProgramSettingsController getProgramSettingsController() {
@@ -112,7 +115,7 @@ public class Main extends Application implements Runnable {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Logger stuff // Logging to a file works, Just need to figure out how exactly I want to do it. Disabled until  then.
+        // Logger stuff // Logging to a file works, Just need to figure out how exactly I want to do it. Disabled until then.
         //FileHandler fileHandler = new FileHandler("");
         Logger rootLog = Logger.getLogger("");
         rootLog.setLevel(Level.FINEST);
@@ -158,7 +161,7 @@ public class Main extends Application implements Runnable {
                     stackTrace[i] = exception.getStackTrace()[i].toString();
                 log.severe(Arrays.toString(stackTrace));
 
-                //Note- Temporarily suppressing these until I figure out how to solve the issue.*/
+                //Note- Temporarily suppressing these until I figure out how to solve a issue with the controller.*/
             });
             thread.start();
         }

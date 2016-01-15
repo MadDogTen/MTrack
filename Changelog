@@ -38,6 +38,7 @@ Changed some buttons to disable and re-enable their "pair" button as well (Ex. A
 Changed the Open File Location to only be one stage.
 Changed MainRun getLanguage select to preselect the default language when choosing.
 Changed Program font. Not final.
+Changed renamed ShowConfirmBox into ShowPlayingBox and completely changed how it works. Moved code out of the controller and into it.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -64,6 +65,7 @@ Added Stage for multiple checkboxes.
 Added option to import settings on firstRun. |||| It is very satisfying when something works the first time.
 Added current active username to the top of the main stage.
 Added per user setting to hide the username.
+Added information about the current show, season, and episode in the ShowPlayingBox stage.
 
 Fixes:
 Will now properly switch to new seasons when found.

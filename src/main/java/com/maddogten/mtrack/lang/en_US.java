@@ -191,5 +191,7 @@ public class en_US extends Language {
         Strings.ExportSettings.setValue("Export Settings");
         Strings.ImportSettings.setValue("Import Settings");
         Strings.FileDoesNotExists.setValue("File doesn't exists.");
+        Strings.CurrentlyPlaying.setValue("Currently Playing:");
+        Strings.WasUnableToPlayTheEpisode.setValue("Was unable to play the episode.");
     }
 }

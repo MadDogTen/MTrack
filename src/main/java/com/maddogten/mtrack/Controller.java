@@ -33,6 +33,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -61,6 +62,7 @@ public class Controller implements Initializable {
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
     private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
     private final ChangesBox changesBox = new ChangesBox();
+    private final ShowPlayingBox showPlayingBox = new ShowPlayingBox();
     @SuppressWarnings("unused")
     @FXML
     private Pane pane;
@@ -228,8 +230,13 @@ public class Controller implements Initializable {
     }
 
     public static void closeChangeBoxStage() {
-        log.fine("ChangeBox was open, closing...");
+        log.fine("Closing ChangeBox if open...");
         if (controller != null) controller.changesBox.closeStage();
+    }
+
+    public static void closeShowPlayingBoxStage() {
+        log.fine("Closing ShowPlayingBox if open...");
+        if (controller != null) controller.showPlayingBox.closeStage();
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -425,38 +432,15 @@ public class Controller implements Initializable {
                             }
                         }
                         if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && (!row.isEmpty()) && currentList.matches("active")) {
-                            String aShow = row.getItem().getShow();
-                            boolean keepPlaying = true;
-                            isShowCurrentlyPlaying = true;
-                            while (keepPlaying) {
-                                if (userInfoController.doesEpisodeExistInShowFile(aShow)) {
-                                    userInfoController.playAnyEpisode(aShow, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow));
-                                    int userChoice = new ShowConfirmBox().showConfirm(Strings.HaveYouWatchedTheShow, userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController) == 1, (Stage) pane.getScene().getWindow());
-                                    if (userChoice == 1) {
-                                        userInfoController.changeEpisode(aShow, -2);
-                                        updateShowField(aShow, true);
-                                        tableView.getSelectionModel().clearSelection();
-                                        keepPlaying = false;
-                                    } else if (userChoice == 2) {
-                                        userInfoController.changeEpisode(aShow, -2);
-                                        updateShowField(aShow, true);
-                                        tableView.getSelectionModel().clearSelection();
-                                    } else if (userChoice == 0) {
-                                        tableView.getSelectionModel().clearSelection();
-                                        keepPlaying = false;
-                                    }
-                                } else {
-                                    // This is being done because I set episodes 1 further when watched, which works when the season is ongoing. However, when moving onto a new season it breaks. This is a simple check to move
-                                    // it into a new season if one is found, and no further episodes are found in the current season.
-                                    if (row.getItem().getRemaining() > 0 && userInfoController.shouldSwitchSeasons(aShow, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow))) {
-                                        log.info("No further episodes found for current season, further episodes found in next season, switching to new season.");
-                                        userInfoController.changeEpisode(aShow, -2);
-                                        updateShowField(aShow, true);
-                                        tableView.getSelectionModel().clearSelection();
-                                    } else break;
+                            if (!isShowCurrentlyPlaying) {
+                                isShowCurrentlyPlaying = true;
+                                try {
+                                    showPlayingBox.showConfirm(row.getItem().getShow(), controller, showInfoController, userInfoController, (Stage) pane.getScene().getWindow());
+                                } catch (IOException e1) {
+                                    GenericMethods.printStackTrace(log, e1, Controller.class);
                                 }
+                                isShowCurrentlyPlaying = false;
                             }
-                            isShowCurrentlyPlaying = false;
                         }
                     });
                     return row;
@@ -525,7 +509,7 @@ public class Controller implements Initializable {
                 setTableViewFields("inactive");
                 log.info("TableViewFields set to inactive.");
             } else if (currentList.matches("inactive")) {
-                if (wereShowsChanged) {
+                if (wereShowsChanged && !Variables.disableAutomaticRechecking) {
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
@@ -534,7 +518,7 @@ public class Controller implements Initializable {
                         }
                     };
                     new Thread(task).start();
-                }
+                } else if (Variables.disableAutomaticRechecking) wereShowsChanged = false;
                 setTableViewFields("active");
                 log.info("TableViewFields set to active.");
             }
@@ -626,6 +610,10 @@ public class Controller implements Initializable {
             }
         };
         new Thread(secondaryTask).start();
+    }
+
+    public void clearTableSelection() {
+        tableView.getSelectionModel().clearSelection();
     }
 
     private void openChangeBox() {

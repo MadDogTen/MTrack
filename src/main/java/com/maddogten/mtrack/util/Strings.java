@@ -193,6 +193,8 @@ public class Strings {
     public static final StringProperty ExportSettings = new SimpleStringProperty();
     public static final StringProperty ImportSettings = new SimpleStringProperty();
     public static final StringProperty FileDoesNotExists = new SimpleStringProperty();
+    public static final StringProperty CurrentlyPlaying = new SimpleStringProperty();
+    public static final StringProperty WasUnableToPlayTheEpisode = new SimpleStringProperty();
     // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
     public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
     // Strings set by program

@@ -192,20 +192,25 @@ public class FileManager {
         } else log.warning(toDeleteFolder + " is write protected!");
     }
 
-    public void open(File file) {
+    public boolean open(File file) {
         OperatingSystem os = getOS();
         try {
-            if (os == OperatingSystem.WINDOWS)
-                Runtime.getRuntime().exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()});
-            else if (os == OperatingSystem.MAC || os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX)
-                Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file.getAbsolutePath()});
+            if (os == OperatingSystem.WINDOWS) {
+                Process process = Runtime.getRuntime().exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()});
+                return process.isAlive();
+            } else if (os == OperatingSystem.MAC || os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) {
+                Process process = Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file.getAbsolutePath()});
+                return process.isAlive();
+            }
             else {
                 if (Desktop.isDesktopSupported()) Desktop.getDesktop().open(file);
                 log.warning("FileManager- Your OS is Unknown, Attempting to open file anyways...");
+                return true;
             }
         } catch (IOException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        return false;
     }
 
     public void exportSettings(Stage stage) {

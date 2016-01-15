@@ -105,16 +105,17 @@ public class UserInfoController {
     }
 
     // Attempts to play the file using the default program for the extension.
-    public void playAnyEpisode(String aShow, int aSeason, int aEpisode) {
+    public boolean playAnyEpisode(String aShow, int aSeason, int aEpisode) {
         log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
         String showLocation = showInfoController.getEpisode(aShow, aSeason, aEpisode);
         log.info("Known show location: " + showLocation);
         if (showLocation.isEmpty()) log.warning("showLocation is empty!");
         else {
             File file = new File(showLocation);
-            if (file.exists()) new FileManager().open(file);
+            if (file.exists()) return new FileManager().open(file);
             else log.warning("File \"" + file + "\" doesn't exists!");
         }
+        return false;
     }
 
     // Changes which episode the user is currently on. If -2 is returned as the episode, it increases it to the next episode found.
@@ -251,9 +252,14 @@ public class UserInfoController {
         });
         if (!allSeasonAllowed.isEmpty()) {
             if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) currentEpisode++;
+            boolean isCurrentSeason = true;
+            Collections.sort(allSeasonAllowed);
             for (int aSeason : allSeasonAllowed) {
                 int episode = 1;
-                if (aSeason == currentSeason) episode = currentEpisode;
+                if (isCurrentSeason) {
+                    if (aSeason != currentSeason) return remaining;
+                    episode = currentEpisode;
+                }
                 Set<Integer> episodes = showInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                 if (!episodes.isEmpty()) {
                     ArrayList<Integer> episodesArray = new ArrayList<>(episodes.size());
@@ -261,7 +267,7 @@ public class UserInfoController {
                     Collections.sort(episodesArray);
                     Iterator<Integer> episodesIterator = episodesArray.iterator();
                     ArrayList<Integer> episodesAllowed = new ArrayList<>(episodesArray.size());
-                    if (aSeason == currentSeason) {
+                    if (isCurrentSeason) {
                         while (episodesIterator.hasNext()) {
                             int next = episodesIterator.next();
                             if (next >= currentEpisode) episodesAllowed.add(next);
@@ -279,6 +285,7 @@ public class UserInfoController {
                     }
                     if (!episodesAllowed.isEmpty()) return remaining;
                 }
+                if (isCurrentSeason) isCurrentSeason = false;
             }
         }
         return remaining;
