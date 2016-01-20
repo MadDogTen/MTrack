@@ -39,6 +39,7 @@ Changed the Open File Location to only be one stage.
 Changed MainRun getLanguage select to preselect the default language when choosing.
 Changed Program font. Not final.
 Changed renamed ShowConfirmBox into ShowPlayingBox and completely changed how it works. Moved code out of the controller and into it.
+Changed how episodes are phased. Its now much simpler and easily expandable.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -66,6 +67,8 @@ Added option to import settings on firstRun. |||| It is very satisfying when som
 Added current active username to the top of the main stage.
 Added per user setting to hide the username.
 Added information about the current show, season, and episode in the ShowPlayingBox stage.
+Added Tooltip to ShowPlaying Show name to show the full name.
+Added DeveloperStuff class and started moving all appropriate code into it.
 
 Fixes:
 Will now properly switch to new seasons when found.
@@ -78,10 +81,15 @@ Fixed button spacing on stages.
 Fixed Stages appearing in the center of the screen before moving.
 Fixed Reset Program not properly removing files if stored in jar's location. (Dev only until I'm confident that any issues with it are solved)
 Fixed mistake where it was unnecessarily searching for episodes twice.
+Fixed switching lists (If shows were set active) automatically rechecking when automatic rechecking is disabled.
+Fixed bug where getRemainingNumberOfEpisodes was reporting remaining episodes from later seasons when the current season was empty.
+Fixed ShowPlaying Show name wrapping down into other text. Instead it is cut.
+Fixed ShowPlaying for causing the wrong row being selected when playing the next episode.
+Fixed bug where getRemainingNumberOfEpisodes was reporting episodes from later seasons if the seasons in between were empty and the season started at episode 1.
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).
-       Removed all long term "To\do" statements.
+       Removed all long term "To\do" statements. (To\do has a '\' in it so idea doesn't show it)
        Added Notes file which currently contains my To\do list.
 Bonus- I have figured out how to have this automatically build into a runnable jar with Jenkins (Don't currently a server for one, but it is planned).
 

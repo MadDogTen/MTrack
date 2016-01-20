@@ -42,9 +42,8 @@ public class FindShows {
         if (new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
             return new ArrayList<>(Arrays.asList(folder.list((dir1, name) -> {
                 for (String extension : Variables.showExtensions)
-                    if (new File(dir1 + Strings.FileSeparator + name).isFile() && name.toLowerCase().endsWith(extension)) {
+                    if (new File(dir1 + Strings.FileSeparator + name).isFile() && name.toLowerCase().endsWith(extension))
                         return true;
-                    }
                 return false;
             })));
         return new ArrayList<>();

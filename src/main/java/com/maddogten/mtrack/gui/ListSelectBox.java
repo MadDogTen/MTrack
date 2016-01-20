@@ -344,6 +344,7 @@ public class ListSelectBox {
         comboBoxLayout.getChildren().addAll(seasonsComboBox, episodesComboBox);
         comboBoxLayout.setAlignment(Pos.CENTER);
         comboBoxLayout.setPadding(new Insets(5, 5, 0, 5));
+        comboBoxLayout.setSpacing(3);
 
         VBox layout = new VBox();
         layout.getChildren().addAll(label, comboBoxLayout, buttonLayout);

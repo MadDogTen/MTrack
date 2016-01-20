@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.information;
 
+import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.information.settings.UserSettings;
 import com.maddogten.mtrack.information.settings.UserShowSettings;
 import com.maddogten.mtrack.io.FileManager;
@@ -160,7 +161,7 @@ public class UserInfoController {
         return result;
     }
 
-    public boolean shouldSwitchSeasons(String aShow, int aSeason, int aEpisode) {
+    private boolean shouldSwitchSeasons(String aShow, int aSeason, int aEpisode) {
         return isAnotherEpisode(aShow, aSeason, aEpisode)[1] && isAnotherSeason(aShow, aSeason);
     }
 
@@ -254,7 +255,9 @@ public class UserInfoController {
             if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) currentEpisode++;
             boolean isCurrentSeason = true;
             Collections.sort(allSeasonAllowed);
+            int lastSeason = -2;
             for (int aSeason : allSeasonAllowed) {
+                if (lastSeason != -2 && lastSeason != aSeason - 1) return remaining;
                 int episode = 1;
                 if (isCurrentSeason) {
                     if (aSeason != currentSeason) return remaining;
@@ -286,9 +289,21 @@ public class UserInfoController {
                     if (!episodesAllowed.isEmpty()) return remaining;
                 }
                 if (isCurrentSeason) isCurrentSeason = false;
+                lastSeason = aSeason;
             }
         }
         return remaining;
+    }
+
+    public boolean isProperEpisodeInNextSeason(String aShow) {
+        // This is being done because I set episodes 1 further when watched, which works when the season is ongoing. However, when moving onto a new season it breaks. This is a simple check to move
+        // it into a new season if one is found, and no further episodes are found in the current season.
+        if (getRemainingNumberOfEpisodes(aShow, showInfoController) > 0 && shouldSwitchSeasons(aShow, getCurrentSeason(aShow), getCurrentEpisode(aShow))) {
+            log.info("No further episodes found for current season, further episodes found in next season, switching to new season.");
+            changeEpisode(aShow, -2);
+            Controller.updateShowField(aShow, true);
+            return true;
+        } else return false;
     }
 
     // Adds a new show to the shows file.
@@ -303,17 +318,6 @@ public class UserInfoController {
 
     public UserSettings getUserSettings() {
         return userSettings;
-    }
-
-    // Debug setting to print out all the current users settings.
-    public void printAllUserInfo() {
-        log.info("Printing all user info for " + Strings.UserName.getValue() + "...");
-        String[] print = new String[1 + userSettings.getShowSettings().values().size()];
-        final int[] i = {0};
-        print[i[0]++] = '\n' + String.valueOf(userSettings.getUserSettingsFileVersion()) + " - " + String.valueOf(userSettings.getUserDirectoryVersion());
-        userSettings.getShowSettings().values().forEach(aShowSettings -> print[i[0]++] = '\n' + aShowSettings.getShowName() + " - " + aShowSettings.isActive() + ", " + aShowSettings.isIgnored() + ", " + aShowSettings.isHidden() + " - Season: " + aShowSettings.getCurrentSeason() + " | Episode: " + aShowSettings.getCurrentEpisode());
-        log.info(Arrays.toString(print));
-        log.info("Finished printing all user info.");
     }
 
     public void saveUserSettingsFile() {

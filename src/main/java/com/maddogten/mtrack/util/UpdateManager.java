@@ -118,10 +118,10 @@ public class UpdateManager {
         int mainDirectoryVersion = programSettingsController.getSettingsFile().getMainDirectoryVersion();
         if (mainDirectoryVersion == userInfoController.getUserSettings().getUserDirectoryVersion()) {
             log.info("User directory version matched, Now checking if number of directories match...");
-            if (directoryController.getDirectories().size() == programSettingsController.getSettingsFile().getNumberOfDirectories()) {
+            if (directoryController.getDirectories(-2).size() == programSettingsController.getSettingsFile().getNumberOfDirectories()) {
                 log.info("Number of directories matched, Now checking if programID's match...");
                 boolean allMatched = true;
-                for (Directory directory : directoryController.getDirectories()) {
+                for (Directory directory : directoryController.getDirectories(-2)) {
                     if (directory.getLastProgramID() != programSettingsController.getSettingsFile().getProgramSettingsID()) {
                         log.info("programID's didn't match, updating...");
                         allMatched = false;
@@ -132,7 +132,7 @@ public class UpdateManager {
                 }
                 if (allMatched) log.info("programID's matched.");
                 else {
-                    directoryController.getDirectories().forEach(aDirectory -> {
+                    directoryController.getDirectories(-2).forEach(aDirectory -> {
                         if (aDirectory.getLastProgramID() != programSettingsController.getSettingsFile().getProgramSettingsID()) {
                             aDirectory.setLastProgramID(programSettingsController.getSettingsFile().getProgramSettingsID());
                             directoryController.saveDirectory(aDirectory, false);
@@ -255,8 +255,7 @@ public class UpdateManager {
                 updated = true;
         }
         if (updated) {
-            // Update Program Settings File Version
-            programSettings.setProgramSettingsFileVersion(newVersion);
+            programSettings.setProgramSettingsFileVersion(newVersion); // Update Program Settings File Version
             new FileManager().save(programSettings, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension, true);
             log.info("Program settings file was successfully updated to version " + newVersion + '.');
         } else log.info("Program settings file was not updated. This is an error, please report.");

@@ -1,6 +1,12 @@
 package com.maddogten.mtrack.util;
 
+import javafx.scene.text.Font;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.regex.Pattern;
 
 /*
       Variables holds the variables for various things, Most variable should be put into here.
@@ -24,6 +30,8 @@ public class Variables {
     public static final String ShowFileExtension = ".shows";
     public static final String UserFileExtension = ".user";
     public static final String SettingFileExtension = ".settings";
+    // Other
+    public static final Font Font = javafx.scene.text.Font.font(("Times New Roman"));
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
     @SuppressWarnings("PublicStaticArrayField")
@@ -33,7 +41,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1004; // Was Changed
     public static final int DirectoryFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 20; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 24; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -47,10 +55,14 @@ public class Variables {
     public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
     /**/public static final boolean forceDisableAutomaticRechecking = false; // false
     public static final boolean genUserShowInfoAtFirstFound = false; // Add to user settings // Add choice when creating user
+    //---------- Episode Variables ----------\\
+    @SuppressWarnings("PublicStaticCollectionField")
+    public static final ArrayList<Pattern> doubleEpisodePatterns = new ArrayList<>(Collections.singletonList(Pattern.compile("s\\d{1,4}e(\\d{1,4})[e|-](\\d{1,4})")));
+    @SuppressWarnings("PublicStaticCollectionField")
+    public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})")));
     public static boolean disableAutomaticRechecking;
     /**/public static boolean devMode = false; // false
     public static int updateSpeed;
-
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static String language;
@@ -69,6 +81,4 @@ public class Variables {
         moveStageWithParent = stageMoveWithParentAndBlockParent;
         haveStageBlockParentStage = stageMoveWithParentAndBlockParent;
     }
-
-    //---------- Temp Variables ----------\\
 }

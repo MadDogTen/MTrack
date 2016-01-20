@@ -131,7 +131,8 @@ public class MainRun {
             timer = GenericMethods.getTimeSeconds();
             hasRan = true;
         }
-        if (directoryController.isReloadShowsFile()) showInfoController.loadShowsFile();
+        if (directoryController.isReloadShowsFile() && !Controller.getCheckShowFiles().isRecheckingShowFile())
+            showInfoController.loadShowsFile();
         recheck();
     }
 

@@ -53,7 +53,8 @@ public class SelectBox {
 
         layout2.getChildren().add(close);
         layout2.setAlignment(Pos.CENTER);
-        layout2.setPadding(new Insets(4, 6, 6, 6));
+        layout2.setPadding(new Insets(3, 0, 0, 0));
+        layout2.setSpacing(3);
 
         VBox layout = new VBox();
         layout.getChildren().addAll(label, layout2);

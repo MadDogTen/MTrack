@@ -80,7 +80,7 @@ public class FirstRun {
             generateProgramSettingsFile();
             programSettingsController.loadProgramSettingsFile();
             if (Variables.makeLanguageDefault) programSettingsController.setDefaultLanguage(Variables.language);
-            boolean directoriesAlreadyAdded = hasImportedFiles && !directoryController.getDirectories().isEmpty();
+            boolean directoriesAlreadyAdded = hasImportedFiles && !directoryController.getDirectories(-2).isEmpty();
             Thread generateShowFilesThread = null;
             if (!directoriesAlreadyAdded) {
                 addDirectories();
@@ -128,7 +128,7 @@ public class FirstRun {
     // Generates the ShowFiles (If a directory is added, otherwise this is skipped).
     private void generateShowFiles() {
         log.info("Generating show files for first run...");
-        ArrayList<Directory> directories = directoryController.getDirectories();
+        ArrayList<Directory> directories = directoryController.getDirectories(-2);
         directories.forEach(aDirectory -> {
             log.info("Currently generating show file for: " + aDirectory.getDirectory());
             generateShowsFile(aDirectory);
@@ -155,7 +155,7 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(), null));
+            boolean[] matched = directoryController.addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(-2), null));
             index++;
             if (!matched[0] && !matched[1])
                 new MessageBox().message(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
@@ -185,11 +185,10 @@ public class FirstRun {
                     episodesFull.forEach(aEpisode -> {
                         log.info("Episode: " + aEpisode);
                         int[] episode = showInfoController.getEpisodeInfo(aEpisode);
-                        if (episode != null && episode.length > 0) {
+                        if (episode[0] != -2) {
                             episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
-                            if (episode.length == 2) {
+                            if (episode[1] != -2)
                                 episodes.put(episode[1], new Episode(episode[1], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
-                            }
                         }
                     });
                     if (!episodes.isEmpty()) seasons.put(aSeason, new Season(aSeason, episodes));

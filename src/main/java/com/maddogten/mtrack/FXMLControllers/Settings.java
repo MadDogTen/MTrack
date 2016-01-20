@@ -26,14 +26,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -327,7 +325,7 @@ public class Settings implements Initializable {
         addDirectory.setOnAction(e -> {
             setButtonDisable(addDirectory, removeDirectory, true);
             int index = directoryController.getLowestFreeDirectoryIndex();
-            boolean[] wasAdded = directoryController.addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(), (Stage) tabPane.getScene().getWindow()));
+            boolean[] wasAdded = directoryController.addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, directoryController.getDirectories(-2), (Stage) tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
                 FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile(), userInfoController);
@@ -359,7 +357,7 @@ public class Settings implements Initializable {
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
             setButtonDisable(removeDirectory, addDirectory, true);
-            ArrayList<Directory> directories = directoryController.getDirectories();
+            ArrayList<Directory> directories = directoryController.getDirectories(-2);
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToDelete}, (Stage) tabPane.getScene().getWindow());
@@ -477,89 +475,26 @@ public class Settings implements Initializable {
 
         // Developer
         printAllShows.textProperty().bind(Strings.PrintAllShowInfo);
-        printAllShows.setOnAction(e -> showInfoController.printOutAllShowsAndEpisodes());
+        printAllShows.setOnAction(e -> Main.getDeveloperStuff().printOutAllShowsAndEpisodes());
         printAllDirectories.textProperty().bind(Strings.PrintAllDirectories);
-        printAllDirectories.setOnAction(e -> directoryController.printAllDirectories());
+        printAllDirectories.setOnAction(e -> Main.getDeveloperStuff().printAllDirectories());
         printEmptyShowFolders.textProperty().bind(Strings.PrintEmptyShows);
-        printEmptyShowFolders.setOnAction(e -> {
-            ArrayList<String> emptyShows = checkShowFiles.getEmptyShows();
-            log.info("Printing empty shows:");
-            if (emptyShows.isEmpty()) log.info("No empty shows");
-            else {
-                ArrayList<Directory> directories = directoryController.getDirectories();
-                directories.forEach(aDirectory -> {
-                    ArrayList<String> emptyShowsDir = new ArrayList<>();
-                    emptyShows.forEach(aShow -> {
-                        if (new FileManager().checkFolderExistsAndReadable(new File(aDirectory + Strings.FileSeparator + aShow)) && !aDirectory.getShows().containsKey(aShow))
-                            emptyShowsDir.add(aShow);
-                    });
-                    log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
-                });
-            }
-            log.info("Finished printing empty shows.");
-        });
+        printEmptyShowFolders.setOnAction(e -> Main.getDeveloperStuff().printEmptyShows());
         printIgnoredShows.textProperty().bind(Strings.PrintIgnoredShows);
-        printIgnoredShows.setOnAction(e -> {
-            log.info("Printing ignored shows:");
-            ArrayList<String> ignoredShows = userInfoController.getIgnoredShows();
-            if (ignoredShows.isEmpty()) log.info("No ignored shows.");
-            else {
-                GenericMethods.printArrayList(Level.INFO, log, ignoredShows, false);
-            }
-            log.info("Finished printing ignored shows.");
-        });
+        printIgnoredShows.setOnAction(e -> Main.getDeveloperStuff().printIgnoredShows());
         printHiddenShows.textProperty().bind(Strings.PrintHiddenShows);
-        printHiddenShows.setOnAction(e -> {
-            log.info("Printing hidden shows:");
-            ArrayList<String> hiddenShows = userInfoController.getHiddenShows();
-            if (hiddenShows.isEmpty()) log.info("No hidden shows.");
-            else {
-                GenericMethods.printArrayList(Level.INFO, log, hiddenShows, false);
-            }
-            log.info("Finished printing hidden shows.");
-        });
+        printHiddenShows.setOnAction(e -> Main.getDeveloperStuff().printHiddenShows());
         unHideAll.textProperty().bind(Strings.UnHideAll);
-        unHideAll.setOnAction(e -> {
-            log.info("Un-hiding all shows...");
-            ArrayList<String> ignoredShows = userInfoController.getHiddenShows();
-            if (ignoredShows.isEmpty()) log.info("No shows to un-hide.");
-            else {
-                ignoredShows.forEach(aShow -> {
-                    log.info(aShow + " is no longer hidden.");
-                    userInfoController.setHiddenStatus(aShow, false);
-                });
-            }
-            log.info("Finished un-hiding all shows.");
-        });
+        unHideAll.setOnAction(e -> Main.getDeveloperStuff().unHideAllShows());
         setAllActive.textProperty().bind(Strings.SetAllActive);
-        setAllActive.setOnAction(e -> {
-            ArrayList<String> showsList = showInfoController.getShowsList();
-            if (showsList.isEmpty()) log.info("No shows to change.");
-            else {
-                showsList.forEach(aShow -> {
-                    userInfoController.setActiveStatus(aShow, true);
-                    Controller.updateShowField(aShow, true);
-                });
-                log.info("Set all shows active.");
-            }
-        });
+        setAllActive.setOnAction(e -> Main.getDeveloperStuff().setAllShowsActive());
         setAllInactive.textProperty().bind(Strings.SetAllInactive);
-        setAllInactive.setOnAction(e -> {
-            ArrayList<String> showsList = showInfoController.getShowsList();
-            if (showsList.isEmpty()) log.info("No shows to change.");
-            else {
-                showsList.forEach(aShow -> {
-                    userInfoController.setActiveStatus(aShow, false);
-                    Controller.updateShowField(aShow, true);
-                });
-                log.info("Set all shows inactive.");
-            }
-        });
+        setAllInactive.setOnAction(e -> Main.getDeveloperStuff().setAllShowsInactive());
         // Dev 2
         printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv);
         printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(programSettingsController.getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + userInfoController.getUserSettings().getUserSettingsFileVersion())));
         printAllUserInfo.textProperty().bind(Strings.PrintAllUserInfo);
-        printAllUserInfo.setOnAction(e -> userInfoController.printAllUserInfo());
+        printAllUserInfo.setOnAction(e -> Main.getDeveloperStuff().printAllUserInfo());
         add1ToDirectoryVersion.textProperty().bind(Strings.DirectoryVersionPlus1);
         add1ToDirectoryVersion.setOnAction(e -> programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1));
         nonForceRecheckShows.textProperty().bind(Strings.NonForceRecheckShows);
@@ -578,28 +513,10 @@ public class Settings implements Initializable {
         clearFile.textProperty().bind(Strings.ClearFile);
         clearFile.setOnAction(e -> {
             setButtonDisable(clearFile, null, true);
-            ArrayList<Directory> directories = directoryController.getDirectories();
-            if (directories.isEmpty())
-                new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, (Stage) tabPane.getScene().getWindow());
-            else {
-                Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, directories, (Stage) tabPane.getScene().getWindow());
-                if (directoryToClear != null && !directoryToClear.getDirectory().toString().isEmpty()) {
-                    boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
-                    if (confirm) {
-                        directoryToClear.getShows().keySet().forEach(aShow -> {
-                            boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, directoryController.getDirectories(directoryToClear.getIndex()));
-                            if (!showExistsElsewhere)
-                                userInfoController.setIgnoredStatus(aShow, true);
-                            Controller.updateShowField(aShow, showExistsElsewhere);
-                        });
-                        directoryToClear.setShows(new HashMap<>());
-                        directoryController.saveDirectory(directoryToClear, true);
-                        programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
-                    }
-                }
-            }
+            Main.getDeveloperStuff().clearDirectory((Stage) tabPane.getScene().getWindow());
             setButtonDisable(clearFile, null, false);
         });
+        // Once I am sure this works properly, I will make it accessible.
         deleteEverythingAndClose.textProperty().bind(Strings.ResetProgram);
         deleteEverythingAndCloseTooltip.textProperty().bind(Strings.WarningUnrecoverable);
         deleteEverythingAndClose.setOnAction(e -> {

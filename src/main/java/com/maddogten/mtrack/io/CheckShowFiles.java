@@ -32,11 +32,11 @@ public class CheckShowFiles {
     private final FindShows findShows = new FindShows();
     // emptyShows - This is populated with folders that the checking has found are empty, and combined with runNumber, prevents these from unnecessarily being checked.
     private final ArrayList<String> emptyShows = new ArrayList<>();
-    // recheckShowFileRunning - If the method is currently running, then this will be true and stop other non-forced checks from running.
-    // keepRunning - This will be true if the program is doing a normal run currently, or false if not running, or currently being forced ran. If recheckShowFileRunning is true, and this is false, it will ignore further force run attempts.
+    // isRecheckingShowFile - If the method is currently running, then this will be true and stop other non-forced checks from running.
+    // keepRunning - This will be true if the program is doing a normal run currently, or false if not running, or currently being forced ran. If isRecheckingShowFile is true, and this is false, it will ignore further force run attempts.
     // currentlyCheckingDirectories - This is true when it is checking if the folders exist / is waiting for a response. Otherwise it is false. This is to show a notification when it is running. Used by the Controller.
     // stopRunning - True either when the program is shutting down, or a forceRun is stopping a normal run. When it is true, recheckShowFile stops what it is doing and discards everything.
-    private boolean recheckShowFileRunning = false, keepRunning = false, currentlyCheckingDirectories = false, stopRunning = false;
+    private boolean isRecheckingShowFile = false, keepRunning = false, currentlyCheckingDirectories = false, stopRunning = false;
     // runNumber - 1 is added to this each time hasShowsChanged is ran. This is used so that the above emptyShows are only checked when the program is first started, or every 5 runs after that.
     private int runNumber = 0;
     // recheckShowFilePercentage - Is increased as recheckShowFile is running. The percentage is currently split between each directory, and then that is further split by each active show (Plus 2 shows worth is reserved when checking for new shows). Used by the controller.
@@ -54,8 +54,8 @@ public class CheckShowFiles {
         return emptyShows;
     }
 
-    public boolean getRecheckShowFileRunning() {
-        return recheckShowFileRunning;
+    public boolean isRecheckingShowFile() {
+        return isRecheckingShowFile;
     }
 
     public double getRecheckShowFilePercentage() {
@@ -68,7 +68,7 @@ public class CheckShowFiles {
 
     // This fully rechecks for any new / removed shows, seasons, and episodes from all directories. If directory is unresponsive, it skips it.
     public void recheckShowFile(boolean forceRun) {
-        if (!recheckShowFileRunning || (forceRun && keepRunning)) {
+        if (!isRecheckingShowFile || (forceRun && keepRunning)) {
             // hasChanged - If anything is found differently, this will be set to true. Used at the end to determine if it should reload the showInfoController showsFile and scan for changes.
             boolean[] hasChanged = {false};
             ArrayList<String> updatedShows = new ArrayList<>();
@@ -81,17 +81,17 @@ public class CheckShowFiles {
             FindChangedShows findChangedShows = new FindChangedShows(showInfoController.getShowsFile(), userInfoController);
             if (forceRun) runNumber = 0;
             else runNumber++;
-            while (recheckShowFileRunning) { // Just in case it had interrupted a run and it hasn't full finished stopping.
+            while (isRecheckingShowFile) { // Just in case it had interrupted a run and it hasn't full finished stopping.
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     GenericMethods.printStackTrace(log, e, this.getClass());
                 }
             }
-            if (!recheckShowFileRunning) recheckShowFileRunning = true;
+            if (!isRecheckingShowFile) isRecheckingShowFile = true;
             final double[] percentagePerDirectory = {100};
-            if (directoryController.getDirectories().isEmpty()) recheckShowFilePercentage = percentagePerDirectory[0];
-            else percentagePerDirectory[0] = percentagePerDirectory[0] / directoryController.getDirectories().size();
+            if (directoryController.getDirectories(-2).isEmpty()) recheckShowFilePercentage = percentagePerDirectory[0];
+            else percentagePerDirectory[0] = percentagePerDirectory[0] / directoryController.getDirectories(-2).size();
             // Just so the user knows when it is a directory that is delaying the search, and not the program hanging.
             currentlyCheckingDirectories = true;
             ArrayList<Directory> activeDirectories = directoryController.getActiveDirectories(!forceRun);
@@ -167,7 +167,7 @@ public class CheckShowFiles {
                 }
                 if (stopRunning) stopRunning = false;
             }
-            recheckShowFileRunning = false;
+            isRecheckingShowFile = false;
             recheckShowFilePercentage = 0;
         }
     }
@@ -224,7 +224,7 @@ public class CheckShowFiles {
         newEpisodesList.forEach(aNewEpisode -> {
             int[] EpisodeInfo = showInfoController.getEpisodeInfo(aNewEpisode);
             newEpisodesListFixed.add(EpisodeInfo[0]);
-            if (EpisodeInfo.length == 2) newEpisodesListFixed.add(EpisodeInfo[1]);
+            if (EpisodeInfo[1] != -2) newEpisodesListFixed.add(EpisodeInfo[1]);
         });
         ArrayList<Integer> changedEpisodes = new ArrayList<>(oldEpisodeList.size() + newEpisodesListFixed.size());
         changedEpisodes.addAll(oldEpisodeList.stream().filter(aOldEpisode -> !newEpisodesListFixed.contains(aOldEpisode)).collect(Collectors.toList()));
@@ -262,7 +262,7 @@ public class CheckShowFiles {
             episodesFull.forEach(aEpisode -> {
                 int[] episode = showInfoController.getEpisodeInfo(aEpisode);
                 episodes.put(episode[0], new Episode(episode[0], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, false));
-                if (episode.length == 2)
+                if (episode[1] != -2)
                     episodes.put(episode[1], new Episode(episode[1], folderLocation + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode, true));
             });
         }
@@ -300,7 +300,7 @@ public class CheckShowFiles {
         final boolean[] answer = {true};
         if (!episodesFull.isEmpty()) {
             episodesFull.forEach(aEpisode -> {
-                if (showInfoController.getEpisodeInfo(aEpisode) != null) answer[0] = false;
+                if (showInfoController.getEpisodeInfo(aEpisode)[0] != -2) answer[0] = false;
             });
         }
         return answer[0];

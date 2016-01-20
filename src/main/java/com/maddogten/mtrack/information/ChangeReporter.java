@@ -31,7 +31,6 @@ public class ChangeReporter {
     // This completely clears the changes String[] so it can start new.
     public static void resetChanges() {
         changes = new String[0];
-        changes = new String[0];
         isChanges = false;
         log.info("Change list has been cleared.");
     }

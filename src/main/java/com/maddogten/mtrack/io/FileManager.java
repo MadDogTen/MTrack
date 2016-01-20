@@ -201,8 +201,7 @@ public class FileManager {
             } else if (os == OperatingSystem.MAC || os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) {
                 Process process = Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file.getAbsolutePath()});
                 return process.isAlive();
-            }
-            else {
+            } else {
                 if (Desktop.isDesktopSupported()) Desktop.getDesktop().open(file);
                 log.warning("FileManager- Your OS is Unknown, Attempting to open file anyways...");
                 return true;

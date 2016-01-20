@@ -3,6 +3,7 @@ package com.maddogten.mtrack;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
+import com.maddogten.mtrack.util.DeveloperStuff;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -15,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.Arrays;
 import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +32,7 @@ public class Main extends Application implements Runnable {
     private final static UserInfoController userInfoController = new UserInfoController(showInfoController);
     private final static ProgramSettingsController programSettingsController = new ProgramSettingsController(userInfoController);
     private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController, directoryController);
+    private final static DeveloperStuff developerStuff = new DeveloperStuff(programSettingsController, directoryController, showInfoController, userInfoController, checkShowFiles);
     private final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles, directoryController);
     private final static int timer = GenericMethods.getTimeSeconds();
     public static boolean programRunning = true, programFullyRunning = false;
@@ -52,7 +55,7 @@ public class Main extends Application implements Runnable {
             if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
-            while (checkShowFiles.getRecheckShowFileRunning()) {
+            while (checkShowFiles.isRecheckingShowFile()) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -83,7 +86,7 @@ public class Main extends Application implements Runnable {
         programSettingsController.getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
         programSettingsController.getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
         programSettingsController.getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
-        programSettingsController.getSettingsFile().setNumberOfDirectories(directoryController.getDirectories().size());
+        programSettingsController.getSettingsFile().setNumberOfDirectories(directoryController.getDirectories(-2).size());
         userInfoController.getUserSettings().setChanges(ChangeReporter.getChanges());
         programSettingsController.saveSettingsFile();
         userInfoController.saveUserSettingsFile();
@@ -111,6 +114,10 @@ public class Main extends Application implements Runnable {
 
     public static DirectoryController getDirectoryController() {
         return directoryController;
+    }
+
+    public static DeveloperStuff getDeveloperStuff() {
+        return developerStuff;
     }
 
     @Override
@@ -155,13 +162,11 @@ public class Main extends Application implements Runnable {
             programFullyRunning = true;
             thread = new Thread(this);
             Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-                /*String[] stackTrace = new String[exception.getStackTrace().length + 1];
+                String[] stackTrace = new String[exception.getStackTrace().length + 1];
                 stackTrace[0] = exception.toString();
                 for (int i = 1; i < exception.getStackTrace().length; i++)
                     stackTrace[i] = exception.getStackTrace()[i].toString();
                 log.severe(Arrays.toString(stackTrace));
-
-                //Note- Temporarily suppressing these until I figure out how to solve a issue with the controller.*/
             });
             thread.start();
         }

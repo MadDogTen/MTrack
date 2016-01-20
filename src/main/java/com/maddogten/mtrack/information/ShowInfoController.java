@@ -6,11 +6,11 @@ import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /*
@@ -31,29 +31,29 @@ public class ShowInfoController {
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile() {
         if (directoryController.isReloadShowsFile()) directoryController.setReloadShowsFile(false);
-        if (directoryController.getDirectories().size() == 1) {
-            showsFile = directoryController.getDirectories().get(0).getShows();
+        ArrayList<Directory> directories = directoryController.getDirectories(-2);
+        if (directories.size() == 1) {
+            showsFile = directories.get(0).getShows();
             log.info("showsFile was loaded, Only one Directory.");
-        } else if (directoryController.getDirectories().size() > 1) {
+        } else if (directories.size() > 1) {
             long timer = GenericMethods.getTimeMilliSeconds();
             showsFile = new HashMap<>();
-            ArrayList<Directory> showsFileArray = directoryController.getDirectories(-2);
             HashSet<String> allShows = new HashSet<>();
-            showsFileArray.stream().filter(aMap -> aMap != null).forEach(showsHashSet -> showsHashSet.getShows().forEach((aShow, Show) -> allShows.add(aShow)));
+            directories.stream().filter(aMap -> aMap != null).forEach(showsHashSet -> showsHashSet.getShows().forEach((aShow, Show) -> allShows.add(aShow)));
             allShows.forEach(aShow -> {
                 Map<Integer, Season> fullSeasons = new HashMap<>();
                 HashSet<Integer> seasons = new HashSet<>();
-                showsFileArray.stream().filter(aDirectory -> aDirectory.getShows().containsKey(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
+                directories.stream().filter(aDirectory -> aDirectory.getShows().containsKey(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
                 seasons.forEach(aSeason -> {
                     Map<Integer, Episode> episodes = new HashMap<>();
-                    showsFileArray.stream().filter(aDirectory -> (aDirectory.getShows().containsKey(aShow) && aDirectory.getShows().get(aShow).getSeasons().containsKey(aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
+                    directories.stream().filter(aDirectory -> (aDirectory.getShows().containsKey(aShow) && aDirectory.getShows().get(aShow).getSeasons().containsKey(aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
                     fullSeasons.put(aSeason, new Season(aSeason, episodes));
                 });
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
             });
             log.info("showsFile was loaded, It took " + GenericMethods.timeTakenMilli(timer) + " nanoseconds to combine all files");
         } else {
-            if (directoryController.getDirectories().isEmpty())
+            if (directories.isEmpty())
                 log.info("showsFile was loaded empty, No directories found.");
             else log.info("showsFile load loaded empty, Unknown reason.");
             showsFile = new HashMap<>();
@@ -154,100 +154,17 @@ public class ShowInfoController {
         return showExistsElsewhere[0];
     }
 
-    public void printShowInformation(String aShow) {
-        log.info("Printing out information for: " + aShow);
-        Show show = showsFile.get(aShow);
-        String[] print = new String[1 + (show.getSeasons().keySet().size() * 2)];
-        final int[] i = {0};
-        print[i[0]++] = "\nShow: " + show.getName();
-        show.getSeasons().keySet().forEach(aSeason -> {
-            Season season = show.getSeasons().get(aSeason);
-            print[i[0]++] = "\nSeason: " + season.getSeason();
-            int[] episodes = new int[season.getEpisodes().size()];
-            final int[] iterator = {0};
-            season.getEpisodes().keySet().forEach(aEpisode -> {
-                Episode episode = season.getEpisodes().get(aEpisode);
-                int episodeNum = episode.getEpisode();
-                episodes[iterator[0]] = episodeNum;
-                iterator[0]++;
-            });
-            print[i[0]++] = Arrays.toString(episodes);
-        });
-        log.info(Arrays.toString(print));
-        log.info("Finished printing out information for: " + aShow);
-    }
-
-    // Debug tool to find out all found shows, the seasons in the shows, and the episodes in the seasons.
-    public void printOutAllShowsAndEpisodes() {
-        log.info("Printing out all Shows and Episodes:");
-        final int[] numberOfShows = {0};
-        showsFile.keySet().forEach(aShow -> {
-            Show show = showsFile.get(aShow);
-            String[] print = new String[1 + (show.getSeasons().keySet().size() * 2)];
-            final int[] i = {0};
-            print[i[0]++] = "\nShow: " + show.getName();
-            show.getSeasons().keySet().forEach(aSeason -> {
-                Season season = show.getSeasons().get(aSeason);
-                print[i[0]++] = "\nSeason: " + season.getSeason();
-                int[] episodes = new int[season.getEpisodes().size()];
-                final int[] iterator = {0};
-                season.getEpisodes().keySet().forEach(aEpisode -> {
-                    Episode episode = season.getEpisodes().get(aEpisode);
-                    int episodeNum = episode.getEpisode();
-                    episodes[iterator[0]] = episodeNum;
-                    iterator[0]++;
-                });
-                print[i[0]++] = Arrays.toString(episodes);
-            });
-            log.info(Arrays.toString(print));
-            numberOfShows[0]++;
-        });
-        log.info("Total Number of Shows: " + numberOfShows[0]);
-        log.info("Finished printing out all Shows and Episodes.");
-    }
-
-    // Uses the given string (The full filename of an episode of a show) and returns the episode number.
+    // Uses the given string (The full filename of an episode of a show) and returns the episode or episodes if its a double episode.
     public int[] getEpisodeInfo(String aEpisode) {
-        int[] bothInt = new int[1];
-        Pattern[] patterns = new Pattern[]{Pattern.compile("s\\d{1,4}e\\d{1,4}"), Pattern.compile("s\\d{1,4}e\\d{1,4}[e|-]\\d{1,4}"), Pattern.compile("\\d{1,4}x\\d{1,4}"), Pattern.compile("episode\\s\\d{1,4}")};
-        Matcher MainM = patterns[0].matcher(aEpisode.toLowerCase());
-        if (MainM.find()) {
-            Matcher match = patterns[1].matcher(aEpisode.toLowerCase());
-            String info;
-            boolean isDouble = false;
-            if (match.find()) {
-                info = match.group();
-                isDouble = true;
-            } else info = MainM.group();
-            String splitResult = info.toLowerCase().replaceFirst("s", Strings.EmptyString);
-            splitResult = splitResult.toLowerCase().replaceFirst("e", " ");
-            if (isDouble) {
-                bothInt = new int[2];
-                if (splitResult.contains("-")) splitResult = splitResult.replaceFirst("-", " ");
-                else if (splitResult.contains("e")) splitResult = splitResult.replaceFirst("e", " ");
+        final int[] bothInt = new int[]{-2, -2};
+        Arrays.asList(Variables.doubleEpisodePatterns, Variables.singleEpisodePatterns).forEach(aPatternArray -> aPatternArray.forEach(aPattern -> {
+            if (bothInt[0] == -2) {
+                Matcher matcher = aPattern.matcher(aEpisode.toLowerCase());
+                if (matcher.find())
+                    for (int i = 1; i <= matcher.groupCount(); i++) bothInt[i - 1] = Integer.parseInt(matcher.group(i));
             }
-            String[] bothString = splitResult.split(" ");
-            bothInt[0] = Integer.valueOf(bothString[1]);
-            if (isDouble) bothInt[1] = Integer.valueOf(bothString[2]);
-            return bothInt;
-        }
-        Matcher MainM2 = patterns[2].matcher(aEpisode.toLowerCase());
-        if (MainM2.find()) {
-            bothInt = new int[2];
-            String info = MainM2.group();
-            String splitResult = info.toLowerCase().replaceFirst("x", " ");
-            String[] bothString = splitResult.split(" ");
-            bothInt[0] = Integer.valueOf(bothString[0]);
-            bothInt[1] = Integer.valueOf(bothString[1]);
-            return bothInt;
-        }
-        Matcher MainM3 = patterns[3].matcher(aEpisode.toLowerCase());
-        if (MainM3.find()) {
-            String info = MainM3.group();
-            bothInt[0] = Integer.valueOf(info.toLowerCase().split(" ")[1]);
-            return bothInt;
-        }
-        log.info("Couldn't find episode information in: \"" + aEpisode + '\"');
+        }));
+        if (bothInt[0] == -2) log.info("Couldn't find episode information in: \"" + aEpisode + '\"');
         return bothInt;
     }
 }

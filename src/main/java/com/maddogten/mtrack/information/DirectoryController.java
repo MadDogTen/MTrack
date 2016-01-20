@@ -14,7 +14,6 @@ import javafx.concurrent.Task;
 
 import java.io.File;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +24,7 @@ public class DirectoryController {
     private boolean reloadShowsFile = false;
 
     // Saves all the directory paths that the program is currently set to check.
-    public ArrayList<Directory> getDirectories() {
+    private ArrayList<Directory> getDirectories() {
         ArrayList<Directory> directories = new ArrayList<>();
         File[] files = new File(Variables.dataFolder + Variables.DirectoriesFolder).listFiles();
         if (files != null) {
@@ -36,6 +35,23 @@ public class DirectoryController {
             }
         }
         return directories;
+    }
+
+    // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
+    public ArrayList<Directory> getDirectories(int skip) {
+        // ArrayList = Shows list from all added Directories
+        if (skip == -2) return getDirectories();
+        else {
+            ArrayList<Directory> directories = getDirectories();
+            Iterator<Directory> directoryIterator = directories.iterator();
+            while (directoryIterator.hasNext()) {
+                if (directoryIterator.next().getIndex() == skip) {
+                    directoryIterator.remove();
+                    break;
+                }
+            }
+            return directories;
+        }
     }
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
@@ -165,17 +181,6 @@ public class DirectoryController {
         return activeDirectories;
     }
 
-    // Debugging tool - Prints all directories to console.
-
-    public void printAllDirectories() {
-        log.info("Printing out all directories:");
-        if (getDirectories().isEmpty()) log.info("No directories.");
-        else {
-            GenericMethods.printArrayList(Level.INFO, log, getDirectories(), true);
-        }
-        log.info("Finished printing out all directories.");
-    }
-
     // Add a new directory.
     public boolean[] addDirectory(int index, File directory) {
         ArrayList<Directory> directories = getDirectories();
@@ -211,23 +216,6 @@ public class DirectoryController {
         int lowestFreeIndex = 0;
         while (usedIndexes.contains(lowestFreeIndex)) lowestFreeIndex++;
         return lowestFreeIndex;
-    }
-
-    // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
-    public ArrayList<Directory> getDirectories(int skip) {
-        // ArrayList = Shows list from all added Directories
-        if (skip == -2) return getDirectories();
-        else {
-            ArrayList<Directory> directories = getDirectories();
-            Iterator<Directory> directoryIterator = directories.iterator();
-            while (directoryIterator.hasNext()) {
-                if (directoryIterator.next().getIndex() == skip) {
-                    directoryIterator.remove();
-                    break;
-                }
-            }
-            return directories;
-        }
     }
 
     // Gets a single directory map using the given index.

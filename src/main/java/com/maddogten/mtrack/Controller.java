@@ -362,7 +362,6 @@ public class Controller implements Initializable {
                         log.info("Reset to running...");
                         String[] choices = {Strings.Beginning.getValue(), Strings.End.getValue()};
                         String answer = new SelectBox().select(Strings.WhatShould.getValue() + row.getItem().getShow() + Strings.BeResetTo.getValue(), choices, (Stage) pane.getScene().getWindow());
-                        log.info(answer);
                         if (answer.matches(Strings.Beginning.getValue())) {
                             userInfoController.setToBeginning(row.getItem().getShow());
                             updateShowField(row.getItem().getShow(), true);
@@ -380,7 +379,7 @@ public class Controller implements Initializable {
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
-                        ArrayList<Directory> directories = directoryController.getDirectories();
+                        ArrayList<Directory> directories = directoryController.getDirectories(-2);
                         ArrayList<Directory> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
@@ -413,7 +412,7 @@ public class Controller implements Initializable {
                     printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + userInfoController.getCurrentSeason(row.getItem().getShow()) + " - Episode: " + userInfoController.getCurrentEpisode(row.getItem().getShow())));
                     MenuItem printShowInformation = new MenuItem();
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
-                    printShowInformation.setOnAction(e -> showInfoController.printShowInformation(row.getItem().getShow()));
+                    printShowInformation.setOnAction(e -> Main.getDeveloperStuff().printShowInformation(row.getItem().getShow()));
                     row.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
                             if (currentList.matches("active")) {
@@ -435,7 +434,7 @@ public class Controller implements Initializable {
                             if (!isShowCurrentlyPlaying) {
                                 isShowCurrentlyPlaying = true;
                                 try {
-                                    showPlayingBox.showConfirm(row.getItem().getShow(), controller, showInfoController, userInfoController, (Stage) pane.getScene().getWindow());
+                                    showPlayingBox.showConfirm(row, controller, userInfoController, (Stage) pane.getScene().getWindow());
                                 } catch (IOException e1) {
                                     GenericMethods.printStackTrace(log, e1, Controller.class);
                                 }
@@ -452,7 +451,7 @@ public class Controller implements Initializable {
         userName.setFill(Color.DIMGRAY);
 
         // ~~~~ Search TextField ~~~~ \\
-        // The ContextMenu *really* isn't needed, But I wanted to make the clearTextField button to properly disappear and appear when needed. Using a Task would have been much easier...
+        // The ContextMenu *really* isn't needed, But I wanted to make the clearTextField button properly disappear and appear when needed. Using a Task would have been much easier...
         MenuItem textFieldCut = new MenuItem();
         textFieldCut.textProperty().bind(Strings.Cut);
         textFieldCut.setOnAction(e -> {
@@ -483,7 +482,7 @@ public class Controller implements Initializable {
         ContextMenu textFieldContextMenu = new ContextMenu();
         textFieldContextMenu.getItems().addAll(textFieldCut, textFieldCopy, textFieldPaste);
         textField.setContextMenu(textFieldContextMenu);
-        // End of unnecessary stuff.
+        // End of ContextMenu
 
         clearTextField.setText(Strings.EmptyString);
         textField.setOnKeyTyped(e -> {
@@ -518,6 +517,7 @@ public class Controller implements Initializable {
                         }
                     };
                     new Thread(task).start();
+                    wereShowsChanged = false;
                 } else if (Variables.disableAutomaticRechecking) wereShowsChanged = false;
                 setTableViewFields("active");
                 log.info("TableViewFields set to active.");
@@ -567,7 +567,7 @@ public class Controller implements Initializable {
             @Override
             protected Void call() throws Exception {
                 while (Main.programRunning) {
-                    if (checkShowFiles.getRecheckShowFileRunning()) {
+                    if (checkShowFiles.isRecheckingShowFile()) {
                         pingingDirectory.setVisible(true);
                         pingingDirectoryPane.setMouseTransparent(false);
                         while (checkShowFiles.isCurrentlyCheckingDirectories()) {
@@ -580,7 +580,7 @@ public class Controller implements Initializable {
                         pingingDirectoryPane.setMouseTransparent(true);
                         isCurrentlyRechecking.setVisible(true);
                         isCurrentlyRechecking.setMouseTransparent(false);
-                        while (checkShowFiles.getRecheckShowFileRunning()) {
+                        while (checkShowFiles.isRecheckingShowFile()) {
                             Platform.runLater(() -> isCurrentlyRechecking.setProgress(checkShowFiles.getRecheckShowFilePercentage()));
                             Thread.sleep(80);
                         }
@@ -612,8 +612,9 @@ public class Controller implements Initializable {
         new Thread(secondaryTask).start();
     }
 
-    public void clearTableSelection() {
-        tableView.getSelectionModel().clearSelection();
+    public void setTableSelection(int row) {
+        if (row == -2) tableView.getSelectionModel().clearSelection();
+        else tableView.getSelectionModel().select(row);
     }
 
     private void openChangeBox() {

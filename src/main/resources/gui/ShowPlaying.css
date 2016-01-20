@@ -1,0 +1,14 @@
+.root{
+    -fx-font-size: 12px;
+    -fx-font-family: "Times New Roman";
+}
+
+.tooltip {
+    -fx-background-color: #E8E8E8;
+    -fx-text-fill: black;
+    -fx-background-radius: 6 6 6 6;
+    -fx-padding: 0.2em 0.5em 0.2em 0.5em;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: .92em;
+    -fx-font-weight: bold;
+}
