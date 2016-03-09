@@ -30,7 +30,6 @@ public class ShowInfoController {
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile() {
-        if (directoryController.isReloadShowsFile()) directoryController.setReloadShowsFile(false);
         ArrayList<Directory> directories = directoryController.getDirectories(-2);
         if (directories.size() == 1) {
             showsFile = directories.get(0).getShows();
@@ -95,9 +94,7 @@ public class ShowInfoController {
 
     // Returns whether or not an episode is part of a double episode.
     public boolean isDoubleEpisode(String show, int season, int episode) {
-        if (showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode))
-            return showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
-        else return false;
+        return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) && showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
     }
 
     // Returns the lowest found season in a show.

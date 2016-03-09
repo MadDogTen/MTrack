@@ -120,6 +120,8 @@
                                                         </Button>
                                                         <Button fx:id="add1ToDirectoryVersion" layoutX="10.0" layoutY="50.0" mnemonicParsing="false" text="Directory Version +1"/>
                                                         <Button fx:id="nonForceRecheckShows" layoutX="8.0" layoutY="92.0" mnemonicParsing="false" text="Non-Force Recheck Shows"/>
+                                                        <Button fx:id="toggleIsChanges" layoutX="8.0" layoutY="134.0"
+                                                                mnemonicParsing="false" text="Toggle isChanges"/>
                                                     </children>
                                                 </AnchorPane>
                                             </content>

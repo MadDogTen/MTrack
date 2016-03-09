@@ -162,6 +162,7 @@ public class FileManager {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean deleteFile(String folder, String filename, String extension) {
         if (checkFileExists(folder, filename, extension)) {
             File toDelete = new File(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension);

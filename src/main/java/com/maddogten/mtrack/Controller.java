@@ -3,7 +3,7 @@ package com.maddogten.mtrack;
 import com.maddogten.mtrack.gui.*;
 import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.information.show.Directory;
-import com.maddogten.mtrack.information.show.DisplayShows;
+import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
@@ -54,9 +54,9 @@ public class Controller implements Initializable {
     private static CheckShowFiles checkShowFiles;
     private static DirectoryController directoryController;
     private static Controller controller;
-    // This is the list that is currently showing in the tableView. Currently can only be "active" or "inactive".
-    private static String currentList = Strings.EmptyString;
-    private static ObservableList<DisplayShows> tableViewFields;
+    // This is the list that is currently showing in the tableView. 0 = Inactive, 1 = Active.
+    private static int currentList = -1;
+    private static ObservableList<DisplayShow> tableViewFields;
     // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
@@ -66,6 +66,7 @@ public class Controller implements Initializable {
     @SuppressWarnings("unused")
     @FXML
     private Pane pane;
+    @SuppressWarnings("unused")
     @FXML
     private TabPane tabPane;
     @FXML
@@ -79,15 +80,15 @@ public class Controller implements Initializable {
     private Button minimize;
     @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
     @FXML
-    private TableView<DisplayShows> tableView = new TableView<>();
+    private TableView<DisplayShow> tableView = new TableView<>();
     @FXML
-    private TableColumn<DisplayShows, String> shows;
+    private TableColumn<DisplayShow, String> shows;
     @FXML
-    private TableColumn<DisplayShows, Integer> remaining;
+    private TableColumn<DisplayShow, Integer> remaining;
     @FXML
-    private TableColumn<DisplayShows, Integer> season;
+    private TableColumn<DisplayShow, Integer> season;
     @FXML
-    private TableColumn<DisplayShows, Integer> episode;
+    private TableColumn<DisplayShow, Integer> episode;
     @FXML
     private TextField textField;
     @FXML
@@ -116,30 +117,30 @@ public class Controller implements Initializable {
     private Text userName;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
-    private static ObservableList<DisplayShows> MakeTableViewFields(ArrayList<String> showList) {
-        ObservableList<DisplayShows> list = FXCollections.observableArrayList();
+    private static ObservableList<DisplayShow> MakeTableViewFields(ArrayList<String> showList) {
+        ObservableList<DisplayShow> list = FXCollections.observableArrayList();
         if (!showList.isEmpty()) {
-            if (currentList.matches("active") && !show0Remaining) {
+            if (currentList == 1 && !show0Remaining) {
                 showList.forEach(aShow -> {
                     int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController);
                     if (remaining != 0)
-                        list.add(new DisplayShows(aShow, remaining, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow)));
+                        list.add(new DisplayShow(aShow, remaining, userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow)));
                 });
             } else
-                list.addAll(showList.stream().map(aShow -> new DisplayShows(aShow, userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow))).collect(Collectors.toList()));
+                list.addAll(showList.stream().map(aShow -> new DisplayShow(aShow, userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), userInfoController.getCurrentSeason(aShow), userInfoController.getCurrentEpisode(aShow))).collect(Collectors.toList()));
         }
         return list;
     }
 
     // This sets the current tableView to whichever you want.
-    public static void setTableViewFields(String type) {
+    public static void setTableViewFields(int type) {
         switch (type) {
-            case "active":
-                if (!currentList.matches("active")) currentList = "active";
+            case 1:
+                if (currentList != 1) currentList = 1;
                 tableViewFields = MakeTableViewFields(userInfoController.getActiveShows());
                 break;
-            case "inactive":
-                if (!currentList.matches("inactive")) currentList = "inactive";
+            case 0:
+                if (currentList != 0) currentList = 0;
                 tableViewFields = MakeTableViewFields(userInfoController.getInactiveShows());
                 break;
         }
@@ -147,25 +148,27 @@ public class Controller implements Initializable {
 
     // Public method to update a particular show with new information. If the show happens to have been remove, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
     public static void updateShowField(String aShow, boolean showExists) {
-        int index = -2;
-        for (DisplayShows show : tableViewFields) {
-            if (show.getShow().replaceAll("[(]|[)]", "").matches(aShow.replaceAll("[(]|[)]", ""))) {
-                index = tableViewFields.indexOf(show);
+        String showReplaced = aShow.replaceAll(Variables.fileNameReplace, "");
+        DisplayShow currentShow = null;
+        for (DisplayShow show : tableViewFields) {
+            if (show.getShow().replaceAll(Variables.fileNameReplace, "").matches(showReplaced)) {
+                currentShow = show;
                 break;
             }
         }
-        boolean isShowActive = (userInfoController.isShowActive(aShow) && showExists), keep = true;
-        if (currentList.matches("active") && !isShowActive || currentList.matches("inactive") && isShowActive)
-            keep = false;
-        if (index != -2) removeShowField(index);
-        if (keep) {
-            int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController), season = userInfoController.getCurrentSeason(aShow), episode = userInfoController.getCurrentEpisode(aShow);
-            DisplayShows show = new DisplayShows(aShow, remaining, season, episode);
-            if (((show0Remaining || currentList.contains("inactive")) || remaining != 0) && index != -2)
-                tableViewFields.add(index, show);
-            else if (index == -2 && ((show0Remaining) || currentList.contains("inactive") || remaining != 0))
-                tableViewFields.add(show);
-        }
+        final boolean isShowActive = userInfoController.isShowActive(aShow) && showExists;
+        if ((currentList != 1 || isShowActive) && (currentList != 0 || !isShowActive)) {
+            int remaining = userInfoController.getRemainingNumberOfEpisodes(aShow, showInfoController);
+            int season = userInfoController.getCurrentSeason(aShow);
+            int episode = userInfoController.getCurrentEpisode(aShow);
+            if (currentShow != null && (remaining != 0 || show0Remaining || currentList == 0)) {
+                currentShow.setSeason(season);
+                currentShow.setEpisode(episode);
+                currentShow.setRemaining(remaining);
+            } else if (remaining == 0 && currentShow != null) tableViewFields.remove(currentShow);
+            else if (show0Remaining || currentList == 0 || remaining != 0)
+                tableViewFields.add(new DisplayShow(aShow, remaining, season, episode));
+        } else if (currentShow != null) tableViewFields.remove(currentShow);
     }
 
     // Used to remove the show from the current list. If you are on the active list and set a show inactive, then it will remove it; and the same if you make a show active on the inactive list.
@@ -259,14 +262,14 @@ public class Controller implements Initializable {
 
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
     private void setTableView() {
-        FilteredList<DisplayShows> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
+        FilteredList<DisplayShow> newFilteredData = new FilteredList<>(tableViewFields, p -> true);
         newFilteredData.setPredicate(show -> textField.getText() == null || textField.getText().isEmpty() || show.getShow().toLowerCase().contains(textField.getText().toLowerCase()));
         textField.textProperty().addListener((observable, oldValue, newValue) -> newFilteredData.setPredicate(show -> newValue == null || newValue.isEmpty() || show.getShow().toLowerCase().contains(newValue.toLowerCase())));
-        SortedList<DisplayShows> newSortedData = new SortedList<>(newFilteredData);
+        SortedList<DisplayShow> newSortedData = new SortedList<>(newFilteredData);
         newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(newSortedData);
-        if (currentList.matches("active")) show0RemainingCheckBox.setVisible(true);
-        else if (currentList.matches("inactive")) show0RemainingCheckBox.setVisible(false);
+        if (currentList == 1) show0RemainingCheckBox.setVisible(true);
+        else if (currentList == 0) show0RemainingCheckBox.setVisible(false);
     }
 
     @Override
@@ -301,13 +304,13 @@ public class Controller implements Initializable {
         episode.textProperty().bind(Strings.Episode);
         episode.setPrefWidth(programSettingsController.getSettingsFile().getEpisodeColumnWidth());
         episode.setVisible(programSettingsController.getSettingsFile().isEpisodeColumnVisibility());
-        Controller.setTableViewFields("active");
+        setTableViewFields(1);
         setTableView();
         tableView.getItems();
         tableView.getSortOrder().add(shows);
         tableView.setRowFactory(
                 param -> {
-                    final TableRow<DisplayShows> row = new TableRow<>();
+                    final TableRow<DisplayShow> row = new TableRow<>();
                     final ContextMenu rowMenuActive = new ContextMenu();
                     final ContextMenu rowMenuInactive = new ContextMenu();
                     MenuItem setSeasonEpisode = new MenuItem();
@@ -338,12 +341,12 @@ public class Controller implements Initializable {
                     });
                     MenuItem toggleActive = new MenuItem();
                     toggleActive.setOnAction(e -> {
-                        if (currentList.matches("inactive")) {
+                        if (currentList == 0) {
                             userInfoController.setActiveStatus(row.getItem().getShow(), true);
                             if (!wereShowsChanged) wereShowsChanged = true;
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             tableView.getSelectionModel().clearSelection();
-                        } else if (currentList.matches("active")) {
+                        } else if (currentList == 1) {
                             userInfoController.setActiveStatus(row.getItem().getShow(), false);
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             tableView.getSelectionModel().clearSelection();
@@ -388,9 +391,7 @@ public class Controller implements Initializable {
                                 folders.add(new Directory(fileName, fileName.toString(), -2, -2, null, -2));
                         });
                         if (folders.size() == 1) fileManager.open(folders.get(0).getDirectory());
-                        else {
-                            new ListSelectBox().openDirectory(folders, (Stage) tabPane.getScene().getWindow());
-                        }
+                        else new ListSelectBox().openDirectory(folders, (Stage) tabPane.getScene().getWindow());
                         log.info("Finished opening show directory...");
                     });
                     MenuItem getRemaining = new MenuItem();
@@ -415,14 +416,14 @@ public class Controller implements Initializable {
                     printShowInformation.setOnAction(e -> Main.getDeveloperStuff().printShowInformation(row.getItem().getShow()));
                     row.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
-                            if (currentList.matches("active")) {
+                            if (currentList == 1) {
                                 toggleActive.textProperty().bind(Strings.SetInactive);
                                 if (Variables.devMode)
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode, printShowInformation);
                                 else
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
-                            } else if (currentList.matches("inactive")) {
+                            } else if (currentList == 0) {
                                 toggleActive.textProperty().bind(Strings.SetActive);
                                 if (Variables.devMode)
                                     rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory, printShowInformation);
@@ -430,16 +431,14 @@ public class Controller implements Initializable {
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuInactive).otherwise((ContextMenu) null));
                             }
                         }
-                        if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && (!row.isEmpty()) && currentList.matches("active")) {
-                            if (!isShowCurrentlyPlaying) {
-                                isShowCurrentlyPlaying = true;
-                                try {
-                                    showPlayingBox.showConfirm(row, controller, userInfoController, (Stage) pane.getScene().getWindow());
-                                } catch (IOException e1) {
-                                    GenericMethods.printStackTrace(log, e1, Controller.class);
-                                }
-                                isShowCurrentlyPlaying = false;
+                        if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && !isShowCurrentlyPlaying && (!row.isEmpty()) && currentList == 1) {
+                            isShowCurrentlyPlaying = true;
+                            try {
+                                showPlayingBox.showConfirm(row.getItem(), controller, userInfoController, (Stage) pane.getScene().getWindow());
+                            } catch (IOException e1) {
+                                GenericMethods.printStackTrace(log, e1, Controller.class);
                             }
+                            isShowCurrentlyPlaying = false;
                         }
                     });
                     return row;
@@ -486,7 +485,7 @@ public class Controller implements Initializable {
 
         clearTextField.setText(Strings.EmptyString);
         textField.setOnKeyTyped(e -> {
-            if (!e.getCharacter().matches("") && !clearTextField.isVisible()) clearTextField.setVisible(true);
+            if (!e.getCharacter().matches("\b") && !clearTextField.isVisible()) clearTextField.setVisible(true);
         });
         textField.setOnKeyReleased(e -> {
             if (textField.getText().isEmpty() && clearTextField.isVisible()) clearTextField.setVisible(false);
@@ -504,10 +503,10 @@ public class Controller implements Initializable {
         minimize.setOnAction(e -> Main.stage.setIconified(true));
         menuButton.textProperty().bind(Strings.Options);
         changeTableView.setOnAction(event -> {
-            if (currentList.matches("active")) {
-                setTableViewFields("inactive");
+            if (currentList == 1) {
+                setTableViewFields(0);
                 log.info("TableViewFields set to inactive.");
-            } else if (currentList.matches("inactive")) {
+            } else if (currentList == 0) {
                 if (wereShowsChanged && !Variables.disableAutomaticRechecking) {
                     Task<Void> task = new Task<Void>() {
                         @Override
@@ -519,7 +518,7 @@ public class Controller implements Initializable {
                     new Thread(task).start();
                     wereShowsChanged = false;
                 } else if (Variables.disableAutomaticRechecking) wereShowsChanged = false;
-                setTableViewFields("active");
+                setTableViewFields(1);
                 log.info("TableViewFields set to active.");
             }
             this.setTableView();
@@ -528,13 +527,14 @@ public class Controller implements Initializable {
         viewChanges.textProperty().bind(Strings.OpenChangesWindow);
         viewChanges.setOnAction(e -> openChangeBox());
         changesAlert.setOnAction(e -> openChangeBox());
+        changesAlert.setOpacity(0.0);
         show0RemainingCheckBox.setSelected(show0Remaining);
         show0RemainingCheckBox.setOnAction(e -> {
             show0Remaining = show0RemainingCheckBox.isSelected();
             programSettingsController.getSettingsFile().setShow0Remaining(show0Remaining);
-            if (show0Remaining && currentList.matches("active"))
+            if (show0Remaining && currentList == 1)
                 log.info("Now showing shows with 0 episodes remaining.");
-            else if (currentList.matches("active")) log.info("No longer showing shows with 0 episodes remaining.");
+            else if (currentList == 1) log.info("No longer showing shows with 0 episodes remaining.");
             setTableViewFields(currentList);
             setTableView();
         });
@@ -621,9 +621,22 @@ public class Controller implements Initializable {
         changesBox.openChanges((Stage) pane.getScene().getWindow());
     }
 
-    private void checkIfChangesListIsPopulated() {
-        if (ChangeReporter.getIsChanges()) changesAlert.setVisible(true);
-        else if (changesAlert.isVisible()) changesAlert.setVisible(false);
+    private void checkIfChangesListIsPopulated() throws InterruptedException {
+        if (ChangeReporter.getIsChanges() && !changesAlert.isVisible()) {
+            changesAlert.setVisible(true);
+            while (Variables.fancyEffects && changesAlert.getOpacity() < 1.0) {
+                final int opacity = (int) (changesAlert.getOpacity() * 100.0) + 10;
+                changesAlert.setOpacity((double) (opacity / 100.0f));
+                Thread.sleep(40);
+            }
+        } else if (!ChangeReporter.getIsChanges() && changesAlert.isVisible()) {
+            while (Variables.fancyEffects && changesAlert.getOpacity() > 0.0) {
+                final int opacity = (int) (changesAlert.getOpacity() * 100.0) - 10;
+                changesAlert.setOpacity((double) (opacity / 100.0f));
+                Thread.sleep(40);
+            }
+            this.changesAlert.setVisible(false);
+        }
     }
 
     private void setController() {

@@ -25,13 +25,15 @@ public class ChangeReporter {
             changes[iterator] = aString;
             iterator++;
         }
-        isChanges = true;
+        if (!isChanges) isChanges = true;
     }
 
     // This completely clears the changes String[] so it can start new.
     public static void resetChanges() {
-        changes = new String[0];
-        isChanges = false;
+        if (changes.length > 0) {
+            changes = new String[0];
+            isChanges = false;
+        }
         log.info("Change list has been cleared.");
     }
 
@@ -51,5 +53,9 @@ public class ChangeReporter {
 
     public static boolean getIsChanges() {
         return isChanges;
+    }
+
+    public static void setIsChanges(final boolean isChanges) {
+        ChangeReporter.isChanges = isChanges;
     }
 }

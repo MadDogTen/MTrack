@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /*
-      DualChoiceButtons will display two separate choices and the related buttons, then returns the string of whichever button was pressed.
+      MultiChoice will display two separate choices and the related buttons, then returns the string of whichever button was pressed.
       It gives the option to display a separate message per a button if wanted, otherwise displays only the first message.
  */
 

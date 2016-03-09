@@ -4,7 +4,7 @@ import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.information.show.Show;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -16,12 +16,12 @@ import java.util.logging.Logger;
 public class FindChangedShows {
     private final Logger log = Logger.getLogger(FindChangedShows.class.getName());
 
-    private final Map<String, Show> showsFile;
+    private final Map<String, Show> oldShowsFile;
     private final UserInfoController userInfoController;
 
     // This class is initialized with a unchanged showsFile.
-    public FindChangedShows(Map<String, Show> showsFile, UserInfoController userInfoController) {
-        this.showsFile = showsFile;
+    public FindChangedShows(Map<String, Show> oldShowsFile, UserInfoController userInfoController) {
+        this.oldShowsFile = oldShowsFile;
         this.userInfoController = userInfoController;
         log.info("ShowsFile has been set.");
     }
@@ -29,75 +29,80 @@ public class FindChangedShows {
     // This compares the showFile that is unchanged with the new updated showsFile and reports any changes found to the ChangeReporter.
     public void findShowFileDifferences(Map<String, Show> newShowsFile) {
         log.info("findShowFileDifferences running...");
-        final boolean[] hasChanged = {false};
-        ArrayList<String> showsFound = new ArrayList<>(showsFile.size());
-        showsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
-            if (newShowsFile.containsKey(aShow)) showsFound.add(aShow);
-            else {
-                log.info(aShow + " Removed");
-                ChangeReporter.addChange("- " + aShow);
+        boolean[] hasChanged = new boolean[]{false};
+        oldShowsFile.forEach((showName, aShow) -> {
+            if (newShowsFile.containsKey(showName)) {
+                boolean recordShowInformation = this.userInfoController.isShowActive(showName) || Variables.recordChangesForNonActiveShows;
+                int currentSeason = this.userInfoController.getCurrentSeason(showName);
+                aShow.getSeasons().forEach((seasonInt, aSeason) -> {
+                    boolean recordSeason = seasonInt >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent;
+                    if ((newShowsFile.get(showName).getSeasons().containsKey(seasonInt))) {
+                        aSeason.getEpisodes().forEach((episodeInt, aEpisode) -> {
+                            if (!(newShowsFile.get(showName).getSeason(seasonInt).getEpisodes().containsKey(episodeInt))) {
+                                this.log.info(showName + " - Season " + showName + " - Episode " + episodeInt + " Removed");
+                                if (recordShowInformation && recordSeason) {
+                                    ChangeReporter.addChange("- " + showName + Strings.DashSeason.getValue() + seasonInt + Strings.DashEpisode.getValue() + episodeInt);
+                                }
+                                hasChanged[0] = true;
+                            }
+                        });
+                    } else {
+                        log.info(showName + " - Season " + seasonInt + " Removed");
+                        if (recordShowInformation && recordSeason) {
+                            ChangeReporter.addChange("- " + showName + Strings.DashSeason.getValue() + seasonInt);
+                        }
+                        hasChanged[0] = true;
+                    }
+                });
+            } else {
+                this.log.info(showName + " Removed");
+                ChangeReporter.addChange("- " + showName);
                 hasChanged[0] = true;
             }
         });
-        showsFound.forEach(aShowFound -> {
-            boolean recordShowInformation = userInfoController.isShowActive(aShowFound) || Variables.recordChangesForNonActiveShows;
-            int currentSeason = userInfoController.getCurrentSeason(aShowFound);
-            ArrayList<Integer> seasonsFound = new ArrayList<>(showsFile.get(aShowFound).getSeasons().size());
-            showsFile.get(aShowFound).getSeasons().forEach((aSeason, aIntegerHashMap) -> {
-                boolean recordSeason = aSeason >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent;
-                if (newShowsFile.get(aShowFound).getSeasons().containsKey(aSeason)) {
-                    if (recordShowInformation && recordSeason) seasonsFound.add(aSeason);
-                } else {
-                    log.info(aShowFound + " - Season " + aSeason + " Removed");
-                    if (recordShowInformation && recordSeason)
-                        ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason.getValue() + aSeason);
-                    hasChanged[0] = true;
-                }
-            });
-            seasonsFound.forEach(aSeasonFound -> showsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().forEach((aEpisode, episodeMap) -> {
-                if (!newShowsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
-                    log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Removed");
-                    if (recordShowInformation && aSeasonFound >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent)
-                        ChangeReporter.addChange("- " + aShowFound + Strings.DashSeason.getValue() + aSeasonFound + Strings.DashEpisode.getValue() + aEpisode);
-                    hasChanged[0] = true;
-                }
-            }));
-        });
-        ArrayList<String> showsFoundOld = new ArrayList<>(newShowsFile.size());
-        newShowsFile.forEach((aShow, aHashMapIntegerHashMap) -> {
-            if (showsFile.containsKey(aShow)) showsFoundOld.add(aShow);
-            else {
-                log.info(aShow + " Added");
-                ChangeReporter.addChange("+ " + aShow);
+
+        newShowsFile.forEach((showName, aShow) -> {
+            if (oldShowsFile.containsKey(showName)) {
+                boolean recordShowInformation = userInfoController.isShowActive(showName) || Variables.recordChangesForNonActiveShows;
+                int currentSeason = userInfoController.getCurrentSeason(showName);
+                aShow.getSeasons().forEach((seasonInt, aSeason) -> {
+                    boolean recordSeason = seasonInt >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent;
+                    if (oldShowsFile.get(showName).getSeasons().containsKey(seasonInt)) {
+                        aSeason.getEpisodes().forEach((episodeInt, aEpisode) -> {
+                            if (!oldShowsFile.get(showName).getSeason(seasonInt).getEpisodes().containsKey(episodeInt)) {
+                                this.log.info(showName + " - Season " + seasonInt + " - Episode " + episodeInt + " Added");
+                                if (recordShowInformation && recordSeason) {
+                                    ChangeReporter.addChange("+ " + showName + Strings.DashSeason.getValue() + seasonInt + Strings.DashEpisode.getValue() + episodeInt);
+                                }
+                                hasChanged[0] = true;
+                            } else if (!new File(this.oldShowsFile.get(showName).getSeason(seasonInt).getEpisode(episodeInt).getEpisodeFilename()).exists()) {
+                                this.log.info(showName + " - Season " + seasonInt + " - Episode " + episodeInt + " Changed");
+                                this.log.info('\"' + this.oldShowsFile.get(showName).getSeason(seasonInt).getEpisode(episodeInt).getEpisodeFilename() + "\" -> \"" + aEpisode.getEpisodeFilename() + "\".");
+                                if (recordShowInformation && recordSeason) {
+                                    ChangeReporter.addChange("~ " + showName + Strings.DashSeason.getValue() + seasonInt + Strings.DashEpisode.getValue() + episodeInt);
+                                }
+                                hasChanged[0] = true;
+                            }
+                        });
+                    } else {
+                        this.log.info(showName + " - Season " + seasonInt + " Added");
+                        if (recordShowInformation && recordSeason) {
+                            ChangeReporter.addChange("+ " + showName + Strings.DashSeason.getValue() + seasonInt);
+                        }
+                        hasChanged[0] = true;
+                    }
+                });
+            } else {
+                this.log.info(showName + " Added");
+                ChangeReporter.addChange("+ " + showName);
                 hasChanged[0] = true;
             }
         });
-        showsFoundOld.forEach(aShowFound -> {
-            boolean recordShowInformation = userInfoController.isShowActive(aShowFound) || Variables.recordChangesForNonActiveShows;
-            int currentSeason = userInfoController.getCurrentSeason(aShowFound);
-            ArrayList<Integer> seasonsFoundOld = new ArrayList<>(newShowsFile.get(aShowFound).getSeasons().size());
-            newShowsFile.get(aShowFound).getSeasons().forEach((aSeason, aIntegerHashMap) -> {
-                boolean recordSeason = aSeason >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent;
-                if (showsFile.get(aShowFound).getSeasons().containsKey(aSeason)) {
-                    if (recordShowInformation && recordSeason) seasonsFoundOld.add(aSeason);
-                } else {
-                    log.info(aShowFound + " - Season " + aSeason + " Added");
-                    if (recordShowInformation && recordSeason)
-                        ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason.getValue() + aSeason);
-                    hasChanged[0] = true;
-                }
-            });
-            seasonsFoundOld.forEach(aSeasonFound -> newShowsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().forEach((aEpisode, StringString) -> {
-                if (!showsFile.get(aShowFound).getSeason(aSeasonFound).getEpisodes().containsKey(aEpisode)) {
-                    log.info(aShowFound + " - Season " + aSeasonFound + " - Episode " + aEpisode + " Added");
-                    if (recordShowInformation && aSeasonFound >= currentSeason || Variables.recordChangedSeasonsLowerThanCurrent)
-                        ChangeReporter.addChange("+ " + aShowFound + Strings.DashSeason.getValue() + aSeasonFound + Strings.DashEpisode.getValue() + aEpisode);
-                    hasChanged[0] = true;
-                }
-            }));
-        });
-        if (hasChanged[0]) log.info("Some files have been changed.");
-        else log.info("No files have changed.");
-        log.info("Finished running findShowFileDifferences.");
+        if (hasChanged[0]) {
+            this.log.info("Some files have been changed.");
+        } else {
+            this.log.info("No files have changed.");
+        }
+        this.log.info("Finished running findShowFileDifferences.");
     }
 }

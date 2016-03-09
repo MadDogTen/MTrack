@@ -157,6 +157,9 @@ public class Settings implements Initializable {
     private Button nonForceRecheckShows;
     @FXML
     private CheckBox showUsername;
+    @FXML
+    private Button toggleIsChanges;
+
 
     public static Settings getSettings() {
         return settings;
@@ -509,6 +512,11 @@ public class Settings implements Initializable {
                 }
             };
             new Thread(task).start();
+        });
+        this.toggleIsChanges.textProperty().bind(Strings.ToggleIsChanges);
+        this.toggleIsChanges.setOnAction(e -> {
+            Main.getDeveloperStuff().toggleIsChanges();
+            log.info("isChanges has been set to:" + ChangeReporter.getIsChanges());
         });
         clearFile.textProperty().bind(Strings.ClearFile);
         clearFile.setOnAction(e -> {

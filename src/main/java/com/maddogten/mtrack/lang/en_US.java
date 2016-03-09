@@ -93,6 +93,7 @@ public class en_US extends Language {
         Strings.OpenAll.setValue("Open All");
         Strings.OpenSelected.setValue("Open Selected");
         Strings.NonForceRecheckShows.setValue("Non-Force Recheck Shows");
+        Strings.ToggleIsChanges.setValue("Toggle isChanges");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("Inactive Shows");

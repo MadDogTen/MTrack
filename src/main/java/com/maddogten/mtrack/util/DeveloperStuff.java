@@ -4,10 +4,7 @@ import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.ListSelectBox;
 import com.maddogten.mtrack.gui.MessageBox;
-import com.maddogten.mtrack.information.DirectoryController;
-import com.maddogten.mtrack.information.ProgramSettingsController;
-import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
@@ -132,10 +129,11 @@ public class DeveloperStuff {
         if (emptyShows.isEmpty()) log.info("No empty shows");
         else {
             ArrayList<Directory> directories = directoryController.getDirectories(-2);
+            FileManager fileManager = new FileManager();
             directories.forEach(aDirectory -> {
                 ArrayList<String> emptyShowsDir = new ArrayList<>();
                 emptyShows.forEach(aShow -> {
-                    if (new FileManager().checkFolderExistsAndReadable(new File(aDirectory + Strings.FileSeparator + aShow)) && !aDirectory.getShows().containsKey(aShow))
+                    if (fileManager.checkFolderExistsAndReadable(new File(aDirectory + Strings.FileSeparator + aShow)) && !aDirectory.getShows().containsKey(aShow))
                         emptyShowsDir.add(aShow);
                 });
                 log.info("Empty shows in \"" + aDirectory + "\": " + emptyShowsDir);
@@ -209,6 +207,10 @@ public class DeveloperStuff {
         userInfoController.getUserSettings().getShowSettings().values().forEach(aShowSettings -> print[i[0]++] = '\n' + aShowSettings.getShowName() + " - " + aShowSettings.isActive() + ", " + aShowSettings.isIgnored() + ", " + aShowSettings.isHidden() + " - Season: " + aShowSettings.getCurrentSeason() + " | Episode: " + aShowSettings.getCurrentEpisode());
         log.info(Arrays.toString(print));
         log.info("Finished printing all user info.");
+    }
+
+    public void toggleIsChanges() {
+        ChangeReporter.setIsChanges(!ChangeReporter.getIsChanges());
     }
 
     //---- CheckShowFiles ----\\

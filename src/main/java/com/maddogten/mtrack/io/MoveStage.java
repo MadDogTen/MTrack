@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import java.util.logging.Logger;
 
 /*
-      MoveWindow is used to allow the user to move stages. This is needed since all stages are UNDECORATED.
+      MoveStage is used to allow the user to move stages. This is needed since all stages are UNDECORATED.
  */
 public class MoveStage {
     private static final Logger log = Logger.getLogger(MoveStage.class.getName());

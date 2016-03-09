@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 public class DirectoryController {
     private final Logger log = Logger.getLogger(DirectoryController.class.getName());
     private final ArrayList<File> inactiveDirectories = new ArrayList<>();
-    private boolean reloadShowsFile = false;
 
     // Saves all the directory paths that the program is currently set to check.
     private ArrayList<Directory> getDirectories() {
@@ -229,7 +228,7 @@ public class DirectoryController {
 
     public void saveDirectory(Directory directory, Boolean loadMap) {
         new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowFileExtension, true);
-        if (loadMap) reloadShowsFile = true;
+        if (loadMap) Main.getShowInfoController().loadShowsFile();
     }
 
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
@@ -238,14 +237,5 @@ public class DirectoryController {
         if (!new FileManager().deleteFile(Variables.DirectoriesFolder, aDirectory.getFileName(), Variables.ShowFileExtension))
             log.info("Wasn't able to delete directory.");
         log.info("Finished processing removal of the directory.");
-    }
-
-    public boolean isReloadShowsFile() {
-        return reloadShowsFile;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    public void setReloadShowsFile(boolean reloadShowsFile) {
-        this.reloadShowsFile = reloadShowsFile;
     }
 }

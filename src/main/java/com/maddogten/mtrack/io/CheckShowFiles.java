@@ -184,8 +184,7 @@ public class CheckShowFiles {
                 else seasons = removeLowerSeasons(currentSeason, showsMap.get(aShow).getSeasons().keySet());
                 seasons.forEach(aSeason -> {
                     if (fileManager.checkFolderExistsAndReadable(new File(String.valueOf(folderLocation) + Strings.FileSeparator + aShow + "/Season " + aSeason + Strings.FileSeparator))) {
-                        ArrayList<Integer> changedEpisodes = hasEpisodesChanged(aShow, aSeason, folderLocation, showsMap);
-                        if (!changedEpisodes.isEmpty()) {
+                        if (hasEpisodesChanged(aShow, aSeason, folderLocation, showsMap)) {
                             log.info("Episode changes detected for " + aShow + ", updating files...");
                             hasChanged[0] = true;
                             updatedShows.add(aShow);
@@ -216,20 +215,29 @@ public class CheckShowFiles {
     }
 
     // This compares the given showsFile Map episodes for any new episodes found in the shows folder. Adds anything new it finds to a ArrayList and returns.
-    private ArrayList<Integer> hasEpisodesChanged(String aShow, Integer aSeason, File folderLocation, Map<String, Show> showsFile) {
+    private boolean hasEpisodesChanged(String aShow, Integer aSeason, File folderLocation, Map<String, Show> showsFile) {
         Set<Integer> oldEpisodeList = showsFile.get(aShow).getSeason(aSeason).getEpisodes().keySet();
         ArrayList<String> newEpisodesList = new FindShows().findEpisodes(folderLocation, aShow, aSeason);
         ArrayList<Integer> newEpisodesListFixed = new ArrayList<>();
-        if ((oldEpisodeList.isEmpty()) && newEpisodesList.isEmpty()) return new ArrayList<>();
+        if ((oldEpisodeList.isEmpty()) && newEpisodesList.isEmpty()) return false;
         newEpisodesList.forEach(aNewEpisode -> {
             int[] EpisodeInfo = showInfoController.getEpisodeInfo(aNewEpisode);
             newEpisodesListFixed.add(EpisodeInfo[0]);
             if (EpisodeInfo[1] != -2) newEpisodesListFixed.add(EpisodeInfo[1]);
+            if (oldEpisodeList.contains(EpisodeInfo[0])) {
+                if (!new File(showsFile.get(aShow).getSeason(aSeason).getEpisode(EpisodeInfo[0]).getEpisodeFilename()).exists()) {
+                    newEpisodesListFixed.add(EpisodeInfo[0]);
+                    if (EpisodeInfo[1] != -2 && oldEpisodeList.contains(EpisodeInfo[1])) {
+                        newEpisodesListFixed.add(EpisodeInfo[1]);
+                    }
+                }
+            }
         });
         ArrayList<Integer> changedEpisodes = new ArrayList<>(oldEpisodeList.size() + newEpisodesListFixed.size());
         changedEpisodes.addAll(oldEpisodeList.stream().filter(aOldEpisode -> !newEpisodesListFixed.contains(aOldEpisode)).collect(Collectors.toList()));
         changedEpisodes.addAll(newEpisodesListFixed.stream().filter(newEpisode -> !oldEpisodeList.contains(newEpisode)).collect(Collectors.toList()));
-        return changedEpisodes;
+        if (changedEpisodes.contains(-2)) changedEpisodes.remove(-2);
+        return !changedEpisodes.isEmpty();
     }
 
     // Same as above, but instead scans the shows folder for new seasons.
@@ -239,9 +247,7 @@ public class CheckShowFiles {
         Iterator<Integer> newSeasonsIterator = newSeasons.iterator();
         while (newSeasonsIterator.hasNext()) {
             int newSeason = newSeasonsIterator.next();
-            if (oldSeasons.contains(newSeason)) {
-                if (showsFile.get(aShow).getSeason(newSeason).getEpisodes().isEmpty()) newSeasonsIterator.remove();
-            } else if (isSeasonEmpty(aShow, newSeason, folderLocation)) newSeasonsIterator.remove();
+            if (isSeasonEmpty(aShow, newSeason, folderLocation)) newSeasonsIterator.remove();
         }
         Set<Integer> changedSeasons = new HashSet<>();
         changedSeasons.addAll(oldSeasons.stream().filter(aOldSeason -> !newSeasons.contains(aOldSeason)).collect(Collectors.toList()));
@@ -311,8 +317,7 @@ public class CheckShowFiles {
         changedSeasons.forEach(aSeason -> {
             Map<Integer, Episode> episodeNum = putEpisodesInMap(aShow, folderLocation, aSeason);
             if (episodeNum.isEmpty()) seasonEpisode.removeSeason(aSeason);
-            else if (seasonEpisode.getSeasons().containsKey(aSeason))
-                seasonEpisode.addOrReplaceSeason(aSeason, new Season(aSeason, episodeNum));
+            else seasonEpisode.addOrReplaceSeason(aSeason, new Season(aSeason, episodeNum));
         });
         directory.getShows().replace(aShow, seasonEpisode);
         directoryController.saveDirectory(directory, true);

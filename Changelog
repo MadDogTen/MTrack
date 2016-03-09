@@ -26,11 +26,11 @@ Show rechecking will now recheck older seasons on program start, every 5th reche
 Show rechecking will now recheck all nonIgnored shows on program start, every 10th recheck, and when doing a forceRun; and added option to show related found changes on the changelog. Defaults off.
 ProgressIndicator isCurrentlyRechecking is not shown until pingingDirectory is finished.
 pingingDirectory is now a symbol and will rotate instead of fading in and out.
-Changed the "X" and "-" buttons to a image.
+Changed the Exit and Minimise buttons to a image.
 Moved Clock Methods to a GenericMethods class and removed the Clock class.
 settingsTab is now disabled while the settings stage is open (To go along with above change).
 Moved "Change Language" to UI tab in the settings stage.
-Changed "ChangeLanguage" to have changes take effect immediately. Note- Needs more testing to make I didn't break anything while implementing this.
+Changed "ChangeLanguage" to have changes take effect immediately. Note- Needs more testing to make sure I didn't break anything while implementing this.
 Renamed MoveWindow to MoveStage.
 Changed Tooltip Style.
 Changed most buttons to become disabled when you click them, and are re-enabled when you / they have finished the task.
@@ -40,6 +40,7 @@ Changed MainRun getLanguage select to preselect the default language when choosi
 Changed Program font. Not final.
 Changed renamed ShowConfirmBox into ShowPlayingBox and completely changed how it works. Moved code out of the controller and into it.
 Changed how episodes are phased. Its now much simpler and easily expandable.
+Changed the ProgressIndicator isCurrentlyRechecking now fades in and out.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -69,6 +70,7 @@ Added per user setting to hide the username.
 Added information about the current show, season, and episode in the ShowPlayingBox stage.
 Added Tooltip to ShowPlaying Show name to show the full name.
 Added DeveloperStuff class and started moving all appropriate code into it.
+Added automatic file saving every 10 minutes.
 
 Fixes:
 Will now properly switch to new seasons when found.
@@ -86,6 +88,7 @@ Fixed bug where getRemainingNumberOfEpisodes was reporting remaining episodes fr
 Fixed ShowPlaying Show name wrapping down into other text. Instead it is cut.
 Fixed ShowPlaying for causing the wrong row being selected when playing the next episode.
 Fixed bug where getRemainingNumberOfEpisodes was reporting episodes from later seasons if the seasons in between were empty and the season started at episode 1.
+Fixed issue where CheckShowFiles wasn't checking if the show filename was changed.
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

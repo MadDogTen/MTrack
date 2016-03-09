@@ -95,6 +95,7 @@ public class lipsum extends Language {
         Strings.OpenAll.setValue("tarimi");
         Strings.OpenSelected.setValue("dorire");
         Strings.NonForceRecheckShows.setValue("gulutu");
+        Strings.ToggleIsChanges.setValue("tavalu marutu");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("miterra");

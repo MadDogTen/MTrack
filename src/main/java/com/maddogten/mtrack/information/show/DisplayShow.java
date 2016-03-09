@@ -4,18 +4,18 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /*
-      DisplayShows is used for the Controller Class. It stores the information that needs to be displayed
+      DisplayShow is used for the Controller Class. It stores the information that needs to be displayed
       on the tableView.
  */
 
 @SuppressWarnings({"unused", "ClassWithoutLogger"})
-public class DisplayShows {
-    private SimpleStringProperty show;
-    private SimpleIntegerProperty remaining;
-    private SimpleIntegerProperty season;
-    private SimpleIntegerProperty episode;
+public class DisplayShow {
+    private final SimpleStringProperty show;
+    private final SimpleIntegerProperty remaining;
+    private final SimpleIntegerProperty season;
+    private final SimpleIntegerProperty episode;
 
-    public DisplayShows(String show, int remaining, int season, int episode) {
+    public DisplayShow(String show, int remaining, int season, int episode) {
         this.show = new SimpleStringProperty(show);
         this.remaining = new SimpleIntegerProperty(remaining);
         this.season = new SimpleIntegerProperty(season);
@@ -30,10 +30,6 @@ public class DisplayShows {
         return show.get();
     }
 
-    public void setShow(String show) {
-        this.show = new SimpleStringProperty(show);
-    }
-
     public SimpleIntegerProperty remainingProperty() {
         return this.remaining;
     }
@@ -43,7 +39,7 @@ public class DisplayShows {
     }
 
     public void setRemaining(Integer remaining) {
-        this.remaining = new SimpleIntegerProperty(remaining);
+        this.remaining.setValue(remaining);
     }
 
     public SimpleIntegerProperty seasonProperty() {
@@ -55,7 +51,7 @@ public class DisplayShows {
     }
 
     public void setSeason(Integer season) {
-        this.season = new SimpleIntegerProperty(season);
+        this.season.setValue(season);
     }
 
     public SimpleIntegerProperty episodeProperty() {
@@ -67,6 +63,6 @@ public class DisplayShows {
     }
 
     public void setEpisode(Integer episode) {
-        this.episode = new SimpleIntegerProperty(episode);
+        this.episode.setValue(episode);
     }
 }

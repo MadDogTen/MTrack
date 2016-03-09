@@ -4,7 +4,7 @@ import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.information.UserInfoController;
-import com.maddogten.mtrack.information.show.DisplayShows;
+import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -13,7 +13,6 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -29,7 +28,7 @@ import java.util.logging.Logger;
 public class ShowPlaying implements Initializable {
     private static final Logger log = Logger.getLogger(ShowPlaying.class.getName());
 
-    private final TableRow<DisplayShows> row;
+    private final DisplayShow show;
     private final Controller controller;
     private final UserInfoController userInfoController;
 
@@ -66,8 +65,8 @@ public class ShowPlaying implements Initializable {
     @FXML
     private Text episodeText;
 
-    public ShowPlaying(TableRow<DisplayShows> row, Controller controller, UserInfoController userInfoController) {
-        this.row = row;
+    public ShowPlaying(DisplayShow show, Controller controller, UserInfoController userInfoController) {
+        this.show = show;
         this.controller = controller;
         this.userInfoController = userInfoController;
     }
@@ -83,10 +82,10 @@ public class ShowPlaying implements Initializable {
         currentlyPlayingText.textProperty().bind(Strings.CurrentlyPlaying);
         currentlyPlayingText.setTextAlignment(TextAlignment.CENTER);
 
-        showNameText.setWrappingWidth(com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(row.getItem().getShow(), Variables.Font));
+        showNameText.setWrappingWidth(com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(show.getShow(), Variables.Font));
         showNameText.setTextAlignment(TextAlignment.LEFT);
-        showNameText.setText(row.getItem().getShow());
-        Tooltip showNameTextTooltip = new Tooltip(row.getItem().getShow());
+        showNameText.setText(show.getShow());
+        Tooltip showNameTextTooltip = new Tooltip(show.getShow());
         showNameTextTooltip.getStyleClass().add("tooltip");
         Tooltip.install(
                 showNameText,
@@ -96,8 +95,8 @@ public class ShowPlaying implements Initializable {
         setSeasonEpisodeText();
 
         yesButton.setOnAction(e -> {
-            userInfoController.changeEpisode(row.getItem().getShow(), -2);
-            Controller.updateShowField(row.getItem().getShow(), true);
+            userInfoController.changeEpisode(show.getShow(), -2);
+            Controller.updateShowField(show.getShow(), true);
             controller.setTableSelection(-2);
             Stage stage = (Stage) mainPane.getScene().getWindow();
             stage.close();
@@ -107,31 +106,30 @@ public class ShowPlaying implements Initializable {
             Stage stage = (Stage) mainPane.getScene().getWindow();
             stage.close();
         });
-        nextEpisodeButton.setDisable(!(row.getItem().getRemaining() > 1));
+        nextEpisodeButton.setDisable(!(show.getRemaining() > 1));
         nextEpisodeButton.setOnAction(e -> {
-            userInfoController.changeEpisode(row.getItem().getShow(), -2);
-            Controller.updateShowField(row.getItem().getShow(), true);
-            controller.setTableSelection(row.getIndex());
+            userInfoController.changeEpisode(show.getShow(), -2);
+            Controller.updateShowField(show.getShow(), true);
             setSeasonEpisodeText();
-            if (row.getItem().getRemaining() <= 1)
+            if (show.getRemaining() <= 1)
                 nextEpisodeButton.setDisable(true);
-            if (userInfoController.doesEpisodeExistInShowFile(row.getItem().getShow()) || userInfoController.isProperEpisodeInNextSeason(row.getItem().getShow())) {
-                if (!userInfoController.playAnyEpisode(row.getItem().getShow(), row.getItem().getSeason(), row.getItem().getEpisode())) {
-                    log.info("Unable to play: " + row.getItem().getShow() + " | Season: " + row.getItem().getSeason() + " | Episode: " + row.getItem().getEpisode());
+            if (userInfoController.doesEpisodeExistInShowFile(show.getShow()) || userInfoController.isProperEpisodeInNextSeason(show.getShow())) {
+                if (!userInfoController.playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+                    log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                     new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                     Stage stage = (Stage) mainPane.getScene().getWindow();
                     stage.close();
                 }
             } else {
-                log.info("Unable to play: " + row.getItem().getShow() + " | Season: " + row.getItem().getSeason() + " | Episode: " + row.getItem().getEpisode());
+                log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 stage.close();
             }
         });
         restartButton.setOnAction(e -> {
-            if (!userInfoController.playAnyEpisode(row.getItem().getShow(), row.getItem().getSeason(), row.getItem().getEpisode())) {
-                log.info("Unable to play: " + row.getItem().getShow() + " | Season: " + row.getItem().getSeason() + " | Episode: " + row.getItem().getEpisode());
+            if (!userInfoController.playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+                log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 stage.close();
@@ -141,7 +139,7 @@ public class ShowPlaying implements Initializable {
 
         Platform.runLater(() -> {
             Stage stage = (Stage) mainPane.getScene().getWindow();
-            if (com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(row.getItem().getShow(), Variables.Font) < stage.getWidth())
+            if (com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(show.getShow(), Variables.Font) < stage.getWidth())
                 showNameText.setX((stage.getWidth() / 2) - (showNameText.getLayoutBounds().getWidth() / 2));
         });
         // This makes the Show name scroll if text goes out of stage. I decided not to do it this way in favor of a tooltip, But am keeping it in case I change my mind.
@@ -174,9 +172,9 @@ public class ShowPlaying implements Initializable {
     }
 
     private void setSeasonEpisodeText() {
-        seasonText.setText(Strings.Season.getValue() + ":  " + userInfoController.getCurrentSeason(row.getItem().getShow()));
+        seasonText.setText(Strings.Season.getValue() + ":  " + this.show.getSeason());
         seasonText.setTextAlignment(TextAlignment.CENTER);
-        episodeText.setText(Strings.Episode.getValue() + ":  " + userInfoController.getCurrentEpisode(row.getItem().getShow()));
+        episodeText.setText(Strings.Episode.getValue() + ":  " + this.show.getEpisode());
         episodeText.setTextAlignment(TextAlignment.CENTER);
     }
 }

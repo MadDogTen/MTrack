@@ -27,7 +27,7 @@ public class MainRun {
     private final DirectoryController directoryController;
     public boolean firstRun = false, continueStarting = true;
     private boolean hasRan = false, forceRun = true;
-    private int timer = GenericMethods.getTimeSeconds();
+    private int recheckTimer, saveTimer;
 
     @SuppressWarnings("SameParameterValue")
     public MainRun(ProgramSettingsController programSettingsController, ShowInfoController showInfoController, UserInfoController userInfoController, CheckShowFiles checkShowFiles, DirectoryController directoryController) {
@@ -128,17 +128,17 @@ public class MainRun {
     public void tick() {
         if (!hasRan) {
             log.info("MainRun Running...");
-            timer = GenericMethods.getTimeSeconds();
+            this.recheckTimer = GenericMethods.getTimeSeconds();
+            this.saveTimer = GenericMethods.getTimeSeconds();
             hasRan = true;
         }
-        if (directoryController.isReloadShowsFile() && !Controller.getCheckShowFiles().isRecheckingShowFile())
-            showInfoController.loadShowsFile();
         recheck();
+        saveSettings();
     }
 
     private void recheck() {
         // noinspection PointlessBooleanExpression
-        if (!(Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(timer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(timer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(timer) > (Variables.updateSpeed * 10))) {
+        if (!(Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.getIsShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > Variables.updateSpeed) || Controller.getIsShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (Variables.updateSpeed * 10))) {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
@@ -153,7 +153,7 @@ public class MainRun {
             } catch (InterruptedException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
-            timer = GenericMethods.getTimeSeconds();
+            recheckTimer = GenericMethods.getTimeSeconds();
             forceRun = false;
         }
     }
@@ -173,6 +173,15 @@ public class MainRun {
         }
     }
 
+    private void saveSettings() {
+        if (Variables.enableAutoSavingOnTimer && GenericMethods.timeTakenSeconds(saveTimer) > Variables.programSaveTime) {
+            GenericMethods.saveSettings();
+            saveTimer = GenericMethods.getTimeSeconds();
+            log.info("Settings have automatically been saved.");
+        }
+    }
+
+
     // Prompts the user to choose which language to startup with. If there is only 1 language, then it will skip the prompt and start with it.
     public void getLanguage() {
         LanguageHandler languageHandler = new LanguageHandler();
@@ -181,8 +190,7 @@ public class MainRun {
         if (!firstRun) language = programSettingsController.getSettingsFile().getLanguage();
         if (languages.size() == 1)
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
-        else {
-            if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove
+        else if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove
                 Boolean wasSet = languageHandler.setLanguage(language);
                 Variables.makeLanguageDefault = true;
                 if (wasSet) {
@@ -209,6 +217,5 @@ public class MainRun {
                     } else log.severe("Language was not set for some reason, Please report.");
                 }
             }
-        }
     }
 }

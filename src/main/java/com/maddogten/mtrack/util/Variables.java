@@ -60,6 +60,7 @@ public class Variables {
     public static final ArrayList<Pattern> doubleEpisodePatterns = new ArrayList<>(Collections.singletonList(Pattern.compile("s\\d{1,4}e(\\d{1,4})[e|-](\\d{1,4})")));
     @SuppressWarnings("PublicStaticCollectionField")
     public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})")));
+    public static final String fileNameReplace = "[(]|[)]|[\\\\]|[\\[]]|[\\]]|[\\[]|[\\]]|[+][\\{][\\}]";
     public static boolean disableAutomaticRechecking;
     /**/public static boolean devMode = false; // false
     public static int updateSpeed;
@@ -72,6 +73,10 @@ public class Variables {
     public static boolean recordChangedSeasonsLowerThanCurrent;
     public static boolean moveStageWithParent;
     public static boolean haveStageBlockParentStage;
+    @SuppressWarnings("CanBeFinal") // TODO Add setting for these
+    public static boolean fancyEffects = true;
+    public static int programSaveTime = 600;
+    public static boolean enableAutoSavingOnTimer = true;
 
     public static void setDataFolder(File file) {
         dataFolder = file;

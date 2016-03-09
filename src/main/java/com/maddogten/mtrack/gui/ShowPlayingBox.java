@@ -4,14 +4,13 @@ import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.FXMLControllers.ShowPlaying;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.information.UserInfoController;
-import com.maddogten.mtrack.information.show.DisplayShows;
+import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.TableRow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -20,7 +19,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /*
-      ShowConfirmBox is displayed when the user plays a show. It allows them increment the episode number and close, leave the episode number as is and close,
+      ShowPlayingBox is displayed when the user plays a show. It allows them increment the episode number and close, leave the episode number as is and close,
       or to increment the episode number and automatically start the next episode and redisplay this window.
  */
 
@@ -40,17 +39,17 @@ public class ShowPlayingBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public void showConfirm(TableRow<DisplayShows> row, Controller controller, UserInfoController userInfoController, Stage oldStage) throws IOException {
+    public void showConfirm(DisplayShow show, Controller controller, UserInfoController userInfoController, Stage oldStage) throws IOException {
         log.fine("showConfirm has been opened.");
 
-        if (userInfoController.doesEpisodeExistInShowFile(row.getItem().getShow()) || userInfoController.isProperEpisodeInNextSeason(row.getItem().getShow())) {
-            if (!userInfoController.playAnyEpisode(row.getItem().getShow(), row.getItem().getSeason(), row.getItem().getEpisode())) {
-                log.info("Unable to play: " + row.getItem().getShow() + " | Season: " + row.getItem().getSeason() + " | Episode: " + row.getItem().getEpisode());
+        if (userInfoController.doesEpisodeExistInShowFile(show.getShow()) || userInfoController.isProperEpisodeInNextSeason(show.getShow())) {
+            if (!userInfoController.playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+                log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 return;
             }
         } else {
-            log.info("Unable to play: " + row.getItem().getShow() + " | Season: " + row.getItem().getSeason() + " | Episode: " + row.getItem().getEpisode());
+            log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
             new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
             return;
         }
@@ -62,7 +61,7 @@ public class ShowPlayingBox {
         GenericMethods.setIcon(stage);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/ShowPlaying.fxml"));
-        fxmlLoader.setController(new ShowPlaying(row, controller, userInfoController));
+        fxmlLoader.setController(new ShowPlaying(show, controller, userInfoController));
 
         stage.setResizable(false);
 

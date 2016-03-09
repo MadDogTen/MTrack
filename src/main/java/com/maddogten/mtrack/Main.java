@@ -1,7 +1,10 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ConfirmBox;
-import com.maddogten.mtrack.information.*;
+import com.maddogten.mtrack.information.DirectoryController;
+import com.maddogten.mtrack.information.ProgramSettingsController;
+import com.maddogten.mtrack.information.ShowInfoController;
+import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.util.DeveloperStuff;
 import com.maddogten.mtrack.util.GenericMethods;
@@ -48,7 +51,7 @@ public class Main extends Application implements Runnable {
         boolean answer = true;
         if (!forceStop) answer = confirmBox.confirm(Strings.AreYouSure, stage);
         if (answer) {
-            if (saveSettings) saveSettings();
+            if (saveSettings) GenericMethods.saveSettings();
             programFullyRunning = false;
             programRunning = false;
             int timeRan = GenericMethods.timeTakenSeconds(timer);
@@ -75,21 +78,6 @@ public class Main extends Application implements Runnable {
                 }
             }
         }
-    }
-
-    private static void saveSettings() {
-        programSettingsController.getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
-        programSettingsController.getSettingsFile().setShowColumnVisibility(Controller.getShowColumnVisibility());
-        programSettingsController.getSettingsFile().setRemainingColumnWidth(Controller.getRemainingColumnWidth());
-        programSettingsController.getSettingsFile().setRemainingColumnVisibility(Controller.getRemainingColumnVisibility());
-        programSettingsController.getSettingsFile().setSeasonColumnWidth(Controller.getSeasonColumnWidth());
-        programSettingsController.getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
-        programSettingsController.getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
-        programSettingsController.getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
-        programSettingsController.getSettingsFile().setNumberOfDirectories(directoryController.getDirectories(-2).size());
-        userInfoController.getUserSettings().setChanges(ChangeReporter.getChanges());
-        programSettingsController.saveSettingsFile();
-        userInfoController.saveUserSettingsFile();
     }
 
     public static ProgramSettingsController getProgramSettingsController() {
