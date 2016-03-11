@@ -141,6 +141,19 @@ public class Main extends Application implements Runnable {
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
+            stage.setOpacity(0);
+            Platform.runLater(() -> {
+                if (Variables.specialEffects) {
+                    while (stage.getOpacity() < 1) {
+                        stage.setOpacity(stage.getOpacity() + .01);
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else stage.setOpacity(1);
+            });
             start();
         } else stop(null, true, false);
     }

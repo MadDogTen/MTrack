@@ -34,13 +34,16 @@ public class ProgramSettingsController {
 
     public void setUpdateSpeed(int updateSpeed) {
         settingsFile.setUpdateSpeed(updateSpeed);
-        Variables.updateSpeed = updateSpeed;
         log.info("Update speed is now set to: " + updateSpeed);
+    }
+
+    public void setSavingSpeed(int savingSpeed) {
+        settingsFile.setSaveSpeed(savingSpeed);
+        log.info("Save speed is now set to: " + savingSpeed);
     }
 
     public void setTimeToWaitForDirectory(int timeToWaitForDirectory) {
         settingsFile.setTimeToWaitForDirectory(timeToWaitForDirectory);
-        Variables.timeToWaitForDirectory = timeToWaitForDirectory;
         log.info("Time to wait for directory is now set to: " + timeToWaitForDirectory);
     }
 

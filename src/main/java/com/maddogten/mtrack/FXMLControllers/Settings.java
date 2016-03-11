@@ -159,6 +159,16 @@ public class Settings implements Initializable {
     private CheckBox showUsername;
     @FXML
     private Button toggleIsChanges;
+    @FXML
+    private CheckBox automaticSaving;
+    @FXML
+    private Text savingText;
+    @FXML
+    private TextField updateSavingTextField;
+    @FXML
+    private Button setSavingTime;
+    @FXML
+    private CheckBox specialEffects;
 
 
     public static Settings getSettings() {
@@ -452,6 +462,40 @@ public class Settings implements Initializable {
             userInfoController.getUserSettings().setShowUsername(showUsername.isSelected());
             Controller.setShowUsernameVisibility(userInfoController.getUserSettings().isShowUsername());
         });
+        specialEffects.textProperty().bind(Strings.SpecialEffects);
+        specialEffects.setSelected(programSettingsController.getSettingsFile().isEnableSpecialEffects());
+        specialEffects.setOnAction(e -> {
+            programSettingsController.getSettingsFile().setEnableSpecialEffects(!programSettingsController.getSettingsFile().isEnableSpecialEffects());
+            log.info("Special Effects has been set to: " + programSettingsController.getSettingsFile().isEnableSpecialEffects());
+        });
+        automaticSaving.textProperty().bind(Strings.EnableAutomaticSaving);
+        automaticSaving.setSelected(programSettingsController.getSettingsFile().isDisableAutomaticShowUpdating());
+        automaticSaving.setOnAction(e -> {
+            programSettingsController.getSettingsFile().setEnableAutomaticSaving(!programSettingsController.getSettingsFile().isEnableAutomaticSaving());
+            if (programSettingsController.getSettingsFile().isEnableAutomaticSaving() && updateSavingTextField.getText().matches(String.valueOf(0))) {
+                programSettingsController.setSavingSpeed(Variables.defaultSavingSpeed);
+                updateSavingTextField.setText(String.valueOf(Variables.defaultSavingSpeed));
+            }
+            setSavingTime.setDisable(!programSettingsController.getSettingsFile().isEnableAutomaticSaving());
+            updateSavingTextField.setDisable(!programSettingsController.getSettingsFile().isEnableAutomaticSaving());
+            log.info("Automatic saving has been set to: " + programSettingsController.getSettingsFile().isEnableAutomaticSaving());
+        });
+        savingText.textProperty().bind(Strings.SavingWaitTimeSeconds);
+        savingText.setTextAlignment(TextAlignment.CENTER);
+        updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
+        setSavingTime.textProperty().bind(Strings.Set);
+        setSavingTime.setOnAction(e -> {
+            if (isNumberValid(updateSavingTextField.getText(), 0)) {
+                if (updateSavingTextField.getText().isEmpty())
+                    updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
+                else if (updateSavingTextField.getText().matches(String.valueOf(0))) {
+                    programSettingsController.getSettingsFile().setEnableAutomaticSaving(!programSettingsController.getSettingsFile().isDisableAutomaticShowUpdating());
+                    automaticSaving.setSelected(false);
+                    setSavingTime.setDisable(true);
+                    updateSavingTextField.setDisable(true);
+                } else programSettingsController.setSavingSpeed(Integer.valueOf(updateSavingTextField.getText()));
+            }
+        });
         changeLanguage.textProperty().bind(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {
             setButtonDisable(changeLanguage, null, true);
@@ -470,7 +514,6 @@ public class Settings implements Initializable {
                     }
                 }
                 programSettingsController.setDefaultLanguage(internalName);
-                Variables.language = programSettingsController.getSettingsFile().getLanguage();
                 languageHandler.setLanguage(Variables.language);
             }
             setButtonDisable(changeLanguage, null, false);

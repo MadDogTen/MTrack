@@ -37,17 +37,18 @@ public class Variables {
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
-    public static final int ProgramSettingsFileVersion = 1012; // Was Changed // Note- Remove all "Was Changed" before merging with master.
+    public static final int ProgramSettingsFileVersion = 1013; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1004; // Was Changed
     public static final int DirectoryFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 24; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 29; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
     public static final int defaultUpdateSpeed = 120;
     public static final int defaultTimeToWaitForDirectory = 20;
+    public static final int defaultSavingSpeed = 600;
     public static final int maxWaitTimeSeconds = 172800; // 2 Days will be the max wait time - Might be changed
     public static final String Logo = "/image/MTrackLogo.png";
     public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
@@ -73,10 +74,9 @@ public class Variables {
     public static boolean recordChangedSeasonsLowerThanCurrent;
     public static boolean moveStageWithParent;
     public static boolean haveStageBlockParentStage;
-    @SuppressWarnings("CanBeFinal") // TODO Add setting for these
-    public static boolean fancyEffects = true;
-    public static int programSaveTime = 600;
-    public static boolean enableAutoSavingOnTimer = true;
+    public static boolean specialEffects;
+    public static int savingSpeed;
+    public static boolean enableAutoSavingOnTimer;
 
     public static void setDataFolder(File file) {
         dataFolder = file;

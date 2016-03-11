@@ -122,6 +122,9 @@ public class MainRun {
         Variables.recordChangedSeasonsLowerThanCurrent = programSettingsController.getSettingsFile().isRecordChangedSeasonsLowerThanCurrent();
         Variables.disableAutomaticRechecking = programSettingsController.getSettingsFile().isDisableAutomaticShowUpdating();
         Variables.setStageMoveWithParentAndBlockParent(programSettingsController.getSettingsFile().isStageMoveWithParentAndBlockParent());
+        Variables.specialEffects = programSettingsController.getSettingsFile().isEnableSpecialEffects();
+        Variables.enableAutoSavingOnTimer = programSettingsController.getSettingsFile().isEnableAutomaticSaving();
+        Variables.savingSpeed = programSettingsController.getSettingsFile().getSaveSpeed();
         ChangeReporter.setChanges(userInfoController.getUserSettings().getChanges());
     }
 
@@ -174,7 +177,7 @@ public class MainRun {
     }
 
     private void saveSettings() {
-        if (Variables.enableAutoSavingOnTimer && GenericMethods.timeTakenSeconds(saveTimer) > Variables.programSaveTime) {
+        if (Variables.enableAutoSavingOnTimer && GenericMethods.timeTakenSeconds(saveTimer) > Variables.savingSpeed) {
             GenericMethods.saveSettings();
             saveTimer = GenericMethods.getTimeSeconds();
             log.info("Settings have automatically been saved.");

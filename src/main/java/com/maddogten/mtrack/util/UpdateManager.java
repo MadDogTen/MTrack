@@ -251,6 +251,11 @@ public class UpdateManager {
                 programSettings.setStageMoveWithParentAndBlockParent(true);
                 programSettings.setDisableAutomaticShowUpdating(false);
                 updatedText(fileType, 1011, 1012);
+            case 1012:
+                programSettings.setEnableSpecialEffects(true);
+                programSettings.setEnableAutomaticSaving(true);
+                programSettings.setSaveSpeed(Variables.defaultSavingSpeed);
+                updatedText(fileType, 1012, 1013);
                 programSettingsController.setSettingsFile(programSettings);
                 updated = true;
         }

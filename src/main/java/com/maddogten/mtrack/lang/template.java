@@ -101,6 +101,8 @@ public class template extends Language {
         Strings.AllowFullWindowMovementUse.setValue("");
         Strings.DisableAutomaticShowSearching.setValue("");
         Strings.ShowUsername.setValue("");
+        Strings.SpecialEffects.setValue("");
+        Strings.EnableAutomaticSaving.setValue("");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("");
@@ -193,5 +195,6 @@ public class template extends Language {
         Strings.FileDoesNotExists.setValue("");
         Strings.CurrentlyPlaying.setValue("");
         Strings.WasUnableToPlayTheEpisode.setValue("");
+        Strings.SavingWaitTimeSeconds.setValue("");
     }
 }

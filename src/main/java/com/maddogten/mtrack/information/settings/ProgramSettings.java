@@ -39,10 +39,16 @@ public class ProgramSettings implements Serializable {
     // UI Settings
     private boolean moveStageWithParent; /*Changes whether or not you can freely move stages or not. Otherwise the parent stays locked to them*/
     private boolean haveStageBlockParentStage; /*Changes whether the child stage will block the parent stage. Not fully supported currently*/
+    private boolean enableSpecialEffects;
 
     // Default User
     private boolean useDefaultUser; /*True if the default user is used.*/
     private String defaultUser; /*The default user used for the above setting*/
+
+    // Automatic Saving
+    private boolean enableAutomaticSaving;
+    private int saveSpeed;
+
 
     private int numberOfDirectories; /*Stores the number of directories it last ended with, and if different, handles adding them to the program. */
 
@@ -74,8 +80,11 @@ public class ProgramSettings implements Serializable {
         this.recordChangedSeasonsLowerThanCurrent = false;
         this.moveStageWithParent = true;
         this.haveStageBlockParentStage = true;
+        this.enableSpecialEffects = true;
         this.useDefaultUser = false;
         this.defaultUser = Strings.EmptyString;
+        this.enableAutomaticSaving = true;
+        this.saveSpeed = 600;
         this.showColumnWidth = Variables.SHOWS_COLUMN_WIDTH;
         this.remainingColumnWidth = Variables.REMAINING_COLUMN_WIDTH;
         this.seasonColumnWidth = Variables.SEASONS_COLUMN_WIDTH;
@@ -121,6 +130,7 @@ public class ProgramSettings implements Serializable {
 
     public void setUpdateSpeed(int updateSpeed) {
         this.updateSpeed = updateSpeed;
+        Variables.updateSpeed = updateSpeed;
     }
 
     public boolean isDisableAutomaticShowUpdating() {
@@ -129,6 +139,7 @@ public class ProgramSettings implements Serializable {
 
     public void setDisableAutomaticShowUpdating(boolean disableAutomaticShowUpdating) {
         this.disableAutomaticShowUpdating = disableAutomaticShowUpdating;
+        Variables.disableAutomaticRechecking = disableAutomaticShowUpdating;
     }
 
     public int getTimeToWaitForDirectory() {
@@ -137,6 +148,7 @@ public class ProgramSettings implements Serializable {
 
     public void setTimeToWaitForDirectory(int timeToWaitForDirectory) {
         this.timeToWaitForDirectory = timeToWaitForDirectory;
+        Variables.timeToWaitForDirectory = timeToWaitForDirectory;
     }
 
     public boolean isShow0Remaining() {
@@ -153,6 +165,7 @@ public class ProgramSettings implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
+        Variables.language = language;
     }
 
     public boolean isRecordChangesForNonActiveShows() {
@@ -161,6 +174,7 @@ public class ProgramSettings implements Serializable {
 
     public void setRecordChangesForNonActiveShows(boolean recordChangesForNonActiveShows) {
         this.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
+        Variables.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
     }
 
     public boolean isRecordChangedSeasonsLowerThanCurrent() {
@@ -169,6 +183,7 @@ public class ProgramSettings implements Serializable {
 
     public void setRecordChangedSeasonsLowerThanCurrent(boolean recordChangedSeasonsLowerThanCurrent) {
         this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
+        Variables.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
     }
 
     private boolean isMoveStageWithParent() {
@@ -177,6 +192,7 @@ public class ProgramSettings implements Serializable {
 
     private void setMoveStageWithParent(boolean moveStageWithParent) {
         this.moveStageWithParent = moveStageWithParent;
+        Variables.moveStageWithParent = moveStageWithParent;
     }
 
     private boolean isHaveStageBlockParentStage() {
@@ -185,6 +201,7 @@ public class ProgramSettings implements Serializable {
 
     private void setHaveStageBlockParentStage(boolean haveStageBlockParentStage) {
         this.haveStageBlockParentStage = haveStageBlockParentStage;
+        Variables.haveStageBlockParentStage = haveStageBlockParentStage;
     }
 
     public boolean isStageMoveWithParentAndBlockParent() {
@@ -194,6 +211,15 @@ public class ProgramSettings implements Serializable {
     public void setStageMoveWithParentAndBlockParent(boolean moveAndBlock) {
         setMoveStageWithParent(moveAndBlock);
         setHaveStageBlockParentStage(moveAndBlock);
+    }
+
+    public boolean isEnableSpecialEffects() {
+        return enableSpecialEffects;
+    }
+
+    public void setEnableSpecialEffects(boolean enableSpecialEffects) {
+        this.enableSpecialEffects = enableSpecialEffects;
+        Variables.specialEffects = enableSpecialEffects;
     }
 
     public boolean isUseDefaultUser() {
@@ -210,6 +236,24 @@ public class ProgramSettings implements Serializable {
 
     public void setDefaultUser(String defaultUser) {
         this.defaultUser = defaultUser;
+    }
+
+    public boolean isEnableAutomaticSaving() {
+        return enableAutomaticSaving;
+    }
+
+    public void setEnableAutomaticSaving(boolean enableAutomaticSaving) {
+        this.enableAutomaticSaving = enableAutomaticSaving;
+        Variables.enableAutoSavingOnTimer = enableAutomaticSaving;
+    }
+
+    public int getSaveSpeed() {
+        return saveSpeed;
+    }
+
+    public void setSaveSpeed(int saveSpeed) {
+        this.saveSpeed = saveSpeed;
+        Variables.savingSpeed = saveSpeed;
     }
 
     public double getShowColumnWidth() {

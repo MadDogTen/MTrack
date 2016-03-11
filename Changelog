@@ -41,6 +41,7 @@ Changed Program font. Not final.
 Changed renamed ShowConfirmBox into ShowPlayingBox and completely changed how it works. Moved code out of the controller and into it.
 Changed how episodes are phased. Its now much simpler and easily expandable.
 Changed the ProgressIndicator isCurrentlyRechecking now fades in and out.
+Changed the Main Stage to fade in on program start (Not sure if I will keep it or expand it to other stages).
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -71,6 +72,7 @@ Added information about the current show, season, and episode in the ShowPlaying
 Added Tooltip to ShowPlaying Show name to show the full name.
 Added DeveloperStuff class and started moving all appropriate code into it.
 Added automatic file saving every 10 minutes.
+Added Settings for disabling Special Effects, disabling automatic saving, & changing automatic saving speed.
 
 Fixes:
 Will now properly switch to new seasons when found.

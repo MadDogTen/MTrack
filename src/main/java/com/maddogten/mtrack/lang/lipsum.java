@@ -103,6 +103,8 @@ public class lipsum extends Language {
         Strings.AllowFullWindowMovementUse.setValue("hula");
         Strings.DisableAutomaticShowSearching.setValue("nomano");
         Strings.ShowUsername.setValue("numalulu");
+        Strings.SpecialEffects.setValue("vinula");
+        Strings.EnableAutomaticSaving.setValue("hilica");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("sollicitudin");
@@ -195,5 +197,6 @@ public class lipsum extends Language {
         Strings.FileDoesNotExists.setValue("guluka");
         Strings.CurrentlyPlaying.setValue("Nunuwa");
         Strings.WasUnableToPlayTheEpisode.setValue("Hiculatu");
+        Strings.SavingWaitTimeSeconds.setValue("Gilamaga");
     }
 }

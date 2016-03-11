@@ -527,7 +527,8 @@ public class Controller implements Initializable {
         viewChanges.textProperty().bind(Strings.OpenChangesWindow);
         viewChanges.setOnAction(e -> openChangeBox());
         changesAlert.setOnAction(e -> openChangeBox());
-        changesAlert.setOpacity(0.0);
+        if (Variables.specialEffects) changesAlert.setOpacity(0.0);
+        else changesAlert.setOpacity(1.0);
         show0RemainingCheckBox.setSelected(show0Remaining);
         show0RemainingCheckBox.setOnAction(e -> {
             show0Remaining = show0RemainingCheckBox.isSelected();
@@ -624,13 +625,13 @@ public class Controller implements Initializable {
     private void checkIfChangesListIsPopulated() throws InterruptedException {
         if (ChangeReporter.getIsChanges() && !changesAlert.isVisible()) {
             changesAlert.setVisible(true);
-            while (Variables.fancyEffects && changesAlert.getOpacity() < 1.0) {
+            while (Variables.specialEffects && changesAlert.getOpacity() < 1.0) {
                 final int opacity = (int) (changesAlert.getOpacity() * 100.0) + 10;
                 changesAlert.setOpacity((double) (opacity / 100.0f));
                 Thread.sleep(40);
             }
         } else if (!ChangeReporter.getIsChanges() && changesAlert.isVisible()) {
-            while (Variables.fancyEffects && changesAlert.getOpacity() > 0.0) {
+            while (Variables.specialEffects && changesAlert.getOpacity() > 0.0) {
                 final int opacity = (int) (changesAlert.getOpacity() * 100.0) - 10;
                 changesAlert.setOpacity((double) (opacity / 100.0f));
                 Thread.sleep(40);

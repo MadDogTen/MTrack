@@ -1,4 +1,4 @@
-package com.maddogten.mtrack.util;
+package com.maddogten.mtrack.util.enumeration;
 
 public enum OperatingSystem {
     WINDOWS, MAC, NIX, NUX, AIX

@@ -101,6 +101,8 @@ public class en_US extends Language {
         Strings.AllowFullWindowMovementUse.setValue("Allow Full Window Movement/Use");
         Strings.DisableAutomaticShowSearching.setValue("Disable Automatic Show Searching");
         Strings.ShowUsername.setValue("Show Username");
+        Strings.SpecialEffects.setValue("Special Effects");
+        Strings.EnableAutomaticSaving.setValue("Enable Automatic Saving");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("Show/Hide shows with 0 episode left.");
@@ -194,5 +196,6 @@ public class en_US extends Language {
         Strings.FileDoesNotExists.setValue("File doesn't exists.");
         Strings.CurrentlyPlaying.setValue("Currently Playing:");
         Strings.WasUnableToPlayTheEpisode.setValue("Was unable to play the episode.");
+        Strings.SavingWaitTimeSeconds.setValue("Saving Wait Time (Seconds):");
     }
 }

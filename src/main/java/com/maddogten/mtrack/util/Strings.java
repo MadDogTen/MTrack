@@ -105,6 +105,8 @@ public class Strings {
     public static final StringProperty AllowFullWindowMovementUse = new SimpleStringProperty();
     public static final StringProperty DisableAutomaticShowSearching = new SimpleStringProperty();
     public static final StringProperty ShowUsername = new SimpleStringProperty();
+    public static final StringProperty SpecialEffects = new SimpleStringProperty();
+    public static final StringProperty EnableAutomaticSaving = new SimpleStringProperty();
     // Tooltip Text
     public static final StringProperty ShowHiddenShowsWith0EpisodeLeft = new SimpleStringProperty();
     public static final StringProperty CurrentlyRechecking = new SimpleStringProperty();
@@ -196,6 +198,7 @@ public class Strings {
     public static final StringProperty FileDoesNotExists = new SimpleStringProperty();
     public static final StringProperty CurrentlyPlaying = new SimpleStringProperty();
     public static final StringProperty WasUnableToPlayTheEpisode = new SimpleStringProperty();
+    public static final StringProperty SavingWaitTimeSeconds = new SimpleStringProperty();
     // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
     public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
     // Strings set by program

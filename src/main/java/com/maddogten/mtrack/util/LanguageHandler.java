@@ -128,6 +128,8 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.AllowFullWindowMovementUse);
         findAndSetMissingStrings(Strings.DisableAutomaticShowSearching);
         findAndSetMissingStrings(Strings.ShowUsername);
+        findAndSetMissingStrings(Strings.SpecialEffects);
+        findAndSetMissingStrings(Strings.EnableAutomaticSaving);
         // Tooltip Text
         findAndSetMissingStrings(Strings.ShowHiddenShowsWith0EpisodeLeft);
         findAndSetMissingStrings(Strings.CurrentlyRechecking);
@@ -219,6 +221,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.FileDoesNotExists);
         findAndSetMissingStrings(Strings.CurrentlyPlaying);
         findAndSetMissingStrings(Strings.WasUnableToPlayTheEpisode);
+        findAndSetMissingStrings(Strings.SavingWaitTimeSeconds);
         log.info("Finished checking for missing strings.");
     }
 
