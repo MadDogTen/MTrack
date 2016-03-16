@@ -1,7 +1,6 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.Controller;
-import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.information.ChangeReporter;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -67,17 +66,17 @@ public class GenericMethods {
     }
 
     public static void saveSettings() {
-        Main.getProgramSettingsController().getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
-        Main.getProgramSettingsController().getSettingsFile().setShowColumnVisibility(Controller.getShowColumnVisibility());
-        Main.getProgramSettingsController().getSettingsFile().setRemainingColumnWidth(Controller.getRemainingColumnWidth());
-        Main.getProgramSettingsController().getSettingsFile().setRemainingColumnVisibility(Controller.getRemainingColumnVisibility());
-        Main.getProgramSettingsController().getSettingsFile().setSeasonColumnWidth(Controller.getSeasonColumnWidth());
-        Main.getProgramSettingsController().getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
-        Main.getProgramSettingsController().getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
-        Main.getProgramSettingsController().getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
-        Main.getProgramSettingsController().getSettingsFile().setNumberOfDirectories(Main.getDirectoryController().getDirectories(-2).size());
-        Main.getUserInfoController().getUserSettings().setChanges(ChangeReporter.getChanges());
-        Main.getProgramSettingsController().saveSettingsFile();
-        Main.getUserInfoController().saveUserSettingsFile();
+        ClassHandler.programSettingsController().getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
+        ClassHandler.programSettingsController().getSettingsFile().setShowColumnVisibility(Controller.getShowColumnVisibility());
+        ClassHandler.programSettingsController().getSettingsFile().setRemainingColumnWidth(Controller.getRemainingColumnWidth());
+        ClassHandler.programSettingsController().getSettingsFile().setRemainingColumnVisibility(Controller.getRemainingColumnVisibility());
+        ClassHandler.programSettingsController().getSettingsFile().setSeasonColumnWidth(Controller.getSeasonColumnWidth());
+        ClassHandler.programSettingsController().getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
+        ClassHandler.programSettingsController().getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
+        ClassHandler.programSettingsController().getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
+        ClassHandler.programSettingsController().getSettingsFile().setNumberOfDirectories(ClassHandler.directoryController().getDirectories(-2).size());
+        ClassHandler.userInfoController().getUserSettings().setChanges(ChangeReporter.getChanges());
+        ClassHandler.programSettingsController().saveSettingsFile();
+        ClassHandler.userInfoController().saveUserSettingsFile();
     }
 }

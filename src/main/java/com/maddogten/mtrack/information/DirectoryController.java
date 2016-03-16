@@ -4,6 +4,7 @@ import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -202,7 +203,7 @@ public class DirectoryController {
                     else fileName += '_' + singleSplit;
                 }
             }
-            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), Main.getProgramSettingsController().getSettingsFile().getProgramSettingsID()), false);
+            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), false);
             answer[0] = true;
         } else if (directory.toString().isEmpty()) answer[1] = true;
         return answer;
@@ -223,12 +224,12 @@ public class DirectoryController {
             if (directory.getIndex() == index) return directory;
         }
         log.warning("Warning- If this point is reached, please report.");
-        return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>(), Main.getProgramSettingsController().getSettingsFile().getProgramSettingsID());
+        return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID());
     }
 
     public void saveDirectory(Directory directory, Boolean loadMap) {
         new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowFileExtension, true);
-        if (loadMap) Main.getShowInfoController().loadShowsFile();
+        if (loadMap) ClassHandler.showInfoController().loadShowsFile();
     }
 
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.

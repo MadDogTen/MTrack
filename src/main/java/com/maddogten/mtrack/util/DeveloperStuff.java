@@ -4,11 +4,10 @@ import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.ListSelectBox;
 import com.maddogten.mtrack.gui.MessageBox;
-import com.maddogten.mtrack.information.*;
+import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
-import com.maddogten.mtrack.io.CheckShowFiles;
 import com.maddogten.mtrack.io.FileManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -24,35 +23,19 @@ import java.util.logging.Logger;
 public class DeveloperStuff {
     private final Logger log = Logger.getLogger(DeveloperStuff.class.getName());
 
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
-    private final ProgramSettingsController programSettingsController;
-    private final DirectoryController directoryController;
-    private final ShowInfoController showInfoController;
-    private final UserInfoController userInfoController;
-    private final CheckShowFiles checkShowFiles;
-
-    @SuppressWarnings("SameParameterValue")
-    public DeveloperStuff(ProgramSettingsController programSettingsController, DirectoryController directoryController, ShowInfoController showInfoController, UserInfoController userInfoController, CheckShowFiles checkShowFiles) {
-        this.programSettingsController = programSettingsController;
-        this.directoryController = directoryController;
-        this.showInfoController = showInfoController;
-        this.userInfoController = userInfoController;
-        this.checkShowFiles = checkShowFiles;
-    }
-
     //---- ProgramSettingsController ----\\
 
     //---- DirectoryController ----\\
     // Debugging tool - Prints all directories to console.
     public void printAllDirectories() {
         log.info("Printing out all directories:");
-        if (directoryController.getDirectories(-2).isEmpty()) log.info("No directories.");
-        else GenericMethods.printArrayList(Level.INFO, log, directoryController.getDirectories(-2), true);
+        if (ClassHandler.directoryController().getDirectories(-2).isEmpty()) log.info("No directories.");
+        else GenericMethods.printArrayList(Level.INFO, log, ClassHandler.directoryController().getDirectories(-2), true);
         log.info("Finished printing out all directories.");
     }
 
     public void clearDirectory(Stage stage) {
-        ArrayList<Directory> directories = directoryController.getDirectories(-2);
+        ArrayList<Directory> directories = ClassHandler.directoryController().getDirectories(-2);
         if (directories.isEmpty())
             new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, stage);
         else {
@@ -61,14 +44,14 @@ public class DeveloperStuff {
                 boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), stage);
                 if (confirm) {
                     directoryToClear.getShows().keySet().forEach(aShow -> {
-                        boolean showExistsElsewhere = showInfoController.doesShowExistElsewhere(aShow, directoryController.getDirectories(directoryToClear.getIndex()));
+                        boolean showExistsElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().getDirectories(directoryToClear.getIndex()));
                         if (!showExistsElsewhere)
-                            userInfoController.setIgnoredStatus(aShow, true);
+                            ClassHandler.userInfoController().setIgnoredStatus(aShow, true);
                         Controller.updateShowField(aShow, showExistsElsewhere);
                     });
                     directoryToClear.setShows(new HashMap<>());
-                    directoryController.saveDirectory(directoryToClear, true);
-                    programSettingsController.setMainDirectoryVersion(programSettingsController.getSettingsFile().getMainDirectoryVersion() + 1);
+                    ClassHandler.directoryController().saveDirectory(directoryToClear, true);
+                    ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
                 }
             }
         }
@@ -77,7 +60,7 @@ public class DeveloperStuff {
     //---- ShowInfoController ----\\
     public void printShowInformation(String aShow) {
         log.info("Printing out information for: " + aShow);
-        Show show = showInfoController.getShowsFile().get(aShow);
+        Show show = ClassHandler.showInfoController().getShowsFile().get(aShow);
         String[] print = new String[1 + (show.getSeasons().keySet().size() * 2)];
         final int[] i = {0};
         print[i[0]++] = "\nShow: " + show.getName();
@@ -100,8 +83,8 @@ public class DeveloperStuff {
     public void printOutAllShowsAndEpisodes() {
         log.info("Printing out all Shows and Episodes:");
         final int[] numberOfShows = {0};
-        showInfoController.getShowsFile().keySet().forEach(aShow -> {
-            Show show = showInfoController.getShowsFile().get(aShow);
+        ClassHandler.showInfoController().getShowsFile().keySet().forEach(aShow -> {
+            Show show = ClassHandler.showInfoController().getShowsFile().get(aShow);
             String[] print = new String[1 + (show.getSeasons().keySet().size() * 2)];
             final int[] i = {0};
             print[i[0]++] = "\nShow: " + show.getName();
@@ -125,10 +108,10 @@ public class DeveloperStuff {
 
     public void printEmptyShows() {
         log.info("Printing empty shows:");
-        ArrayList<String> emptyShows = checkShowFiles.getEmptyShows();
+        ArrayList<String> emptyShows = ClassHandler.checkShowFiles().getEmptyShows();
         if (emptyShows.isEmpty()) log.info("No empty shows");
         else {
-            ArrayList<Directory> directories = directoryController.getDirectories(-2);
+            ArrayList<Directory> directories = ClassHandler.directoryController().getDirectories(-2);
             FileManager fileManager = new FileManager();
             directories.forEach(aDirectory -> {
                 ArrayList<String> emptyShowsDir = new ArrayList<>();
@@ -144,7 +127,7 @@ public class DeveloperStuff {
 
     public void printIgnoredShows() {
         log.info("Printing ignored shows:");
-        ArrayList<String> ignoredShows = userInfoController.getIgnoredShows();
+        ArrayList<String> ignoredShows = ClassHandler.userInfoController().getIgnoredShows();
         if (ignoredShows.isEmpty()) log.info("No ignored shows.");
         else {
             GenericMethods.printArrayList(Level.INFO, log, ignoredShows, false);
@@ -154,7 +137,7 @@ public class DeveloperStuff {
 
     public void printHiddenShows() {
         log.info("Printing hidden shows:");
-        ArrayList<String> hiddenShows = userInfoController.getHiddenShows();
+        ArrayList<String> hiddenShows = ClassHandler.userInfoController().getHiddenShows();
         if (hiddenShows.isEmpty()) log.info("No hidden shows.");
         else GenericMethods.printArrayList(Level.INFO, log, hiddenShows, false);
         log.info("Finished printing hidden shows.");
@@ -162,23 +145,23 @@ public class DeveloperStuff {
 
     public void unHideAllShows() {
         log.info("Un-hiding all shows...");
-        ArrayList<String> ignoredShows = userInfoController.getHiddenShows();
+        ArrayList<String> ignoredShows = ClassHandler.userInfoController().getHiddenShows();
         if (ignoredShows.isEmpty()) log.info("No shows to un-hide.");
         else {
             ignoredShows.forEach(aShow -> {
                 log.info(aShow + " is no longer hidden.");
-                userInfoController.setHiddenStatus(aShow, false);
+                ClassHandler.userInfoController().setHiddenStatus(aShow, false);
             });
         }
         log.info("Finished un-hiding all shows.");
     }
 
     public void setAllShowsActive() {
-        ArrayList<String> showsList = showInfoController.getShowsList();
+        ArrayList<String> showsList = ClassHandler.showInfoController().getShowsList();
         if (showsList.isEmpty()) log.info("No shows to change.");
         else {
             showsList.forEach(aShow -> {
-                userInfoController.setActiveStatus(aShow, true);
+                ClassHandler.userInfoController().setActiveStatus(aShow, true);
                 Controller.updateShowField(aShow, true);
             });
             log.info("Set all shows active.");
@@ -186,11 +169,11 @@ public class DeveloperStuff {
     }
 
     public void setAllShowsInactive() {
-        ArrayList<String> showsList = showInfoController.getShowsList();
+        ArrayList<String> showsList = ClassHandler.showInfoController().getShowsList();
         if (showsList.isEmpty()) log.info("No shows to change.");
         else {
             showsList.forEach(aShow -> {
-                userInfoController.setActiveStatus(aShow, false);
+                ClassHandler.userInfoController().setActiveStatus(aShow, false);
                 Controller.updateShowField(aShow, true);
             });
             log.info("Set all shows inactive.");
@@ -201,10 +184,10 @@ public class DeveloperStuff {
     // Debug setting to print out all the current users settings.
     public void printAllUserInfo() {
         log.info("Printing all user info for " + Strings.UserName.getValue() + "...");
-        String[] print = new String[1 + userInfoController.getUserSettings().getShowSettings().values().size()];
+        String[] print = new String[1 + ClassHandler.userInfoController().getUserSettings().getShowSettings().values().size()];
         final int[] i = {0};
-        print[i[0]++] = '\n' + String.valueOf(userInfoController.getUserSettings().getUserSettingsFileVersion()) + " - " + String.valueOf(userInfoController.getUserSettings().getUserDirectoryVersion());
-        userInfoController.getUserSettings().getShowSettings().values().forEach(aShowSettings -> print[i[0]++] = '\n' + aShowSettings.getShowName() + " - " + aShowSettings.isActive() + ", " + aShowSettings.isIgnored() + ", " + aShowSettings.isHidden() + " - Season: " + aShowSettings.getCurrentSeason() + " | Episode: " + aShowSettings.getCurrentEpisode());
+        print[i[0]++] = '\n' + String.valueOf(ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion()) + " - " + String.valueOf(ClassHandler.userInfoController().getUserSettings().getUserDirectoryVersion());
+        ClassHandler.userInfoController().getUserSettings().getShowSettings().values().forEach(aShowSettings -> print[i[0]++] = '\n' + aShowSettings.getShowName() + " - " + aShowSettings.isActive() + ", " + aShowSettings.isIgnored() + ", " + aShowSettings.isHidden() + " - Season: " + aShowSettings.getCurrentSeason() + " | Episode: " + aShowSettings.getCurrentEpisode());
         log.info(Arrays.toString(print));
         log.info("Finished printing all user info.");
     }

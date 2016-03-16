@@ -1,8 +1,8 @@
 package com.maddogten.mtrack.information;
 
-import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.information.settings.ProgramSettings;
 import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 
@@ -14,14 +14,8 @@ import java.util.logging.Logger;
 
 public class ProgramSettingsController {
     private final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
-    private final UserInfoController userInfoController;
     private ProgramSettings settingsFile;
     private boolean mainDirectoryVersionAlreadyChanged = false;
-
-    @SuppressWarnings("SameParameterValue")
-    public ProgramSettingsController(UserInfoController userInfoController) {
-        this.userInfoController = userInfoController;
-    }
 
     public void loadProgramSettingsFile() {
         this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
@@ -60,7 +54,7 @@ public class ProgramSettingsController {
         } else {
             settingsFile.setMainDirectoryVersion(version);
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
-            if (!Main.getMainRun().firstRun) userInfoController.getUserSettings().setUserDirectoryVersion(version);
+            if (!ClassHandler.mainRun().firstRun) ClassHandler.userInfoController().getUserSettings().setUserDirectoryVersion(version);
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;

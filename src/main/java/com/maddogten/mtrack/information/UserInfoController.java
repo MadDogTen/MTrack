@@ -4,6 +4,7 @@ import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.information.settings.UserSettings;
 import com.maddogten.mtrack.information.settings.UserShowSettings;
 import com.maddogten.mtrack.io.FileManager;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 
@@ -17,13 +18,7 @@ import java.util.logging.Logger;
 
 public class UserInfoController {
     private final Logger log = Logger.getLogger(UserInfoController.class.getName());
-    private final ShowInfoController showInfoController;
     private UserSettings userSettings;
-
-    @SuppressWarnings("SameParameterValue")
-    public UserInfoController(ShowInfoController showInfoController) {
-        this.showInfoController = showInfoController;
-    }
 
     public void loadUserInfo() {
         this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension);
@@ -32,12 +27,16 @@ public class UserInfoController {
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
     public ArrayList<String> getAllUsers() {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
-        ArrayList<String> users = new ArrayList<>(folder.list().length);
-        if (new FileManager().checkFolderExistsAndReadable(folder))
-            Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UserFileExtension) && !name.toLowerCase().matches("Program"))));
-        ArrayList<String> usersCleaned = new ArrayList<>(users.size());
-        users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UserFileExtension, Strings.EmptyString)));
-        return usersCleaned;
+        if (folder.exists()) {
+            ArrayList<String> users = new ArrayList<>(folder.list().length);
+            if (new FileManager().checkFolderExistsAndReadable(folder))
+                Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UserFileExtension) && !name.toLowerCase().matches("Program"))));
+            ArrayList<String> usersCleaned = new ArrayList<>(users.size());
+            users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UserFileExtension, Strings.EmptyString)));
+            if (usersCleaned.isEmpty()) log.info("Users folder was empty.");
+            return usersCleaned;
+        } else log.info("Users folder doesn't exists.");
+        return new ArrayList<>();
     }
 
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
@@ -108,7 +107,7 @@ public class UserInfoController {
     // Attempts to play the file using the default program for the extension.
     public boolean playAnyEpisode(String aShow, int aSeason, int aEpisode) {
         log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
-        String showLocation = showInfoController.getEpisode(aShow, aSeason, aEpisode);
+        String showLocation = ClassHandler.showInfoController().getEpisode(aShow, aSeason, aEpisode);
         log.info("Known show location: " + showLocation);
         if (showLocation.isEmpty()) log.warning("showLocation is empty!");
         else {
@@ -125,7 +124,8 @@ public class UserInfoController {
         if (episode == -2) {
             int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason();
             int currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
-            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) ++currentEpisode;
+            if (ClassHandler.showInfoController().isDoubleEpisode(aShow, currentSeason, currentEpisode))
+                ++currentEpisode;
             boolean[] isAnotherEpisodeResult = isAnotherEpisode(aShow, currentSeason, currentEpisode);
             if (isAnotherEpisodeResult[0]) {
                 userSettings.getAShowSettings(aShow).setCurrentEpisode(++currentEpisode);
@@ -155,7 +155,7 @@ public class UserInfoController {
     private boolean[] isAnotherEpisode(String aShow, int aSeason, int aEpisode) {
         boolean[] result = {false, false};
         Set<Integer> episodes = new HashSet<>();
-        showInfoController.getEpisodesList(aShow, aSeason).stream().filter(episodeInt -> episodeInt >= aEpisode).forEach(episodes::add);
+        ClassHandler.showInfoController().getEpisodesList(aShow, aSeason).stream().filter(episodeInt -> episodeInt >= aEpisode).forEach(episodes::add);
         if (episodes.contains(aEpisode)) result[0] = true;
         if (!result[0] && episodes.isEmpty()) result[1] = true;
         return result;
@@ -167,32 +167,32 @@ public class UserInfoController {
 
     // Checks if there is another season directly following the current season.
     private boolean isAnotherSeason(String aShow, int season) {
-        return showInfoController.getSeasonsList(aShow).contains(++season);
+        return ClassHandler.showInfoController().getSeasonsList(aShow).contains(++season);
     }
 
     // Sets a show to the very first season & episode.
     public void setToBeginning(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(showInfoController.findLowestSeason(aShow));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
+        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findLowestSeason(aShow));
+        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
         log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
     // Sets a show to the last season and to the last found episode + 1.
     public void setToEnd(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(showInfoController.findHighestSeason(aShow));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(showInfoController.findHighestEpisode(showInfoController.getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
+        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findHighestSeason(aShow));
+        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findHighestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
         log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
     // Checks if the given episode has been found for a show.
     private boolean doesEpisodeExistInShowFile(String aShow, int aSeason, int aEpisode) {
-        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, aSeason);
+        Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, aSeason);
         return !episodes.isEmpty() && episodes.contains(aEpisode);
     }
 
     // Does same as above, but checks against the current episode & season.
     public boolean doesEpisodeExistInShowFile(String aShow) {
-        Set<Integer> episodes = showInfoController.getEpisodesList(aShow, getCurrentSeason(aShow));
+        Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, getCurrentSeason(aShow));
         return !episodes.isEmpty() && episodes.contains(getCurrentEpisode(aShow));
     }
 
@@ -204,21 +204,21 @@ public class UserInfoController {
         seasonEpisodeReturn[0] = currentSeason;
         int episode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
         episode -= 1;
-        for (int aEpisode : showInfoController.getEpisodesList(aShow, currentSeason)) {
+        for (int aEpisode : ClassHandler.showInfoController().getEpisodesList(aShow, currentSeason)) {
             seasonEpisodeReturn[1] = aEpisode;
             if (aEpisode == episode) return seasonEpisodeReturn;
         }
         if (episode == 0) {
             log.info(String.valueOf(episode));
-            Set<Integer> seasons = showInfoController.getSeasonsList(aShow);
+            Set<Integer> seasons = ClassHandler.showInfoController().getSeasonsList(aShow);
             int season = currentSeason;
             season -= 1;
             if (seasons.contains(season)) {
                 seasonEpisodeReturn[0] = season;
-                if (!showInfoController.getEpisodesList(aShow, season).isEmpty()) {
-                    Set<Integer> episodesPreviousSeason = showInfoController.getEpisodesList(aShow, season);
+                if (!ClassHandler.showInfoController().getEpisodesList(aShow, season).isEmpty()) {
+                    Set<Integer> episodesPreviousSeason = ClassHandler.showInfoController().getEpisodesList(aShow, season);
                     log.info(String.valueOf(episodesPreviousSeason));
-                    int episode1 = showInfoController.findHighestEpisode(episodesPreviousSeason);
+                    int episode1 = ClassHandler.showInfoController().findHighestEpisode(episodesPreviousSeason);
                     if (episodesPreviousSeason.contains(episode1)) {
                         seasonEpisodeReturn[1] = episode1;
                         return seasonEpisodeReturn;
@@ -244,15 +244,16 @@ public class UserInfoController {
 
     // Finds out how many episodes you have following the currently one. If it finds incrementing episodes all the way from the current one,
     // Then checks for a following season that contains episode 1.
-    public int getRemainingNumberOfEpisodes(String aShow, ShowInfoController showInfoController) {
+    public int getRemainingNumberOfEpisodes(String aShow) {
         int remaining = 0, currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
-        Set<Integer> allSeasons = showInfoController.getSeasonsList(aShow);
+        Set<Integer> allSeasons = ClassHandler.showInfoController().getSeasonsList(aShow);
         ArrayList<Integer> allSeasonAllowed = new ArrayList<>(allSeasons.size());
         allSeasons.forEach(aSeason -> {
             if (aSeason >= currentSeason) allSeasonAllowed.add(aSeason);
         });
         if (!allSeasonAllowed.isEmpty()) {
-            if (showInfoController.isDoubleEpisode(aShow, currentSeason, currentEpisode)) currentEpisode++;
+            if (ClassHandler.showInfoController().isDoubleEpisode(aShow, currentSeason, currentEpisode))
+                currentEpisode++;
             boolean isCurrentSeason = true;
             Collections.sort(allSeasonAllowed);
             int lastSeason = -2;
@@ -263,7 +264,7 @@ public class UserInfoController {
                     if (aSeason != currentSeason) return remaining;
                     episode = currentEpisode;
                 }
-                Set<Integer> episodes = showInfoController.getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
+                Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                 if (!episodes.isEmpty()) {
                     ArrayList<Integer> episodesArray = new ArrayList<>(episodes.size());
                     episodes.forEach(episodesArray::add);
@@ -298,7 +299,7 @@ public class UserInfoController {
     public boolean isProperEpisodeInNextSeason(String aShow) {
         // This is being done because I set episodes 1 further when watched, which works when the season is ongoing. However, when moving onto a new season it breaks. This is a simple check to move
         // it into a new season if one is found, and no further episodes are found in the current season.
-        if (getRemainingNumberOfEpisodes(aShow, showInfoController) > 0 && shouldSwitchSeasons(aShow, getCurrentSeason(aShow), getCurrentEpisode(aShow))) {
+        if (getRemainingNumberOfEpisodes(aShow) > 0 && shouldSwitchSeasons(aShow, getCurrentSeason(aShow), getCurrentEpisode(aShow))) {
             log.info("No further episodes found for current season, further episodes found in next season, switching to new season.");
             changeEpisode(aShow, -2);
             Controller.updateShowField(aShow, true);
@@ -311,7 +312,7 @@ public class UserInfoController {
         if (!userSettings.getShowSettings().containsKey(aShow)) {
             log.info("Adding " + aShow + " to user settings file.");
             if (Variables.genUserShowInfoAtFirstFound)
-                userSettings.addShowSettings(new UserShowSettings(aShow, showInfoController.findLowestSeason(aShow), showInfoController.findLowestEpisode(showInfoController.getEpisodesList(aShow, showInfoController.findLowestSeason(aShow)))));
+                userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestSeason(aShow), ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestSeason(aShow)))));
             else userSettings.addShowSettings(new UserShowSettings(aShow, 1, 1));
         }
     }

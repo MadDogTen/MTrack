@@ -1,12 +1,7 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ConfirmBox;
-import com.maddogten.mtrack.information.DirectoryController;
-import com.maddogten.mtrack.information.ProgramSettingsController;
-import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.UserInfoController;
-import com.maddogten.mtrack.io.CheckShowFiles;
-import com.maddogten.mtrack.util.DeveloperStuff;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -30,13 +25,6 @@ import java.util.logging.Logger;
 
 public class Main extends Application implements Runnable {
     private static final Logger log = Logger.getLogger(Main.class.getName());
-    private final static DirectoryController directoryController = new DirectoryController();
-    private final static ShowInfoController showInfoController = new ShowInfoController(directoryController);
-    private final static UserInfoController userInfoController = new UserInfoController(showInfoController);
-    private final static ProgramSettingsController programSettingsController = new ProgramSettingsController(userInfoController);
-    private final static CheckShowFiles checkShowFiles = new CheckShowFiles(programSettingsController, showInfoController, userInfoController, directoryController);
-    private final static DeveloperStuff developerStuff = new DeveloperStuff(programSettingsController, directoryController, showInfoController, userInfoController, checkShowFiles);
-    private final static MainRun mainRun = new MainRun(programSettingsController, showInfoController, userInfoController, checkShowFiles, directoryController);
     private final static int timer = GenericMethods.getTimeSeconds();
     public static boolean programRunning = true, programFullyRunning = false;
     public static Stage stage;
@@ -58,17 +46,17 @@ public class Main extends Application implements Runnable {
             if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
-            while (checkShowFiles.isRecheckingShowFile()) {
+            while (ClassHandler.checkShowFiles().isRecheckingShowFile()) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     GenericMethods.printStackTrace(log, e, Main.class);
                 }
             }
-            Platform.exit();
             Controller.closeChangeBoxStage();
             Controller.getSettingsWindow().closeSettings();
             Controller.closeShowPlayingBoxStage();
+            Platform.exit();
             if (stage != null) stage.close();
             if (thread != null) {
                 try {
@@ -78,34 +66,6 @@ public class Main extends Application implements Runnable {
                 }
             }
         }
-    }
-
-    public static ProgramSettingsController getProgramSettingsController() {
-        return programSettingsController;
-    }
-
-    public static ShowInfoController getShowInfoController() {
-        return showInfoController;
-    }
-
-    public static UserInfoController getUserInfoController() {
-        return userInfoController;
-    }
-
-    public static CheckShowFiles getCheckShowFiles() {
-        return checkShowFiles;
-    }
-
-    public static MainRun getMainRun() {
-        return mainRun;
-    }
-
-    public static DirectoryController getDirectoryController() {
-        return directoryController;
-    }
-
-    public static DeveloperStuff getDeveloperStuff() {
-        return developerStuff;
     }
 
     @Override
@@ -123,7 +83,7 @@ public class Main extends Application implements Runnable {
         rootLog.getHandlers()[0].setFilter(filter);
         // End logger stuff
 
-        boolean continueStarting = mainRun.startBackend();
+        boolean continueStarting = ClassHandler.mainRun().startBackend();
         if (continueStarting) {
             stage = primaryStage;
             GenericMethods.setIcon(stage);
@@ -176,7 +136,7 @@ public class Main extends Application implements Runnable {
     @Override
     public void run() {
         while (programFullyRunning) {
-            mainRun.tick();
+            ClassHandler.mainRun().tick();
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {

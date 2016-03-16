@@ -91,6 +91,7 @@ Fixed ShowPlaying Show name wrapping down into other text. Instead it is cut.
 Fixed ShowPlaying for causing the wrong row being selected when playing the next episode.
 Fixed bug where getRemainingNumberOfEpisodes was reporting episodes from later seasons if the seasons in between were empty and the season started at episode 1.
 Fixed issue where CheckShowFiles wasn't checking if the show filename was changed.
+Fixed bug where if the Users folder didn't exist, the program crashed.
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

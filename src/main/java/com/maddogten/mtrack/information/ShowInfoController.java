@@ -4,6 +4,7 @@ import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -20,17 +21,11 @@ import java.util.stream.Collectors;
 
 public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
-    private final DirectoryController directoryController;
     private Map<String, Show> showsFile;
-
-    @SuppressWarnings("SameParameterValue")
-    public ShowInfoController(DirectoryController directoryController) {
-        this.directoryController = directoryController;
-    }
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile() {
-        ArrayList<Directory> directories = directoryController.getDirectories(-2);
+        ArrayList<Directory> directories = ClassHandler.directoryController().getDirectories(-2);
         if (directories.size() == 1) {
             showsFile = directories.get(0).getShows();
             log.info("showsFile was loaded, Only one Directory.");
