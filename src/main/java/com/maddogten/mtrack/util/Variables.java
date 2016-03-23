@@ -34,15 +34,11 @@ public class Variables {
     public static final Font Font = javafx.scene.text.Font.font(("Times New Roman"));
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
-    @SuppressWarnings("PublicStaticArrayField")
-    public static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
     public static final int ProgramSettingsFileVersion = 1013; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1004; // Was Changed
     public static final int DirectoryFileVersion = 1000; // Was Changed
-
-    public static final int InternalVersion = 29; // To help keep track of what I'm currently working on / testing.
-
+    public static final int InternalVersion = 30; // To help keep track of what I'm currently working on / testing.
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
@@ -62,8 +58,14 @@ public class Variables {
     @SuppressWarnings("PublicStaticCollectionField")
     public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})")));
     public static final String fileNameReplace = "[(]|[)]|[\\\\]|[\\[]]|[\\]]|[\\[]|[\\]]|[+][\\{][\\}]";
+    static final String LogsFolder = Strings.FileSeparator + "Logs";
+    @SuppressWarnings("PublicStaticArrayField")
+    static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
+    static final int logMaxFileSize = 60000;
+    static final int logMaxNumberOfFiles = 10;
+    static final String logFilename = "/Log_%g";
     public static boolean disableAutomaticRechecking;
-    /**/public static boolean devMode = false; // false
+    /**/public static boolean devMode = true; // false
     public static int updateSpeed;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
@@ -77,6 +79,8 @@ public class Variables {
     public static boolean specialEffects;
     public static int savingSpeed;
     public static boolean enableAutoSavingOnTimer;
+    @SuppressWarnings("CanBeFinal")
+    public static boolean enableFileLogging = true; // TODO Add user setting
 
     public static void setDataFolder(File file) {
         dataFolder = file;

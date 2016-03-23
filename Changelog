@@ -73,6 +73,8 @@ Added Tooltip to ShowPlaying Show name to show the full name.
 Added DeveloperStuff class and started moving all appropriate code into it.
 Added automatic file saving every 10 minutes.
 Added Settings for disabling Special Effects, disabling automatic saving, & changing automatic saving speed.
+Added ClassHandler class which now holds DirectoryController, ShowInfoController, UserInfoController, ProgramSettingsController, CheckShowFiles, DeveloperStuff, MainRun, and Controller.
+Added Logging to a file.
 
 Fixes:
 Will now properly switch to new seasons when found.
@@ -92,6 +94,8 @@ Fixed ShowPlaying for causing the wrong row being selected when playing the next
 Fixed bug where getRemainingNumberOfEpisodes was reporting episodes from later seasons if the seasons in between were empty and the season started at episode 1.
 Fixed issue where CheckShowFiles wasn't checking if the show filename was changed.
 Fixed bug where if the Users folder didn't exist, the program crashed.
+Fixed program crashing when choosing to store the files with the jar.
+Fixed program not properly finding settings files stored with it.
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

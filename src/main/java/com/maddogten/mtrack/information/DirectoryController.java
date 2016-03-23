@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.information;
 
+import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.information.show.Directory;
@@ -24,7 +25,7 @@ public class DirectoryController {
     private final ArrayList<File> inactiveDirectories = new ArrayList<>();
 
     // Saves all the directory paths that the program is currently set to check.
-    private ArrayList<Directory> getDirectories() {
+    public ArrayList<Directory> findDirectories(boolean includeInactive, Boolean skipFoundInactiveDirectories) {
         ArrayList<Directory> directories = new ArrayList<>();
         File[] files = new File(Variables.dataFolder + Variables.DirectoriesFolder).listFiles();
         if (files != null) {
@@ -34,15 +35,15 @@ public class DirectoryController {
                 directories.add((Directory) new FileManager().loadFile(Variables.DirectoriesFolder, properFileString, Strings.EmptyString));
             }
         }
-        return directories;
+        return includeInactive ? directories : getActiveDirectories(directories, skipFoundInactiveDirectories);
     }
 
     // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
-    public ArrayList<Directory> getDirectories(int skip) {
+    public ArrayList<Directory> findDirectories(int skip, boolean includeInactive, Boolean skipFoundInactiveDirectories) {
         // ArrayList = Shows list from all added Directories
-        if (skip == -2) return getDirectories();
+        if (skip == -2) return findDirectories(includeInactive, skipFoundInactiveDirectories);
         else {
-            ArrayList<Directory> directories = getDirectories();
+            ArrayList<Directory> directories = findDirectories(includeInactive, skipFoundInactiveDirectories);
             Iterator<Directory> directoryIterator = directories.iterator();
             while (directoryIterator.hasNext()) {
                 if (directoryIterator.next().getIndex() == skip) {
@@ -55,8 +56,7 @@ public class DirectoryController {
     }
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    public ArrayList<Directory> getActiveDirectories(boolean skipFoundInactiveDirectories) {
-        ArrayList<Directory> untestedDirectories = getDirectories();
+    private ArrayList<Directory> getActiveDirectories(ArrayList<Directory> untestedDirectories, boolean skipFoundInactiveDirectories) {
         ArrayList<Directory> activeDirectories = new ArrayList<>(untestedDirectories.size());
         if (skipFoundInactiveDirectories) {
             log.info("skipFoundInactiveDirectories was true, Skipping known inactive directories.");
@@ -74,10 +74,12 @@ public class DirectoryController {
                 });
             }
         } else log.info("skipFoundInactiveDirectories was false, Rechecking all directories.");
+        final boolean[] reloadShowFile = {false};
         String bsR1 = "\\\\";
         Pattern drivePattern = Pattern.compile("[A-Z]:" + bsR1);
         Pattern networkFolderPattern = Pattern.compile(bsR1 + bsR1 + "[0-9A-Za-z-]+" + bsR1);
         Pattern ipPattern = Pattern.compile(bsR1 + bsR1 + "[0-9a-z][0-9.a-z:]+[.|:][0-9.a-z:]+[0-9a-z]" + bsR1);
+        ArrayList<File> previouslyInactive = new ArrayList<>(inactiveDirectories);
         untestedDirectories.forEach(directory -> {
             log.info("Checking active status of " + directory.getDirectory() + '.');
             Matcher driveMatcher = drivePattern.matcher(directory.getDirectory().toString());
@@ -160,8 +162,10 @@ public class DirectoryController {
                 }
             }
             if (directoryChecked) {
-                if (!skipFoundInactiveDirectories && isDirectoryActive[0] && inactiveDirectories.contains(directory.getDirectory()))
+                if (!skipFoundInactiveDirectories && isDirectoryActive[0] && previouslyInactive.contains(directory.getDirectory())) {
                     inactiveDirectories.remove(directory.getDirectory());
+                    if (!reloadShowFile[0]) reloadShowFile[0] = true;
+                }
                 String activeStatus;
                 if (isDirectoryActive[0]) {
                     activeStatus = "active.";
@@ -172,18 +176,25 @@ public class DirectoryController {
                     if (!inactiveDirectories.contains(directory.getDirectory())) {
                         log.info(directory.getDirectory() + " was added to the inactiveDirectories list.");
                         inactiveDirectories.add(directory.getDirectory());
+                        if (!reloadShowFile[0]) reloadShowFile[0] = true;
                     }
                 }
                 log.info("Finished checking " + directory.getDirectory() + ". It was found to be " + activeStatus);
             } else
                 log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory.getDirectory());
         });
+        if (reloadShowFile[0]) {
+            log.info("Inactive directories list was changed, updating ShowsFile & Displayed list");
+            ClassHandler.showInfoController().loadShowsFile(activeDirectories);
+            inactiveDirectories.stream().filter(file -> !previouslyInactive.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, ClassHandler.showInfoController().doesShowExistElsewhere(showName, activeDirectories)))));
+            previouslyInactive.stream().filter(file -> !inactiveDirectories.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, true))));
+        }
         return activeDirectories;
     }
 
     // Add a new directory.
     public boolean[] addDirectory(int index, File directory) {
-        ArrayList<Directory> directories = getDirectories();
+        ArrayList<Directory> directories = findDirectories(true, false);
         boolean[] answer = {false, false};
         boolean directoryDoesNotExist = true;
         for (Directory aDirectory : directories) {
@@ -212,7 +223,7 @@ public class DirectoryController {
     // Returns the lowest usable directory index. If directory is deleted this make the index reusable.
     public int getLowestFreeDirectoryIndex() {
         List<Integer> usedIndexes = new LinkedList<>();
-        getDirectories().forEach(directory -> usedIndexes.add(directory.getIndex()));
+        findDirectories(true, false).forEach(directory -> usedIndexes.add(directory.getIndex()));
         int lowestFreeIndex = 0;
         while (usedIndexes.contains(lowestFreeIndex)) lowestFreeIndex++;
         return lowestFreeIndex;
@@ -220,7 +231,7 @@ public class DirectoryController {
 
     // Gets a single directory map using the given index.
     public Directory getDirectory(int index) {
-        for (Directory directory : getDirectories()) {
+        for (Directory directory : findDirectories(true, false)) {
             if (directory.getIndex() == index) return directory;
         }
         log.warning("Warning- If this point is reached, please report.");
@@ -229,7 +240,8 @@ public class DirectoryController {
 
     public void saveDirectory(Directory directory, Boolean loadMap) {
         new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowFileExtension, true);
-        if (loadMap) ClassHandler.showInfoController().loadShowsFile();
+        if (loadMap)
+            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
     }
 
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.

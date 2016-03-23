@@ -120,7 +120,7 @@ public class FileManager {
         String[] split = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
         for (String splitPart : split) {
             if (converted.isEmpty()) converted = splitPart;
-            else converted += Strings.FileSeparator + splitPart;
+            else if (!splitPart.matches(split[split.length - 1])) converted += Strings.FileSeparator + splitPart;
         }
         return new File(converted);
     }

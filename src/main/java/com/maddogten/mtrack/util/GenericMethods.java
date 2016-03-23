@@ -2,13 +2,15 @@ package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.information.ChangeReporter;
+import com.maddogten.mtrack.io.FileManager;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 /*
       GenericMethods is for methods that don't really fit anywhere else, and doesn't need their own class.
@@ -16,6 +18,9 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("ClassWithoutLogger")
 public class GenericMethods {
+
+    private static Logger rootLog;
+    private static Filter filter;
 
     // Clock Methods to help with timing.
     @SuppressWarnings("WeakerAccess")
@@ -46,7 +51,7 @@ public class GenericMethods {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public static void printArrayList(Level level, Logger log, ArrayList arrayList, boolean splitWithNewLine) {
+    static void printArrayList(Level level, Logger log, ArrayList arrayList, boolean splitWithNewLine) {
         String[] print = new String[arrayList.size()];
         final int[] i = {0};
         String newLine = splitWithNewLine ? "\n" : Strings.EmptyString;
@@ -57,12 +62,15 @@ public class GenericMethods {
 
     // Handles Exceptions
     public static void printStackTrace(Logger log, Exception exception, Class exceptionClass) {
-        String[] stackTrace = new String[exception.getStackTrace().length + 2];
-        stackTrace[0] = '\n' + exceptionClass.getName();
-        stackTrace[1] = '\n' + exception.toString();
-        for (int i = 2; i < exception.getStackTrace().length; i++)
-            stackTrace[i] = '\n' + exception.getStackTrace()[i].toString();
-        log.severe(Arrays.toString(stackTrace));
+        if (Variables.devMode) exception.printStackTrace();
+        else {
+            String[] stackTrace = new String[exception.getStackTrace().length + 2];
+            stackTrace[0] = '\n' + exceptionClass.getName();
+            stackTrace[1] = '\n' + exception.toString();
+            for (int i = 2; i < exception.getStackTrace().length; i++)
+                stackTrace[i] = '\n' + exception.getStackTrace()[i].toString();
+            log.severe(Arrays.toString(stackTrace));
+        }
     }
 
     public static void saveSettings() {
@@ -74,9 +82,32 @@ public class GenericMethods {
         ClassHandler.programSettingsController().getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
         ClassHandler.programSettingsController().getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
         ClassHandler.programSettingsController().getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
-        ClassHandler.programSettingsController().getSettingsFile().setNumberOfDirectories(ClassHandler.directoryController().getDirectories(-2).size());
+        ClassHandler.programSettingsController().getSettingsFile().setNumberOfDirectories(ClassHandler.directoryController().findDirectories(true, false).size());
         ClassHandler.userInfoController().getUserSettings().setChanges(ChangeReporter.getChanges());
         ClassHandler.programSettingsController().saveSettingsFile();
         ClassHandler.userInfoController().saveUserSettingsFile();
+    }
+
+    // Initiate logging rules.
+    public static void initLogger() {
+        rootLog = Logger.getLogger("");
+        rootLog.setLevel(Level.FINEST);
+        rootLog.getHandlers()[0].setLevel(Level.FINEST);
+        filter = record -> record.getSourceClassName().contains("com.maddogten.mtrack");
+        rootLog.setFilter(filter);
+        rootLog.getHandlers()[0].setFilter(filter);
+    }
+
+    public static void initFileLogging(Logger log) throws IOException, SecurityException {
+        if (Variables.enableFileLogging) {
+            if (!new File(Variables.dataFolder + Variables.LogsFolder).exists())
+                new FileManager().createFolder(Variables.LogsFolder);
+            FileHandler fileHandler = new FileHandler(Variables.dataFolder.getPath() + Variables.LogsFolder + Variables.logFilename, Variables.logMaxFileSize, Variables.logMaxNumberOfFiles, true);
+            rootLog.addHandler(fileHandler);
+            fileHandler.setFormatter(new SimpleFormatter());
+            fileHandler.setFilter(filter);
+
+            log.info("-------- Program Logging Started --------\n\n\n\n");
+        }
     }
 }

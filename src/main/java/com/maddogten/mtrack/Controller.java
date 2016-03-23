@@ -126,6 +126,10 @@ public class Controller implements Initializable {
         return list;
     }
 
+    public static void setTableViewFields() {
+        setTableViewFields(currentList);
+    }
+
     // This sets the current tableView to whichever you want.
     public static void setTableViewFields(int type) {
         switch (type) {
@@ -150,7 +154,7 @@ public class Controller implements Initializable {
                 break;
             }
         }
-        final boolean isShowActive = ClassHandler.userInfoController().isShowActive(aShow) && showExists;
+        final boolean isShowActive = showExists && ClassHandler.showInfoController().getShowsList().contains(aShow) && ClassHandler.userInfoController().isShowActive(aShow);
         if ((currentList != 1 || isShowActive) && (currentList != 0 || !isShowActive)) {
             int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow);
             int season = ClassHandler.userInfoController().getCurrentSeason(aShow);
@@ -208,12 +212,10 @@ public class Controller implements Initializable {
     }
 
     public static void closeChangeBoxStage() {
-        log.fine("Closing ChangeBox if open...");
         if (ClassHandler.controller() != null) ClassHandler.controller().changesBox.closeStage();
     }
 
     public static void closeShowPlayingBoxStage() {
-        log.fine("Closing ShowPlayingBox if open...");
         if (ClassHandler.controller() != null) ClassHandler.controller().showPlayingBox.closeStage();
     }
 
@@ -351,7 +353,7 @@ public class Controller implements Initializable {
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
-                        ArrayList<Directory> directories = ClassHandler.directoryController().getDirectories(-2);
+                        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true);
                         ArrayList<Directory> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
@@ -505,7 +507,7 @@ public class Controller implements Initializable {
             if (show0Remaining && currentList == 1)
                 log.info("Now showing shows with 0 episodes remaining.");
             else if (currentList == 1) log.info("No longer showing shows with 0 episodes remaining.");
-            setTableViewFields(currentList);
+            setTableViewFields();
             setTableView();
         });
         show0RemainingCheckBoxTooltip.textProperty().bind(Strings.ShowHiddenShowsWith0EpisodeLeft);

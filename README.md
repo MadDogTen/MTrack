@@ -1,5 +1,5 @@
 # MTrack
-A Program to track Shows you have stored on your network for additions and removals, and help you keep track where you are in watching them.
+A program to track shows you have stored on your network for additions and removals, and help you keep track where you are in watching them.
 
 Coded using IntelliJ IDEA 14.1.4 Windows Edition.
 

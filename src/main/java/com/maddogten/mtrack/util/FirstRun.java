@@ -17,6 +17,7 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,10 +45,19 @@ public class FirstRun {
                 fileManager.createFolder("");
                 fileManager.createFolder(Variables.DirectoriesFolder);
                 fileManager.createFolder(Variables.UsersFolder);
+                fileManager.createFolder(Variables.LogsFolder);
             } else if (answer.getValue().matches(Strings.WithTheJar.getValue())) {
                 Variables.setDataFolder(jarLocation);
                 fileManager.createFolder(Variables.DirectoriesFolder);
                 fileManager.createFolder(Variables.UsersFolder);
+                fileManager.createFolder(Variables.LogsFolder);
+            } else return false;
+            if (Variables.enableFileLogging) {
+                try {
+                    GenericMethods.initFileLogging(log);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             boolean hasImportedFiles = false;
             if (new ConfirmBox().confirm(Strings.DoYouWantToImportFiles, null)) {
@@ -62,7 +72,7 @@ public class FirstRun {
             ClassHandler.programSettingsController().loadProgramSettingsFile();
             if (Variables.makeLanguageDefault)
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
-            boolean directoriesAlreadyAdded = hasImportedFiles && !ClassHandler.directoryController().getDirectories(-2).isEmpty();
+            boolean directoriesAlreadyAdded = hasImportedFiles && !ClassHandler.directoryController().findDirectories(true, false).isEmpty();
             Thread generateShowFilesThread = null;
             if (!directoriesAlreadyAdded) {
                 addDirectories();
@@ -91,7 +101,7 @@ public class FirstRun {
                     }
                 }
                 log.info(Strings.UserName.getValue());
-                ClassHandler.showInfoController().loadShowsFile();
+                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
                 if (!usersAlreadyAdd) generateUserSettingsFile(Strings.UserName.getValue());
                 ClassHandler.userInfoController().loadUserInfo();
             }
@@ -110,7 +120,7 @@ public class FirstRun {
     // Generates the ShowFiles (If a directory is added, otherwise this is skipped).
     private void generateShowFiles() {
         log.info("Generating show files for first run...");
-        ArrayList<Directory> directories = ClassHandler.directoryController().getDirectories(-2);
+        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false);
         directories.forEach(aDirectory -> {
             log.info("Currently generating show file for: " + aDirectory.getDirectory());
             generateShowsFile(aDirectory);
@@ -137,7 +147,7 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = ClassHandler.directoryController().addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().getDirectories(-2), null));
+            boolean[] matched = ClassHandler.directoryController().addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false), null));
             index++;
             if (!matched[0] && !matched[1])
                 new MessageBox().message(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);

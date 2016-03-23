@@ -4,6 +4,7 @@ import com.maddogten.mtrack.information.ShowInfoController;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -313,7 +314,15 @@ public class ListSelectBox {
         ArrayList<Integer> episodesArrayList = new ArrayList<>();
         ObservableList<Integer> episodesList = FXCollections.observableArrayList(episodesArrayList);
         ComboBox<Integer> episodesComboBox = new ComboBox<>(episodesList);
-        episodesComboBox.setDisable(true);
+
+        int season = ClassHandler.userInfoController().getCurrentSeason(aShow);
+        int episode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
+        if (ClassHandler.showInfoController().getEpisode(aShow, season, episode).isEmpty()) {
+            episodesComboBox.setDisable(true);
+        } else {
+            seasonsComboBox.getSelectionModel().select((Integer) season);
+            episodesComboBox.getSelectionModel().select((Integer) episode);
+        }
 
         Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);

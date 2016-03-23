@@ -7,8 +7,8 @@ import com.maddogten.mtrack.util.*;
 import javafx.concurrent.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -23,11 +23,11 @@ public class MainRun {
     private boolean hasRan = false, forceRun = true;
     private int recheckTimer, saveTimer;
 
-    public boolean startBackend() {
+    boolean startBackend() {
         FileManager fileManager = new FileManager();
         // First it checks if the folder that contains the jar has the settings file.
         try {
-            File path = new File(URLDecoder.decode(MainRun.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8"));
+            File path = fileManager.getJarLocationFolder();
             File[] files = path.listFiles();
             if (files != null) {
                 for (File file : files) {
@@ -56,9 +56,17 @@ public class MainRun {
         if (Variables.dataFolder.toString().isEmpty()) {
             firstRun = true;
             needsToRun = new FirstRun().programFirstRun();
+            if (Variables.dataFolder.toString().isEmpty()) continueStarting = false;
             firstRun = false;
         }
         if (!continueStarting) return false;
+        if (needsToRun && Variables.enableFileLogging) {
+            try {
+                GenericMethods.initFileLogging(log);
+            } catch (IOException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
+        }
         UpdateManager updateManager = new UpdateManager();
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         if (needsToRun) {
@@ -74,7 +82,7 @@ public class MainRun {
                 if (!continueStarting) return false;
                 if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
                     new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
-                ClassHandler.showInfoController().loadShowsFile();
+                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
                 updateManager.updateUserSettingsFile();
                 ClassHandler.userInfoController().loadUserInfo();
             } else {
@@ -89,7 +97,7 @@ public class MainRun {
                 if (!continueStarting) return false;
                 if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
                     new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
-                ClassHandler.showInfoController().loadShowsFile();
+                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
                 updateManager.updateUserSettingsFile();
                 ClassHandler.userInfoController().loadUserInfo();
                 // If those both exists, then it starts normally.
@@ -114,7 +122,7 @@ public class MainRun {
         ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
     }
 
-    public void tick() {
+    void tick() {
         if (!hasRan) {
             log.info("MainRun Running...");
             this.recheckTimer = GenericMethods.getTimeSeconds();

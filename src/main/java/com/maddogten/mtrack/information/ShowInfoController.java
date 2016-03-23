@@ -4,7 +4,6 @@ import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
-import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -24,8 +23,7 @@ public class ShowInfoController {
     private Map<String, Show> showsFile;
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
-    public void loadShowsFile() {
-        ArrayList<Directory> directories = ClassHandler.directoryController().getDirectories(-2);
+    public void loadShowsFile(ArrayList<Directory> directories) {
         if (directories.size() == 1) {
             showsFile = directories.get(0).getShows();
             log.info("showsFile was loaded, Only one Directory.");
@@ -49,7 +47,7 @@ public class ShowInfoController {
         } else {
             if (directories.isEmpty())
                 log.info("showsFile was loaded empty, No directories found.");
-            else log.info("showsFile load loaded empty, Unknown reason.");
+            else log.info("showsFile loaded empty, Unknown reason.");
             showsFile = new HashMap<>();
         }
     }
@@ -79,12 +77,7 @@ public class ShowInfoController {
 
     // Returns a given episode from a given season in a given show.
     public String getEpisode(String show, int season, int episode) {
-        if (showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode))
-            return showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename();
-        else {
-            log.warning("Error for: " + show + " - Season " + season + " - Episode " + episode + ", Please report.");
-            return Strings.EmptyString;
-        }
+        return showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode) ? showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename() : Strings.EmptyString;
     }
 
     // Returns whether or not an episode is part of a double episode.

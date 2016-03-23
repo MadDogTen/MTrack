@@ -209,6 +209,8 @@ public class Settings implements Initializable {
             disableAutomaticShowUpdating.setSelected(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
         disableAutomaticShowUpdating.setOnAction(e -> {
             ClassHandler.programSettingsController().getSettingsFile().setDisableAutomaticShowUpdating(!ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
+            updateTimeTextField.setDisable(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
+            setUpdateTime.setDisable(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
             log.info("Disable automatic show checking has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
         });
         notifyChangesText.textProperty().bind(Strings.NotifyChangesFor);
@@ -328,7 +330,7 @@ public class Settings implements Initializable {
         addDirectory.setOnAction(e -> {
             setButtonDisable(addDirectory, removeDirectory, true);
             int index = ClassHandler.directoryController().getLowestFreeDirectoryIndex();
-            boolean[] wasAdded = ClassHandler.directoryController().addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().getDirectories(-2), (Stage) tabPane.getScene().getWindow()));
+            boolean[] wasAdded = ClassHandler.directoryController().addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(false, true), (Stage) tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
                 FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
@@ -346,7 +348,7 @@ public class Settings implements Initializable {
                 } catch (InterruptedException e1) {
                     GenericMethods.printStackTrace(log, e1, this.getClass());
                 }
-                ClassHandler.showInfoController().loadShowsFile();
+                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
                 findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
                 ClassHandler.directoryController().getDirectory(index).getShows().keySet().forEach(aShow -> {
                     ClassHandler.userInfoController().addNewShow(aShow);
@@ -360,7 +362,7 @@ public class Settings implements Initializable {
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
             setButtonDisable(removeDirectory, addDirectory, true);
-            ArrayList<Directory> directories = ClassHandler.directoryController().getDirectories(-2);
+            ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false);
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToDelete}, (Stage) tabPane.getScene().getWindow());
@@ -370,7 +372,7 @@ public class Settings implements Initializable {
                     log.info("Directory selected for deletion: " + directoryToDelete.getFileName());
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + directoryToDelete.getFileName() + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     if (confirm) {
-                        ArrayList<Directory> otherDirectories = ClassHandler.directoryController().getDirectories(directoryToDelete.getIndex());
+                        ArrayList<Directory> otherDirectories = ClassHandler.directoryController().findDirectories(directoryToDelete.getIndex(), true, false);
                         Map<String, Boolean> showsToUpdate = new HashMap<>();
                         directoryToDelete.getShows().keySet().forEach(aShow -> {
                             log.info("Currently checking: " + aShow);
@@ -382,7 +384,7 @@ public class Settings implements Initializable {
                             showsToUpdate.put(aShow, showExistsElsewhere);
                         });
                         ClassHandler.directoryController().removeDirectory(directoryToDelete);
-                        ClassHandler.showInfoController().loadShowsFile();
+                        ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
                         showsToUpdate.forEach(Controller::updateShowField);
                         ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
                         log.info('"' + directoryToDelete.getFileName() + "\" has been deleted!");

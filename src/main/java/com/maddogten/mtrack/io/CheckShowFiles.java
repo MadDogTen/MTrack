@@ -53,7 +53,7 @@ public class CheckShowFiles {
     // This fully rechecks for any new / removed shows, seasons, and episodes from all directories. If directory is unresponsive, it skips it.
     public void recheckShowFile(boolean forceRun) {
         if (!isRecheckingShowFile || (forceRun && keepRunning)) {
-            // hasChanged - If anything is found differently, this will be set to true. Used at the end to determine if it should reload the ClassHandler.showInfoController() showsFile and scan for changes.
+            // hasChanged - If anything is found differently, this will be set to true. Used at the end to determine if it should reload the ShowInfoController showsFile and scan for changes.
             boolean[] hasChanged = {false};
             ArrayList<String> updatedShows = new ArrayList<>();
             // timer - Used purely for log purposes to see how long the run takes.
@@ -74,12 +74,14 @@ public class CheckShowFiles {
             }
             if (!isRecheckingShowFile) isRecheckingShowFile = true;
             final double[] percentagePerDirectory = {100};
-            if (ClassHandler.directoryController().getDirectories(-2).isEmpty()) recheckShowFilePercentage = percentagePerDirectory[0];
-            else percentagePerDirectory[0] = percentagePerDirectory[0] / ClassHandler.directoryController().getDirectories(-2).size();
             // Just so the user knows when it is a directory that is delaying the search, and not the program hanging.
             currentlyCheckingDirectories = true;
-            ArrayList<Directory> activeDirectories = ClassHandler.directoryController().getActiveDirectories(!forceRun);
+            if (ClassHandler.directoryController().findDirectories(false, !forceRun).isEmpty())
+                recheckShowFilePercentage = percentagePerDirectory[0];
+            else
+                percentagePerDirectory[0] = percentagePerDirectory[0] / ClassHandler.directoryController().findDirectories(false, true).size();
             currentlyCheckingDirectories = false;
+            ArrayList<Directory> activeDirectories = ClassHandler.directoryController().findDirectories(false, true);
             if (Main.programFullyRunning) {
                 activeDirectories.forEach(aDirectory -> {
                     boolean checkAllShows = forceRun || runNumber % Variables.checkAllNonIgnoredShowsInterval == 0;
@@ -120,7 +122,7 @@ public class CheckShowFiles {
                                 recheckShowFilePercentage += percentagePer;
                             });
                             ClassHandler.directoryController().saveDirectory(aDirectory, false);
-                            ClassHandler.showInfoController().loadShowsFile();
+                            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
                             changedShows.keySet().forEach(aShow -> {
                                 ClassHandler.userInfoController().addNewShow(aShow);
                                 Controller.updateShowField(aShow, true);
@@ -138,7 +140,7 @@ public class CheckShowFiles {
                         log.warning("recheckShowFilePercentage was: \"" + (int) recheckShowFilePercentage + "\" and not 100, Must be an error in the calculation, Please correct.");
                     recheckShowFilePercentage = 100;
                     if (hasChanged[0] && Main.programFullyRunning) {
-                        ClassHandler.showInfoController().loadShowsFile();
+                        ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
                         if (!updatedShows.isEmpty())
                             updatedShows.forEach(aShow -> Controller.updateShowField(aShow, true));
                         findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
@@ -330,7 +332,7 @@ public class CheckShowFiles {
             ClassHandler.directoryController().saveDirectory(directory, true);
             removedShows.forEach(aShow -> {
                 log.info(aShow + " is no longer found in \"" + folder + "\".");
-                boolean doesShowExistElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().getDirectories(index));
+                boolean doesShowExistElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(index, false, true));
                 if (!doesShowExistElsewhere) ClassHandler.userInfoController().setIgnoredStatus(aShow, true);
                 Controller.updateShowField(aShow, doesShowExistElsewhere);
             });
