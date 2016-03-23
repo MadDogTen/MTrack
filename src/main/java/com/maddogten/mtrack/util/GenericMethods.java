@@ -3,6 +3,7 @@ package com.maddogten.mtrack.util;
 import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.io.FileManager;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -108,6 +109,35 @@ public class GenericMethods {
             fileHandler.setFilter(filter);
 
             log.info("-------- Program Logging Started --------\n\n\n\n");
+        }
+    }
+
+    public static void fadeStageIn(Stage stage, int fadeTime, Logger log, Class stageClass) {
+        stage.setOpacity(0);
+        Platform.runLater(() -> {
+            while (true) {
+                stage.setOpacity(stage.getOpacity() + .01 <= 1 ? stage.getOpacity() + .01 : 1);
+                if (stage.getOpacity() < 1) {
+                    try {
+                        Thread.sleep(fadeTime);
+                    } catch (InterruptedException e) {
+                        printStackTrace(log, e, stageClass);
+                    }
+                } else break;
+            }
+        });
+    }
+
+    public static void fadeStageOut(Stage stage, int fadeTime, Logger log, Class stageClass) {
+        while (true) {
+            stage.setOpacity(stage.getOpacity() - .01 >= 0 ? stage.getOpacity() - .01 : 0);
+            if (stage.getOpacity() > 0) {
+                try {
+                    Thread.sleep(fadeTime);
+                } catch (InterruptedException e) {
+                    printStackTrace(log, e, stageClass);
+                }
+            } else break;
         }
     }
 }

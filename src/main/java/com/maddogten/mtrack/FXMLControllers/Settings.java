@@ -240,6 +240,7 @@ public class Settings implements Initializable {
         // User
         exit.setOnAction(e -> {
             Stage stage = (Stage) tabPane.getScene().getWindow();
+            if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 2, log, this.getClass());
             stage.close();
         });
         setDefaultUsername.textProperty().bind(Strings.SetDefaultUser);

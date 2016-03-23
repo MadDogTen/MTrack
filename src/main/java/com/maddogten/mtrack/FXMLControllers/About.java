@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.FXMLControllers;
 
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.fxml.FXML;
@@ -60,6 +61,7 @@ public class About implements Initializable {
         close.textProperty().bind(Strings.Close);
         close.setOnAction(e -> {
             Stage stage = (Stage) pane.getScene().getWindow();
+            if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 2, log, this.getClass());
             stage.close();
         });
     }

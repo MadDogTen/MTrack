@@ -55,8 +55,9 @@ public class Main extends Application implements Runnable {
             Controller.closeChangeBoxStage();
             Controller.getSettingsWindow().closeSettings();
             Controller.closeShowPlayingBoxStage();
+            if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 10, log, Main.class);
+            stage.close();
             Platform.exit();
-            if (stage != null) stage.close();
             if (thread != null) {
                 try {
                     thread.join();
@@ -88,19 +89,7 @@ public class Main extends Application implements Runnable {
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
-            stage.setOpacity(0);
-            Platform.runLater(() -> {
-                if (Variables.specialEffects) {
-                    while (stage.getOpacity() < 1) {
-                        stage.setOpacity(stage.getOpacity() + .01);
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else stage.setOpacity(1);
-            });
+            if (Variables.specialEffects) GenericMethods.fadeStageIn(stage, 10, log, Main.class);
             start();
         } else stop(null, true, false);
     }

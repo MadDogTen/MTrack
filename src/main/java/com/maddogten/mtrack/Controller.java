@@ -386,7 +386,7 @@ public class Controller implements Initializable {
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
                     printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShow()));
                     row.setOnMouseEntered(e -> {
-                        if (row.getItem() != null) {
+                        if (row.getItem() != null && (row.getTooltip() == null || !row.getTooltip().getText().contains(row.getItem().getShow()))) {
                             Tooltip rowToolTip = new Tooltip(row.getItem().getShow() + " - " + Strings.Season.getValue() + " " + row.getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + row.getItem().getEpisode());
                             rowToolTip.getStyleClass().add("tooltip");
                             row.setTooltip(rowToolTip);

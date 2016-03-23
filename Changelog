@@ -43,6 +43,7 @@ Changed how episodes are phased. Its now much simpler and easily expandable.
 Changed the ProgressIndicator isCurrentlyRechecking now fades in and out.
 Changed the Main Stage to fade in on program start (Not sure if I will keep it or expand it to other stages).
 Changed "Set Season + Episode" to default the fields to the current season & episode (If found, otherwise defaults to old behaviour).
+Changed how the stages fading in/out work. Also added it for Settings & About box.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.

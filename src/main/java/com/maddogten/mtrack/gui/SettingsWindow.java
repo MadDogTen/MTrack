@@ -50,12 +50,15 @@ public class SettingsWindow {
         stage.setScene(scene);
 
         if (tab != -2)
-            Platform.runLater(() -> Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab));
+            Platform.runLater(() -> {
+                Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab);
+            });
 
         stage.show();
         stage.hide();
         stage.setX(stage.getOwner().getX() + (stage.getOwner().getWidth() / 2) - (stage.getWidth() / 2));
         stage.setY(stage.getOwner().getY() + (stage.getOwner().getHeight() / 2) - (stage.getHeight() / 2));
+        if (Variables.specialEffects) GenericMethods.fadeStageIn(stage, 2, log, this.getClass());
         stage.showAndWait();
 
         log.fine("settings has been closed.");
