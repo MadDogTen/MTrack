@@ -385,6 +385,13 @@ public class Controller implements Initializable {
                     MenuItem printShowInformation = new MenuItem();
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
                     printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShow()));
+                    row.setOnMouseEntered(e -> {
+                        if (row.getItem() != null) {
+                            Tooltip rowToolTip = new Tooltip(row.getItem().getShow() + " - " + Strings.Season.getValue() + " " + row.getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + row.getItem().getEpisode());
+                            rowToolTip.getStyleClass().add("tooltip");
+                            row.setTooltip(rowToolTip);
+                        }
+                    });
                     row.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
                             if (currentList == 1) {

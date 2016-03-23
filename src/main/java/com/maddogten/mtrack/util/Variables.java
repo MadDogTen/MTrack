@@ -38,7 +38,9 @@ public class Variables {
     public static final int ProgramSettingsFileVersion = 1013; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1004; // Was Changed
     public static final int DirectoryFileVersion = 1000; // Was Changed
+
     public static final int InternalVersion = 30; // To help keep track of what I'm currently working on / testing.
+
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release

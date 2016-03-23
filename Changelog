@@ -42,6 +42,7 @@ Changed renamed ShowConfirmBox into ShowPlayingBox and completely changed how it
 Changed how episodes are phased. Its now much simpler and easily expandable.
 Changed the ProgressIndicator isCurrentlyRechecking now fades in and out.
 Changed the Main Stage to fade in on program start (Not sure if I will keep it or expand it to other stages).
+Changed "Set Season + Episode" to default the fields to the current season & episode (If found, otherwise defaults to old behaviour).
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -75,6 +76,7 @@ Added automatic file saving every 10 minutes.
 Added Settings for disabling Special Effects, disabling automatic saving, & changing automatic saving speed.
 Added ClassHandler class which now holds DirectoryController, ShowInfoController, UserInfoController, ProgramSettingsController, CheckShowFiles, DeveloperStuff, MainRun, and Controller.
 Added Logging to a file.
+Added Tooltip when hovering over a show that Displays the Show name, Season, and Episode.
 
 Fixes:
 Will now properly switch to new seasons when found.
@@ -96,6 +98,7 @@ Fixed issue where CheckShowFiles wasn't checking if the show filename was change
 Fixed bug where if the Users folder didn't exist, the program crashed.
 Fixed program crashing when choosing to store the files with the jar.
 Fixed program not properly finding settings files stored with it.
+Fixed ShowsList not updating when a directory isn't found to be active anymore, It now removes / updates shows from the list as necessary (and adds then back when the directory is found again).
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

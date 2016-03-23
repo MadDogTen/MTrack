@@ -192,42 +192,39 @@ public class Settings implements Initializable {
         updateText.textProperty().bind(Strings.UpdateTime);
         updateText.setTextAlignment(TextAlignment.CENTER);
         updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
+        updateTimeTextField.setDisable(Variables.disableAutomaticRechecking);
         setUpdateTime.textProperty().bind(Strings.Set);
+        setUpdateTime.setDisable(Variables.disableAutomaticRechecking);
         setUpdateTime.setOnAction(e -> {
-            if (isNumberValid(updateTimeTextField.getText(), 10)) {
-                if (updateTimeTextField.getText().isEmpty())
-                    updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
-                else
-                    ClassHandler.programSettingsController().setUpdateSpeed(Integer.valueOf(updateTimeTextField.getText()));
-            }
+            if (isNumberValid(updateTimeTextField.getText(), 10))
+                ClassHandler.programSettingsController().setUpdateSpeed(Integer.valueOf(updateTimeTextField.getText()));
+            else updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
         });
         disableAutomaticShowUpdating.textProperty().bind(Strings.DisableAutomaticShowSearching);
-        if (Variables.forceDisableAutomaticRechecking) {
-            disableAutomaticShowUpdating.setSelected(true);
-            disableAutomaticShowUpdating.setDisable(true);
-        } else
-            disableAutomaticShowUpdating.setSelected(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
+        //noinspection ConstantConditions
+        disableAutomaticShowUpdating.setSelected(Variables.forceDisableAutomaticRechecking || Variables.disableAutomaticRechecking);
+        disableAutomaticShowUpdating.setDisable(Variables.forceDisableAutomaticRechecking);
         disableAutomaticShowUpdating.setOnAction(e -> {
             ClassHandler.programSettingsController().getSettingsFile().setDisableAutomaticShowUpdating(!ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
-            updateTimeTextField.setDisable(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
-            setUpdateTime.setDisable(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
-            log.info("Disable automatic show checking has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
+            updateTimeTextField.setDisable(Variables.disableAutomaticRechecking);
+            setUpdateTime.setDisable(Variables.disableAutomaticRechecking);
+            log.info("Disable automatic show checking has been set to: " + Variables.disableAutomaticRechecking);
         });
         notifyChangesText.textProperty().bind(Strings.NotifyChangesFor);
         notifyChangesText.setTextAlignment(TextAlignment.CENTER);
         onlyChecksEveryText.textProperty().bind(Strings.OnlyChecksEveryRuns);
         onlyChecksEveryText.setTextAlignment(TextAlignment.CENTER);
         inactiveShowsCheckBox.textProperty().bind(Strings.InactiveShows);
-        inactiveShowsCheckBox.setSelected(ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows());
+        inactiveShowsCheckBox.setSelected(Variables.recordChangesForNonActiveShows);
         inactiveShowsCheckBox.setOnAction(e -> {
             ClassHandler.programSettingsController().getSettingsFile().setRecordChangesForNonActiveShows(!ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows());
-            log.info("Record inactive shows has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows());
+            log.info("Record inactive shows has been set to: " + Variables.recordChangesForNonActiveShows);
         });
         olderSeasonsCheckBox.textProperty().bind(Strings.OlderSeasons);
-        olderSeasonsCheckBox.setSelected(ClassHandler.programSettingsController().getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
+        olderSeasonsCheckBox.setSelected(Variables.recordChangedSeasonsLowerThanCurrent);
         olderSeasonsCheckBox.setOnAction(e -> {
             ClassHandler.programSettingsController().getSettingsFile().setRecordChangedSeasonsLowerThanCurrent(!ClassHandler.programSettingsController().getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
-            log.info("Record older seasons has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
+            log.info("Record older seasons has been set to: " + Variables.recordChangedSeasonsLowerThanCurrent);
         });
         about.textProperty().bind(Strings.About);
         about.setOnAction(e -> {
@@ -455,39 +452,33 @@ public class Settings implements Initializable {
             Controller.setShowUsernameVisibility(ClassHandler.userInfoController().getUserSettings().isShowUsername());
         });
         specialEffects.textProperty().bind(Strings.SpecialEffects);
-        specialEffects.setSelected(ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
+        specialEffects.setSelected(Variables.specialEffects);
         specialEffects.setOnAction(e -> {
             ClassHandler.programSettingsController().getSettingsFile().setEnableSpecialEffects(!ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
-            log.info("Special Effects has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
+            log.info("Special Effects has been set to: " + Variables.specialEffects);
         });
         automaticSaving.textProperty().bind(Strings.EnableAutomaticSaving);
-        automaticSaving.setSelected(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
+        automaticSaving.setSelected(Variables.enableAutoSavingOnTimer);
         automaticSaving.setOnAction(e -> {
             ClassHandler.programSettingsController().getSettingsFile().setEnableAutomaticSaving(!ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
-            if (ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving() && updateSavingTextField.getText().matches(String.valueOf(0))) {
+            if (Variables.enableAutoSavingOnTimer && updateSavingTextField.getText().matches(String.valueOf(0))) {
                 ClassHandler.programSettingsController().setSavingSpeed(Variables.defaultSavingSpeed);
                 updateSavingTextField.setText(String.valueOf(Variables.defaultSavingSpeed));
             }
-            setSavingTime.setDisable(!ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
-            updateSavingTextField.setDisable(!ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
-            log.info("Automatic saving has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
+            setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
+            updateSavingTextField.setDisable(!Variables.enableAutoSavingOnTimer);
+            log.info("Automatic saving has been set to: " + Variables.enableAutoSavingOnTimer);
         });
         savingText.textProperty().bind(Strings.SavingWaitTimeSeconds);
         savingText.setTextAlignment(TextAlignment.CENTER);
         updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
+        updateSavingTextField.setDisable(!Variables.enableAutoSavingOnTimer);
         setSavingTime.textProperty().bind(Strings.Set);
+        setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
         setSavingTime.setOnAction(e -> {
-            if (isNumberValid(updateSavingTextField.getText(), 0)) {
-                if (updateSavingTextField.getText().isEmpty())
-                    updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
-                else if (updateSavingTextField.getText().matches(String.valueOf(0))) {
-                    ClassHandler.programSettingsController().getSettingsFile().setEnableAutomaticSaving(!ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
-                    automaticSaving.setSelected(false);
-                    setSavingTime.setDisable(true);
-                    updateSavingTextField.setDisable(true);
-                } else
-                    ClassHandler.programSettingsController().setSavingSpeed(Integer.valueOf(updateSavingTextField.getText()));
-            }
+            if (isNumberValid(updateSavingTextField.getText(), 5))
+                ClassHandler.programSettingsController().setSavingSpeed(Integer.valueOf(updateSavingTextField.getText()));
+            else updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
         });
         changeLanguage.textProperty().bind(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {
@@ -578,9 +569,7 @@ public class Settings implements Initializable {
 
     private boolean isNumberValid(String textFieldValue, int minValue) {
         log.finest("isNumberValid has been called.");
-        if (textFieldValue.isEmpty())
-            return new ConfirmBox().confirm(Strings.LeaveItAsIs, (Stage) this.tabPane.getScene().getWindow());
-        else if (!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) > Variables.maxWaitTimeSeconds || Integer.parseInt(textFieldValue) < minValue) {
+        if (textFieldValue.isEmpty() || !textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) > Variables.maxWaitTimeSeconds || Integer.parseInt(textFieldValue) < minValue) {
             new MessageBox().message(new StringProperty[]{new SimpleStringProperty(Strings.MustBeANumberBetween.getValue() + minValue + " - " + Variables.maxWaitTimeSeconds)}, (Stage) this.tabPane.getScene().getWindow());
             return false;
         } else return true;
