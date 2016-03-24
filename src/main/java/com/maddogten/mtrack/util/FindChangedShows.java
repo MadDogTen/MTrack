@@ -94,7 +94,9 @@ public class FindChangedShows {
                 });
             } else {
                 this.log.info(showName + " Added");
+                log.info(String.valueOf(0));
                 ChangeReporter.addChange("+ " + showName);
+                log.info(String.valueOf(1));
                 hasChanged[0] = true;
             }
         });

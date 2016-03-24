@@ -107,10 +107,10 @@ public class UpdateManager {
         int mainDirectoryVersion = ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion();
         if (mainDirectoryVersion == ClassHandler.userInfoController().getUserSettings().getUserDirectoryVersion()) {
             log.info("User directory version matched, Now checking if number of directories match...");
-            if (ClassHandler.directoryController().findDirectories(true, false).size() == ClassHandler.programSettingsController().getSettingsFile().getNumberOfDirectories()) {
+            if (ClassHandler.directoryController().findDirectories(true, false, true).size() == ClassHandler.programSettingsController().getSettingsFile().getNumberOfDirectories()) {
                 log.info("Number of directories matched, Now checking if programID's match...");
                 boolean allMatched = true;
-                for (Directory directory : ClassHandler.directoryController().findDirectories(true, false)) {
+                for (Directory directory : ClassHandler.directoryController().findDirectories(true, false, true)) {
                     if (directory.getLastProgramID() != ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()) {
                         log.info("programID's didn't match, updating...");
                         allMatched = false;
@@ -121,7 +121,7 @@ public class UpdateManager {
                 }
                 if (allMatched) log.info("programID's matched.");
                 else {
-                    ClassHandler.directoryController().findDirectories(true, false).forEach(aDirectory -> {
+                    ClassHandler.directoryController().findDirectories(true, false, true).forEach(aDirectory -> {
                         if (aDirectory.getLastProgramID() != ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()) {
                             aDirectory.setLastProgramID(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID());
                             ClassHandler.directoryController().saveDirectory(aDirectory, false);

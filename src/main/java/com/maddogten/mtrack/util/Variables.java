@@ -30,6 +30,7 @@ public class Variables {
     public static final String ShowFileExtension = ".shows";
     public static final String UserFileExtension = ".user";
     public static final String SettingFileExtension = ".settings";
+    public static final String TextExtension = ".txt";
     // Other
     public static final Font Font = javafx.scene.text.Font.font(("Times New Roman"));
     @SuppressWarnings("PublicStaticArrayField")
@@ -39,7 +40,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1004; // Was Changed
     public static final int DirectoryFileVersion = 1000; // Was Changed
 
-    public static final int InternalVersion = 31; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 33; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -60,14 +61,13 @@ public class Variables {
     @SuppressWarnings("PublicStaticCollectionField")
     public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})")));
     public static final String fileNameReplace = "[(]|[)]|[\\\\]|[\\[]]|[\\]]|[\\[]|[\\]]|[+][\\{][\\}]";
-    static final String LogsFolder = Strings.FileSeparator + "Logs";
+    public static final String LogsFolder = Strings.FileSeparator + "Logs";
     @SuppressWarnings("PublicStaticArrayField")
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
-    static final int logMaxFileSize = 60000;
+    static final int logMaxFileSize = 1000000;
     static final int logMaxNumberOfFiles = 10;
-    static final String logFilename = "/Log_%g";
     public static boolean disableAutomaticRechecking;
-    /**/public static boolean devMode = true; // false
+    /**/public static boolean devMode = false; // false
     public static int updateSpeed;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);

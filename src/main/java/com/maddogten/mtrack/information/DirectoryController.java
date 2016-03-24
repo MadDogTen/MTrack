@@ -25,7 +25,7 @@ public class DirectoryController {
     private final ArrayList<File> inactiveDirectories = new ArrayList<>();
 
     // Saves all the directory paths that the program is currently set to check.
-    public ArrayList<Directory> findDirectories(boolean includeInactive, Boolean skipFoundInactiveDirectories) {
+    public ArrayList<Directory> findDirectories(boolean includeInactive, boolean skipFoundInactiveDirectories, boolean skipRechecking) {
         ArrayList<Directory> directories = new ArrayList<>();
         File[] files = new File(Variables.dataFolder + Variables.DirectoriesFolder).listFiles();
         if (files != null) {
@@ -35,15 +35,22 @@ public class DirectoryController {
                 directories.add((Directory) new FileManager().loadFile(Variables.DirectoriesFolder, properFileString, Strings.EmptyString));
             }
         }
+
+        if (skipRechecking && !includeInactive) {
+            ArrayList<Directory> activeOnly = new ArrayList<>();
+            directories.stream().filter(directory -> !inactiveDirectories.contains(directory.getDirectory())).forEach(activeOnly::add);
+            return activeOnly;
+        }
+
         return includeInactive ? directories : getActiveDirectories(directories, skipFoundInactiveDirectories);
     }
 
     // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
-    public ArrayList<Directory> findDirectories(int skip, boolean includeInactive, Boolean skipFoundInactiveDirectories) {
+    public ArrayList<Directory> findDirectories(int skip, boolean includeInactive, Boolean skipFoundInactiveDirectories, @SuppressWarnings("SameParameterValue") boolean skipRechecking) {
         // ArrayList = Shows list from all added Directories
-        if (skip == -2) return findDirectories(includeInactive, skipFoundInactiveDirectories);
+        if (skip == -2) return findDirectories(includeInactive, skipFoundInactiveDirectories, skipRechecking);
         else {
-            ArrayList<Directory> directories = findDirectories(includeInactive, skipFoundInactiveDirectories);
+            ArrayList<Directory> directories = findDirectories(includeInactive, skipFoundInactiveDirectories, skipRechecking);
             Iterator<Directory> directoryIterator = directories.iterator();
             while (directoryIterator.hasNext()) {
                 if (directoryIterator.next().getIndex() == skip) {
@@ -194,7 +201,7 @@ public class DirectoryController {
 
     // Add a new directory.
     public boolean[] addDirectory(int index, File directory) {
-        ArrayList<Directory> directories = findDirectories(true, false);
+        ArrayList<Directory> directories = findDirectories(true, false, true);
         boolean[] answer = {false, false};
         boolean directoryDoesNotExist = true;
         for (Directory aDirectory : directories) {
@@ -223,7 +230,7 @@ public class DirectoryController {
     // Returns the lowest usable directory index. If directory is deleted this make the index reusable.
     public int getLowestFreeDirectoryIndex() {
         List<Integer> usedIndexes = new LinkedList<>();
-        findDirectories(true, false).forEach(directory -> usedIndexes.add(directory.getIndex()));
+        findDirectories(true, false, true).forEach(directory -> usedIndexes.add(directory.getIndex()));
         int lowestFreeIndex = 0;
         while (usedIndexes.contains(lowestFreeIndex)) lowestFreeIndex++;
         return lowestFreeIndex;
@@ -231,7 +238,7 @@ public class DirectoryController {
 
     // Gets a single directory map using the given index.
     public Directory getDirectory(int index) {
-        for (Directory directory : findDirectories(true, false)) {
+        for (Directory directory : findDirectories(true, false, true)) {
             if (directory.getIndex() == index) return directory;
         }
         log.warning("Warning- If this point is reached, please report.");
@@ -241,7 +248,7 @@ public class DirectoryController {
     public void saveDirectory(Directory directory, Boolean loadMap) {
         new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowFileExtension, true);
         if (loadMap)
-            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
+            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
     }
 
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.

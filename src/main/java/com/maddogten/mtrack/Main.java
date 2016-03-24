@@ -14,7 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /*
@@ -43,7 +42,7 @@ public class Main extends Application implements Runnable {
             int timeRan = GenericMethods.timeTakenSeconds(timer);
             if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             else log.info("The program has been running for " + timeRan + " Seconds.");
-            log.warning("Program is exiting\n\n\n\n");
+            log.warning("Program is exiting");
 
             while (ClassHandler.checkShowFiles().isRecheckingShowFile()) {
                 try {
@@ -56,7 +55,7 @@ public class Main extends Application implements Runnable {
             Controller.getSettingsWindow().closeSettings();
             Controller.closeShowPlayingBoxStage();
             if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 10, log, Main.class);
-            stage.close();
+            if (stage != null) stage.close();
             Platform.exit();
             if (thread != null) {
                 try {
@@ -99,11 +98,12 @@ public class Main extends Application implements Runnable {
             programFullyRunning = true;
             thread = new Thread(this);
             Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-                String[] stackTrace = new String[exception.getStackTrace().length + 1];
+                exception.printStackTrace();
+                /*String[] stackTrace = new String[exception.getStackTrace().length + 1];
                 stackTrace[0] = exception.toString();
                 for (int i = 1; i < exception.getStackTrace().length; i++)
                     stackTrace[i] = exception.getStackTrace()[i].toString();
-                log.severe(Arrays.toString(stackTrace));
+                log.severe(Arrays.toString(stackTrace));*/
             });
             thread.start();
         }

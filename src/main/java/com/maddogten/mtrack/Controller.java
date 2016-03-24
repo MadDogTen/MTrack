@@ -48,9 +48,9 @@ import java.util.stream.Collectors;
 public class Controller implements Initializable {
     private static final Logger log = Logger.getLogger(Controller.class.getName());
     private static final SettingsWindow settingsWindow = new SettingsWindow();
+    private final static ObservableList<DisplayShow> tableViewFields = FXCollections.observableArrayList();
     // This is the list that is currently showing in the tableView. 0 = Inactive, 1 = Active.
     private static int currentList = -1;
-    private static ObservableList<DisplayShow> tableViewFields;
     // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
@@ -135,11 +135,13 @@ public class Controller implements Initializable {
         switch (type) {
             case 0:
                 if (currentList != 0) currentList = 0;
-                tableViewFields = MakeTableViewFields(ClassHandler.userInfoController().getInactiveShows());
+                tableViewFields.clear();
+                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().getInactiveShows()));
                 break;
             case 1:
                 if (currentList != 1) currentList = 1;
-                tableViewFields = MakeTableViewFields(ClassHandler.userInfoController().getActiveShows());
+                tableViewFields.clear();
+                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().getActiveShows()));
                 break;
         }
     }
@@ -177,7 +179,7 @@ public class Controller implements Initializable {
 
     public static boolean getIsShowCurrentlyPlaying() {
         return isShowCurrentlyPlaying;
-    }    
+    }
 
     public static double getShowColumnWidth() {
         return ClassHandler.controller().shows.getWidth();
@@ -281,9 +283,26 @@ public class Controller implements Initializable {
         tableView.getSortOrder().add(shows);
         tableView.setRowFactory(
                 param -> {
-                    final TableRow<DisplayShow> row = new TableRow<>();
+                    final TableRow<DisplayShow> row = new TableRow<DisplayShow>() {
+                        @Override
+                        protected void updateItem(DisplayShow item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (Variables.specialEffects && item != null && ChangeReporter.wasShowChanged(item.getShow()) && !isSelected()) {
+                                setStyle("-fx-background-color: #56C9F0");
+                            } else if (!getStyle().isEmpty()) setStyle("");
+                        }
+                    };
                     final ContextMenu rowMenuActive = new ContextMenu();
                     final ContextMenu rowMenuInactive = new ContextMenu();
+
+                    // Both these commented out sections are just something I'm messing around with. Currently usable, but unfinished.
+                    row.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                        if (Variables.specialEffects && row.getItem() != null && ChangeReporter.wasShowChanged(row.getItem().getShow()) && !row.isSelected())
+                            row.setStyle("-fx-background-color: #56C9F0");
+                        else if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
+
+                    });
+
                     MenuItem setSeasonEpisode = new MenuItem();
                     setSeasonEpisode.textProperty().bind(Strings.SetSeasonEpisode);
                     setSeasonEpisode.setOnAction(e -> {
@@ -353,7 +372,7 @@ public class Controller implements Initializable {
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
-                        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true);
+                        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true, true);
                         ArrayList<Directory> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
@@ -419,6 +438,32 @@ public class Controller implements Initializable {
                             isShowCurrentlyPlaying = false;
                         }
                     });
+
+                    /*if (row.getItem() != null && row.getItem().getRemaining() >= 1) row.setStyle("-fx-background-color: yellow");
+                    row.setOnScroll(e -> {
+                        if (row.getItem() != null && row.getItem().getRemaining() >= 1 && !row.isSelected()) row.setStyle("-fx-background-color: yellow");
+                        else if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
+                    });
+
+                    row.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                        if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
+                    });*/
+
+                    Task<Void> task = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            while (Main.programRunning && tableView == param) {
+                                if (row.getItem() != null && row.getItem().getRemaining() >= 1 && !row.isSelected())
+                                    row.setStyle("-fx-background-color: yellow");
+                                else if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
+                                Thread.sleep(20);
+                            }
+                            return null;
+                        }
+                    };
+
+                    //Platform.runLater(() -> new Thread(task).start());
+
                     return row;
                 }
         );

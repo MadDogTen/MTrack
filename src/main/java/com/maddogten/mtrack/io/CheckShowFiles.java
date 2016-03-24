@@ -76,12 +76,12 @@ public class CheckShowFiles {
             final double[] percentagePerDirectory = {100};
             // Just so the user knows when it is a directory that is delaying the search, and not the program hanging.
             currentlyCheckingDirectories = true;
-            if (ClassHandler.directoryController().findDirectories(false, !forceRun).isEmpty())
+            if (ClassHandler.directoryController().findDirectories(false, !forceRun, false).isEmpty())
                 recheckShowFilePercentage = percentagePerDirectory[0];
             else
-                percentagePerDirectory[0] = percentagePerDirectory[0] / ClassHandler.directoryController().findDirectories(false, true).size();
+                percentagePerDirectory[0] = percentagePerDirectory[0] / ClassHandler.directoryController().findDirectories(false, true, false).size();
             currentlyCheckingDirectories = false;
-            ArrayList<Directory> activeDirectories = ClassHandler.directoryController().findDirectories(false, true);
+            ArrayList<Directory> activeDirectories = ClassHandler.directoryController().findDirectories(false, true, true);
             if (Main.programFullyRunning) {
                 activeDirectories.forEach(aDirectory -> {
                     boolean checkAllShows = forceRun || runNumber % Variables.checkAllNonIgnoredShowsInterval == 0;
@@ -122,7 +122,7 @@ public class CheckShowFiles {
                                 recheckShowFilePercentage += percentagePer;
                             });
                             ClassHandler.directoryController().saveDirectory(aDirectory, false);
-                            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
+                            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
                             changedShows.keySet().forEach(aShow -> {
                                 ClassHandler.userInfoController().addNewShow(aShow);
                                 Controller.updateShowField(aShow, true);
@@ -140,7 +140,7 @@ public class CheckShowFiles {
                         log.warning("recheckShowFilePercentage was: \"" + (int) recheckShowFilePercentage + "\" and not 100, Must be an error in the calculation, Please correct.");
                     recheckShowFilePercentage = 100;
                     if (hasChanged[0] && Main.programFullyRunning) {
-                        ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
+                        ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
                         if (!updatedShows.isEmpty())
                             updatedShows.forEach(aShow -> Controller.updateShowField(aShow, true));
                         findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
@@ -332,7 +332,7 @@ public class CheckShowFiles {
             ClassHandler.directoryController().saveDirectory(directory, true);
             removedShows.forEach(aShow -> {
                 log.info(aShow + " is no longer found in \"" + folder + "\".");
-                boolean doesShowExistElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(index, false, true));
+                boolean doesShowExistElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(index, false, true, true));
                 if (!doesShowExistElsewhere) ClassHandler.userInfoController().setIgnoredStatus(aShow, true);
                 Controller.updateShowField(aShow, doesShowExistElsewhere);
             });

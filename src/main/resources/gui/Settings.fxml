@@ -44,17 +44,23 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
                             <children>
-                                <Button fx:id="setDefaultUsername" layoutX="47.0" layoutY="31.0" mnemonicParsing="false"
-                                        text="Set Default User"/>
-                                <Button fx:id="clearDefaultUsername" layoutX="151.0" layoutY="31.0"
+                                <Button fx:id="setDefaultUsername" layoutX="47.0" layoutY="180.0"
+                                        mnemonicParsing="false" text="Set Default User"/>
+                                <Button fx:id="clearDefaultUsername" layoutX="151.0" layoutY="180.0"
                                         mnemonicParsing="false" text="Reset"/>
-                                <Button fx:id="deleteUser" layoutX="118.0" layoutY="114.0" mnemonicParsing="false" text="Delete User">
+                                <Button fx:id="deleteUser" layoutX="118.0" layoutY="245.0" mnemonicParsing="false"
+                                        text="Delete User">
                                     <tooltip>
                                         <Tooltip id="tooltip" fx:id="deleteUserTooltip"/>
                                     </tooltip>
                                 </Button>
-                                <Button fx:id="addUser" layoutX="51.0" layoutY="114.0" mnemonicParsing="false"
+                                <Button fx:id="addUser" layoutX="51.0" layoutY="245.0" mnemonicParsing="false"
                                         text="Add User"/>
+                                <Text fx:id="currentUserText" layoutX="83.0" layoutY="70.0" strokeType="OUTSIDE"
+                                      strokeWidth="0.0" text="Current User:"/>
+                                <ComboBox fx:id="currentUserComboBox" layoutX="43.0" layoutY="78.0" prefWidth="150.0"/>
+                                <Separator layoutX="49.0" layoutY="48.0" prefHeight="14.0" prefWidth="134.0"/>
+                                <Separator layoutX="49.0" layoutY="105.0" prefHeight="14.0" prefWidth="134.0"/>
                             </children>
                         </AnchorPane>
                     </content>

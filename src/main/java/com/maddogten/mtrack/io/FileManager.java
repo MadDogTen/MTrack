@@ -129,9 +129,11 @@ public class FileManager {
     public void clearProgramFiles() {
         if (Variables.dataFolder.toString().matches(Pattern.quote(String.valueOf(findProgramFolder())))) {
             log.info("Deleting " + Variables.dataFolder + " in AppData...");
+            GenericMethods.stopFileLogging(log);
             deleteFolder(Variables.dataFolder);
         } else {
             log.info("Deleting appropriate files found in the folder the jar is contained in...");
+            GenericMethods.stopFileLogging(log);
             File[] files = Variables.dataFolder.listFiles();
             if (files != null) {
                 for (File file : files) {
@@ -140,7 +142,7 @@ public class FileManager {
                     else {
                         String[] splitFile = file.toString().split(Pattern.quote(Strings.FileSeparator));
                         String directory = Strings.FileSeparator + splitFile[splitFile.length - 1];
-                        if (directory.matches(Pattern.quote(Variables.DirectoriesFolder)) || directory.matches(Pattern.quote(Variables.UsersFolder)))
+                        if (directory.matches(Pattern.quote(Variables.DirectoriesFolder)) || directory.matches(Pattern.quote(Variables.UsersFolder)) || directory.matches(Pattern.quote(Variables.LogsFolder)))
                             valid = true;
                     }
                     if (valid) {

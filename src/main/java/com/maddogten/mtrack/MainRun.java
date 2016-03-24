@@ -70,43 +70,40 @@ public class MainRun {
         UpdateManager updateManager = new UpdateManager();
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         if (needsToRun) {
-            if (fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingFileExtension)) {
+            if (fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingFileExtension))
                 updateManager.updateProgramSettingsFile();
-                ClassHandler.programSettingsController().loadProgramSettingsFile();
-                updateManager.updateShowFile();
-                getLanguage();
-                if (Variables.makeLanguageDefault)
-                    ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
-                if (!continueStarting) return false;
-                Strings.UserName.setValue(getUser());
-                if (!continueStarting) return false;
-                if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
-                    new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
-                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
-                updateManager.updateUserSettingsFile();
-                ClassHandler.userInfoController().loadUserInfo();
-            } else {
-                new FirstRun().generateProgramSettingsFile();
-                ClassHandler.programSettingsController().loadProgramSettingsFile();
-                updateManager.updateShowFile();
-                getLanguage();
-                if (Variables.makeLanguageDefault)
-                    ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
-                if (!continueStarting) return false;
-                Strings.UserName.setValue(getUser());
-                if (!continueStarting) return false;
-                if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
-                    new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
-                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
-                updateManager.updateUserSettingsFile();
-                ClassHandler.userInfoController().loadUserInfo();
-                // If those both exists, then it starts normally.
-            }
+            else new FirstRun().generateProgramSettingsFile();
+            ClassHandler.programSettingsController().loadProgramSettingsFile();
+            updateManager.updateShowFile();
+            getLanguage();
+            if (Variables.makeLanguageDefault)
+                ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
+            if (!continueStarting) return false;
+            Strings.UserName.setValue(getUser());
+            if (!continueStarting) return false;
+            loadUser(updateManager);
         }
+
+        if (!needsToRun) {
+            log.info("Username is set: " + Strings.UserName.getValue());
+            updateManager.updateMainDirectoryVersion();
+            loadSettings();
+        }
+        return continueStarting;
+    }
+
+    public void loadUser(UpdateManager updateManager) {
+        if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
+            new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
+        if (ClassHandler.showInfoController().getShowsFile() == null)
+            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
+        else
+            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
+        updateManager.updateUserSettingsFile();
+        ClassHandler.userInfoController().loadUserInfo();
         log.info("Username is set: " + Strings.UserName.getValue());
         updateManager.updateMainDirectoryVersion();
         loadSettings();
-        return continueStarting;
     }
 
     private void loadSettings() {

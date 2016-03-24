@@ -72,7 +72,7 @@ public class FirstRun {
             ClassHandler.programSettingsController().loadProgramSettingsFile();
             if (Variables.makeLanguageDefault)
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
-            boolean directoriesAlreadyAdded = hasImportedFiles && !ClassHandler.directoryController().findDirectories(true, false).isEmpty();
+            boolean directoriesAlreadyAdded = hasImportedFiles && !ClassHandler.directoryController().findDirectories(true, false, true).isEmpty();
             Thread generateShowFilesThread = null;
             if (!directoriesAlreadyAdded) {
                 addDirectories();
@@ -101,7 +101,7 @@ public class FirstRun {
                     }
                 }
                 log.info(Strings.UserName.getValue());
-                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
+                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
                 if (!usersAlreadyAdd) generateUserSettingsFile(Strings.UserName.getValue());
                 ClassHandler.userInfoController().loadUserInfo();
             }
@@ -120,7 +120,7 @@ public class FirstRun {
     // Generates the ShowFiles (If a directory is added, otherwise this is skipped).
     private void generateShowFiles() {
         log.info("Generating show files for first run...");
-        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false);
+        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
         directories.forEach(aDirectory -> {
             log.info("Currently generating show file for: " + aDirectory.getDirectory());
             generateShowsFile(aDirectory);
@@ -147,7 +147,7 @@ public class FirstRun {
         ConfirmBox confirmBox = new ConfirmBox();
         int index = 0;
         while (addAnother) {
-            boolean[] matched = ClassHandler.directoryController().addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false), null));
+            boolean[] matched = ClassHandler.directoryController().addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), null));
             index++;
             if (!matched[0] && !matched[1])
                 new MessageBox().message(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);

@@ -50,9 +50,7 @@ public class SettingsWindow {
         stage.setScene(scene);
 
         if (tab != -2)
-            Platform.runLater(() -> {
-                Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab);
-            });
+            Platform.runLater(() -> Settings.getSettings().getTabPane().getSelectionModel().clearAndSelect(tab));
 
         stage.show();
         stage.hide();

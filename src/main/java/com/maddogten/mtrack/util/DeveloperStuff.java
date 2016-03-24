@@ -29,14 +29,15 @@ public class DeveloperStuff {
     // Debugging tool - Prints all directories to console.
     public void printAllDirectories() {
         log.info("Printing out all directories:");
-        if (ClassHandler.directoryController().findDirectories(true, false).isEmpty()) log.info("No directories.");
+        if (ClassHandler.directoryController().findDirectories(true, false, true).isEmpty())
+            log.info("No directories.");
         else
-            GenericMethods.printArrayList(Level.INFO, log, ClassHandler.directoryController().findDirectories(true, false), true);
+            GenericMethods.printArrayList(Level.INFO, log, ClassHandler.directoryController().findDirectories(true, false, true), true);
         log.info("Finished printing out all directories.");
     }
 
     public void clearDirectory(Stage stage) {
-        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false);
+        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
         if (directories.isEmpty())
             new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, stage);
         else {
@@ -45,7 +46,7 @@ public class DeveloperStuff {
                 boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), stage);
                 if (confirm) {
                     directoryToClear.getShows().keySet().forEach(aShow -> {
-                        boolean showExistsElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(directoryToClear.getIndex(), true, false));
+                        boolean showExistsElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(directoryToClear.getIndex(), true, false, true));
                         if (!showExistsElsewhere)
                             ClassHandler.userInfoController().setIgnoredStatus(aShow, true);
                         Controller.updateShowField(aShow, showExistsElsewhere);
@@ -112,7 +113,7 @@ public class DeveloperStuff {
         ArrayList<String> emptyShows = ClassHandler.checkShowFiles().getEmptyShows();
         if (emptyShows.isEmpty()) log.info("No empty shows");
         else {
-            ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true);
+            ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true, false);
             FileManager fileManager = new FileManager();
             directories.forEach(aDirectory -> {
                 ArrayList<String> emptyShowsDir = new ArrayList<>();

@@ -78,6 +78,8 @@ Added Settings for disabling Special Effects, disabling automatic saving, & chan
 Added ClassHandler class which now holds DirectoryController, ShowInfoController, UserInfoController, ProgramSettingsController, CheckShowFiles, DeveloperStuff, MainRun, and Controller.
 Added Logging to a file.
 Added Tooltip when hovering over a show that Displays the Show name, Season, and Episode.
+Added Ability to switch users on fly. Warning- Needs more testing, Might be a bit buggy.
+Added color overlay to shows that have been changed. Note- Unfinished, Might be removed / completely changed.
 
 Fixes:
 Will now properly switch to new seasons when found.

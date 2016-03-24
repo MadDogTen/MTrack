@@ -163,6 +163,10 @@ public class Settings implements Initializable {
     private Button setSavingTime;
     @FXML
     private CheckBox specialEffects;
+    @FXML
+    private Text currentUserText;
+    @FXML
+    private ComboBox<String> currentUserComboBox;
 
 
     public static Settings getSettings() {
@@ -187,6 +191,12 @@ public class Settings implements Initializable {
         dev2Tab.textProperty().bind(Strings.Dev2);
 
         // ~~~~ Buttons ~~~~ \\
+
+        exit.setOnAction(e -> {
+            Stage stage = (Stage) tabPane.getScene().getWindow();
+            if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 2, log, this.getClass());
+            stage.close();
+        });
 
         // Main
         updateText.textProperty().bind(Strings.UpdateTime);
@@ -238,10 +248,16 @@ public class Settings implements Initializable {
         });
 
         // User
-        exit.setOnAction(e -> {
-            Stage stage = (Stage) tabPane.getScene().getWindow();
-            if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 2, log, this.getClass());
-            stage.close();
+        currentUserText.textProperty().setValue("Current User:"); // TODO Add localization
+        currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
+        currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
+        currentUserComboBox.setOnAction(e -> {
+            if (currentUserComboBox.getValue() != null && !currentUserComboBox.getValue().matches(Strings.UserName.getValue())) {
+                GenericMethods.saveSettings();
+                Strings.UserName.setValue(currentUserComboBox.getValue());
+                ClassHandler.mainRun().loadUser(new UpdateManager());
+                Controller.setTableViewFields();
+            }
         });
         setDefaultUsername.textProperty().bind(Strings.SetDefaultUser);
         setDefaultUsername.setOnAction(e -> {
@@ -271,6 +287,9 @@ public class Settings implements Initializable {
                 new FileManager().save(new UserSettings(userName, showSettings, true, new String[0], ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
                 log.info(userName + " was added.");
             }
+            currentUserComboBox.getItems().clear();
+            currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
+            currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
             setButtonDisable(addUser, deleteUser, false);
         });
         deleteUser.textProperty().bind(Strings.DeleteUser);
@@ -288,6 +307,9 @@ public class Settings implements Initializable {
                         log.info("Wasn't able to delete user file.");
                 }
             }
+            currentUserComboBox.getItems().clear();
+            currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
+            currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
             setButtonDisable(deleteUser, addDirectory, false);
         });
         deleteUserTooltip.textProperty().bind(Strings.DeleteUsersNoteCantDeleteCurrentUser);
@@ -328,7 +350,7 @@ public class Settings implements Initializable {
         addDirectory.setOnAction(e -> {
             setButtonDisable(addDirectory, removeDirectory, true);
             int index = ClassHandler.directoryController().getLowestFreeDirectoryIndex();
-            boolean[] wasAdded = ClassHandler.directoryController().addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(false, true), (Stage) tabPane.getScene().getWindow()));
+            boolean[] wasAdded = ClassHandler.directoryController().addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
                 log.info("Directory was added.");
                 FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
@@ -346,7 +368,7 @@ public class Settings implements Initializable {
                 } catch (InterruptedException e1) {
                     GenericMethods.printStackTrace(log, e1, this.getClass());
                 }
-                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
+                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
                 findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
                 ClassHandler.directoryController().getDirectory(index).getShows().keySet().forEach(aShow -> {
                     ClassHandler.userInfoController().addNewShow(aShow);
@@ -360,7 +382,7 @@ public class Settings implements Initializable {
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
             setButtonDisable(removeDirectory, addDirectory, true);
-            ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false);
+            ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToDelete}, (Stage) tabPane.getScene().getWindow());
@@ -370,7 +392,7 @@ public class Settings implements Initializable {
                     log.info("Directory selected for deletion: " + directoryToDelete.getFileName());
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + directoryToDelete.getFileName() + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     if (confirm) {
-                        ArrayList<Directory> otherDirectories = ClassHandler.directoryController().findDirectories(directoryToDelete.getIndex(), true, false);
+                        ArrayList<Directory> otherDirectories = ClassHandler.directoryController().findDirectories(directoryToDelete.getIndex(), true, false, true);
                         Map<String, Boolean> showsToUpdate = new HashMap<>();
                         directoryToDelete.getShows().keySet().forEach(aShow -> {
                             log.info("Currently checking: " + aShow);
@@ -382,7 +404,7 @@ public class Settings implements Initializable {
                             showsToUpdate.put(aShow, showExistsElsewhere);
                         });
                         ClassHandler.directoryController().removeDirectory(directoryToDelete);
-                        ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true));
+                        ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
                         showsToUpdate.forEach(Controller::updateShowField);
                         ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
                         log.info('"' + directoryToDelete.getFileName() + "\" has been deleted!");
