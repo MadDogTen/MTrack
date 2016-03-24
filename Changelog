@@ -76,10 +76,10 @@ Added DeveloperStuff class and started moving all appropriate code into it.
 Added automatic file saving every 10 minutes.
 Added Settings for disabling Special Effects, disabling automatic saving, & changing automatic saving speed.
 Added ClassHandler class which now holds DirectoryController, ShowInfoController, UserInfoController, ProgramSettingsController, CheckShowFiles, DeveloperStuff, MainRun, and Controller.
-Added Logging to a file.
+Added Logging to a file. Keeps a maximum of 10 files, and deletes the oldest files first (Only deletes files on boot, So you may occasionally have over 10 files).
 Added Tooltip when hovering over a show that Displays the Show name, Season, and Episode.
 Added Ability to switch users on fly. Warning- Needs more testing, Might be a bit buggy.
-Added color overlay to shows that have been changed. Note- Unfinished, Might be removed / completely changed.
+Added color overlay to shows that have been changed. Note- Unfinished (In some cases, won't take effect until list is manually refreshed), Might be removed / completely changed.
 
 Fixes:
 Will now properly switch to new seasons when found.

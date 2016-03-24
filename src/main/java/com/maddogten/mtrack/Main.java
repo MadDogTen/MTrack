@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /*
@@ -98,12 +99,14 @@ public class Main extends Application implements Runnable {
             programFullyRunning = true;
             thread = new Thread(this);
             Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-                exception.printStackTrace();
-                /*String[] stackTrace = new String[exception.getStackTrace().length + 1];
-                stackTrace[0] = exception.toString();
-                for (int i = 1; i < exception.getStackTrace().length; i++)
-                    stackTrace[i] = exception.getStackTrace()[i].toString();
-                log.severe(Arrays.toString(stackTrace));*/
+                if (Variables.devMode) exception.printStackTrace();
+                else {
+                    String[] stackTrace = new String[exception.getStackTrace().length + 1];
+                    stackTrace[0] = exception.toString();
+                    for (int i = 1; i < exception.getStackTrace().length; i++)
+                        stackTrace[i] = exception.getStackTrace()[i].toString();
+                    log.severe(Arrays.toString(stackTrace));
+                }
             });
             thread.start();
         }

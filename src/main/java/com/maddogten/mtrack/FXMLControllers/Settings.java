@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -173,9 +174,10 @@ public class Settings implements Initializable {
         return settings;
     }
 
-    private void setButtonDisable(Button button, Button button2, boolean isDisable) {
-        button.setDisable(isDisable);
-        if (button2 != null) button2.setDisable(isDisable);
+    private void setButtonDisable(boolean isDisable, Region... regions) {
+        for (Region aRegion : regions) {
+            aRegion.setDisable(isDisable);
+        }
     }
 
     @Override
@@ -238,13 +240,13 @@ public class Settings implements Initializable {
         });
         about.textProperty().bind(Strings.About);
         about.setOnAction(e -> {
-            setButtonDisable(about, null, true);
+            setButtonDisable(true, about);
             try {
                 new AboutBox().display((Stage) tabPane.getScene().getWindow());
             } catch (Exception e1) {
                 GenericMethods.printStackTrace(log, e1, this.getClass());
             }
-            setButtonDisable(about, null, false);
+            setButtonDisable(false, about);
         });
 
         // User
@@ -261,19 +263,19 @@ public class Settings implements Initializable {
         });
         setDefaultUsername.textProperty().bind(Strings.SetDefaultUser);
         setDefaultUsername.setOnAction(e -> {
-            setButtonDisable(setDefaultUsername, clearDefaultUsername, true);
+            setButtonDisable(true, setDefaultUsername, clearDefaultUsername, addUser, deleteUser);
             ListSelectBox listSelectBox = new ListSelectBox();
             ArrayList<String> Users = ClassHandler.userInfoController().getAllUsers();
             String defaultUsername = listSelectBox.pickDefaultUser(Strings.PleaseChooseADefaultUser, Users, ClassHandler.programSettingsController().getSettingsFile().getDefaultUser(), (Stage) tabPane.getScene().getWindow());
             if (defaultUsername != null && !defaultUsername.isEmpty())
                 ClassHandler.programSettingsController().setDefaultUsername(defaultUsername, true);
-            setButtonDisable(setDefaultUsername, clearDefaultUsername, false);
+            setButtonDisable(false, setDefaultUsername, clearDefaultUsername, addUser, deleteUser);
         });
         clearDefaultUsername.textProperty().bind(Strings.Reset);
         clearDefaultUsername.setOnAction(e -> ClassHandler.programSettingsController().setDefaultUsername(Strings.EmptyString, false));
         addUser.textProperty().bind(Strings.AddUser);
         addUser.setOnAction(e -> {
-            setButtonDisable(addUser, deleteUser, true);
+            setButtonDisable(true, addUser, deleteUser, currentUserComboBox, setDefaultUsername);
             String userName = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, ClassHandler.userInfoController().getAllUsers(), (Stage) tabPane.getScene().getWindow());
             if (userName.isEmpty()) log.info("New user wasn't added.");
             else {
@@ -290,11 +292,11 @@ public class Settings implements Initializable {
             currentUserComboBox.getItems().clear();
             currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
             currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
-            setButtonDisable(addUser, deleteUser, false);
+            setButtonDisable(false, addUser, deleteUser, currentUserComboBox, setDefaultUsername);
         });
         deleteUser.textProperty().bind(Strings.DeleteUser);
         deleteUser.setOnAction(e -> {
-            setButtonDisable(deleteUser, addDirectory, true);
+            setButtonDisable(true, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
             ArrayList<String> users = ClassHandler.userInfoController().getAllUsers();
             users.remove(Strings.UserName.getValue());
             if (users.isEmpty())
@@ -310,19 +312,19 @@ public class Settings implements Initializable {
             currentUserComboBox.getItems().clear();
             currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
             currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
-            setButtonDisable(deleteUser, addDirectory, false);
+            setButtonDisable(false, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
         });
         deleteUserTooltip.textProperty().bind(Strings.DeleteUsersNoteCantDeleteCurrentUser);
 
         // Show
         forceRecheck.textProperty().bind(Strings.ForceRecheckShows);
         forceRecheck.setOnAction(e -> {
-            setButtonDisable(forceRecheck, null, true);
+            setButtonDisable(true, forceRecheck);
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
                     ClassHandler.checkShowFiles().recheckShowFile(true);
-                    setButtonDisable(forceRecheck, null, false);
+                    setButtonDisable(false, forceRecheck);
                     return null;
                 }
             };
@@ -330,7 +332,7 @@ public class Settings implements Initializable {
         });
         unHideShow.textProperty().bind(Strings.UnHideShow);
         unHideShow.setOnAction(e -> {
-            setButtonDisable(unHideShow, null, true);
+            setButtonDisable(true, unHideShow);
             ArrayList<String> hiddenShows = ClassHandler.userInfoController().getHiddenShows();
             if (hiddenShows.isEmpty())
                 new MessageBox().message(new StringProperty[]{Strings.ThereAreNoHiddenShows}, (Stage) tabPane.getScene().getWindow());
@@ -342,13 +344,13 @@ public class Settings implements Initializable {
                     log.info(showToUnHide + " was unhidden.");
                 } else log.info("No show was unhidden.");
             }
-            setButtonDisable(unHideShow, null, false);
+            setButtonDisable(false, unHideShow);
         });
 
         // Other
         addDirectory.textProperty().bind(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
-            setButtonDisable(addDirectory, removeDirectory, true);
+            setButtonDisable(true, addDirectory, removeDirectory);
             int index = ClassHandler.directoryController().getLowestFreeDirectoryIndex();
             boolean[] wasAdded = ClassHandler.directoryController().addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow()));
             if (wasAdded[0]) {
@@ -376,12 +378,12 @@ public class Settings implements Initializable {
                 });
                 ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
             } else log.info("Directory wasn't added.");
-            setButtonDisable(addDirectory, removeDirectory, false);
+            setButtonDisable(false, addDirectory, removeDirectory);
         });
         removeDirectory.textProperty().bind(Strings.RemoveDirectory);
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
-            setButtonDisable(removeDirectory, addDirectory, true);
+            setButtonDisable(true, removeDirectory, addDirectory);
             ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
@@ -412,7 +414,7 @@ public class Settings implements Initializable {
                 }
             }
             log.info("Remove Directory Finished!");
-            setButtonDisable(removeDirectory, addDirectory, false);
+            setButtonDisable(false, removeDirectory, addDirectory);
         });
         directoryTimeoutText.textProperty().bind(Strings.DirectoryTimeout);
         directoryTimeoutText.setTextAlignment(TextAlignment.CENTER);
@@ -505,7 +507,7 @@ public class Settings implements Initializable {
         });
         changeLanguage.textProperty().bind(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {
-            setButtonDisable(changeLanguage, null, true);
+            setButtonDisable(true, changeLanguage);
             LanguageHandler languageHandler = new LanguageHandler();
             Map<String, String> languages = languageHandler.getLanguageNames();
             if (languages.containsKey(ClassHandler.programSettingsController().getSettingsFile().getLanguage()))
@@ -523,7 +525,7 @@ public class Settings implements Initializable {
                 ClassHandler.programSettingsController().setDefaultLanguage(internalName);
                 languageHandler.setLanguage(Variables.language);
             }
-            setButtonDisable(changeLanguage, null, false);
+            setButtonDisable(false, changeLanguage);
         });
 
         // Developer
@@ -552,12 +554,12 @@ public class Settings implements Initializable {
         add1ToDirectoryVersion.setOnAction(e -> ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1));
         nonForceRecheckShows.textProperty().bind(Strings.NonForceRecheckShows);
         nonForceRecheckShows.setOnAction(e -> {
-            setButtonDisable(nonForceRecheckShows, null, true);
+            setButtonDisable(true, nonForceRecheckShows);
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
                     ClassHandler.checkShowFiles().recheckShowFile(false);
-                    setButtonDisable(nonForceRecheckShows, null, false);
+                    setButtonDisable(false, nonForceRecheckShows);
                     return null;
                 }
             };
@@ -570,22 +572,22 @@ public class Settings implements Initializable {
         });
         clearFile.textProperty().bind(Strings.ClearFile);
         clearFile.setOnAction(e -> {
-            setButtonDisable(clearFile, null, true);
+            setButtonDisable(true, clearFile);
             ClassHandler.developerStuff().clearDirectory((Stage) tabPane.getScene().getWindow());
-            setButtonDisable(clearFile, null, false);
+            setButtonDisable(false, clearFile);
         });
         // Once I am sure this works properly, I will make it accessible.
         deleteEverythingAndClose.textProperty().bind(Strings.ResetProgram);
         deleteEverythingAndCloseTooltip.textProperty().bind(Strings.WarningUnrecoverable);
         deleteEverythingAndClose.setOnAction(e -> {
-            setButtonDisable(deleteEverythingAndClose, null, true);
+            setButtonDisable(true, deleteEverythingAndClose);
             ConfirmBox confirmBox = new ConfirmBox();
             if (confirmBox.confirm(Strings.AreYouSureThisWillDeleteEverything, (Stage) tabPane.getScene().getWindow())) {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
                 new FileManager().clearProgramFiles();
                 Main.stop(Main.stage, true, false);
-            } else setButtonDisable(deleteEverythingAndClose, null, false);
+            } else setButtonDisable(false, deleteEverythingAndClose);
         });
         new MoveStage().moveStage(tabPane, Main.stage);
     }

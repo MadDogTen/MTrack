@@ -438,32 +438,6 @@ public class Controller implements Initializable {
                             isShowCurrentlyPlaying = false;
                         }
                     });
-
-                    /*if (row.getItem() != null && row.getItem().getRemaining() >= 1) row.setStyle("-fx-background-color: yellow");
-                    row.setOnScroll(e -> {
-                        if (row.getItem() != null && row.getItem().getRemaining() >= 1 && !row.isSelected()) row.setStyle("-fx-background-color: yellow");
-                        else if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
-                    });
-
-                    row.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                        if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
-                    });*/
-
-                    Task<Void> task = new Task<Void>() {
-                        @Override
-                        protected Void call() throws Exception {
-                            while (Main.programRunning && tableView == param) {
-                                if (row.getItem() != null && row.getItem().getRemaining() >= 1 && !row.isSelected())
-                                    row.setStyle("-fx-background-color: yellow");
-                                else if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
-                                Thread.sleep(20);
-                            }
-                            return null;
-                        }
-                    };
-
-                    //Platform.runLater(() -> new Thread(task).start());
-
                     return row;
                 }
         );
