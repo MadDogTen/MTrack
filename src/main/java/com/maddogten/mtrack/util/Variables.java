@@ -72,7 +72,7 @@ public class Variables {
     static final int logMaxFileSize = 1000000;
     static final int logMaxNumberOfFiles = 10;
     public static boolean disableAutomaticRechecking;
-    /**/public static boolean devMode = true; // false
+    /**/public static boolean devMode = false; // false
     public static int updateSpeed;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);

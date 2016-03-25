@@ -81,6 +81,7 @@ Added Tooltip when hovering over a show that Displays the Show name, Season, and
 Added Ability to switch users on fly. Warning- Needs more testing, Might be a bit buggy.
 Added color overlay to shows that have been changed, with the color showing how the remaining amount is affected. Green = Same amount of remaining, Red = Less Remaining, Blue = More Remaining.
 Added Ability to pull data from a website (Currently using tvmaze). Currently disabled / highly unfinished.
+Added Ability to change the user by clicking the username on the main stage.
 
 Fixes:
 Will now properly switch to new seasons when found.
