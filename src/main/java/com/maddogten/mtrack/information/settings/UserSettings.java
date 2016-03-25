@@ -3,6 +3,7 @@ package com.maddogten.mtrack.information.settings;
 import com.maddogten.mtrack.util.Variables;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -30,18 +31,20 @@ public class UserSettings implements Serializable {
 
     // Changes List
     private String[] changes;
+    private Map<String, Integer> changedShowsStatus;
 
     @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused", "FieldMayBeFinal"})
     private long lastProgramID;
 
     @SuppressWarnings("SameParameterValue")
-    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, boolean showUsername, String[] changes, long lastProgramID) {
+    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, boolean showUsername, String[] changes, HashMap<String, Integer> changedShowsStatus, long lastProgramID) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
         this.showSettings = showSettings;
         this.showUsername = showUsername;
         this.changes = changes;
+        this.changedShowsStatus = changedShowsStatus;
         this.lastProgramID = lastProgramID;
     }
 
@@ -93,5 +96,13 @@ public class UserSettings implements Serializable {
 
     public void setChanges(String[] changes) {
         this.changes = changes;
+    }
+
+    public Map<String, Integer> getChangedShowsStatus() {
+        return changedShowsStatus;
+    }
+
+    public void setChangedShowsStatus(Map<String, Integer> changedShowsStatus) {
+        this.changedShowsStatus = changedShowsStatus;
     }
 }

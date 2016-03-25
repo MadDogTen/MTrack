@@ -123,9 +123,9 @@ public class CheckShowFiles {
                             });
                             ClassHandler.directoryController().saveDirectory(aDirectory, false);
                             ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
-                            changedShows.keySet().forEach(aShow -> {
-                                ClassHandler.userInfoController().addNewShow(aShow);
-                                Controller.updateShowField(aShow, true);
+                            changedShows.keySet().forEach(aNewShow -> {
+                                ClassHandler.userInfoController().addNewShow(aNewShow);
+                                Controller.updateShowField(aNewShow, true);
                                 recheckShowFilePercentage += percentagePer;
                             });
                             ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);

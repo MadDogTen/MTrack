@@ -4,6 +4,7 @@ import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -11,7 +12,6 @@ import com.maddogten.mtrack.util.Variables;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 /*
       ShowInfoController stores the showsFile. It loads all of the show files
@@ -59,7 +59,7 @@ public class ShowInfoController {
     // Returns an arrayList of all shows.
     public ArrayList<String> getShowsList() {
         ArrayList<String> showsList = new ArrayList<>();
-        if (showsFile != null) showsList.addAll(showsFile.keySet().stream().collect(Collectors.toList()));
+        if (showsFile != null) showsList.addAll(showsFile.keySet());
         return showsList;
     }
 
@@ -124,6 +124,43 @@ public class ShowInfoController {
             if (highestEpisode[0] == -1 || aEpisode > highestEpisode[0]) highestEpisode[0] = aEpisode;
         });
         return highestEpisode[0];
+    }
+
+    public Map<Integer, Set<Integer>> getMissingEpisodes(String aShow) {
+        if (showsFile.containsKey(aShow) && showsFile.get(aShow).isShowData()) {
+            Show show = ClassHandler.showInfoController().getShowsFile().get(aShow);
+            int currentSeason = ClassHandler.userInfoController().getCurrentSeason(aShow);
+            int currentEpisode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
+            Map<Integer, Set<Integer>> missingEpisodes = new HashMap<>();
+            log.info("Finding missing episodes for: " + aShow);
+            Set<Integer> seasons = show.getSeasons().keySet();
+            Iterator<Integer> integerIterator = seasons.iterator();
+            while (integerIterator.hasNext()) {
+                int seasonInt = integerIterator.next();
+                if (seasonInt < currentSeason) integerIterator.remove();
+                else break;
+            }
+            for (int seasonInt : show.getSeasons().keySet()) {
+                Season season = show.getSeason(seasonInt);
+                log.info("Season: " + seasonInt + " - Number of episodes: " + season.getNumberOfEpisodes());
+                if (season.getNumberOfEpisodes() != -1) {
+                    Set<Integer> episodes = new HashSet<>();
+                    season.getEpisodes().keySet().stream().filter(episodeInt -> episodeInt >= currentEpisode).forEach(episodes::add);
+                    for (int episodeInt = seasonInt == currentSeason ? currentEpisode : 1; episodeInt <= season.getNumberOfEpisodes(); episodeInt++) {
+                        log.info("Episode: " + episodeInt);
+                        if (!episodes.contains(episodeInt)) {
+                            if (!missingEpisodes.containsKey(seasonInt))
+                                missingEpisodes.put(seasonInt, new HashSet<>());
+                            missingEpisodes.get(seasonInt).add(episodeInt);
+                        } else episodes.remove(episodeInt);
+                        if (episodes.isEmpty() && episodeInt != season.getNumberOfEpisodes()) break;
+                    }
+                    if (!show.containsSeason(++seasonInt)) break;
+                }
+            }
+            return missingEpisodes;
+        }
+        return new HashMap<>();
     }
 
     // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.

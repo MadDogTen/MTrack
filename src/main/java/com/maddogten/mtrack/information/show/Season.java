@@ -11,9 +11,13 @@ public class Season implements Serializable {
     private final int season;
     private final Map<Integer, Episode> episodes;
 
+    // TVMaze data
+    private int numberOfEpisodes;
+
     public Season(int season, Map<Integer, Episode> episodes) {
         this.season = season;
         this.episodes = episodes;
+        this.numberOfEpisodes = -1;
     }
 
     public int getSeason() {
@@ -30,5 +34,13 @@ public class Season implements Serializable {
 
     public Map<Integer, Episode> getEpisodes() {
         return episodes;
+    }
+
+    public int getNumberOfEpisodes() {
+        return numberOfEpisodes;
+    }
+
+    public void setNumberOfEpisodes(int numberOfEpisodes) {
+        this.numberOfEpisodes = numberOfEpisodes;
     }
 }

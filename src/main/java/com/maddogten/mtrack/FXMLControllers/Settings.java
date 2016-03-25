@@ -250,14 +250,15 @@ public class Settings implements Initializable {
         });
 
         // User
-        currentUserText.textProperty().setValue("Current User:"); // TODO Add localization
+        currentUserText.textProperty().bind(Strings.CurrentUser);
         currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
         currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
         currentUserComboBox.setOnAction(e -> {
             if (currentUserComboBox.getValue() != null && !currentUserComboBox.getValue().matches(Strings.UserName.getValue())) {
                 GenericMethods.saveSettings();
                 Strings.UserName.setValue(currentUserComboBox.getValue());
-                ClassHandler.mainRun().loadUser(new UpdateManager());
+                ChangeReporter.resetChanges();
+                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
                 Controller.setTableViewFields();
             }
         });
@@ -286,7 +287,7 @@ public class Settings implements Initializable {
                         showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestSeason(aShow), ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestSeason(aShow)))));
                     else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
                 }
-                new FileManager().save(new UserSettings(userName, showSettings, true, new String[0], ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
+                new FileManager().save(new UserSettings(userName, showSettings, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
                 log.info(userName + " was added.");
             }
             currentUserComboBox.getItems().clear();
@@ -606,5 +607,9 @@ public class Settings implements Initializable {
 
     private void setSettings() {
         settings = this;
+    }
+
+    public void toggleUsernameUsability(boolean disable) {
+        setButtonDisable(disable, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
     }
 }

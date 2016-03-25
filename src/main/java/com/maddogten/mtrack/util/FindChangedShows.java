@@ -5,6 +5,7 @@ import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.information.show.Show;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -19,10 +20,15 @@ public class FindChangedShows {
     private final Map<String, Show> oldShowsFile;
     private final UserInfoController userInfoController;
 
+    private final Map<String, Integer> showRemaining;
+
     // This class is initialized with a unchanged showsFile.
     public FindChangedShows(Map<String, Show> oldShowsFile, UserInfoController userInfoController) {
         this.oldShowsFile = oldShowsFile;
         this.userInfoController = userInfoController;
+
+        this.showRemaining = new HashMap<>();
+        userInfoController.getAllNonIgnoredShows().forEach((aShow) -> this.showRemaining.put(aShow, userInfoController.getRemainingNumberOfEpisodes(aShow)));
         log.info("ShowsFile has been set.");
     }
 
@@ -41,6 +47,7 @@ public class FindChangedShows {
                             if (!(newShowsFile.get(showName).getSeason(seasonInt).getEpisodes().containsKey(episodeInt))) {
                                 this.log.info(showName + " - Season " + showName + " - Episode " + episodeInt + " Removed");
                                 if (recordShowInformation && recordSeason) {
+                                    ClassHandler.controller().addChangedShow(showName, showRemaining.get(showName));
                                     ChangeReporter.addChange("- " + showName + Strings.DashSeason.getValue() + seasonInt + Strings.DashEpisode.getValue() + episodeInt);
                                 }
                                 hasChanged[0] = true;
@@ -49,6 +56,7 @@ public class FindChangedShows {
                     } else {
                         log.info(showName + " - Season " + seasonInt + " Removed");
                         if (recordShowInformation && recordSeason) {
+                            ClassHandler.controller().addChangedShow(showName, showRemaining.get(showName));
                             ChangeReporter.addChange("- " + showName + Strings.DashSeason.getValue() + seasonInt);
                         }
                         hasChanged[0] = true;
@@ -72,6 +80,7 @@ public class FindChangedShows {
                             if (!oldShowsFile.get(showName).getSeason(seasonInt).getEpisodes().containsKey(episodeInt)) {
                                 this.log.info(showName + " - Season " + seasonInt + " - Episode " + episodeInt + " Added");
                                 if (recordShowInformation && recordSeason) {
+                                    ClassHandler.controller().addChangedShow(showName, showRemaining.get(showName));
                                     ChangeReporter.addChange("+ " + showName + Strings.DashSeason.getValue() + seasonInt + Strings.DashEpisode.getValue() + episodeInt);
                                 }
                                 hasChanged[0] = true;
@@ -79,6 +88,7 @@ public class FindChangedShows {
                                 this.log.info(showName + " - Season " + seasonInt + " - Episode " + episodeInt + " Changed");
                                 this.log.info('\"' + this.oldShowsFile.get(showName).getSeason(seasonInt).getEpisode(episodeInt).getEpisodeFilename() + "\" -> \"" + aEpisode.getEpisodeFilename() + "\".");
                                 if (recordShowInformation && recordSeason) {
+                                    ClassHandler.controller().addChangedShow(showName, showRemaining.get(showName));
                                     ChangeReporter.addChange("~ " + showName + Strings.DashSeason.getValue() + seasonInt + Strings.DashEpisode.getValue() + episodeInt);
                                 }
                                 hasChanged[0] = true;
@@ -87,6 +97,7 @@ public class FindChangedShows {
                     } else {
                         this.log.info(showName + " - Season " + seasonInt + " Added");
                         if (recordShowInformation && recordSeason) {
+                            ClassHandler.controller().addChangedShow(showName, showRemaining.get(showName));
                             ChangeReporter.addChange("+ " + showName + Strings.DashSeason.getValue() + seasonInt);
                         }
                         hasChanged[0] = true;
@@ -94,6 +105,7 @@ public class FindChangedShows {
                 });
             } else {
                 this.log.info(showName + " Added");
+                ClassHandler.controller().addChangedShow(showName, 0);
                 ChangeReporter.addChange("+ " + showName);
                 hasChanged[0] = true;
             }

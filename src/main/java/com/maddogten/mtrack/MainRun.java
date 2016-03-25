@@ -81,18 +81,18 @@ public class MainRun {
             if (!continueStarting) return false;
             Strings.UserName.setValue(getUser());
             if (!continueStarting) return false;
-            loadUser(updateManager);
+            loadUser(updateManager, true);
         }
 
         if (!needsToRun) {
             log.info("Username is set: " + Strings.UserName.getValue());
             updateManager.updateMainDirectoryVersion();
-            loadSettings();
+            loadSettings(true);
         }
         return continueStarting;
     }
 
-    public void loadUser(UpdateManager updateManager) {
+    public void loadUser(UpdateManager updateManager, boolean mainLoad) {
         if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
             new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
         if (ClassHandler.showInfoController().getShowsFile() == null)
@@ -103,10 +103,10 @@ public class MainRun {
         ClassHandler.userInfoController().loadUserInfo();
         log.info("Username is set: " + Strings.UserName.getValue());
         updateManager.updateMainDirectoryVersion();
-        loadSettings();
+        loadSettings(mainLoad);
     }
 
-    private void loadSettings() {
+    private void loadSettings(boolean mainLoad) {
         Variables.updateSpeed = ClassHandler.programSettingsController().getSettingsFile().getUpdateSpeed();
         Variables.timeToWaitForDirectory = ClassHandler.programSettingsController().getSettingsFile().getTimeToWaitForDirectory();
         Variables.recordChangesForNonActiveShows = ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows();
@@ -117,6 +117,8 @@ public class MainRun {
         Variables.enableAutoSavingOnTimer = ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving();
         Variables.savingSpeed = ClassHandler.programSettingsController().getSettingsFile().getSaveSpeed();
         ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
+        if (!mainLoad)
+            ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
     }
 
     void tick() {
@@ -125,6 +127,45 @@ public class MainRun {
             this.recheckTimer = GenericMethods.getTimeSeconds();
             this.saveTimer = GenericMethods.getTimeSeconds();
             hasRan = true;
+
+            /*ArrayList<String> unFoundShows = new ArrayList<>();
+            for (String show : ClassHandler.showInfoController().getShowsList()) {
+                try {
+                    String showToTest = show.replaceAll("\\s\\(\\d{4}\\)", "").replaceAll("\\s\\(\\S\\S\\)", "");
+                    GetShowInfo getShowInfo = new GetShowInfo();
+                    log.info(showToTest + " : " + getShowInfo.getShowID(showToTest));
+                    *//*String data = new WebsiteHandler(new URL("http://api.tvmaze.com/singlesearch/shows?q=" + showToTest *//**//*+ "&embed=episodes"*//**//*)).getWebsiteData();
+                    Pattern pattern = Pattern.compile(".*\"id\":(\\d{1,6}).*\"name\":(\\S{1,20}),\"type\":.*\"href\":\"(.*)\".*");
+                    Matcher matcher = pattern.matcher(data);
+                    if (matcher.find()) {
+                        *//**//*matcher.group(1);
+                        matcher.group(2);
+                        matcher.group(3);
+                        matcher.group(4);*//**//*
+                        log.info(matcher.group(1) + " |||| " +  matcher.group(2) + " |||| " + matcher.group(3));
+                    }*//*
+                    *//*Pattern pattern = Pattern.compile("\"season\":(\\d{1,3}),\"number\":(\\d{1,3})");
+                    Matcher matcher = pattern.matcher(data);
+                    HashMap<Integer, Set<Integer>> showData = new HashMap<>();
+                    while (matcher.find()) {
+                        String showData1 = matcher.group();
+                        //log.info(showData1);
+                        Matcher matcher1 = pattern.matcher(showData1);
+                        if (matcher1.find()) {
+                            int season = Integer.parseInt(matcher1.group(1));
+                            if (!showData.containsKey(season)) showData.put(season, new HashSet<>());
+                            int episode = Integer.parseInt(matcher1.group(2));
+                            showData.get(season).add(episode);
+                        }
+                    }
+                    log.info(showToTest + ": " + String.valueOf(showData));*//*
+                } catch (IOException e) {
+                    log.info("\"" + show.replaceAll("\\s\\(\\d{4}\\)", "") + "\" wasn't found on tvmaze.");
+                    unFoundShows.add(show.replaceAll("\\s\\(\\d{4}\\)", ""));
+                }
+            }
+            log.info(String.valueOf(unFoundShows));
+            System.exit(0);*/
         }
         recheck();
         saveSettings();

@@ -122,6 +122,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.OpenSelected);
         findAndSetMissingStrings(Strings.NonForceRecheckShows);
         findAndSetMissingStrings(Strings.ToggleIsChanges);
+        findAndSetMissingStrings(Strings.GetMissingEpisodes);
         // Checkbox Text
         findAndSetMissingStrings(Strings.InactiveShows);
         findAndSetMissingStrings(Strings.OlderSeasons);
@@ -222,6 +223,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.CurrentlyPlaying);
         findAndSetMissingStrings(Strings.WasUnableToPlayTheEpisode);
         findAndSetMissingStrings(Strings.SavingWaitTimeSeconds);
+        findAndSetMissingStrings(Strings.CurrentUser);
         log.info("Finished checking for missing strings.");
     }
 

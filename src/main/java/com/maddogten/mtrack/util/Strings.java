@@ -99,6 +99,7 @@ public class Strings {
     public static final StringProperty OpenSelected = new SimpleStringProperty();
     public static final StringProperty NonForceRecheckShows = new SimpleStringProperty();
     public static final StringProperty ToggleIsChanges = new SimpleStringProperty();
+    public static final StringProperty GetMissingEpisodes = new SimpleStringProperty();
     // Checkbox Text
     public static final StringProperty InactiveShows = new SimpleStringProperty();
     public static final StringProperty OlderSeasons = new SimpleStringProperty();
@@ -199,6 +200,7 @@ public class Strings {
     public static final StringProperty CurrentlyPlaying = new SimpleStringProperty();
     public static final StringProperty WasUnableToPlayTheEpisode = new SimpleStringProperty();
     public static final StringProperty SavingWaitTimeSeconds = new SimpleStringProperty();
+    public static final StringProperty CurrentUser = new SimpleStringProperty();
     // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
     public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
     // Strings set by program

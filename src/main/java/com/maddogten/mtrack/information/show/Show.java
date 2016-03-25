@@ -17,9 +17,15 @@ public class Show implements Serializable {
     @SuppressWarnings({"CanBeFinal", "FieldMayBeFinal"})
     private Map<Integer, Season> seasons;
 
+    // TVMaze data
+    private int showID;
+    private int numberOfSeasons;
+
     public Show(String name, Map<Integer, Season> seasons) {
         this.name = name;
         this.seasons = seasons;
+        this.showID = -1;
+        this.numberOfSeasons = -1;
     }
 
     public String getName() {
@@ -50,5 +56,25 @@ public class Show implements Serializable {
         if (seasons.containsKey(seasonInt)) {
             seasons.remove(seasonInt);
         }
+    }
+
+    public boolean isShowData() {
+        return showID != -1 && numberOfSeasons != -1;
+    }
+
+    public int getShowID() {
+        return showID;
+    }
+
+    public void setShowID(int showID) {
+        this.showID = showID;
+    }
+
+    public int getNumberOfSeasons() {
+        return numberOfSeasons;
+    }
+
+    public void setNumberOfSeasons(int numberOfSeasons) {
+        this.numberOfSeasons = numberOfSeasons;
     }
 }

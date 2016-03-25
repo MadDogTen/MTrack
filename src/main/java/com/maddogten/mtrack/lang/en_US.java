@@ -94,6 +94,7 @@ public class en_US extends Language {
         Strings.OpenSelected.setValue("Open Selected");
         Strings.NonForceRecheckShows.setValue("Non-Force Recheck Shows");
         Strings.ToggleIsChanges.setValue("Toggle isChanges");
+        Strings.GetMissingEpisodes.setValue("Get Missing Episodes");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("Inactive Shows");
@@ -197,5 +198,6 @@ public class en_US extends Language {
         Strings.CurrentlyPlaying.setValue("Currently Playing:");
         Strings.WasUnableToPlayTheEpisode.setValue("Was unable to play the episode.");
         Strings.SavingWaitTimeSeconds.setValue("Saving Wait Time (Seconds):");
+        Strings.CurrentUser.setValue("Current User:");
     }
 }

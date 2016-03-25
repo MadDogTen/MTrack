@@ -39,7 +39,9 @@ public class DisplayShow {
     }
 
     public void setRemaining(Integer remaining) {
-        this.remaining.setValue(remaining);
+        if (!remaining.equals(this.getRemaining())) {
+            this.remaining.setValue(remaining);
+        }
     }
 
     public SimpleIntegerProperty seasonProperty() {

@@ -96,6 +96,7 @@ public class lipsum extends Language {
         Strings.OpenSelected.setValue("dorire");
         Strings.NonForceRecheckShows.setValue("gulutu");
         Strings.ToggleIsChanges.setValue("tavalu marutu");
+        Strings.GetMissingEpisodes.setValue("fitu");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("miterra");
@@ -171,6 +172,7 @@ public class lipsum extends Language {
         Strings.YouHaveReachedTheEnd.setValue("galaminka");
         Strings.PingingDirectories.setValue("vermuna");
         Strings.PathToDirectory.setValue("mezera");
+        Strings.PrintCurrentSeasonEpisode.setValue("philu");
         Strings.WasFoundToBeInactive.setValue("galamru");
         Strings.PleaseCorrectTheIssueThenForceRefresh.setValue("altez");
         Strings.NotifyChangesFor.setValue("iternu");
@@ -198,5 +200,6 @@ public class lipsum extends Language {
         Strings.CurrentlyPlaying.setValue("Nunuwa");
         Strings.WasUnableToPlayTheEpisode.setValue("Hiculatu");
         Strings.SavingWaitTimeSeconds.setValue("Gilamaga");
+        Strings.CurrentUser.setValue("Olomo:");
     }
 }

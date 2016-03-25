@@ -1,18 +1,17 @@
 package com.maddogten.mtrack;
 
+import com.maddogten.mtrack.FXMLControllers.Settings;
 import com.maddogten.mtrack.gui.*;
 import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
-import com.maddogten.mtrack.util.ClassHandler;
-import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.util.*;
 import com.sun.javafx.tk.Toolkit;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,22 +20,23 @@ import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -55,6 +55,7 @@ public class Controller implements Initializable {
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
     private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
+    private final Map<String, Integer> changedShows = new HashMap<>();
     private final ChangesBox changesBox = new ChangesBox();
     private final ShowPlayingBox showPlayingBox = new ShowPlayingBox();
     @SuppressWarnings("unused")
@@ -108,7 +109,11 @@ public class Controller implements Initializable {
     @FXML
     private Tooltip isCurrentlyRecheckingTooltip;
     @FXML
-    private Text userName;
+    private Label userName;
+    @FXML
+    private ComboBox<String> userNameComboBox;
+    @FXML
+    private Tooltip comboBoxTooltip;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShow> MakeTableViewFields(ArrayList<String> showList) {
@@ -146,16 +151,19 @@ public class Controller implements Initializable {
         }
     }
 
-    // Public method to update a particular show with new information. If the show happens to have been remove, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
-    public static void updateShowField(String aShow, boolean showExists) {
+    private static DisplayShow getDisplayShowFromShow(String aShow) {
         String showReplaced = aShow.replaceAll(Variables.fileNameReplace, "");
-        DisplayShow currentShow = null;
         for (DisplayShow show : tableViewFields) {
             if (show.getShow().replaceAll(Variables.fileNameReplace, "").matches(showReplaced)) {
-                currentShow = show;
-                break;
+                return show;
             }
         }
+        return null;
+    }
+
+    // Public method to update a particular show with new information. If the show happens to have been remove, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
+    public static void updateShowField(String aShow, boolean showExists) {
+        DisplayShow currentShow = getDisplayShowFromShow(aShow);
         final boolean isShowActive = showExists && ClassHandler.showInfoController().getShowsList().contains(aShow) && ClassHandler.userInfoController().isShowActive(aShow);
         if ((currentList != 1 || isShowActive) && (currentList != 0 || !isShowActive)) {
             int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow);
@@ -237,6 +245,26 @@ public class Controller implements Initializable {
 
     public static void setShowUsernameVisibility(boolean isVisible) {
         ClassHandler.controller().userName.setVisible(isVisible);
+        ClassHandler.controller().userNameComboBox.setVisible(isVisible);
+    }
+
+    public Map<String, Integer> getChangedShows() {
+        return this.changedShows;
+    }
+
+    public void setChangedShows(Map<String, Integer> newShows) {
+        newShows.forEach(this.changedShows::put);
+    }
+
+    public void addChangedShow(String aShow, int remaining) {
+        if (!this.changedShows.containsKey(aShow)) {
+            this.changedShows.put(aShow, remaining);
+            tableView.refresh();
+        }
+    }
+
+    public void resetChangedShows() {
+        this.changedShows.clear();
     }
 
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
@@ -254,6 +282,7 @@ public class Controller implements Initializable {
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         log.info("MainController Running...");
         ClassHandler.setController(this);
+        this.setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tabPane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         tableView.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT - 69);
@@ -287,20 +316,18 @@ public class Controller implements Initializable {
                         @Override
                         protected void updateItem(DisplayShow item, boolean empty) {
                             super.updateItem(item, empty);
-                            if (Variables.specialEffects && item != null && ChangeReporter.wasShowChanged(item.getShow()) && !isSelected()) {
-                                setStyle("-fx-background-color: #56C9F0");
+                            if (Variables.specialEffects && item != null && changedShows.containsKey(item.getShow()) && !isSelected()) {
+                                setStyle("-fx-background-color: " + Variables.ShowChangedStatus.findColor(changedShows.get(getItem().getShow()), getItem().getRemaining()).getColor());
                             } else if (!getStyle().isEmpty()) setStyle("");
                         }
                     };
                     final ContextMenu rowMenuActive = new ContextMenu();
                     final ContextMenu rowMenuInactive = new ContextMenu();
 
-                    // Both these commented out sections are just something I'm messing around with. Currently usable, but unfinished.
                     row.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                        if (Variables.specialEffects && row.getItem() != null && ChangeReporter.wasShowChanged(row.getItem().getShow()) && !row.isSelected())
-                            row.setStyle("-fx-background-color: #56C9F0");
+                        if (Variables.specialEffects && row.getItem() != null && this.changedShows.containsKey(row.getItem().getShow()) && !row.isSelected())
+                            row.setStyle("-fx-background-color: " + Variables.ShowChangedStatus.findColor(this.changedShows.get(row.getItem().getShow()), row.getItem().getRemaining()).getColor());
                         else if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
-
                     });
 
                     MenuItem setSeasonEpisode = new MenuItem();
@@ -378,7 +405,7 @@ public class Controller implements Initializable {
                         directories.forEach(aDirectory -> {
                             File fileName = new File(aDirectory.getDirectory() + Strings.FileSeparator + row.getItem().getShow());
                             if (fileName.exists())
-                                folders.add(new Directory(fileName, fileName.toString(), -2, -2, null, -2));
+                                folders.add(new Directory(fileName, fileName.toString(), -2, -2, null));
                         });
                         if (folders.size() == 1) fileManager.open(folders.get(0).getDirectory());
                         else new ListSelectBox().openDirectory(folders, (Stage) tabPane.getScene().getWindow());
@@ -404,6 +431,22 @@ public class Controller implements Initializable {
                     MenuItem printShowInformation = new MenuItem();
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
                     printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShow()));
+                    MenuItem getMissingEpisodes = new MenuItem();
+                    getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes);
+                    getMissingEpisodes.setOnAction(e -> {
+                        Map<Integer, Set<Integer>> missingInfo = ClassHandler.showInfoController().getMissingEpisodes(row.getItem().getShow());
+                        if (missingInfo.isEmpty())
+                            new MessageBox().message(new StringProperty[]{new SimpleStringProperty("Show is missing database info / Has no missing episodes.")}, (Stage) tabPane.getScene().getWindow());
+                        else {
+                            StringProperty[] info = new StringProperty[missingInfo.keySet().size()];
+                            int i = 0;
+                            missingInfo.forEach((integer, integers) -> {
+                                info[i] = new SimpleStringProperty("Season: " + integer + " - Episode: " + integers);
+                                log.info("Missing info for " + row.getItem().getShow() + " - Season: " + integer + " - Episodes: " + integers);
+                            });
+                            new MessageBox().message(info, (Stage) tabPane.getScene().getWindow());
+                        }
+                    });
                     row.setOnMouseEntered(e -> {
                         if (row.getItem() != null && (row.getTooltip() == null || !row.getTooltip().getText().contains(row.getItem().getShow()))) {
                             Tooltip rowToolTip = new Tooltip(row.getItem().getShow() + " - " + Strings.Season.getValue() + " " + row.getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + row.getItem().getEpisode());
@@ -416,7 +459,7 @@ public class Controller implements Initializable {
                             if (currentList == 1) {
                                 toggleActive.textProperty().bind(Strings.SetInactive);
                                 if (Variables.devMode)
-                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode, printShowInformation);
+                                    rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode, printShowInformation, getMissingEpisodes);
                                 else
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
@@ -444,7 +487,33 @@ public class Controller implements Initializable {
 
         userName.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());
         userName.textProperty().bind(Strings.UserName);
-        userName.setFill(Color.DIMGRAY);
+        comboBoxTooltip.textProperty().bind(Strings.UserName);
+
+        userNameComboBox.addEventFilter(MouseEvent.MOUSE_RELEASED, mouse -> {
+            if (!mouse.isStillSincePress()) mouse.consume();
+            userNameComboBox.setCursor(Cursor.DEFAULT);
+        });
+
+        userNameComboBox.setOnShown(e -> {
+            if (getSettingsWindow().isSettingsOpen()) Settings.getSettings().toggleUsernameUsability(true);
+            ArrayList<String> users = ClassHandler.userInfoController().getAllUsers();
+            users.remove(Strings.UserName.getValue());
+            userNameComboBox.getItems().addAll(users);
+        });
+        userNameComboBox.setOnHidden(event -> {
+            if (getSettingsWindow().isSettingsOpen()) Settings.getSettings().toggleUsernameUsability(false);
+            userNameComboBox.getItems().clear();
+        });
+        userNameComboBox.setOnAction(e -> {
+            if (userNameComboBox.getValue() != null && !userNameComboBox.getValue().matches(Strings.UserName.getValue())) {
+                GenericMethods.saveSettings();
+                Strings.UserName.setValue(userNameComboBox.getValue());
+                ChangeReporter.resetChanges();
+                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
+                Controller.setTableViewFields();
+            }
+        });
+        userName.setTextFill(Paint.valueOf(Color.DIMGRAY.toString()));
 
         // ~~~~ Search TextField ~~~~ \\
         // The ContextMenu *really* isn't needed, But I wanted to make the clearTextField button properly disappear and appear when needed. Using a Task would have been much easier...
@@ -559,6 +628,7 @@ public class Controller implements Initializable {
             }
         });
         new MoveStage().moveStage(tabPane, null);
+        new MoveStage().moveStage(userNameComboBox, null);
         // Shows an indicator when its rechecking the shows.
         isCurrentlyRecheckingTooltip.textProperty().bind(Strings.CurrentlyRechecking);
         Task<Void> mainTask = new Task<Void>() {

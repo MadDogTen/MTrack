@@ -11,6 +11,7 @@ import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.io.FileManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class UpdateManager {
                     showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestSeason(aShow), ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestSeason(aShow)))));
                 else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
             }
-            new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings, true, new String[0], ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
+            new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
             log.info("User settings file was generated, skipping version check.");
             return;
         }
@@ -94,11 +95,18 @@ public class UpdateManager {
     }
 
     public void updateShowFile() {
-        if (Variables.DirectoryFileVersion == ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion())
-            log.info("Show file versions matched.");
-        else {
-            log.info("Show file versions didn't match " + Variables.DirectoryFileVersion + " - " + ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion() + ", Updating...");
-            convertShowFile(ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion(), Variables.DirectoryFileVersion);
+        if (-2 == ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion()) {
+            log.info("Older show file(s) found, updating..." + Variables.DirectoryFileVersion + " - " + ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion() + ", Updating...");
+            convertShowFile();
+        }
+
+        for (Directory directory : ClassHandler.directoryController().findDirectories(true, false, true)) {
+            if (Variables.DirectoryFileVersion == directory.getDirectoryFileVersion())
+                log.info(directory.getFileName() + " directory versions matched.");
+            else {
+                log.info(directory.getFileName() + " directory version didn't match " + Variables.DirectoryFileVersion + " - " + directory.getDirectoryFileVersion() + ", Updating...");
+                convertDirectory(directory, directory.getDirectoryFileVersion() == 0 ? 1000 : directory.getDirectoryFileVersion(), Variables.DirectoryFileVersion);
+            }
         }
     }
 
@@ -301,7 +309,7 @@ public class UpdateManager {
                 case 1001:
                     Map<String, UserShowSettings> showsConverted = new HashMap<>();
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
-                    userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted, true, new String[0], ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID());
+                    userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID());
                     updatedText(fileType, 1001, 1002);
                     oldVersion = 1002;
             }
@@ -318,6 +326,10 @@ public class UpdateManager {
                 //noinspection ConstantConditions
                 userSettings.setShowUsername(true);
                 updatedText(fileType, 1003, 1004);
+            case 1004:
+                //noinspection ConstantConditions
+                userSettings.setChangedShowsStatus(new HashMap<>());
+                updatedText(fileType, 1004, 1005);
                 updated = true;
         }
         if (updated) {
@@ -328,62 +340,92 @@ public class UpdateManager {
         } else log.info("User settings file was not updated. This is an error, please report.");
     }
 
+    private void convertShowFile() {
+        //noinspection unchecked
+        HashMap<String, HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileHashMap = new HashMap();
+        //noinspection unchecked
+        ArrayList<String> directories = (ArrayList<String>) neededObjects[0];
+        directories.forEach(aString -> {
+            String directoryFilename = "Directory-" + aString.split(">")[0];
+            FileManager fileManager = new FileManager();
+            //noinspection unchecked
+            showsFileHashMap.put(aString, (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowFileExtension));
+            if (!fileManager.deleteFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowFileExtension))
+                log.info("Wasn't able to delete directory.");
+        });
+        showsFileHashMap.forEach((directory, aHashMap) -> {
+            Map<String, Show> showsMap = new HashMap<>();
+            aHashMap.forEach((showName, showHashMap) -> {
+                Map<Integer, Season> seasonsMap = new HashMap<>();
+                showHashMap.forEach((season, seasonHashMap) -> {
+                    Map<Integer, Episode> episodesMap = new HashMap<>();
+                    seasonHashMap.forEach((episode, episodeFileName) -> {
+                        if (episode.contains("+")) {
+                            for (String episodes : episode.split("[+]"))
+                                episodesMap.put(Integer.parseInt(episodes), new Episode(Integer.parseInt(episodes), episodeFileName, true));
+                        } else
+                            episodesMap.put(Integer.parseInt(episode), new Episode(Integer.parseInt(episode), episodeFileName, false));
+                    });
+                    seasonsMap.put(season, new Season(season, episodesMap));
+                });
+                showsMap.put(showName, new Show(showName, seasonsMap));
+            });
+            String[] splitResult = directory.split(">")[1].split(Pattern.quote(Strings.FileSeparator));
+            String fileName = "";
+            for (String singleSplit : splitResult) {
+                if (singleSplit.contains(":")) singleSplit = singleSplit.replace(":", "");
+                if (!singleSplit.isEmpty()) {
+                    if (fileName.isEmpty()) fileName = singleSplit;
+                    else fileName += '_' + singleSplit;
+                }
+            }
+            ClassHandler.directoryController().saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, ClassHandler.directoryController().getLowestFreeDirectoryIndex(), -1, showsMap), false);
+        });
+        updatedText("ShowsFile", -2, 1000);
+        // Update Program Settings File Version
+        ClassHandler.programSettingsController().getSettingsFile().setShowFileVersion(1000);
+        ClassHandler.programSettingsController().saveSettingsFile();
+        log.info("Show file was successfully updated to version " + Variables.DirectoryFileVersion + '.');
+    }
+
     @SuppressWarnings("SameParameterValue")
-    private void convertShowFile(int oldVersion, int newVersion) {
+    private void convertDirectory(Directory directory, int oldVersion, int newVersion) {
         boolean updated = false;
         String fileType = "ShowsFile";
+        GetShowInfo getShowInfo = new GetShowInfo();
         switch (oldVersion) {
-            case -2:
-                //noinspection unchecked
-                HashMap<String, HashMap<String, HashMap<Integer, HashMap<String, String>>>> showsFileHashMap = new HashMap();
-                //noinspection unchecked
-                ArrayList<String> directories = (ArrayList<String>) neededObjects[0];
-                directories.forEach(aString -> {
-                    String directoryFilename = "Directory-" + aString.split(">")[0];
-                    FileManager fileManager = new FileManager();
-                    //noinspection unchecked
-                    showsFileHashMap.put(aString, (HashMap<String, HashMap<Integer, HashMap<String, String>>>) fileManager.loadFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowFileExtension));
-                    if (!fileManager.deleteFile(Variables.DirectoriesFolder, directoryFilename, Variables.ShowFileExtension))
-                        log.info("Wasn't able to delete directory.");
-                });
-                showsFileHashMap.forEach((directory, aHashMap) -> {
-                    Map<String, Show> showsMap = new HashMap<>();
-                    aHashMap.forEach((showName, showHashMap) -> {
-                        Map<Integer, Season> seasonsMap = new HashMap<>();
-                        showHashMap.forEach((season, seasonHashMap) -> {
-                            Map<Integer, Episode> episodesMap = new HashMap<>();
-                            seasonHashMap.forEach((episode, episodeFileName) -> {
-                                if (episode.contains("+")) {
-                                    for (String episodes : episode.split("[+]"))
-                                        episodesMap.put(Integer.parseInt(episodes), new Episode(Integer.parseInt(episodes), episodeFileName, true));
-                                } else
-                                    episodesMap.put(Integer.parseInt(episode), new Episode(Integer.parseInt(episode), episodeFileName, false));
-                            });
-                            seasonsMap.put(season, new Season(season, episodesMap));
-                        });
-                        showsMap.put(showName, new Show(showName, seasonsMap));
-                    });
-                    String[] splitResult = directory.split(">")[1].split(Pattern.quote(Strings.FileSeparator));
-                    String fileName = "";
-                    for (String singleSplit : splitResult) {
-                        if (singleSplit.contains(":")) singleSplit = singleSplit.replace(":", "");
-                        if (!singleSplit.isEmpty()) {
-                            if (fileName.isEmpty()) fileName = singleSplit;
-                            else fileName += '_' + singleSplit;
+            case 1000:
+                if (Variables.useOnlineDatabase) {
+                    directory.getShows().forEach((showName, show) -> {
+                        try {
+                            show.setShowID(getShowInfo.getShowID(showName));
+                            if (show.getShowID() != -1) {
+                                HashMap<Integer, Integer> showInfo = getShowInfo.getShowInfo(show.getShowID());
+                                if (!showInfo.isEmpty()) {
+                                    int highestSeason = -1;
+                                    for (Integer season : showInfo.keySet()) {
+                                        if (season == -1 || season > highestSeason) highestSeason = season;
+                                    }
+                                    show.setNumberOfSeasons(highestSeason);
+                                    showInfo.keySet().forEach(seasonInt -> {
+                                        if (show.containsSeason(seasonInt))
+                                            show.getSeason(seasonInt).setNumberOfEpisodes(showInfo.get(seasonInt));
+                                    });
+                                }
+                            }
+                        } catch (IOException e) {
+                            log.info("Unable to get information for: \"" + showName + "\".");
                         }
-                    }
-                    ClassHandler.directoryController().saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, Integer.parseInt(directory.split(">")[0]), -1, showsMap, ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), false);
-                });
-                updatedText(fileType, 1000, -2);
-                log.info("Shows file has been updated from version -2 -> 1000.");
+                    });
+                }
+                updatedText(fileType, 1000, 1001);
                 updated = true;
         }
         if (updated) {
-            // Update Program Settings File Version
-            ClassHandler.programSettingsController().getSettingsFile().setShowFileVersion(newVersion);
-            ClassHandler.programSettingsController().saveSettingsFile();
-            log.info("Show file was successfully updated to version " + newVersion + '.');
-        } else log.info("Show file was not updated. This is an error, please report.");
+            directory.setDirectoryFileVersion(newVersion);
+            ClassHandler.directoryController().saveDirectory(directory, false);
+            log.info("Directory was successfully updated to version " + newVersion + '.');
+        } else log.info("Directory was not updated. This is an error, please report.");
     }
 
     // This finds what shows have been added / remove if another user has ran the program (and found updated information) since you last ran your profile.

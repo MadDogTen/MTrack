@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" id="pane" fx:id="pane" prefHeight="454.0" prefWidth="281.0" stylesheets="@MainGui.css" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.Controller">
     <children>
         <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="454.0" prefWidth="282.0" tabClosingPolicy="UNAVAILABLE">
@@ -19,9 +18,12 @@
                                 <TableView fx:id="tableView" layoutY="40.0" prefHeight="385.0" prefWidth="281.0" tableMenuButtonVisible="true">
                                     <columns>
                                         <TableColumn fx:id="shows" editable="false" prefWidth="139.0" text="Shows"/>
-                                        <TableColumn fx:id="season" editable="false" minWidth="0.0" prefWidth="48.0" text="Season" visible="false"/>
-                                        <TableColumn fx:id="episode" editable="false" minWidth="0.0" prefWidth="50.0" text="Episode" visible="false"/>
-                                        <TableColumn fx:id="remaining" editable="false" minWidth="0.0" prefWidth="30.0" text="Left"/>
+                                        <TableColumn fx:id="season" editable="false" minWidth="0.0" prefWidth="48.0"
+                                                     text="Season" visible="false"/>
+                                        <TableColumn fx:id="episode" editable="false" minWidth="0.0" prefWidth="50.0"
+                                                     text="Episode" visible="false"/>
+                                        <TableColumn fx:id="remaining" editable="false" minWidth="0.0" prefWidth="30.0"
+                                                     text="Left"/>
                                     </columns>
                                 </TableView>
                                 <TextField fx:id="textField" layoutX="8.0" layoutY="6.0"/>
@@ -32,11 +34,15 @@
                                 </CheckBox>
                                 <MenuButton fx:id="menuButton" layoutX="200.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="74.0" text="Options">
                                     <items>
-                                        <MenuItem fx:id="changeTableView" mnemonicParsing="false" text="Switch between Active/Inactive List"/>
-                                        <MenuItem fx:id="viewChanges" mnemonicParsing="false" text="Open Changes Window"/>
+                                        <MenuItem fx:id="changeTableView" mnemonicParsing="false"
+                                                  text="Switch between Active/Inactive List"/>
+                                        <MenuItem fx:id="viewChanges" mnemonicParsing="false"
+                                                  text="Open Changes Window"/>
                                     </items>
                                 </MenuButton>
-                                <Button id="clearTextField" fx:id="clearTextField" layoutX="137.0" layoutY="12.5" mnemonicParsing="false" prefHeight="0.0" prefWidth="0.0" text="Clear TextField"/>
+                                <Button id="clearTextField" fx:id="clearTextField" layoutX="137.0" layoutY="12.5"
+                                        mnemonicParsing="false" prefHeight="0.0" prefWidth="0.0"
+                                        text="Clear TextField"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -66,13 +72,26 @@
                 </ImageView>
             </graphic>
         </Button>
-        <ProgressIndicator id="isCurrentlyRechecking" fx:id="isCurrentlyRechecking" layoutX="145.0" layoutY="2.0" mouseTransparent="true" prefHeight="42.0" prefWidth="56.0" progress="0.0" visible="false">
+        <Label fx:id="userName" layoutX="107.0" layoutY="4.0" mouseTransparent="true" prefWidth="85.0">
+            <font>
+                <Font name="System Bold" size="14.0"/>
+            </font>
+        </Label>
+        <ComboBox id="test" fx:id="userNameComboBox" layoutX="107.0" prefHeight="30.0" prefWidth="85.0">
+            <tooltip>
+                <Tooltip id="tooltip" fx:id="comboBoxTooltip"/>
+            </tooltip>
+        </ComboBox>
+        <ProgressIndicator id="isCurrentlyRechecking" fx:id="isCurrentlyRechecking" layoutX="150.0" layoutY="2.0"
+                           mouseTransparent="true" prefHeight="42.0" prefWidth="56.0" progress="0.0" visible="false">
             <tooltip>
                 <Tooltip id="tooltip" fx:id="isCurrentlyRecheckingTooltip"/>
             </tooltip>
         </ProgressIndicator>
-        <Button id="changesAlert" fx:id="changesAlert" layoutX="190.0" layoutY="3.0" mnemonicParsing="false" prefHeight="1.0" prefWidth="1.0" text="!" visible="false"/>
-        <Pane fx:id="pingingDirectoryPane" layoutX="164.0" layoutY="6.0" mouseTransparent="true" prefHeight="18.0" prefWidth="18.0">
+        <Button id="changesAlert" fx:id="changesAlert" layoutX="195.0" layoutY="3.0" mnemonicParsing="false"
+                prefHeight="1.0" prefWidth="1.0" text="!" visible="false"/>
+        <Pane fx:id="pingingDirectoryPane" layoutX="169.0" layoutY="6.0" mouseTransparent="true" prefHeight="18.0"
+              prefWidth="18.0">
             <children>
                 <ImageView fx:id="pingingDirectory" fitHeight="18.0" fitWidth="18.0" layoutX="2.0" layoutY="-1.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" visible="false">
                     <image>
@@ -81,10 +100,5 @@
                 </ImageView>
             </children>
         </Pane>
-        <Text fx:id="userName" layoutX="110.0" layoutY="20.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="116.13671875">
-            <font>
-                <Font name="Georgia Bold" size="14.0"/>
-            </font>
-        </Text>
     </children>
 </Pane>

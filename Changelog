@@ -79,7 +79,8 @@ Added ClassHandler class which now holds DirectoryController, ShowInfoController
 Added Logging to a file. Keeps a maximum of 10 files, and deletes the oldest files first (Only deletes files on boot, So you may occasionally have over 10 files).
 Added Tooltip when hovering over a show that Displays the Show name, Season, and Episode.
 Added Ability to switch users on fly. Warning- Needs more testing, Might be a bit buggy.
-Added color overlay to shows that have been changed. Note- Unfinished (In some cases, won't take effect until list is manually refreshed), Might be removed / completely changed.
+Added color overlay to shows that have been changed, with the color showing how the remaining amount is affected. Green = Same amount of remaining, Red = Less Remaining, Blue = More Remaining.
+Added Ability to pull data from a website (Currently using tvmaze). Currently disabled / highly unfinished.
 
 Fixes:
 Will now properly switch to new seasons when found.

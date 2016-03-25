@@ -221,7 +221,7 @@ public class DirectoryController {
                     else fileName += '_' + singleSplit;
                 }
             }
-            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), false);
+            saveDirectory(new Directory(directory, fileName, index, -1, new HashMap<>()), false);
             answer[0] = true;
         } else if (directory.toString().isEmpty()) answer[1] = true;
         return answer;
@@ -242,7 +242,7 @@ public class DirectoryController {
             if (directory.getIndex() == index) return directory;
         }
         log.warning("Warning- If this point is reached, please report.");
-        return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID());
+        return new Directory(new File("Empty"), "Empty", -1, -1, new HashMap<>());
     }
 
     public void saveDirectory(Directory directory, Boolean loadMap) {

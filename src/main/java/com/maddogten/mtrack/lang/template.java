@@ -30,7 +30,7 @@ public class template extends Language {
         Strings.Beginning.setValue("");
         Strings.End.setValue("");
         Strings.QuestionMark.setValue("");
-        Strings.Shows.setValue(Strings.EmptyString);
+        Strings.Shows.setValue("");
         Strings.Left.setValue("");
         Strings.Settings.setValue("");
         Strings.Options.setValue("");
@@ -94,6 +94,7 @@ public class template extends Language {
         Strings.Directories.setValue("");
         Strings.NonForceRecheckShows.setValue("");
         Strings.ToggleIsChanges.setValue("");
+        Strings.GetMissingEpisodes.setValue("");
 
         // CheckBox Text
         Strings.InactiveShows.setValue("");
@@ -169,6 +170,7 @@ public class template extends Language {
         Strings.YouHaveReachedTheEnd.setValue("");
         Strings.PingingDirectories.setValue("");
         Strings.PathToDirectory.setValue("");
+        Strings.PrintCurrentSeasonEpisode.setValue("");
         Strings.WasFoundToBeInactive.setValue("");
         Strings.PleaseCorrectTheIssueThenForceRefresh.setValue("");
         Strings.NotifyChangesFor.setValue("");
@@ -196,5 +198,6 @@ public class template extends Language {
         Strings.CurrentlyPlaying.setValue("");
         Strings.WasUnableToPlayTheEpisode.setValue("");
         Strings.SavingWaitTimeSeconds.setValue("");
+        Strings.CurrentUser.setValue("");
     }
 }

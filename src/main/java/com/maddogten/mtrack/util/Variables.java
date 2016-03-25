@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 /*
@@ -37,10 +38,10 @@ public class Variables {
     public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
     public static final int ProgramSettingsFileVersion = 1013; // Was Changed // Note- Remove all "Was Changed" before merging with master.
-    public static final int UserSettingsFileVersion = 1004; // Was Changed
-    public static final int DirectoryFileVersion = 1000; // Was Changed
+    public static final int UserSettingsFileVersion = 1005; // Was Changed
+    public static final int DirectoryFileVersion = 1001; // Was Changed
 
-    public static final int InternalVersion = 33; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 34; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -62,12 +63,16 @@ public class Variables {
     public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})")));
     public static final String fileNameReplace = "[(]|[)]|[\\\\]|[\\[]]|[\\]]|[\\[]|[\\]]|[+][\\{][\\}]";
     public static final String LogsFolder = Strings.FileSeparator + "Logs";
+    public final static String findShowURL = "http://api.tvmaze.com/singlesearch/shows?q=";
+    public final static String getShowWithID = "http://api.tvmaze.com/shows/";
+    public final static String episodesAddition = "/episodes";
+    public static final Level loggingLevel = Level.FINEST;
     @SuppressWarnings("PublicStaticArrayField")
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     static final int logMaxFileSize = 1000000;
     static final int logMaxNumberOfFiles = 10;
     public static boolean disableAutomaticRechecking;
-    /**/public static boolean devMode = false; // false
+    /**/public static boolean devMode = true; // false
     public static int updateSpeed;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
@@ -83,6 +88,9 @@ public class Variables {
     public static boolean enableAutoSavingOnTimer;
     @SuppressWarnings("CanBeFinal")
     public static boolean enableFileLogging = true; // TODO Add user setting
+    //---------- TV Maze ----------\\
+    @SuppressWarnings("CanBeFinal")
+    public static boolean useOnlineDatabase = false; // TODO Add user setting || Still highly unfinished.
 
     public static void setDataFolder(File file) {
         dataFolder = file;
@@ -91,5 +99,30 @@ public class Variables {
     public static void setStageMoveWithParentAndBlockParent(boolean stageMoveWithParentAndBlockParent) {
         moveStageWithParent = stageMoveWithParentAndBlockParent;
         haveStageBlockParentStage = stageMoveWithParentAndBlockParent;
+    }
+
+
+    public enum OperatingSystem {
+        WINDOWS, MAC, NIX, NUX, AIX
+    }
+
+    public enum ShowChangedStatus {
+        REMOVED("LightCoral"), ADDED("DeepSkyBlue"), DEFAULT("LimeGreen");
+
+        private final String color;
+
+        ShowChangedStatus(String color) {
+            this.color = color;
+        }
+
+        public static ShowChangedStatus findColor(int previouslyRemaining, int currentlyRemaining) {
+            if (previouslyRemaining < currentlyRemaining) return ADDED;
+            else if (previouslyRemaining > currentlyRemaining) return REMOVED;
+            else return DEFAULT;
+        }
+
+        public String getColor() {
+            return color;
+        }
     }
 }

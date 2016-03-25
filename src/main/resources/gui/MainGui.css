@@ -14,6 +14,14 @@
     -fx-max-height: 12px;
 }
 
+#test {
+  -fx-background-color: transparent;
+}
+
+#test .arrow {
+  -fx-background-color: transparent;
+}
+
 #changesAlert {
     -fx-background-radius: 5em;
     -fx-min-width: 20px;

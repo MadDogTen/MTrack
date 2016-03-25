@@ -71,7 +71,10 @@ public class ChangesBox {
             ChangeReporter.resetChanges();
             listView.getItems().clear();
         });
-        close.setOnAction(e -> changesStage.close());
+        close.setOnAction(e -> {
+            GenericMethods.fadeStageOut(changesStage, 2, log, this.getClass());
+            changesStage.close();
+        });
 
         HBox buttonHBox = new HBox();
         buttonHBox.getChildren().addAll(clear, close);
@@ -112,6 +115,7 @@ public class ChangesBox {
         changesStage.hide();
         changesStage.setX(changesStage.getOwner().getX() + (changesStage.getOwner().getWidth() / 2) - (changesStage.getWidth() / 2));
         changesStage.setY(changesStage.getOwner().getY() + (changesStage.getOwner().getHeight() / 2) - (changesStage.getHeight() / 2));
+        GenericMethods.fadeStageIn(changesStage, 2, log, this.getClass());
         changesStage.showAndWait();
 
         currentlyOpen = false;

@@ -1,9 +1,8 @@
 package com.maddogten.mtrack.information;
 
-import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.util.ClassHandler;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /*
@@ -13,7 +12,6 @@ import java.util.logging.Logger;
 
 public class ChangeReporter {
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
-    private static final Set<String> changedShows = new HashSet<>();
     // Stores all the changes that are added with addChange().
     private static String[] changes = new String[0];
     private static boolean isChanges = false;
@@ -43,7 +41,6 @@ public class ChangeReporter {
             changes[iterator] = aString;
             iterator++;
         }
-        changedShows.add(newInfo.contains(Strings.DashSeason.getValue()) ? newInfo.replaceFirst("[+~\\-]\\s", "").split(Strings.DashSeason.getValue())[0] : newInfo.replaceFirst("[+~\\-]\\s", ""));
         if (!isChanges) isChanges = true;
     }
 
@@ -52,8 +49,9 @@ public class ChangeReporter {
         if (changes.length > 0) {
             changes = new String[0];
             isChanges = false;
+            Controller.setTableViewFields(); // TODO Change this
         }
-        if (!changedShows.isEmpty()) changedShows.clear();
+        ClassHandler.controller().resetChangedShows();
         log.info("Change list has been cleared.");
     }
 
@@ -62,8 +60,6 @@ public class ChangeReporter {
     }
 
     public static void setChanges(String[] newChangeList) {
-        if (newChangeList.length > 0) for (String change : newChangeList)
-            changedShows.add(change.contains(Strings.DashSeason.getValue()) ? change.replaceFirst("[+~\\-]\\s", "").split(Strings.DashSeason.getValue())[0] : change.replaceFirst("[+~\\-]\\s", ""));
         if (changes.length == 0) changes = newChangeList;
         else {
             String[] tempSave = changes;
@@ -79,9 +75,5 @@ public class ChangeReporter {
 
     public static void setIsChanges(final boolean isChanges) {
         ChangeReporter.isChanges = isChanges;
-    }
-
-    public static boolean wasShowChanged(String aShow) {
-        return changedShows.contains(aShow);
     }
 }

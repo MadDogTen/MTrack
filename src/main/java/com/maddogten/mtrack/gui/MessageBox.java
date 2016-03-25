@@ -40,9 +40,11 @@ public class MessageBox {
             layout.getChildren().add(messageLabel);
         } else if (message.length > 1) {
             for (StringProperty aMessage : message) {
-                Label messageLabel = new Label();
-                messageLabel.textProperty().bind(aMessage);
-                layout.getChildren().add(messageLabel);
+                if (aMessage != null) {
+                    Label messageLabel = new Label();
+                    messageLabel.textProperty().bind(aMessage);
+                    layout.getChildren().add(messageLabel);
+                }
             }
         }
 

@@ -90,6 +90,7 @@ public class GenericMethods {
         ClassHandler.programSettingsController().getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
         ClassHandler.programSettingsController().getSettingsFile().setNumberOfDirectories(ClassHandler.directoryController().findDirectories(true, false, true).size());
         ClassHandler.userInfoController().getUserSettings().setChanges(ChangeReporter.getChanges());
+        ClassHandler.userInfoController().getUserSettings().setChangedShowsStatus(ClassHandler.controller().getChangedShows());
         ClassHandler.programSettingsController().saveSettingsFile();
         ClassHandler.userInfoController().saveUserSettingsFile();
     }
@@ -97,8 +98,8 @@ public class GenericMethods {
     // Initiate logging rules.
     public static void initLogger() {
         rootLog = Logger.getLogger("");
-        rootLog.setLevel(Level.FINEST);
-        rootLog.getHandlers()[0].setLevel(Level.FINEST);
+        rootLog.setLevel(Variables.loggingLevel);
+        rootLog.getHandlers()[0].setLevel(Variables.loggingLevel);
         filter = record -> record.getSourceClassName().contains("com.maddogten.mtrack");
         rootLog.setFilter(filter);
         rootLog.getHandlers()[0].setFilter(filter);

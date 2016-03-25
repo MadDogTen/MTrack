@@ -8,7 +8,6 @@ import com.maddogten.mtrack.gui.TextBox;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
-import com.maddogten.mtrack.util.enumeration.OperatingSystem;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
@@ -72,16 +71,16 @@ public class FileManager {
 
     // Detects the operating system that the program is current on. 
     @SuppressWarnings("AccessOfSystemProperties")
-    private OperatingSystem getOS() {
+    private Variables.OperatingSystem getOS() {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("windows")) return OperatingSystem.WINDOWS;
-        else if (os.contains("mac")) return OperatingSystem.MAC;
-        else if (os.contains("nix")) return OperatingSystem.NIX;
-        else if (os.contains("nux")) return OperatingSystem.NUX;
-        else if (os.contains("aix")) return OperatingSystem.AIX;
+        if (os.contains("windows")) return Variables.OperatingSystem.WINDOWS;
+        else if (os.contains("mac")) return Variables.OperatingSystem.MAC;
+        else if (os.contains("nix")) return Variables.OperatingSystem.NIX;
+        else if (os.contains("nux")) return Variables.OperatingSystem.NUX;
+        else if (os.contains("aix")) return Variables.OperatingSystem.AIX;
         else {
             log.warning("Your operating system is unknown, Assuming linux based, Using nix...");
-            return OperatingSystem.NIX;
+            return Variables.OperatingSystem.NIX;
         }
     }
 
@@ -95,7 +94,7 @@ public class FileManager {
     @SuppressWarnings("AccessOfSystemProperties")
     public File findProgramFolder() {
         String home = System.getProperty("user.home");
-        OperatingSystem os = getOS();
+        Variables.OperatingSystem os = getOS();
         switch (os) {
             case WINDOWS:
                 home = System.getenv("appdata");
@@ -196,12 +195,12 @@ public class FileManager {
     }
 
     public boolean open(File file) {
-        OperatingSystem os = getOS();
+        Variables.OperatingSystem os = getOS();
         try {
-            if (os == OperatingSystem.WINDOWS) {
+            if (os == Variables.OperatingSystem.WINDOWS) {
                 Process process = Runtime.getRuntime().exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()});
                 return process.isAlive();
-            } else if (os == OperatingSystem.MAC || os == OperatingSystem.NIX || os == OperatingSystem.NUX || os == OperatingSystem.AIX) {
+            } else if (os == Variables.OperatingSystem.MAC || os == Variables.OperatingSystem.NIX || os == Variables.OperatingSystem.NUX || os == Variables.OperatingSystem.AIX) {
                 Process process = Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file.getAbsolutePath()});
                 return process.isAlive();
             } else {
