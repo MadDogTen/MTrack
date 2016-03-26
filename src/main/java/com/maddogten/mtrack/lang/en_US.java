@@ -37,7 +37,7 @@ public class en_US extends Language {
         Strings.Main.setValue("Main");
         Strings.Users.setValue("Users");
         Strings.Other.setValue("Other");
-        Strings.Developers.setValue("Developer");
+        Strings.Dev.setValue("Dev");
         Strings.Reset.setValue("Reset");
         Strings.About.setValue("About");
         Strings.Season.setValue("Season");
@@ -104,6 +104,8 @@ public class en_US extends Language {
         Strings.ShowUsername.setValue("Show Username");
         Strings.SpecialEffects.setValue("Special Effects");
         Strings.EnableAutomaticSaving.setValue("Enable Automatic Saving");
+        Strings.UseOnlineDatabase.setValue("Use Online Database");
+        Strings.EnableFileLogging.setValue("Enable File Logging");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("Show/Hide shows with 0 episode left.");
@@ -199,5 +201,6 @@ public class en_US extends Language {
         Strings.WasUnableToPlayTheEpisode.setValue("Was unable to play the episode.");
         Strings.SavingWaitTimeSeconds.setValue("Saving Wait Time (Seconds):");
         Strings.CurrentUser.setValue("Current User:");
+        Strings.WarningConnectsToRemoteWebsite.setValue("Warning- Connects to remote website.");
     }
 }

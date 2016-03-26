@@ -23,7 +23,7 @@ public class AboutBox {
         GenericMethods.setIcon(aboutStage);
         aboutStage.initOwner(oldStage);
         aboutStage.initStyle(StageStyle.UNDECORATED);
-        aboutStage.initModality(Modality.APPLICATION_MODAL);
+        if (Variables.haveStageBlockParentStage) aboutStage.initModality(Modality.APPLICATION_MODAL);
         Pane root = FXMLLoader.load(getClass().getResource("/gui/About.fxml"));
         Scene scene = new Scene(root);
         scene.setFill(Color.WHITESMOKE);

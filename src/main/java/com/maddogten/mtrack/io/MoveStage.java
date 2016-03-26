@@ -34,6 +34,10 @@ public class MoveStage {
                 if (parentStage != null && Variables.moveStageWithParent) {
                     parentStage.getScene().getWindow().setX(region.getScene().getWindow().getX() - (parentStage.getWidth() / 2) + (region.getWidth() / 2));
                     parentStage.getScene().getWindow().setY(region.getScene().getWindow().getY() - (parentStage.getHeight() / 2) + (region.getHeight() / 2));
+                    if (parentStage.getOwner() != null) {
+                        parentStage.getOwner().setX(region.getScene().getWindow().getX() - (parentStage.getOwner().getWidth() / 2) + (region.getWidth() / 2));
+                        parentStage.getOwner().setY(region.getScene().getWindow().getY() - (parentStage.getOwner().getHeight() / 2) + (region.getHeight() / 2));
+                    }
                 }
             }
         });

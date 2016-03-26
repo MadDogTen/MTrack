@@ -66,7 +66,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.Main);
         findAndSetMissingStrings(Strings.Users);
         findAndSetMissingStrings(Strings.Other);
-        findAndSetMissingStrings(Strings.Developers);
+        findAndSetMissingStrings(Strings.Dev);
         findAndSetMissingStrings(Strings.Reset);
         findAndSetMissingStrings(Strings.About);
         findAndSetMissingStrings(Strings.Season);
@@ -131,6 +131,8 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.ShowUsername);
         findAndSetMissingStrings(Strings.SpecialEffects);
         findAndSetMissingStrings(Strings.EnableAutomaticSaving);
+        findAndSetMissingStrings(Strings.UseOnlineDatabase);
+        findAndSetMissingStrings(Strings.EnableFileLogging);
         // Tooltip Text
         findAndSetMissingStrings(Strings.ShowHiddenShowsWith0EpisodeLeft);
         findAndSetMissingStrings(Strings.CurrentlyRechecking);
@@ -224,6 +226,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.WasUnableToPlayTheEpisode);
         findAndSetMissingStrings(Strings.SavingWaitTimeSeconds);
         findAndSetMissingStrings(Strings.CurrentUser);
+        findAndSetMissingStrings(Strings.WarningConnectsToRemoteWebsite);
         log.info("Finished checking for missing strings.");
     }
 

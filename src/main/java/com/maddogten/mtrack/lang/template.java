@@ -37,7 +37,7 @@ public class template extends Language {
         Strings.Main.setValue("");
         Strings.Users.setValue("");
         Strings.Other.setValue("");
-        Strings.Developers.setValue("");
+        Strings.Dev.setValue("");
         Strings.Reset.setValue("");
         Strings.About.setValue("");
         Strings.Season.setValue("");
@@ -104,6 +104,8 @@ public class template extends Language {
         Strings.ShowUsername.setValue("");
         Strings.SpecialEffects.setValue("");
         Strings.EnableAutomaticSaving.setValue("");
+        Strings.UseOnlineDatabase.setValue("");
+        Strings.EnableFileLogging.setValue("");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("");
@@ -199,5 +201,6 @@ public class template extends Language {
         Strings.WasUnableToPlayTheEpisode.setValue("");
         Strings.SavingWaitTimeSeconds.setValue("");
         Strings.CurrentUser.setValue("");
+        Strings.WarningConnectsToRemoteWebsite.setValue("");
     }
 }

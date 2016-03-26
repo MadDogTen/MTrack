@@ -60,13 +60,6 @@ public class MainRun {
             firstRun = false;
         }
         if (!continueStarting) return false;
-        if (needsToRun && Variables.enableFileLogging) {
-            try {
-                GenericMethods.initFileLogging(log);
-            } catch (IOException e) {
-                GenericMethods.printStackTrace(log, e, this.getClass());
-            }
-        }
         UpdateManager updateManager = new UpdateManager();
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         if (needsToRun) {
@@ -82,6 +75,14 @@ public class MainRun {
             Strings.UserName.setValue(getUser());
             if (!continueStarting) return false;
             loadUser(updateManager, true);
+        }
+
+        if (Variables.enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
+            try {
+                GenericMethods.initFileLogging(log);
+            } catch (IOException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
         }
 
         if (!needsToRun) {
@@ -116,6 +117,8 @@ public class MainRun {
         Variables.specialEffects = ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects();
         Variables.enableAutoSavingOnTimer = ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving();
         Variables.savingSpeed = ClassHandler.programSettingsController().getSettingsFile().getSaveSpeed();
+        Variables.enableFileLogging = ClassHandler.programSettingsController().getSettingsFile().isFileLogging();
+        Variables.useOnlineDatabase = ClassHandler.programSettingsController().getSettingsFile().isUseRemoteDatabase();
         ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
         if (!mainLoad)
             ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());

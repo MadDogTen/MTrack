@@ -39,7 +39,7 @@ public class lipsum extends Language {
         Strings.Main.setValue("lacus");
         Strings.Users.setValue("maecenas");
         Strings.Other.setValue("accumsan");
-        Strings.Developers.setValue("fermentum");
+        Strings.Dev.setValue("fermentum");
         Strings.Reset.setValue("massa");
         Strings.About.setValue("eget");
         Strings.Season.setValue("vertamis");
@@ -106,6 +106,8 @@ public class lipsum extends Language {
         Strings.ShowUsername.setValue("numalulu");
         Strings.SpecialEffects.setValue("vinula");
         Strings.EnableAutomaticSaving.setValue("hilica");
+        Strings.UseOnlineDatabase.setValue("burlutu");
+        Strings.EnableFileLogging.setValue("hijaka");
 
         // Tooltip Text
         Strings.ShowHiddenShowsWith0EpisodeLeft.setValue("sollicitudin");
@@ -201,5 +203,6 @@ public class lipsum extends Language {
         Strings.WasUnableToPlayTheEpisode.setValue("Hiculatu");
         Strings.SavingWaitTimeSeconds.setValue("Gilamaga");
         Strings.CurrentUser.setValue("Olomo:");
+        Strings.WarningConnectsToRemoteWebsite.setValue("Tulumoto");
     }
 }

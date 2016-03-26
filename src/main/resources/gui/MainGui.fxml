@@ -77,7 +77,8 @@
                 <Font name="System Bold" size="14.0"/>
             </font>
         </Label>
-        <ComboBox id="test" fx:id="userNameComboBox" layoutX="107.0" prefHeight="30.0" prefWidth="85.0">
+        <ComboBox id="userComboBox" fx:id="userNameComboBox" layoutX="107.0" layoutY="1.0" prefHeight="26.0"
+                  prefWidth="85.0">
             <tooltip>
                 <Tooltip id="tooltip" fx:id="comboBoxTooltip"/>
             </tooltip>

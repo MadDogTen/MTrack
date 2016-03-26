@@ -49,6 +49,12 @@ public class ProgramSettings implements Serializable {
     private boolean enableAutomaticSaving;
     private int saveSpeed;
 
+    // Logging
+    private boolean fileLogging;
+
+    // TV Maze
+    private boolean useRemoteDatabase;
+
 
     private int numberOfDirectories; /*Stores the number of directories it last ended with, and if different, handles adding them to the program. */
 
@@ -85,6 +91,8 @@ public class ProgramSettings implements Serializable {
         this.defaultUser = Strings.EmptyString;
         this.enableAutomaticSaving = true;
         this.saveSpeed = 600;
+        this.fileLogging = true;
+        this.useRemoteDatabase = false;
         this.showColumnWidth = Variables.SHOWS_COLUMN_WIDTH;
         this.remainingColumnWidth = Variables.REMAINING_COLUMN_WIDTH;
         this.seasonColumnWidth = Variables.SEASONS_COLUMN_WIDTH;
@@ -254,6 +262,24 @@ public class ProgramSettings implements Serializable {
     public void setSaveSpeed(int saveSpeed) {
         this.saveSpeed = saveSpeed;
         Variables.savingSpeed = saveSpeed;
+    }
+
+    public boolean isFileLogging() {
+        return fileLogging;
+    }
+
+    public void setFileLogging(boolean fileLogging) {
+        this.fileLogging = fileLogging;
+        Variables.enableFileLogging = fileLogging;
+    }
+
+    public boolean isUseRemoteDatabase() {
+        return useRemoteDatabase;
+    }
+
+    public void setUseRemoteDatabase(boolean useRemoteDatabase) {
+        this.useRemoteDatabase = useRemoteDatabase;
+        Variables.useOnlineDatabase = useRemoteDatabase;
     }
 
     public double getShowColumnWidth() {

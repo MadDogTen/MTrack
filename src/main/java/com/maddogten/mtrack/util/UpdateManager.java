@@ -253,6 +253,10 @@ public class UpdateManager {
                 programSettings.setEnableAutomaticSaving(true);
                 programSettings.setSaveSpeed(Variables.defaultSavingSpeed);
                 updatedText(fileType, 1012, 1013);
+            case 1013:
+                programSettings.setFileLogging(true);
+                programSettings.setUseRemoteDatabase(false);
+                updatedText(fileType, 1013, 1014);
                 ClassHandler.programSettingsController().setSettingsFile(programSettings);
                 updated = true;
         }

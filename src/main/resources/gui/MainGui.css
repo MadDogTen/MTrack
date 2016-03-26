@@ -14,11 +14,11 @@
     -fx-max-height: 12px;
 }
 
-#test {
+#userComboBox {
   -fx-background-color: transparent;
 }
 
-#test .arrow {
+#userComboBox .arrow {
   -fx-background-color: transparent;
 }
 
@@ -44,7 +44,7 @@
 
 .tooltip {
     -fx-background-color: #E8E8E8;
-    -fx-text-fill: black;
+    -fx-text-fill: #696969;
     -fx-background-radius: 6 6 6 6;
     -fx-padding: 0.2em 0.5em 0.2em 0.5em;
     -fx-font-family: "Helvetica";

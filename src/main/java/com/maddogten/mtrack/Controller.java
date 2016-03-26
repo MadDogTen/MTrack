@@ -246,6 +246,7 @@ public class Controller implements Initializable {
     public static void setShowUsernameVisibility(boolean isVisible) {
         ClassHandler.controller().userName.setVisible(isVisible);
         ClassHandler.controller().userNameComboBox.setVisible(isVisible);
+        ClassHandler.controller().userNameComboBox.setDisable(!isVisible);
     }
 
     public Map<String, Integer> getChangedShows() {
@@ -609,10 +610,7 @@ public class Controller implements Initializable {
         Tooltip pingingDirectoryTooltip = new Tooltip();
         pingingDirectoryTooltip.textProperty().bind(Strings.PingingDirectories);
         pingingDirectoryTooltip.getStyleClass().add("tooltip");
-        Tooltip.install(
-                pingingDirectoryPane,
-                pingingDirectoryTooltip
-        );
+        Tooltip.install(pingingDirectoryPane, pingingDirectoryTooltip);
 
         // || ~~~~ Settings Tab ~~~~ || \\
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();

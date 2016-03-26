@@ -43,7 +43,7 @@ Changed how episodes are phased. Its now much simpler and easily expandable.
 Changed the ProgressIndicator isCurrentlyRechecking now fades in and out.
 Changed the Main Stage to fade in on program start (Not sure if I will keep it or expand it to other stages).
 Changed "Set Season + Episode" to default the fields to the current season & episode (If found, otherwise defaults to old behaviour).
-Changed how the stages fading in/out work. Also added it for Settings & About box.
+Changed how the stages fading in/out work. Also added it for Settings, About box, & Change Box.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -79,7 +79,7 @@ Added ClassHandler class which now holds DirectoryController, ShowInfoController
 Added Logging to a file. Keeps a maximum of 10 files, and deletes the oldest files first (Only deletes files on boot, So you may occasionally have over 10 files).
 Added Tooltip when hovering over a show that Displays the Show name, Season, and Episode.
 Added Ability to switch users on fly. Warning- Needs more testing, Might be a bit buggy.
-Added color overlay to shows that have been changed, with the color showing how the remaining amount is affected. Green = Same amount of remaining, Red = Less Remaining, Blue = More Remaining.
+Added color overlay to shows that have been changed, with the color showing how the remaining amount is affected. Green = Same amount of remaining, Red = Less Remaining, Blue = More Remaining. (Won't work for anything already in the changelist)
 Added Ability to pull data from a website (Currently using tvmaze). Currently disabled / highly unfinished.
 Added Ability to change the user by clicking the username on the main stage.
 

@@ -43,7 +43,7 @@ public class Strings {
     public static final StringProperty Main = new SimpleStringProperty();
     public static final StringProperty Users = new SimpleStringProperty();
     public static final StringProperty Other = new SimpleStringProperty();
-    public static final StringProperty Developers = new SimpleStringProperty();
+    public static final StringProperty Dev = new SimpleStringProperty();
     public static final StringProperty Reset = new SimpleStringProperty();
     public static final StringProperty About = new SimpleStringProperty();
     public static final StringProperty Season = new SimpleStringProperty();
@@ -108,6 +108,8 @@ public class Strings {
     public static final StringProperty ShowUsername = new SimpleStringProperty();
     public static final StringProperty SpecialEffects = new SimpleStringProperty();
     public static final StringProperty EnableAutomaticSaving = new SimpleStringProperty();
+    public static final StringProperty UseOnlineDatabase = new SimpleStringProperty();
+    public static final StringProperty EnableFileLogging = new SimpleStringProperty();
     // Tooltip Text
     public static final StringProperty ShowHiddenShowsWith0EpisodeLeft = new SimpleStringProperty();
     public static final StringProperty CurrentlyRechecking = new SimpleStringProperty();
@@ -201,6 +203,7 @@ public class Strings {
     public static final StringProperty WasUnableToPlayTheEpisode = new SimpleStringProperty();
     public static final StringProperty SavingWaitTimeSeconds = new SimpleStringProperty();
     public static final StringProperty CurrentUser = new SimpleStringProperty();
+    public static final StringProperty WarningConnectsToRemoteWebsite = new SimpleStringProperty();
     // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
     public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
     // Strings set by program

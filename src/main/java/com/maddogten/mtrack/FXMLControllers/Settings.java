@@ -168,6 +168,12 @@ public class Settings implements Initializable {
     private Text currentUserText;
     @FXML
     private ComboBox<String> currentUserComboBox;
+    @FXML
+    private CheckBox enableLoggingCheckbox;
+    @FXML
+    private CheckBox useOnlineDatabaseCheckbox;
+    @FXML
+    private Text onlineWarningText;
 
 
     public static Settings getSettings() {
@@ -188,7 +194,7 @@ public class Settings implements Initializable {
         showTab.textProperty().bind(Strings.Show);
         otherTab.textProperty().bind(Strings.Other);
         uiTab.textProperty().bind(Strings.UI);
-        developerTab.textProperty().bind(Strings.Developers);
+        developerTab.textProperty().bind(Strings.Dev);
         dev1Tab.textProperty().bind(Strings.Dev1);
         dev2Tab.textProperty().bind(Strings.Dev2);
 
@@ -347,6 +353,14 @@ public class Settings implements Initializable {
             }
             setButtonDisable(false, unHideShow);
         });
+        useOnlineDatabaseCheckbox.textProperty().bind(Strings.UseOnlineDatabase); // TODO Enable once working
+        useOnlineDatabaseCheckbox.setSelected(Variables.useOnlineDatabase);
+        useOnlineDatabaseCheckbox.setOnAction(e -> {
+            ClassHandler.programSettingsController().getSettingsFile().setUseRemoteDatabase(!ClassHandler.programSettingsController().getSettingsFile().isUseRemoteDatabase());
+            log.info("Use online database has been set too: " + Variables.useOnlineDatabase);
+        });
+        onlineWarningText.textProperty().bind(Strings.WarningConnectsToRemoteWebsite);
+        useOnlineDatabaseCheckbox.setDisable(true);
 
         // Other
         addDirectory.textProperty().bind(Strings.AddDirectory);
@@ -428,6 +442,12 @@ public class Settings implements Initializable {
                 else
                     ClassHandler.programSettingsController().setTimeToWaitForDirectory(Integer.valueOf(directoryTimeoutTextField.getText()));
             }
+        });
+        enableLoggingCheckbox.textProperty().bind(Strings.EnableFileLogging);
+        enableLoggingCheckbox.setSelected(Variables.enableFileLogging);
+        enableLoggingCheckbox.setOnAction(e -> {
+            ClassHandler.programSettingsController().setFileLogging(!ClassHandler.programSettingsController().getSettingsFile().isFileLogging());
+            log.info("Enable file logging is now: " + Variables.enableFileLogging);
         });
         exportSettings.textProperty().bind(Strings.ExportSettings);
         exportSettings.setOnAction(e -> new FileManager().exportSettings((Stage) tabPane.getScene().getWindow()));

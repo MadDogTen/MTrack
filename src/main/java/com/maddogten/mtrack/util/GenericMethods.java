@@ -106,7 +106,7 @@ public class GenericMethods {
     }
 
     public static void initFileLogging(Logger log) throws IOException, SecurityException {
-        if (Variables.enableFileLogging) {
+        if (Variables.enableFileLogging && !isFileLoggingStarted()) {
             File logFolder = new File(Variables.dataFolder + Variables.LogsFolder);
             if (!logFolder.exists())
                 new FileManager().createFolder(Variables.LogsFolder);
@@ -114,7 +114,6 @@ public class GenericMethods {
                 if (file.delete())
                     log.info("\"" + file.getName() + "\" was deleted."); // Clear the lock files, They aren't needed.
             File[] files = logFolder.listFiles((dir, name) -> name.endsWith(".txt"));
-            log.info(Arrays.toString(files));
             while (files.length > Variables.logMaxNumberOfFiles - 1) { // Delete any extra log files.
                 Matcher lowest = null;
                 String toDelete = null;
@@ -182,10 +181,14 @@ public class GenericMethods {
     }
 
     public static void stopFileLogging(Logger log) {
-        if (fileHandler != null) {
+        if (isFileLoggingStarted()) {
             fileHandler.close();
             fileHandler = null;
-            log.info("File logger has been stopped.");
+            log.info("-------- Program Logging Stopped --------");
         }
+    }
+
+    public static boolean isFileLoggingStarted() {
+        return fileHandler != null;
     }
 }

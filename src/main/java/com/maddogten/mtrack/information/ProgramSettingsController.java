@@ -3,9 +3,11 @@ package com.maddogten.mtrack.information;
 import com.maddogten.mtrack.information.settings.ProgramSettings;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.ClassHandler;
+import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /*
@@ -54,11 +56,23 @@ public class ProgramSettingsController {
         } else {
             settingsFile.setMainDirectoryVersion(version);
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
-            if (!ClassHandler.mainRun().firstRun) ClassHandler.userInfoController().getUserSettings().setUserDirectoryVersion(version);
+            if (!ClassHandler.mainRun().firstRun)
+                ClassHandler.userInfoController().getUserSettings().setUserDirectoryVersion(version);
             saveSettingsFile();
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;
         }
+    }
+
+    public void setFileLogging(boolean enableFileLogging) {
+        settingsFile.setFileLogging(enableFileLogging);
+        if (enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
+            try {
+                GenericMethods.initFileLogging(log);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (GenericMethods.isFileLoggingStarted()) GenericMethods.stopFileLogging(log);
     }
 
     public ProgramSettings getSettingsFile() {
