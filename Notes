@@ -12,10 +12,9 @@ Short Term:
 
 
 Long Term:
-Save log files in a log directory.
 Handle all "Note-" tasks.
 Remove lipsum fully and template from loading.
-Add console to see log output.
+Add console to see log output in real time.
 
 
 May Add:

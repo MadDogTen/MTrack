@@ -88,6 +88,8 @@ public class Variables {
     public static boolean enableAutoSavingOnTimer;
     @SuppressWarnings("CanBeFinal")
     public static boolean enableFileLogging;
+    @SuppressWarnings("CanBeFinal")
+    public static boolean showActiveShows = true; // TODO Add User option to hide them & Change text depending on this setting
     //---------- TV Maze ----------\\
     @SuppressWarnings("CanBeFinal")
     public static boolean useOnlineDatabase; // TODO Still highly unfinished.
@@ -106,16 +108,16 @@ public class Variables {
         WINDOWS, MAC, NIX, NUX, AIX
     }
 
-    public enum ShowChangedStatus {
-        REMOVED("LightCoral"), ADDED("DeepSkyBlue"), DEFAULT("LimeGreen");
+    public enum ShowColorStatus {
+        REMOVED("LightCoral"), ADDED("DeepSkyBlue"), DEFAULT("LimeGreen"), ACTIVE("LightGrey");
 
         private final String color;
 
-        ShowChangedStatus(String color) {
+        ShowColorStatus(String color) {
             this.color = color;
         }
 
-        public static ShowChangedStatus findColor(int previouslyRemaining, int currentlyRemaining) {
+        public static ShowColorStatus findColorFromRemaining(int previouslyRemaining, int currentlyRemaining) {
             if (previouslyRemaining < currentlyRemaining) return ADDED;
             else if (previouslyRemaining > currentlyRemaining) return REMOVED;
             else return DEFAULT;

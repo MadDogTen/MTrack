@@ -81,6 +81,15 @@ public class UserInfoController {
         return inActiveShows;
     }
 
+    public ArrayList<String> getUsersShows() {
+        ArrayList<String> shows = new ArrayList<>(userSettings.getShowSettings().size());
+        userSettings.getShowSettings().forEach((showName, showSettings) -> {
+            if (!showSettings.isIgnored() && !showSettings.isHidden())
+                shows.add(showSettings.getShowName());
+        });
+        return shows;
+    }
+
     // Returns all the shows the program currently has being tracked.
     public ArrayList<String> getAllNonIgnoredShows() {
         ArrayList<String> nonIgnoredShows = new ArrayList<>(userSettings.getShowSettings().size());

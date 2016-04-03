@@ -54,7 +54,7 @@ public class Controller implements Initializable {
     // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
-    private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying;
+    private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying; // TODO Move show0Remaining into settings?
     private final Map<String, Integer> changedShows = new HashMap<>();
     private final ChangesBox changesBox = new ChangesBox();
     private final ShowPlayingBox showPlayingBox = new ShowPlayingBox();
@@ -141,7 +141,7 @@ public class Controller implements Initializable {
             case 0:
                 if (currentList != 0) currentList = 0;
                 tableViewFields.clear();
-                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().getInactiveShows()));
+                tableViewFields.addAll(MakeTableViewFields(Variables.showActiveShows ? ClassHandler.userInfoController().getUsersShows() : ClassHandler.userInfoController().getInactiveShows()));
                 break;
             case 1:
                 if (currentList != 1) currentList = 1;
@@ -317,18 +317,32 @@ public class Controller implements Initializable {
                         @Override
                         protected void updateItem(DisplayShow item, boolean empty) {
                             super.updateItem(item, empty);
-                            if (Variables.specialEffects && item != null && changedShows.containsKey(item.getShow()) && !isSelected()) {
-                                setStyle("-fx-background-color: " + Variables.ShowChangedStatus.findColor(changedShows.get(getItem().getShow()), getItem().getRemaining()).getColor());
-                            } else if (!getStyle().isEmpty()) setStyle("");
+                            if (item != null) {
+                                if (currentList == 0 && Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(item.getShow())) {
+                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
+                                    return;
+                                } else if (currentList == 1 && Variables.specialEffects && changedShows.containsKey(item.getShow()) && !isSelected()) {
+                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(changedShows.get(item.getShow()), item.getRemaining()).getColor());
+                                    return;
+                                }
+                            }
+                            setStyle(Strings.EmptyString);
                         }
                     };
                     final ContextMenu rowMenuActive = new ContextMenu();
                     final ContextMenu rowMenuInactive = new ContextMenu();
 
                     row.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                        if (Variables.specialEffects && row.getItem() != null && this.changedShows.containsKey(row.getItem().getShow()) && !row.isSelected())
-                            row.setStyle("-fx-background-color: " + Variables.ShowChangedStatus.findColor(this.changedShows.get(row.getItem().getShow()), row.getItem().getRemaining()).getColor());
-                        else if (!row.getStyle().isEmpty()) row.setStyle(Strings.EmptyString);
+                        if (row.getItem() != null) {
+                            if (!row.isSelected() && currentList == 0 && Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(row.getItem().getShow())) {
+                                row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
+                                return;
+                            } else if (!row.isSelected() && currentList == 1 && Variables.specialEffects && this.changedShows.containsKey(row.getItem().getShow())) {
+                                row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(this.changedShows.get(row.getItem().getShow()), row.getItem().getRemaining()).getColor());
+                                return;
+                            }
+                        }
+                        row.setStyle(Strings.EmptyString);
                     });
 
                     MenuItem setSeasonEpisode = new MenuItem();
@@ -360,9 +374,17 @@ public class Controller implements Initializable {
                     MenuItem toggleActive = new MenuItem();
                     toggleActive.setOnAction(e -> {
                         if (currentList == 0) {
-                            ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), true);
-                            if (!wereShowsChanged) wereShowsChanged = true;
-                            removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                            if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(row.getItem().getShow())) {
+                                ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), false);
+                                row.setStyle("");
+                            } else {
+                                ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), true);
+                                if (!wereShowsChanged) wereShowsChanged = true;
+                                if (Variables.showActiveShows)
+                                    row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
+                                else
+                                    removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
+                            }
                             tableView.getSelectionModel().clearSelection();
                         } else if (currentList == 1) {
                             ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), false);
@@ -458,6 +480,7 @@ public class Controller implements Initializable {
                     row.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
                             if (currentList == 1) {
+                                rowMenuActive.getItems().clear();
                                 toggleActive.textProperty().bind(Strings.SetInactive);
                                 if (Variables.devMode)
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, getRemaining, openDirectory, printCurrentSeasonEpisode, printShowInformation, getMissingEpisodes);
@@ -465,10 +488,16 @@ public class Controller implements Initializable {
                                     rowMenuActive.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, resetShow, toggleActive, openDirectory);
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuActive).otherwise((ContextMenu) null));
                             } else if (currentList == 0) {
-                                toggleActive.textProperty().bind(Strings.SetActive);
-                                if (Variables.devMode)
-                                    rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory, printShowInformation);
-                                else rowMenuInactive.getItems().addAll(toggleActive, setHidden, openDirectory);
+                                rowMenuInactive.getItems().clear();
+                                if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(row.getItem().getShow())) {
+                                    toggleActive.textProperty().bind(Strings.SetInactive);
+                                    rowMenuInactive.getItems().add(toggleActive);
+                                } else {
+                                    toggleActive.textProperty().bind(Strings.SetActive);
+                                    if (Variables.devMode)
+                                        rowMenuInactive.getItems().addAll(toggleActive, setHidden, getRemaining, openDirectory, printShowInformation);
+                                    else rowMenuInactive.getItems().addAll(toggleActive, setHidden, openDirectory);
+                                }
                                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenuInactive).otherwise((ContextMenu) null));
                             }
                         }
@@ -488,13 +517,14 @@ public class Controller implements Initializable {
 
         userName.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());
         userName.textProperty().bind(Strings.UserName);
+        userNameComboBox.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());
+        userNameComboBox.setDisable(!ClassHandler.userInfoController().getUserSettings().isShowUsername());
         comboBoxTooltip.textProperty().bind(Strings.UserName);
 
         userNameComboBox.addEventFilter(MouseEvent.MOUSE_RELEASED, mouse -> {
             if (!mouse.isStillSincePress()) mouse.consume();
             userNameComboBox.setCursor(Cursor.DEFAULT);
         });
-
         userNameComboBox.setOnShown(e -> {
             if (getSettingsWindow().isSettingsOpen()) Settings.getSettings().toggleUsernameUsability(true);
             ArrayList<String> users = ClassHandler.userInfoController().getAllUsers();
@@ -572,6 +602,8 @@ public class Controller implements Initializable {
         changeTableView.setOnAction(event -> {
             if (currentList == 1) {
                 setTableViewFields(0);
+                tableView.scrollTo(0);
+                tableView.scrollToColumnIndex(0);
                 log.info("TableViewFields set to inactive.");
             } else if (currentList == 0) {
                 if (wereShowsChanged && !Variables.disableAutomaticRechecking) {
@@ -586,6 +618,8 @@ public class Controller implements Initializable {
                     wereShowsChanged = false;
                 } else if (Variables.disableAutomaticRechecking) wereShowsChanged = false;
                 setTableViewFields(1);
+                tableView.scrollTo(0);
+                tableView.scrollToColumnIndex(0);
                 log.info("TableViewFields set to active.");
             }
             this.setTableView();
@@ -600,9 +634,9 @@ public class Controller implements Initializable {
         show0RemainingCheckBox.setOnAction(e -> {
             show0Remaining = show0RemainingCheckBox.isSelected();
             ClassHandler.programSettingsController().getSettingsFile().setShow0Remaining(show0Remaining);
-            if (show0Remaining && currentList == 1)
+            if (show0Remaining)
                 log.info("Now showing shows with 0 episodes remaining.");
-            else if (currentList == 1) log.info("No longer showing shows with 0 episodes remaining.");
+            else log.info("No longer showing shows with 0 episodes remaining.");
             setTableViewFields();
             setTableView();
         });

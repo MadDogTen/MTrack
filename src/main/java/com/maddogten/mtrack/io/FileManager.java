@@ -198,10 +198,10 @@ public class FileManager {
         Variables.OperatingSystem os = getOS();
         try {
             if (os == Variables.OperatingSystem.WINDOWS) {
-                Process process = Runtime.getRuntime().exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()});
+                Process process = Runtime.getRuntime().exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", file.getPath()});
                 return process.isAlive();
             } else if (os == Variables.OperatingSystem.MAC || os == Variables.OperatingSystem.NIX || os == Variables.OperatingSystem.NUX || os == Variables.OperatingSystem.AIX) {
-                Process process = Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file.getAbsolutePath()});
+                Process process = Runtime.getRuntime().exec(new String[]{"/usr/bin/open", file.getPath()});
                 return process.isAlive();
             } else {
                 if (Desktop.isDesktopSupported()) Desktop.getDesktop().open(file);
