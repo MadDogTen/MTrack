@@ -174,6 +174,8 @@ public class Settings implements Initializable {
     private CheckBox useOnlineDatabaseCheckbox;
     @FXML
     private Text onlineWarningText;
+    @FXML
+    private Text directoryText;
 
 
     public static Settings getSettings() {
@@ -362,7 +364,77 @@ public class Settings implements Initializable {
         onlineWarningText.textProperty().bind(Strings.WarningConnectsToRemoteWebsite);
         useOnlineDatabaseCheckbox.setDisable(true);
 
+        // UI
+        unlockParentScene.textProperty().bind(Strings.AllowFullWindowMovementUse);
+        unlockParentScene.setSelected(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+        unlockParentScene.setOnAction(e -> {
+            ClassHandler.programSettingsController().getSettingsFile().setStageMoveWithParentAndBlockParent(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+            Variables.setStageMoveWithParentAndBlockParent(ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+            Stage stage = (Stage) tabPane.getScene().getWindow();
+            stage.close();
+            Platform.runLater(() -> Controller.openSettingsWindow(3));
+            log.info("MoveAndBlock has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+        });
+        showUsername.textProperty().bind(Strings.ShowUsername);
+        showUsername.setSelected(ClassHandler.userInfoController().getUserSettings().isShowUsername());
+        showUsername.setOnAction(e -> {
+            ClassHandler.userInfoController().getUserSettings().setShowUsername(showUsername.isSelected());
+            Controller.setShowUsernameVisibility(ClassHandler.userInfoController().getUserSettings().isShowUsername());
+        });
+        specialEffects.textProperty().bind(Strings.SpecialEffects);
+        specialEffects.setSelected(Variables.specialEffects);
+        specialEffects.setOnAction(e -> {
+            ClassHandler.programSettingsController().getSettingsFile().setEnableSpecialEffects(!ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
+            log.info("Special Effects has been set to: " + Variables.specialEffects);
+        });
+        automaticSaving.textProperty().bind(Strings.EnableAutomaticSaving);
+        automaticSaving.setSelected(Variables.enableAutoSavingOnTimer);
+        automaticSaving.setOnAction(e -> {
+            ClassHandler.programSettingsController().getSettingsFile().setEnableAutomaticSaving(!ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
+            if (Variables.enableAutoSavingOnTimer && updateSavingTextField.getText().matches(String.valueOf(0))) {
+                ClassHandler.programSettingsController().setSavingSpeed(Variables.defaultSavingSpeed);
+                updateSavingTextField.setText(String.valueOf(Variables.defaultSavingSpeed));
+            }
+            setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
+            updateSavingTextField.setDisable(!Variables.enableAutoSavingOnTimer);
+            log.info("Automatic saving has been set to: " + Variables.enableAutoSavingOnTimer);
+        });
+        savingText.textProperty().bind(Strings.SavingWaitTimeSeconds);
+        savingText.setTextAlignment(TextAlignment.CENTER);
+        updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
+        updateSavingTextField.setDisable(!Variables.enableAutoSavingOnTimer);
+        setSavingTime.textProperty().bind(Strings.Set);
+        setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
+        setSavingTime.setOnAction(e -> {
+            if (isNumberValid(updateSavingTextField.getText(), 5))
+                ClassHandler.programSettingsController().setSavingSpeed(Integer.valueOf(updateSavingTextField.getText()));
+            else updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
+        });
+        changeLanguage.textProperty().bind(Strings.ChangeLanguage);
+        changeLanguage.setOnAction(e -> {
+            setButtonDisable(true, changeLanguage);
+            LanguageHandler languageHandler = new LanguageHandler();
+            Map<String, String> languages = languageHandler.getLanguageNames();
+            if (languages.containsKey(ClassHandler.programSettingsController().getSettingsFile().getLanguage()))
+                languages.remove(ClassHandler.programSettingsController().getSettingsFile().getLanguage());
+            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), false, (Stage) tabPane.getScene().getWindow());
+            String languageReadable = (String) pickLanguageResult[0];
+            if (!languageReadable.contains("-2")) {
+                String internalName = Strings.EmptyString;
+                for (String langKey : languages.keySet()) {
+                    if (languages.get(langKey).matches(languageReadable)) {
+                        internalName = langKey;
+                        break;
+                    }
+                }
+                ClassHandler.programSettingsController().setDefaultLanguage(internalName);
+                languageHandler.setLanguage(Variables.language);
+            }
+            setButtonDisable(false, changeLanguage);
+        });
+
         // Other
+        directoryText.textProperty().setValue("Directory"); // TODO Add localization
         addDirectory.textProperty().bind(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
             setButtonDisable(true, addDirectory, removeDirectory);
@@ -479,75 +551,6 @@ public class Settings implements Initializable {
             developerTab.setDisable(true);
             tabPane.getTabs().remove(developerTab);
         }
-
-        // UI
-        unlockParentScene.textProperty().bind(Strings.AllowFullWindowMovementUse);
-        unlockParentScene.setSelected(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-        unlockParentScene.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setStageMoveWithParentAndBlockParent(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-            Variables.setStageMoveWithParentAndBlockParent(ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-            Stage stage = (Stage) tabPane.getScene().getWindow();
-            stage.close();
-            Platform.runLater(() -> Controller.openSettingsWindow(3));
-            log.info("MoveAndBlock has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-        });
-        showUsername.textProperty().bind(Strings.ShowUsername);
-        showUsername.setSelected(ClassHandler.userInfoController().getUserSettings().isShowUsername());
-        showUsername.setOnAction(e -> {
-            ClassHandler.userInfoController().getUserSettings().setShowUsername(showUsername.isSelected());
-            Controller.setShowUsernameVisibility(ClassHandler.userInfoController().getUserSettings().isShowUsername());
-        });
-        specialEffects.textProperty().bind(Strings.SpecialEffects);
-        specialEffects.setSelected(Variables.specialEffects);
-        specialEffects.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setEnableSpecialEffects(!ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
-            log.info("Special Effects has been set to: " + Variables.specialEffects);
-        });
-        automaticSaving.textProperty().bind(Strings.EnableAutomaticSaving);
-        automaticSaving.setSelected(Variables.enableAutoSavingOnTimer);
-        automaticSaving.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setEnableAutomaticSaving(!ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
-            if (Variables.enableAutoSavingOnTimer && updateSavingTextField.getText().matches(String.valueOf(0))) {
-                ClassHandler.programSettingsController().setSavingSpeed(Variables.defaultSavingSpeed);
-                updateSavingTextField.setText(String.valueOf(Variables.defaultSavingSpeed));
-            }
-            setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
-            updateSavingTextField.setDisable(!Variables.enableAutoSavingOnTimer);
-            log.info("Automatic saving has been set to: " + Variables.enableAutoSavingOnTimer);
-        });
-        savingText.textProperty().bind(Strings.SavingWaitTimeSeconds);
-        savingText.setTextAlignment(TextAlignment.CENTER);
-        updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
-        updateSavingTextField.setDisable(!Variables.enableAutoSavingOnTimer);
-        setSavingTime.textProperty().bind(Strings.Set);
-        setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
-        setSavingTime.setOnAction(e -> {
-            if (isNumberValid(updateSavingTextField.getText(), 5))
-                ClassHandler.programSettingsController().setSavingSpeed(Integer.valueOf(updateSavingTextField.getText()));
-            else updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
-        });
-        changeLanguage.textProperty().bind(Strings.ChangeLanguage);
-        changeLanguage.setOnAction(e -> {
-            setButtonDisable(true, changeLanguage);
-            LanguageHandler languageHandler = new LanguageHandler();
-            Map<String, String> languages = languageHandler.getLanguageNames();
-            if (languages.containsKey(ClassHandler.programSettingsController().getSettingsFile().getLanguage()))
-                languages.remove(ClassHandler.programSettingsController().getSettingsFile().getLanguage());
-            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), false, (Stage) tabPane.getScene().getWindow());
-            String languageReadable = (String) pickLanguageResult[0];
-            if (!languageReadable.contains("-2")) {
-                String internalName = Strings.EmptyString;
-                for (String langKey : languages.keySet()) {
-                    if (languages.get(langKey).matches(languageReadable)) {
-                        internalName = langKey;
-                        break;
-                    }
-                }
-                ClassHandler.programSettingsController().setDefaultLanguage(internalName);
-                languageHandler.setLanguage(Variables.language);
-            }
-            setButtonDisable(false, changeLanguage);
-        });
 
         // Developer
         printAllShows.textProperty().bind(Strings.PrintAllShowInfo);

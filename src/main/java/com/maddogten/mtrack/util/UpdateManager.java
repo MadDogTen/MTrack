@@ -212,12 +212,7 @@ public class UpdateManager {
                     programSettings.setMainDirectoryVersion(Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(1)));
                     programSettings.setShowFileVersion(Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(2)));
                     programSettings.setUpdateSpeed(Integer.parseInt(oldProgramSettingsFile.get("General").get(0)));
-                    programSettings.setDisableAutomaticShowUpdating(false);
-                    programSettings.setTimeToWaitForDirectory(-1);
                     programSettings.setShow0Remaining(Boolean.parseBoolean(oldProgramSettingsFile.get("General").get(1)));
-                    programSettings.setRecordChangesForNonActiveShows(false);
-                    programSettings.setRecordChangedSeasonsLowerThanCurrent(false);
-                    programSettings.setStageMoveWithParentAndBlockParent(true);
                     programSettings.setUseDefaultUser(Boolean.parseBoolean(oldProgramSettingsFile.get("DefaultUser").get(0)));
                     programSettings.setDefaultUser(oldProgramSettingsFile.get("DefaultUser").get(1));
                     programSettings.setShowColumnWidth(Double.parseDouble(oldProgramSettingsFile.get("GuiNumberSettings").get(0)));
@@ -257,6 +252,9 @@ public class UpdateManager {
                 programSettings.setFileLogging(true);
                 programSettings.setUseRemoteDatabase(false);
                 updatedText(fileType, 1013, 1014);
+            case 1014:
+                programSettings.setShowActiveShows(false);
+                updatedText(fileType, 1014, 1015);
                 ClassHandler.programSettingsController().setSettingsFile(programSettings);
                 updated = true;
         }

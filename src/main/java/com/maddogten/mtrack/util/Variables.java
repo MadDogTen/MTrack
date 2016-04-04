@@ -37,7 +37,7 @@ public class Variables {
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
-    public static final int ProgramSettingsFileVersion = 1014; // Was Changed // Note- Remove all "Was Changed" before merging with master.
+    public static final int ProgramSettingsFileVersion = 1015; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1005; // Was Changed
     public static final int DirectoryFileVersion = 1001; // Was Changed
 
@@ -89,7 +89,8 @@ public class Variables {
     @SuppressWarnings("CanBeFinal")
     public static boolean enableFileLogging;
     @SuppressWarnings("CanBeFinal")
-    public static boolean showActiveShows = true; // TODO Add User option to hide them & Change text depending on this setting
+    public static boolean showActiveShows;
+    public static boolean show0Remaining;
     //---------- TV Maze ----------\\
     @SuppressWarnings("CanBeFinal")
     public static boolean useOnlineDatabase; // TODO Still highly unfinished.

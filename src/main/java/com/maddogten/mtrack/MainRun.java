@@ -119,6 +119,8 @@ public class MainRun {
         Variables.savingSpeed = ClassHandler.programSettingsController().getSettingsFile().getSaveSpeed();
         Variables.enableFileLogging = ClassHandler.programSettingsController().getSettingsFile().isFileLogging();
         Variables.useOnlineDatabase = ClassHandler.programSettingsController().getSettingsFile().isUseRemoteDatabase();
+        Variables.show0Remaining = ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining();
+        Variables.showActiveShows = ClassHandler.programSettingsController().getSettingsFile().isShowActiveShows();
         ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
         if (!mainLoad)
             ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());

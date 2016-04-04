@@ -138,8 +138,8 @@
                                         text="Import Settings"/>
                                 <Separator layoutX="49.0" layoutY="6.0" prefHeight="14.0" prefWidth="134.0"/>
                                 <Separator layoutX="49.0" layoutY="124.0" prefHeight="14.0" prefWidth="134.0"/>
-                                <Text layoutX="91.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0"
-                                      text="Directory" underline="true"/>
+                                <Text fx:id="directoryText" layoutX="91.0" layoutY="30.0" strokeType="OUTSIDE"
+                                      strokeWidth="0.0" text="Directory" underline="true"/>
                                 <CheckBox fx:id="enableLoggingCheckbox" layoutX="54.0" layoutY="143.0"
                                           mnemonicParsing="false" text="Enable File Logging"/>
                                 <Separator layoutX="49.0" layoutY="166.0" prefHeight="14.0" prefWidth="134.0"/>

@@ -30,6 +30,7 @@ public class ProgramSettings implements Serializable {
     private boolean disableAutomaticShowUpdating; /*Stops the program from automatically searching for new files. You must do it manually then*/
     private int timeToWaitForDirectory; /*How long the program will wait before reporting the directory as failed to load*/
     private boolean show0Remaining; /*Saves the last state of show0Remaining, Which changes whether it shows active shows with no further episodes to currently watch*/
+    private boolean showActiveShows; /*Save the last state of showActiveShows, Which changes whether it show active shows on the inactive list*/
     private String language; /*Saves the default language*/
 
     // ChangeList Settings
@@ -81,6 +82,7 @@ public class ProgramSettings implements Serializable {
         this.disableAutomaticShowUpdating = false;
         this.timeToWaitForDirectory = Variables.defaultTimeToWaitForDirectory;
         this.show0Remaining = false;
+        this.showActiveShows = false;
         this.language = "None";
         this.recordChangesForNonActiveShows = false;
         this.recordChangedSeasonsLowerThanCurrent = false;
@@ -97,10 +99,10 @@ public class ProgramSettings implements Serializable {
         this.remainingColumnWidth = Variables.REMAINING_COLUMN_WIDTH;
         this.seasonColumnWidth = Variables.SEASONS_COLUMN_WIDTH;
         this.episodeColumnWidth = Variables.EPISODE_COLUMN_WIDTH;
-        showColumnVisibility = true;
-        remainingColumnVisibility = true;
-        seasonColumnVisibility = false;
-        episodeColumnVisibility = false;
+        this.showColumnVisibility = true;
+        this.remainingColumnVisibility = true;
+        this.seasonColumnVisibility = false;
+        this.episodeColumnVisibility = false;
         this.numberOfDirectories = 0;
     }
 
@@ -165,6 +167,16 @@ public class ProgramSettings implements Serializable {
 
     public void setShow0Remaining(boolean show0Remaining) {
         this.show0Remaining = show0Remaining;
+        Variables.show0Remaining = show0Remaining;
+    }
+
+    public boolean isShowActiveShows() {
+        return showActiveShows;
+    }
+
+    public void setShowActiveShows(boolean showActiveShows) {
+        this.showActiveShows = showActiveShows;
+        Variables.showActiveShows = showActiveShows;
     }
 
     public String getLanguage() {

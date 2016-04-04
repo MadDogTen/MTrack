@@ -26,13 +26,21 @@
                                                      text="Left"/>
                                     </columns>
                                 </TableView>
-                                <TextField fx:id="textField" layoutX="8.0" layoutY="6.0"/>
-                                <CheckBox fx:id="show0RemainingCheckBox" layoutX="168.0" layoutY="10.0" mnemonicParsing="false">
+                                <TextField fx:id="textField" layoutX="8.0" layoutY="7.0"/>
+                                <CheckBox fx:id="show0RemainingCheckBox" layoutX="250.0" layoutY="10.0"
+                                          mnemonicParsing="false" visible="false">
                                     <tooltip>
                                         <Tooltip id="tooltip" fx:id="show0RemainingCheckBoxTooltip"/>
                                     </tooltip>
                                 </CheckBox>
-                                <MenuButton fx:id="menuButton" layoutX="200.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="74.0" text="Options">
+                                <CheckBox fx:id="showActiveShowsCheckbox" layoutX="250.0" layoutY="10.0"
+                                          mnemonicParsing="false" visible="false">
+                                    <tooltip>
+                                        <Tooltip id="tooltip" fx:id="showActiveShowsCheckboxTooltip"/>
+                                    </tooltip>
+                                </CheckBox>
+                                <MenuButton fx:id="menuButton" layoutX="168.0" layoutY="6.0" mnemonicParsing="false"
+                                            prefHeight="25.0" prefWidth="74.0" text="Options">
                                     <items>
                                         <MenuItem fx:id="changeTableView" mnemonicParsing="false"
                                                   text="Switch between Active/Inactive List"/>
@@ -40,7 +48,7 @@
                                                   text="Open Changes Window"/>
                                     </items>
                                 </MenuButton>
-                                <Button id="clearTextField" fx:id="clearTextField" layoutX="137.0" layoutY="12.5"
+                                <Button id="clearTextField" fx:id="clearTextField" layoutX="137.0" layoutY="13.0"
                                         mnemonicParsing="false" prefHeight="0.0" prefWidth="0.0"
                                         text="Clear TextField"/>
                             </children>

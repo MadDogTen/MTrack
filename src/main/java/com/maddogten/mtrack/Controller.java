@@ -54,7 +54,7 @@ public class Controller implements Initializable {
     // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
-    private static boolean show0Remaining, wereShowsChanged, isShowCurrentlyPlaying; // TODO Move show0Remaining into settings?
+    private static boolean wereShowsChanged, isShowCurrentlyPlaying; // TODO Move show0Remaining into settings?
     private final Map<String, Integer> changedShows = new HashMap<>();
     private final ChangesBox changesBox = new ChangesBox();
     private final ShowPlayingBox showPlayingBox = new ShowPlayingBox();
@@ -114,12 +114,16 @@ public class Controller implements Initializable {
     private ComboBox<String> userNameComboBox;
     @FXML
     private Tooltip comboBoxTooltip;
+    @FXML
+    private CheckBox showActiveShowsCheckbox;
+    @FXML
+    private Tooltip showActiveShowsCheckboxTooltip;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShow> MakeTableViewFields(ArrayList<String> showList) {
         ObservableList<DisplayShow> list = FXCollections.observableArrayList();
         if (!showList.isEmpty()) {
-            if (currentList == 1 && !show0Remaining) {
+            if (currentList == 1 && !Variables.show0Remaining) {
                 showList.forEach(aShow -> {
                     int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow);
                     if (remaining != 0)
@@ -170,12 +174,12 @@ public class Controller implements Initializable {
             int season = ClassHandler.userInfoController().getCurrentSeason(aShow);
             int episode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
             if (currentShow != null) {
-                if (remaining != 0 || show0Remaining || currentList == 0) {
+                if (remaining != 0 || Variables.show0Remaining || currentList == 0) {
                     if (currentShow.getSeason() != season) currentShow.setSeason(season);
                     if (currentShow.getEpisode() != episode) currentShow.setEpisode(episode);
                     if (currentShow.getRemaining() != remaining) currentShow.setRemaining(remaining);
                 } else tableViewFields.remove(currentShow);
-            } else if (show0Remaining || currentList == 0 || remaining != 0)
+            } else if (Variables.show0Remaining || currentList == 0 || remaining != 0)
                 tableViewFields.add(new DisplayShow(aShow, remaining, season, episode));
         } else if (currentShow != null) tableViewFields.remove(currentShow);
     }
@@ -276,7 +280,8 @@ public class Controller implements Initializable {
         SortedList<DisplayShow> newSortedData = new SortedList<>(newFilteredData);
         newSortedData.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(newSortedData);
-        show0RemainingCheckBox.setVisible(currentList == 1);
+        show0RemainingCheckBox.setVisible(Variables.devMode && currentList == 1);
+        showActiveShowsCheckbox.setVisible(currentList == 0);
     }
 
     @Override
@@ -306,7 +311,6 @@ public class Controller implements Initializable {
         episode.textProperty().bind(Strings.Episode);
         episode.setPrefWidth(ClassHandler.programSettingsController().getSettingsFile().getEpisodeColumnWidth());
         episode.setVisible(ClassHandler.programSettingsController().getSettingsFile().isEpisodeColumnVisibility());
-        show0Remaining = ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining();
         setTableViewFields(1);
         setTableView();
         tableView.getItems();
@@ -324,6 +328,11 @@ public class Controller implements Initializable {
                                 } else if (currentList == 1 && Variables.specialEffects && changedShows.containsKey(item.getShow()) && !isSelected()) {
                                     setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(changedShows.get(item.getShow()), item.getRemaining()).getColor());
                                     return;
+                                }
+                                if (getTooltip() == null || !getTooltip().getText().contains(getItem().getShow())) {
+                                    Tooltip rowToolTip = new Tooltip(getItem().getShow() + " - " + Strings.Season.getValue() + " " + getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + getItem().getEpisode());
+                                    rowToolTip.getStyleClass().add("tooltip");
+                                    setTooltip(rowToolTip);
                                 }
                             }
                             setStyle(Strings.EmptyString);
@@ -468,13 +477,6 @@ public class Controller implements Initializable {
                                 log.info("Missing info for " + row.getItem().getShow() + " - Season: " + integer + " - Episodes: " + integers);
                             });
                             new MessageBox().message(info, (Stage) tabPane.getScene().getWindow());
-                        }
-                    });
-                    row.setOnMouseEntered(e -> {
-                        if (row.getItem() != null && (row.getTooltip() == null || !row.getTooltip().getText().contains(row.getItem().getShow()))) {
-                            Tooltip rowToolTip = new Tooltip(row.getItem().getShow() + " - " + Strings.Season.getValue() + " " + row.getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + row.getItem().getEpisode());
-                            rowToolTip.getStyleClass().add("tooltip");
-                            row.setTooltip(rowToolTip);
                         }
                     });
                     row.setOnMouseClicked(e -> {
@@ -630,17 +632,26 @@ public class Controller implements Initializable {
         changesAlert.setOnAction(e -> openChangeBox());
         if (Variables.specialEffects) changesAlert.setOpacity(0.0);
         else changesAlert.setOpacity(1.0);
-        show0RemainingCheckBox.setSelected(show0Remaining);
+        show0RemainingCheckBox.setSelected(Variables.show0Remaining);
         show0RemainingCheckBox.setOnAction(e -> {
-            show0Remaining = show0RemainingCheckBox.isSelected();
-            ClassHandler.programSettingsController().getSettingsFile().setShow0Remaining(show0Remaining);
-            if (show0Remaining)
+            ClassHandler.programSettingsController().getSettingsFile().setShow0Remaining(show0RemainingCheckBox.isSelected());
+            if (Variables.show0Remaining)
                 log.info("Now showing shows with 0 episodes remaining.");
             else log.info("No longer showing shows with 0 episodes remaining.");
             setTableViewFields();
             setTableView();
         });
         show0RemainingCheckBoxTooltip.textProperty().bind(Strings.ShowHiddenShowsWith0EpisodeLeft);
+        showActiveShowsCheckbox.setSelected(Variables.showActiveShows);
+        showActiveShowsCheckbox.setOnAction(e -> {
+            ClassHandler.programSettingsController().getSettingsFile().setShowActiveShows(showActiveShowsCheckbox.isSelected());
+            if (Variables.showActiveShows)
+                log.info("Now showing active shows.");
+            else log.info("No longer showing active shows.");
+            setTableViewFields();
+            setTableView();
+        });
+        showActiveShowsCheckboxTooltip.textProperty().setValue("Toggle active shows visibility."); // TODO Add localization
         Tooltip pingingDirectoryTooltip = new Tooltip();
         pingingDirectoryTooltip.textProperty().bind(Strings.PingingDirectories);
         pingingDirectoryTooltip.getStyleClass().add("tooltip");
