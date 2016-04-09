@@ -58,6 +58,7 @@ public class Strings {
     public static final StringProperty All = new SimpleStringProperty();
     public static final StringProperty Program = new SimpleStringProperty();
     public static final StringProperty Directories = new SimpleStringProperty();
+    public static final StringProperty Directory = new SimpleStringProperty();
     // Button Text
     public static final StringProperty SetSeasonEpisode = new SimpleStringProperty();
     public static final StringProperty PlaySeasonEpisode = new SimpleStringProperty();
@@ -118,6 +119,7 @@ public class Strings {
     public static final StringProperty InternalVersion = new SimpleStringProperty();
     public static final StringProperty MakeUserDefault = new SimpleStringProperty();
     public static final StringProperty MakeLanguageDefault = new SimpleStringProperty();
+    public static final StringProperty ToggleActiveShowsVisibility = new SimpleStringProperty();
     // Other Text
     public static final StringProperty AddNewUsername = new SimpleStringProperty();
     public static final StringProperty PleaseEnterUsername = new SimpleStringProperty();

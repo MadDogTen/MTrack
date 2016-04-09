@@ -54,6 +54,7 @@ public class lipsum extends Language {
         Strings.All.setValue("frulu");
         Strings.Program.setValue("datlu");
         Strings.Directories.setValue("gutma");
+        Strings.Directory.setValue("duvulaka");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("malesuada");
@@ -117,6 +118,7 @@ public class lipsum extends Language {
         Strings.InternalVersion.setValue("gataluma: " + Variables.InternalVersion);
         Strings.MakeUserDefault.setValue("tertavu");
         Strings.MakeLanguageDefault.setValue("mitaka");
+        Strings.ToggleActiveShowsVisibility.setValue("duvumanata");
 
         // Other Text
         Strings.AddNewUsername.setValue("porta");

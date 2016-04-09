@@ -35,13 +35,13 @@ public class UserInfoController {
             users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UserFileExtension, Strings.EmptyString)));
             if (usersCleaned.isEmpty()) log.info("Users folder was empty.");
             return usersCleaned;
-        } else log.info("Users folder doesn't exists.");
+        } else log.fine("Users folder doesn't exists.");
         return new ArrayList<>();
     }
 
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
     public void setIgnoredStatus(String aShow, boolean ignored) {
-        log.info(aShow + " ignore status is: " + ignored);
+        log.fine(aShow + " ignore status is: " + ignored);
         userSettings.getAShowSettings(aShow).setIgnored(ignored);
     }
 
@@ -101,7 +101,7 @@ public class UserInfoController {
 
     // If a user doesn't want a show clogging up any lists, then it can be set hidden. It shouldn't be able to be found anywhere at that point.
     public void setHiddenStatus(String aShow, boolean isHidden) {
-        log.info(aShow + " hidden status is: " + isHidden);
+        log.fine(aShow + " hidden status is: " + isHidden);
         userSettings.getAShowSettings(aShow).setHidden(isHidden);
     }
 
@@ -117,7 +117,7 @@ public class UserInfoController {
     public boolean playAnyEpisode(String aShow, int aSeason, int aEpisode) {
         log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
         String showLocation = ClassHandler.showInfoController().getEpisode(aShow, aSeason, aEpisode);
-        log.info("Known show location: " + showLocation);
+        log.finer("Known show location: " + showLocation);
         if (showLocation.isEmpty()) log.warning("showLocation is empty!");
         else {
             File file = new File(showLocation);
@@ -218,7 +218,6 @@ public class UserInfoController {
             if (aEpisode == episode) return seasonEpisodeReturn;
         }
         if (episode == 0) {
-            log.info(String.valueOf(episode));
             Set<Integer> seasons = ClassHandler.showInfoController().getSeasonsList(aShow);
             int season = currentSeason;
             season -= 1;
@@ -226,7 +225,6 @@ public class UserInfoController {
                 seasonEpisodeReturn[0] = season;
                 if (!ClassHandler.showInfoController().getEpisodesList(aShow, season).isEmpty()) {
                     Set<Integer> episodesPreviousSeason = ClassHandler.showInfoController().getEpisodesList(aShow, season);
-                    log.info(String.valueOf(episodesPreviousSeason));
                     int episode1 = ClassHandler.showInfoController().findHighestEpisode(episodesPreviousSeason);
                     if (episodesPreviousSeason.contains(episode1)) {
                         seasonEpisodeReturn[1] = episode1;
@@ -255,51 +253,53 @@ public class UserInfoController {
     // Then checks for a following season that contains episode 1.
     public int getRemainingNumberOfEpisodes(String aShow) {
         int remaining = 0, currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
-        Set<Integer> allSeasons = ClassHandler.showInfoController().getSeasonsList(aShow);
-        ArrayList<Integer> allSeasonAllowed = new ArrayList<>(allSeasons.size());
-        allSeasons.forEach(aSeason -> {
-            if (aSeason >= currentSeason) allSeasonAllowed.add(aSeason);
-        });
-        if (!allSeasonAllowed.isEmpty()) {
-            if (ClassHandler.showInfoController().isDoubleEpisode(aShow, currentSeason, currentEpisode))
-                currentEpisode++;
-            boolean isCurrentSeason = true;
-            Collections.sort(allSeasonAllowed);
-            int lastSeason = -2;
-            for (int aSeason : allSeasonAllowed) {
-                if (lastSeason != -2 && lastSeason != aSeason - 1) return remaining;
-                int episode = 1;
-                if (isCurrentSeason) {
-                    if (aSeason != currentSeason) return remaining;
-                    episode = currentEpisode;
-                }
-                Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
-                if (!episodes.isEmpty()) {
-                    ArrayList<Integer> episodesArray = new ArrayList<>(episodes.size());
-                    episodes.forEach(episodesArray::add);
-                    Collections.sort(episodesArray);
-                    Iterator<Integer> episodesIterator = episodesArray.iterator();
-                    ArrayList<Integer> episodesAllowed = new ArrayList<>(episodesArray.size());
+        if (ClassHandler.showInfoController().getShowsFile().containsKey(aShow)) {
+            Set<Integer> allSeasons = ClassHandler.showInfoController().getSeasonsList(aShow);
+            ArrayList<Integer> allSeasonAllowed = new ArrayList<>(allSeasons.size());
+            allSeasons.forEach(aSeason -> {
+                if (aSeason >= currentSeason) allSeasonAllowed.add(aSeason);
+            });
+            if (!allSeasonAllowed.isEmpty()) {
+                if (ClassHandler.showInfoController().isDoubleEpisode(aShow, currentSeason, currentEpisode))
+                    currentEpisode++;
+                boolean isCurrentSeason = true;
+                Collections.sort(allSeasonAllowed);
+                int lastSeason = -2;
+                for (int aSeason : allSeasonAllowed) {
+                    if (lastSeason != -2 && lastSeason != aSeason - 1) return remaining;
+                    int episode = 1;
                     if (isCurrentSeason) {
-                        while (episodesIterator.hasNext()) {
-                            int next = episodesIterator.next();
-                            if (next >= currentEpisode) episodesAllowed.add(next);
-                        }
-                    } else episodesArray.forEach(episodesAllowed::add);
-                    Collections.sort(episodesAllowed);
-                    Iterator<Integer> episodesIterator2 = episodesAllowed.iterator();
-                    while (episodesIterator2.hasNext()) {
-                        int e = episodesIterator2.next();
-                        if (e == episode) {
-                            remaining++;
-                            episode++;
-                            episodesIterator2.remove();
-                        } else return remaining;
+                        if (aSeason != currentSeason) return remaining;
+                        episode = currentEpisode;
                     }
-                    if (!episodesAllowed.isEmpty()) return remaining;
+                    Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
+                    if (!episodes.isEmpty()) {
+                        ArrayList<Integer> episodesArray = new ArrayList<>(episodes.size());
+                        episodes.forEach(episodesArray::add);
+                        Collections.sort(episodesArray);
+                        Iterator<Integer> episodesIterator = episodesArray.iterator();
+                        ArrayList<Integer> episodesAllowed = new ArrayList<>(episodesArray.size());
+                        if (isCurrentSeason) {
+                            while (episodesIterator.hasNext()) {
+                                int next = episodesIterator.next();
+                                if (next >= currentEpisode) episodesAllowed.add(next);
+                            }
+                        } else episodesArray.forEach(episodesAllowed::add);
+                        Collections.sort(episodesAllowed);
+                        Iterator<Integer> episodesIterator2 = episodesAllowed.iterator();
+                        while (episodesIterator2.hasNext()) {
+                            int e = episodesIterator2.next();
+                            if (e == episode) {
+                                remaining++;
+                                episode++;
+                                episodesIterator2.remove();
+                            } else return remaining;
+                        }
+                        if (!episodesAllowed.isEmpty()) return remaining;
+                    }
+                    if (isCurrentSeason) isCurrentSeason = false;
+                    lastSeason = aSeason;
                 }
-                if (isCurrentSeason) isCurrentSeason = false;
-                lastSeason = aSeason;
             }
         }
         return remaining;
@@ -319,7 +319,7 @@ public class UserInfoController {
     // Adds a new show to the shows file.
     public void addNewShow(String aShow) {
         if (!userSettings.getShowSettings().containsKey(aShow)) {
-            log.info("Adding " + aShow + " to user settings file.");
+            log.fine("Adding " + aShow + " to user settings file.");
             if (Variables.genUserShowInfoAtFirstFound)
                 userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestSeason(aShow), ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestSeason(aShow)))));
             else userSettings.addShowSettings(new UserShowSettings(aShow, 1, 1));
@@ -332,6 +332,6 @@ public class UserInfoController {
 
     public void saveUserSettingsFile() {
         new FileManager().save(userSettings, Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, true);
-        log.info("userSettingsFile has been saved!");
+        log.fine("userSettingsFile has been saved!");
     }
 }

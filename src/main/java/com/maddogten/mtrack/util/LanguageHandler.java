@@ -34,7 +34,7 @@ public class LanguageHandler {
     }
 
     public boolean setLanguage(String name) {
-        log.info("Attempting to set language to " + name);
+        log.finer("Attempting to set language to " + name);
         if (languages.containsKey(name)) {
             languages.get(name).setAllStrings();
             if (!name.matches("template"))
@@ -46,7 +46,7 @@ public class LanguageHandler {
 
     // This verifies that all the Strings have been set, and if any haven't been, sets it as TextMissing. If TextMissing happens to be missing, it uses a default english string.
     private void addMissingTextForAllMissingStrings() {
-        log.info("Checking for missing strings...");
+        log.finer("Checking for missing strings...");
         if (Strings.TextMissing == null || Strings.TextMissing.getValue() == null || Strings.TextMissing.getValue().isEmpty())
             Strings.TextMissing.setValue("Proper text is missing, Please report.");
         // Single Words
@@ -81,6 +81,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.All);
         findAndSetMissingStrings(Strings.Program);
         findAndSetMissingStrings(Strings.Directories);
+        findAndSetMissingStrings(Strings.Directory);
         // Button Text
         findAndSetMissingStrings(Strings.SetSeasonEpisode);
         findAndSetMissingStrings(Strings.PlaySeasonEpisode);
@@ -141,6 +142,7 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.InternalVersion);
         findAndSetMissingStrings(Strings.MakeUserDefault);
         findAndSetMissingStrings(Strings.MakeLanguageDefault);
+        findAndSetMissingStrings(Strings.ToggleActiveShowsVisibility);
         // Other Text
         findAndSetMissingStrings(Strings.AddNewUsername);
         findAndSetMissingStrings(Strings.PleaseEnterUsername);
@@ -233,6 +235,7 @@ public class LanguageHandler {
     private void findAndSetMissingStrings(StringProperty stringToCheck) {
         if (stringToCheck.getValue() == null && stringToCheck.getValue().isEmpty()) {
             stringToCheck.setValue(Strings.TextMissing.getValue());
+            log.warning("\"" + stringToCheck.getName() + "\" didn't have a string, Please correct.");
         }
     }
 }

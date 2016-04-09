@@ -105,7 +105,7 @@ public class UpdateManager {
                 log.info(directory.getFileName() + " directory versions matched.");
             else {
                 log.info(directory.getFileName() + " directory version didn't match " + Variables.DirectoryFileVersion + " - " + directory.getDirectoryFileVersion() + ", Updating...");
-                convertDirectory(directory, directory.getDirectoryFileVersion() == 0 ? 1000 : directory.getDirectoryFileVersion(), Variables.DirectoryFileVersion);
+                convertDirectory(directory, directory.getDirectoryFileVersion(), Variables.DirectoryFileVersion);
             }
         }
     }
@@ -115,7 +115,7 @@ public class UpdateManager {
         int mainDirectoryVersion = ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion();
         if (mainDirectoryVersion == ClassHandler.userInfoController().getUserSettings().getUserDirectoryVersion()) {
             log.info("User directory version matched, Now checking if number of directories match...");
-            if (ClassHandler.directoryController().findDirectories(true, false, true).size() == ClassHandler.programSettingsController().getSettingsFile().getNumberOfDirectories()) {
+            if (ClassHandler.directoryController().findDirectories(false, true, false).size() == ClassHandler.programSettingsController().getSettingsFile().getNumberOfDirectories()) {
                 log.info("Number of directories matched, Now checking if programID's match...");
                 boolean allMatched = true;
                 for (Directory directory : ClassHandler.directoryController().findDirectories(true, false, true)) {
@@ -332,6 +332,10 @@ public class UpdateManager {
                 //noinspection ConstantConditions
                 userSettings.setChangedShowsStatus(new HashMap<>());
                 updatedText(fileType, 1004, 1005);
+            case 1005:
+                if (userSettings != null)
+                    userSettings.getShowSettings().forEach((showName, userShowSettings) -> userShowSettings.setRemaining(ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showName)));
+                updatedText(fileType, 1005, 1006);
                 updated = true;
         }
         if (updated) {
@@ -381,7 +385,7 @@ public class UpdateManager {
                     else fileName += '_' + singleSplit;
                 }
             }
-            ClassHandler.directoryController().saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, ClassHandler.directoryController().getLowestFreeDirectoryIndex(), -1, showsMap), false);
+            ClassHandler.directoryController().saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, -1, showsMap), false);
         });
         updatedText("ShowsFile", -2, 1000);
         // Update Program Settings File Version
@@ -396,6 +400,8 @@ public class UpdateManager {
         String fileType = "ShowsFile";
         GetShowInfo getShowInfo = new GetShowInfo();
         switch (oldVersion) {
+            case 0:
+                updatedText(fileType, 0, 1000);
             case 1000:
                 if (Variables.useOnlineDatabase) {
                     directory.getShows().forEach((showName, show) -> {
@@ -421,6 +427,12 @@ public class UpdateManager {
                     });
                 }
                 updatedText(fileType, 1000, 1001);
+            case 1001:
+                log.info("Deleting then recreating directory: " + directory.getFileName());
+                ClassHandler.directoryController().removeDirectory(directory);
+                directory = new Directory(directory.getDirectory(), directory.getFileName(), directory.getPriority(), directory.getShows());
+                log.info("Finished recreating directory: " + directory.getFileName());
+                updatedText(fileType, 1001, 1002);
                 updated = true;
         }
         if (updated) {
@@ -439,15 +451,28 @@ public class UpdateManager {
         shows.forEach(aShow -> {
             if (!userShows.contains(aShow) && !ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and added.");
-                ChangeReporter.addChange("+ " + aShow);
                 ClassHandler.userInfoController().addNewShow(aShow);
+                /*ChangeReporter.addChange("+ " + aShow);
+                ClassHandler.controller().addChangedShow(aShow, ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow));*/
                 changed[0] = true;
             } else if (ignoredShows.contains(aShow)) {
                 log.info(aShow + " was found during user shows update and un-ignored.");
-                ChangeReporter.addChange("+ " + aShow);
                 ClassHandler.userInfoController().setIgnoredStatus(aShow, false);
+                /*ChangeReporter.addChange("+ " + aShow);
+                ClassHandler.controller().addChangedShow(aShow, ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow));*/
                 changed[0] = true;
-            }
+            } /*else {
+                int lastRemaining = ClassHandler.userInfoController().getUserSettings().getAShowSettings(aShow).getRemaining(), currentlyRemaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow);
+                log.info(String.valueOf(lastRemaining));
+                if (lastRemaining != -2 && lastRemaining != currentlyRemaining) {
+                    ChangeReporter.addChange((lastRemaining < currentlyRemaining ? "+ " : "- ") + aShow + Strings.DashSeason.getValue() + " | " + Strings.Episode.getValue()); // Add\Fix localizations
+                    Map<String, Integer> changedShows = ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus();
+                    if (!changedShows.containsKey(aShow)) {
+                        changedShows.put(aShow, lastRemaining);
+                        ClassHandler.userInfoController().getUserSettings().setChangedShowsStatus(changedShows);
+                    }
+                }
+            }*/ //TODO Finish
         });
         userShows.forEach(aShow -> {
             if (!shows.contains(aShow)) {

@@ -39,7 +39,7 @@ public class MainRun {
         } catch (UnsupportedEncodingException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        // If the above isn't the correct folder, it then checks if the Roaming Appdata folder is the correct one.
+        // If the above isn't the correct folder, it then checks if the Appdata Roaming folder is the correct one.
         if (Variables.dataFolder.toString().isEmpty()) {
             File path = fileManager.findProgramFolder();
             if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
@@ -128,7 +128,7 @@ public class MainRun {
 
     void tick() {
         if (!hasRan) {
-            log.info("MainRun Running...");
+            log.finer("MainRun Running...");
             this.recheckTimer = GenericMethods.getTimeSeconds();
             this.saveTimer = GenericMethods.getTimeSeconds();
             hasRan = true;
@@ -161,9 +161,9 @@ public class MainRun {
 
     // This first checks if a DefaultUser currently exists, and if not, prompts the user to choose / create one.
     public String getUser() {
-        log.info("getUser Running...");
+        log.finer("getUser Running...");
         if (ClassHandler.programSettingsController().getSettingsFile().isUseDefaultUser()) {
-            log.info("Using default user.");
+            log.finer("Using default user.");
             return ClassHandler.programSettingsController().getSettingsFile().getDefaultUser();
         } else {
             Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, ClassHandler.userInfoController().getAllUsers());
@@ -178,7 +178,7 @@ public class MainRun {
         if (Variables.enableAutoSavingOnTimer && GenericMethods.timeTakenSeconds(saveTimer) > Variables.savingSpeed) {
             GenericMethods.saveSettings();
             saveTimer = GenericMethods.getTimeSeconds();
-            log.info("Settings have automatically been saved.");
+            log.fine("Settings have automatically been saved.");
         }
     }
 
@@ -196,7 +196,7 @@ public class MainRun {
             Variables.makeLanguageDefault = true;
             if (wasSet) {
                 Variables.language = language;
-                log.info("Language is set: " + language);
+                log.finer("Language is set: " + language);
             } else log.severe("Language was not set for some reason, Please report.");
         } else {
             languageHandler.setLanguage(Variables.DefaultLanguage[0]);
@@ -214,7 +214,7 @@ public class MainRun {
                 Variables.makeLanguageDefault = (boolean) pickLanguageResult[1];
                 if (languageHandler.setLanguage(internalName)) {
                     Variables.language = internalName;
-                    log.info("Language is set: " + languageReadable);
+                    log.finer("Language is set: " + languageReadable);
                 } else log.severe("Language was not set for some reason, Please report.");
             }
         }

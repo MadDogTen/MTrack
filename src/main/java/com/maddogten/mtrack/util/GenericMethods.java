@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 @SuppressWarnings("ClassWithoutLogger")
 public class GenericMethods {
 
+    private static final Filter filter = record -> record.getSourceClassName().contains("com.maddogten.mtrack");
     private static Logger rootLog;
-    private static Filter filter;
     private static FileHandler fileHandler = null;
 
     // Clock Methods to help with timing.
@@ -91,6 +91,7 @@ public class GenericMethods {
         ClassHandler.programSettingsController().getSettingsFile().setNumberOfDirectories(ClassHandler.directoryController().findDirectories(true, false, true).size());
         ClassHandler.userInfoController().getUserSettings().setChanges(ChangeReporter.getChanges());
         ClassHandler.userInfoController().getUserSettings().setChangedShowsStatus(ClassHandler.controller().getChangedShows());
+        ClassHandler.userInfoController().getActiveShows().forEach(showName -> ClassHandler.userInfoController().getUserSettings().getAShowSettings(showName).setRemaining(ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showName)));
         ClassHandler.programSettingsController().saveSettingsFile();
         ClassHandler.userInfoController().saveUserSettingsFile();
     }
@@ -98,11 +99,14 @@ public class GenericMethods {
     // Initiate logging rules.
     public static void initLogger() {
         rootLog = Logger.getLogger("");
-        rootLog.setLevel(Variables.loggingLevel);
-        rootLog.getHandlers()[0].setLevel(Variables.loggingLevel);
-        filter = record -> record.getSourceClassName().contains("com.maddogten.mtrack");
+        setLoggerLevel(Variables.devMode ? Level.ALL : Variables.loggerLevel);
         rootLog.setFilter(filter);
         rootLog.getHandlers()[0].setFilter(filter);
+    }
+
+    public static void setLoggerLevel(Level loggerLevel) {
+        rootLog.setLevel(loggerLevel);
+        rootLog.getHandlers()[0].setLevel(loggerLevel);
     }
 
     public static void initFileLogging(Logger log) throws IOException, SecurityException {
@@ -113,12 +117,13 @@ public class GenericMethods {
             for (File file : logFolder.listFiles((dir, name) -> name.endsWith(".lck")))
                 if (file.delete())
                     log.info("\"" + file.getName() + "\" was deleted."); // Clear the lock files, They aren't needed.
-            File[] files = logFolder.listFiles((dir, name) -> name.endsWith(".txt"));
+            File[] files = logFolder.listFiles((dir, name) -> name.endsWith(".txt") || name.endsWith(Variables.LogExtension));
             while (files.length > Variables.logMaxNumberOfFiles - 1) { // Delete any extra log files.
                 Matcher lowest = null;
                 String toDelete = null;
+                Pattern pattern = Pattern.compile("M?Log(?:_\\d{1,2}){1,2}-(\\d\\d)[\\-\\.](\\d\\d)[\\-\\.](\\d\\d)_(\\d\\d)[\\-\\.](\\d\\d)[\\-\\.](\\d\\d)");
                 for (File file : files) {
-                    Matcher matcher = Pattern.compile("(\\d\\d)\\.(\\d\\d)\\.(\\d\\d)_(\\d\\d)\\.(\\d\\d)\\.(\\d\\d)").matcher(file.getName());
+                    Matcher matcher = pattern.matcher(file.getName());
                     if (matcher.find()) {
                         if (lowest == null) {
                             lowest = matcher;
@@ -137,12 +142,12 @@ public class GenericMethods {
                         }
                     }
                 }
-                log.info(files.length + " log files were found (Limit: " + Variables.logMaxNumberOfFiles + "). Deleted: \"" + toDelete + "\".");
+                log.info("\"" + files.length + "\" log files were found (Limit: " + Variables.logMaxNumberOfFiles + "). Deleted: \"" + toDelete + "\".");
                 if (!new FileManager().deleteFile(Variables.LogsFolder, toDelete, "")) break;
 
-                files = logFolder.listFiles((dir, name) -> name.endsWith(".txt"));
+                files = logFolder.listFiles((dir, name) -> name.endsWith(".txt") || name.endsWith(Variables.LogExtension));
             }
-            fileHandler = new FileHandler(logFolder + Strings.FileSeparator + "Log_%g-" + new SimpleDateFormat("MM.dd.yy_HH.mm.ss").format(new Date()) + Variables.TextExtension, Variables.logMaxFileSize, Variables.logMaxNumberOfFiles);
+            fileHandler = new FileHandler(logFolder + Strings.FileSeparator + "MLog_%u_%g-" + new SimpleDateFormat("MM-dd-yy_HH-mm-ss").format(new Date()) + Variables.LogExtension, Variables.logMaxFileSize, Variables.logMaxNumberOfFiles);
             rootLog.addHandler(fileHandler);
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setFilter(filter);

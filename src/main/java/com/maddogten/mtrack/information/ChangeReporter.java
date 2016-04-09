@@ -1,6 +1,5 @@
 package com.maddogten.mtrack.information;
 
-import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.util.ClassHandler;
 
 import java.util.logging.Logger;
@@ -32,7 +31,7 @@ public class ChangeReporter {
             changes = correctedList;
         }
 
-        log.info("Adding new change: \"" + newInfo + "\".");
+        log.fine("Adding new change: \"" + newInfo + "\".");
         String[] currentList = changes;
         changes = new String[currentList.length + 1];
         changes[0] = newInfo;
@@ -49,7 +48,6 @@ public class ChangeReporter {
         if (changes.length > 0) {
             changes = new String[0];
             isChanges = false;
-            Controller.setTableViewFields(); // TODO Change this
         }
         ClassHandler.controller().resetChangedShows();
         log.info("Change list has been cleared.");

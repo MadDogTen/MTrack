@@ -145,13 +145,11 @@ public class FirstRun {
         boolean addAnother = true;
         TextBox textBox = new TextBox();
         ConfirmBox confirmBox = new ConfirmBox();
-        int index = 0;
         while (addAnother) {
-            boolean[] matched = ClassHandler.directoryController().addDirectory(index, textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), null));
-            index++;
-            if (!matched[0] && !matched[1])
+            Long[] matched = ClassHandler.directoryController().addDirectory(textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), null));
+            if (matched[0] == null && matched[1] == null)
                 new MessageBox().message(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
-            else if (matched[1]) break;
+            else if (matched[1] != null) break;
             if (!confirmBox.confirm(Strings.AddAnotherDirectory, null)) addAnother = false;
         }
     }

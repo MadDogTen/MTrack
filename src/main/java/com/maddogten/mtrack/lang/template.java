@@ -49,6 +49,7 @@ public class template extends Language {
         Strings.Cut.setValue("");
         Strings.Copy.setValue("");
         Strings.Paste.setValue("");
+        Strings.Directory.setValue("");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("");
@@ -115,6 +116,7 @@ public class template extends Language {
         Strings.InternalVersion.setValue("");
         Strings.MakeUserDefault.setValue("");
         Strings.MakeLanguageDefault.setValue("");
+        Strings.ToggleActiveShowsVisibility.setValue("");
 
         // Other Text
         Strings.AddNewUsername.setValue("");

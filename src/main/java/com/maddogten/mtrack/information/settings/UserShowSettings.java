@@ -22,6 +22,8 @@ public class UserShowSettings implements Serializable {
     private int currentSeason;
     private int currentEpisode;
 
+    private int remaining = -2;
+
     public UserShowSettings(String showName, int currentSeason, int currentEpisode) {
         this.showName = showName;
         active = false;
@@ -84,5 +86,13 @@ public class UserShowSettings implements Serializable {
 
     public void setCurrentEpisode(int currentEpisode) {
         this.currentEpisode = currentEpisode;
+    }
+
+    /*public int getRemaining() {
+        return remaining;
+    }*/
+
+    public void setRemaining(int remaining) {
+        this.remaining = remaining;
     }
 }

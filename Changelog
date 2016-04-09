@@ -44,6 +44,8 @@ Changed the ProgressIndicator isCurrentlyRechecking now fades in and out.
 Changed the Main Stage to fade in on program start (Not sure if I will keep it or expand it to other stages).
 Changed "Set Season + Episode" to default the fields to the current season & episode (If found, otherwise defaults to old behaviour).
 Changed how the stages fading in/out work. Also added it for Settings, About box, & Change Box.
+Changed the level of some logging messages. Still needs quite a bit more work.
+Changed Directory "index" to "directoryID", and it now uses a randomly generated number.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -76,7 +78,7 @@ Added DeveloperStuff class and started moving all appropriate code into it.
 Added automatic file saving every 10 minutes.
 Added Settings for disabling Special Effects, disabling automatic saving, & changing automatic saving speed.
 Added ClassHandler class which now holds DirectoryController, ShowInfoController, UserInfoController, ProgramSettingsController, CheckShowFiles, DeveloperStuff, MainRun, and Controller.
-Added Logging to a file. Keeps a maximum of 10 files, and deletes the oldest files first (Only deletes files on boot, So you may occasionally have over 10 files).
+Added Logging to a file (Level Info). Keeps a maximum of 10 files (Max 10MB/File), and deletes the oldest files first (Only deletes files on boot, So you may occasionally have over 10 files).
 Added Tooltip when hovering over a show that Displays the Show name, Season, and Episode.
 Added Ability to switch users on fly. Warning- Needs more testing, Might be a bit buggy.
 Added color overlay to shows that have been changed, with the color showing how the remaining amount is affected. Green = Same amount of remaining, Red = Less Remaining, Blue = More Remaining. (Won't work for anything already in the changelist)
@@ -105,6 +107,8 @@ Fixed bug where if the Users folder didn't exist, the program crashed.
 Fixed program crashing when choosing to store the files with the jar.
 Fixed program not properly finding settings files stored with it.
 Fixed ShowsList not updating when a directory isn't found to be active anymore, It now removes / updates shows from the list as necessary (and adds then back when the directory is found again).
+Fixed nothing happening when attempting to use "Set Season + Episode" on certain shows.
+Fixed crash when starting with an inactive directory.
 
 
 Notes- Version bumped to 'Alpha 1.0.0'. This is no longer considered pre-alpha. Updating is still supported from the oldest uploaded version of the program (Much to my surprise).

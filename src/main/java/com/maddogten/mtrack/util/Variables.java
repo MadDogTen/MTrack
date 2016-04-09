@@ -31,15 +31,15 @@ public class Variables {
     public static final String ShowFileExtension = ".shows";
     public static final String UserFileExtension = ".user";
     public static final String SettingFileExtension = ".settings";
-    public static final String TextExtension = ".txt";
+    public static final String LogExtension = ".log";
     // Other
     public static final Font Font = javafx.scene.text.Font.font(("Times New Roman"));
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
     public static final int ProgramSettingsFileVersion = 1015; // Was Changed // Note- Remove all "Was Changed" before merging with master.
-    public static final int UserSettingsFileVersion = 1005; // Was Changed
-    public static final int DirectoryFileVersion = 1001; // Was Changed
+    public static final int UserSettingsFileVersion = 1006; // Was Changed
+    public static final int DirectoryFileVersion = 1002; // Was Changed
 
     public static final int InternalVersion = 35; // To help keep track of what I'm currently working on / testing.
 
@@ -66,10 +66,10 @@ public class Variables {
     public final static String findShowURL = "http://api.tvmaze.com/singlesearch/shows?q=";
     public final static String getShowWithID = "http://api.tvmaze.com/shows/";
     public final static String episodesAddition = "/episodes";
-    public static final Level loggingLevel = Level.FINEST;
+    public static final Level loggerLevel = Level.INFO; // INFO
     @SuppressWarnings("PublicStaticArrayField")
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
-    static final int logMaxFileSize = 1000000;
+    static final int logMaxFileSize = 10000000;
     static final int logMaxNumberOfFiles = 10;
     public static boolean disableAutomaticRechecking;
     /**/public static boolean devMode = false; // false
@@ -119,7 +119,9 @@ public class Variables {
         }
 
         public static ShowColorStatus findColorFromRemaining(int previouslyRemaining, int currentlyRemaining) {
-            if (previouslyRemaining < currentlyRemaining) return ADDED;
+            if (previouslyRemaining < currentlyRemaining) {
+                return previouslyRemaining == -2 && currentlyRemaining == 0 ? DEFAULT : ADDED;
+            }
             else if (previouslyRemaining > currentlyRemaining) return REMOVED;
             else return DEFAULT;
         }

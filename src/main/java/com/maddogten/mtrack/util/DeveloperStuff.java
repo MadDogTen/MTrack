@@ -31,8 +31,17 @@ public class DeveloperStuff {
         log.info("Printing out all directories:");
         if (ClassHandler.directoryController().findDirectories(true, false, true).isEmpty())
             log.info("No directories.");
-        else
-            GenericMethods.printArrayList(Level.INFO, log, ClassHandler.directoryController().findDirectories(true, false, true), true);
+        else {
+            ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
+            directories.forEach(directory -> {
+                String[] print = new String[4];
+                print[0] = directory.getFileName();
+                print[1] = directory.getDirectory().getPath();
+                print[2] = String.valueOf(directory.getDirectoryFileVersion());
+                print[3] = String.valueOf(directory.getDirectoryID());
+                log.info(Arrays.toString(print));
+            });
+        }
         log.info("Finished printing out all directories.");
     }
 
@@ -46,7 +55,7 @@ public class DeveloperStuff {
                 boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), stage);
                 if (confirm) {
                     directoryToClear.getShows().keySet().forEach(aShow -> {
-                        boolean showExistsElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(directoryToClear.getIndex(), true, false, true));
+                        boolean showExistsElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(directoryToClear.getDirectoryID(), true, false, true));
                         if (!showExistsElsewhere)
                             ClassHandler.userInfoController().setIgnoredStatus(aShow, true);
                         Controller.updateShowField(aShow, showExistsElsewhere);

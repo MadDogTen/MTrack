@@ -54,7 +54,7 @@ public class Controller implements Initializable {
     // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
-    private static boolean wereShowsChanged, isShowCurrentlyPlaying; // TODO Move show0Remaining into settings?
+    private static boolean wereShowsChanged, isShowCurrentlyPlaying;
     private final Map<String, Integer> changedShows = new HashMap<>();
     private final ChangesBox changesBox = new ChangesBox();
     private final ShowPlayingBox showPlayingBox = new ShowPlayingBox();
@@ -286,7 +286,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        log.info("MainController Running...");
+        log.finer("Controller Running...");
         ClassHandler.setController(this);
         this.setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
@@ -322,15 +322,15 @@ public class Controller implements Initializable {
                         protected void updateItem(DisplayShow item, boolean empty) {
                             super.updateItem(item, empty);
                             if (item != null) {
-                                if (currentList == 0 && Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(item.getShow())) {
-                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
+                                if (currentList == 0 && ((Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(item.getShow())) || item.getRemaining() == -2)) {
+                                    setStyle("-fx-background-color: " + (item.getRemaining() == -2 ? Variables.ShowColorStatus.ADDED.getColor() : Variables.ShowColorStatus.ACTIVE.getColor()));
                                     return;
                                 } else if (currentList == 1 && Variables.specialEffects && changedShows.containsKey(item.getShow()) && !isSelected()) {
                                     setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(changedShows.get(item.getShow()), item.getRemaining()).getColor());
                                     return;
                                 }
                                 if (getTooltip() == null || !getTooltip().getText().contains(getItem().getShow())) {
-                                    Tooltip rowToolTip = new Tooltip(getItem().getShow() + " - " + Strings.Season.getValue() + " " + getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + getItem().getEpisode());
+                                    Tooltip rowToolTip = new Tooltip(getItem().getShow() + " - " + Strings.Season.getValue() + " " + getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + getItem().getEpisode() + " - " + getItem().getRemaining() + " " + Strings.Left.getValue());
                                     rowToolTip.getStyleClass().add("tooltip");
                                     setTooltip(rowToolTip);
                                 }
@@ -437,7 +437,7 @@ public class Controller implements Initializable {
                         directories.forEach(aDirectory -> {
                             File fileName = new File(aDirectory.getDirectory() + Strings.FileSeparator + row.getItem().getShow());
                             if (fileName.exists())
-                                folders.add(new Directory(fileName, fileName.toString(), -2, -2, null));
+                                folders.add(new Directory(fileName, fileName.toString(), -2, null));
                         });
                         if (folders.size() == 1) fileManager.open(folders.get(0).getDirectory());
                         else new ListSelectBox().openDirectory(folders, (Stage) tabPane.getScene().getWindow());
@@ -651,7 +651,7 @@ public class Controller implements Initializable {
             setTableViewFields();
             setTableView();
         });
-        showActiveShowsCheckboxTooltip.textProperty().setValue("Toggle active shows visibility."); // TODO Add localization
+        showActiveShowsCheckboxTooltip.textProperty().bind(Strings.ToggleActiveShowsVisibility);
         Tooltip pingingDirectoryTooltip = new Tooltip();
         pingingDirectoryTooltip.textProperty().bind(Strings.PingingDirectories);
         pingingDirectoryTooltip.getStyleClass().add("tooltip");

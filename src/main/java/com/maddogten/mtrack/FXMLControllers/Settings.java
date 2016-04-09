@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -434,19 +435,18 @@ public class Settings implements Initializable {
         });
 
         // Other
-        directoryText.textProperty().setValue("Directory"); // TODO Add localization
+        directoryText.textProperty().bind(Strings.Directory);
         addDirectory.textProperty().bind(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
             setButtonDisable(true, addDirectory, removeDirectory);
-            int index = ClassHandler.directoryController().getLowestFreeDirectoryIndex();
-            boolean[] wasAdded = ClassHandler.directoryController().addDirectory(index, new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow()));
-            if (wasAdded[0]) {
+            Long[] wasAdded = ClassHandler.directoryController().addDirectory(new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow()));
+            if (wasAdded[0] != null && wasAdded[1] == null) {
                 log.info("Directory was added.");
                 FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
                 Task<Void> task = new Task<Void>() {
                     @Override
                     protected Void call() throws Exception {
-                        new FirstRun().generateShowsFile(ClassHandler.directoryController().getDirectory(index));
+                        new FirstRun().generateShowsFile(ClassHandler.directoryController().getDirectory(wasAdded[0]));
                         return null;
                     }
                 };
@@ -459,7 +459,7 @@ public class Settings implements Initializable {
                 }
                 ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
                 findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
-                ClassHandler.directoryController().getDirectory(index).getShows().keySet().forEach(aShow -> {
+                ClassHandler.directoryController().getDirectory(wasAdded[0]).getShows().keySet().forEach(aShow -> {
                     ClassHandler.userInfoController().addNewShow(aShow);
                     Controller.updateShowField(aShow, true);
                 });
@@ -481,7 +481,7 @@ public class Settings implements Initializable {
                     log.info("Directory selected for deletion: " + directoryToDelete.getFileName());
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + directoryToDelete.getFileName() + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     if (confirm) {
-                        ArrayList<Directory> otherDirectories = ClassHandler.directoryController().findDirectories(directoryToDelete.getIndex(), true, false, true);
+                        ArrayList<Directory> otherDirectories = ClassHandler.directoryController().findDirectories(directoryToDelete.getDirectoryID(), true, false, true);
                         Map<String, Boolean> showsToUpdate = new HashMap<>();
                         directoryToDelete.getShows().keySet().forEach(aShow -> {
                             log.info("Currently checking: " + aShow);
@@ -533,9 +533,11 @@ public class Settings implements Initializable {
                 if (Variables.devMode) {
                     developerTab.setDisable(false);
                     tabPane.getTabs().add(developerTab);
+                    GenericMethods.setLoggerLevel(Level.ALL);
                 } else {
                     developerTab.setDisable(true);
                     tabPane.getTabs().remove(developerTab);
+                    GenericMethods.setLoggerLevel(Variables.loggerLevel);
                 }
             });
         } else toggleDevMode.setVisible(false);

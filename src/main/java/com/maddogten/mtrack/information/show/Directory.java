@@ -6,6 +6,7 @@ import com.maddogten.mtrack.util.Variables;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Random;
 
 /*
       Directory stores each directory the user added, and their related information / settings.
@@ -18,7 +19,7 @@ public class Directory implements Serializable {
     private static final long serialVersionUID = 8211794325592517516L;
     private final File directory;
     private final String fileName;
-    private final int index;
+    private final long directoryID;
     @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal", "unused", "FieldMayBeFinal"})
     // The idea for priority is that once this is implemented you will be able to choose which directory the program will prefer to play an episode from, if found in multiple locations. To be implemented at a later time.
     private int priority;
@@ -26,10 +27,10 @@ public class Directory implements Serializable {
     private int directoryFileVersion;
     private long lastProgramID;
 
-    public Directory(File directory, String fileName, int index, int priority, Map<String, Show> shows) {
+    public Directory(File directory, String fileName, int priority, Map<String, Show> shows) {
         this.directory = directory;
         this.fileName = fileName;
-        this.index = index;
+        this.directoryID = new Random().nextLong() + 1;
         this.priority = priority;
         this.shows = shows;
         this.directoryFileVersion = Variables.DirectoryFileVersion;
@@ -44,9 +45,17 @@ public class Directory implements Serializable {
         return fileName;
     }
 
-    public int getIndex() {
-        return index;
+    public long getDirectoryID() {
+        return directoryID;
     }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    /*public void setPriority(int priority) {
+        this.priority = priority;
+    }*/
 
     public Map<String, Show> getShows() {
         return shows;

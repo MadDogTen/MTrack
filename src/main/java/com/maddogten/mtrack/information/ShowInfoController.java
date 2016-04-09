@@ -77,7 +77,7 @@ public class ShowInfoController {
 
     // Returns a given episode from a given season in a given show.
     public String getEpisode(String show, int season, int episode) {
-        return showsFile.get(show).getSeason(season).getEpisodes().containsKey(episode) ? showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename() : Strings.EmptyString;
+        return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) ? showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename() : Strings.EmptyString;
     }
 
     // Returns whether or not an episode is part of a double episode.

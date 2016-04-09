@@ -29,7 +29,6 @@ public class FindChangedShows {
 
         this.showRemaining = new HashMap<>();
         userInfoController.getAllNonIgnoredShows().forEach((aShow) -> this.showRemaining.put(aShow, userInfoController.getRemainingNumberOfEpisodes(aShow)));
-        log.info("ShowsFile has been set.");
     }
 
     // This compares the showFile that is unchanged with the new updated showsFile and reports any changes found to the ChangeReporter.
@@ -105,7 +104,7 @@ public class FindChangedShows {
                 });
             } else {
                 this.log.info(showName + " Added");
-                ClassHandler.controller().addChangedShow(showName, 0);
+                ClassHandler.controller().addChangedShow(showName, -2);
                 ChangeReporter.addChange("+ " + showName);
                 hasChanged[0] = true;
             }

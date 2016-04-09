@@ -52,6 +52,7 @@ public class en_US extends Language {
         Strings.All.setValue("All");
         Strings.Program.setValue("Program");
         Strings.Directories.setValue("Directories");
+        Strings.Directory.setValue("Directory");
 
         // Button Text
         Strings.SetSeasonEpisode.setValue("Set Season + Episode");
@@ -115,6 +116,7 @@ public class en_US extends Language {
         Strings.InternalVersion.setValue("Internal Version: " + Variables.InternalVersion);
         Strings.MakeUserDefault.setValue("Make User Default");
         Strings.MakeLanguageDefault.setValue("Make Language Default");
+        Strings.ToggleActiveShowsVisibility.setValue("Toggle active shows visibility.");
 
         // Other Text
         Strings.AddNewUsername.setValue("Add New Username");
