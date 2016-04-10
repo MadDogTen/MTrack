@@ -39,9 +39,9 @@ public class Variables {
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
     public static final int ProgramSettingsFileVersion = 1015; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1006; // Was Changed
-    public static final int DirectoryFileVersion = 1002; // Was Changed
+    public static final int DirectoryFileVersion = 1003; // Was Changed
 
-    public static final int InternalVersion = 35; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 36; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -90,7 +90,7 @@ public class Variables {
     public static boolean enableFileLogging;
     @SuppressWarnings("CanBeFinal")
     public static boolean showActiveShows;
-    public static boolean show0Remaining;
+    public static boolean show0Remaining; // TODO Re-add user toggle for this.
     //---------- TV Maze ----------\\
     @SuppressWarnings("CanBeFinal")
     public static boolean useOnlineDatabase; // TODO Still highly unfinished.

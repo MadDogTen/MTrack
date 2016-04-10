@@ -42,7 +42,9 @@ public class UserInfoController {
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
     public void setIgnoredStatus(String aShow, boolean ignored) {
         log.fine(aShow + " ignore status is: " + ignored);
-        userSettings.getAShowSettings(aShow).setIgnored(ignored);
+        if (userSettings.getAShowSettings(aShow) == null)
+            log.finer("Show was not found in user directory, may be an error.");
+        else userSettings.getAShowSettings(aShow).setIgnored(ignored);
     }
 
     public ArrayList<String> getIgnoredShows() {
@@ -181,15 +183,15 @@ public class UserInfoController {
 
     // Sets a show to the very first season & episode.
     public void setToBeginning(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findLowestSeason(aShow));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
+        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)));
+        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
         log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
     // Sets a show to the last season and to the last found episode + 1.
     public void setToEnd(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findHighestSeason(aShow));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findHighestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
+        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findHighestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)));
+        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findHighestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
         log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
     }
 
@@ -225,7 +227,7 @@ public class UserInfoController {
                 seasonEpisodeReturn[0] = season;
                 if (!ClassHandler.showInfoController().getEpisodesList(aShow, season).isEmpty()) {
                     Set<Integer> episodesPreviousSeason = ClassHandler.showInfoController().getEpisodesList(aShow, season);
-                    int episode1 = ClassHandler.showInfoController().findHighestEpisode(episodesPreviousSeason);
+                    int episode1 = ClassHandler.showInfoController().findHighestInteger(episodesPreviousSeason);
                     if (episodesPreviousSeason.contains(episode1)) {
                         seasonEpisodeReturn[1] = episode1;
                         return seasonEpisodeReturn;
@@ -252,8 +254,9 @@ public class UserInfoController {
     // Finds out how many episodes you have following the currently one. If it finds incrementing episodes all the way from the current one,
     // Then checks for a following season that contains episode 1.
     public int getRemainingNumberOfEpisodes(String aShow) {
-        int remaining = 0, currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
+        int remaining = 0;
         if (ClassHandler.showInfoController().getShowsFile().containsKey(aShow)) {
+            int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();
             Set<Integer> allSeasons = ClassHandler.showInfoController().getSeasonsList(aShow);
             ArrayList<Integer> allSeasonAllowed = new ArrayList<>(allSeasons.size());
             allSeasons.forEach(aSeason -> {
@@ -321,7 +324,7 @@ public class UserInfoController {
         if (!userSettings.getShowSettings().containsKey(aShow)) {
             log.fine("Adding " + aShow + " to user settings file.");
             if (Variables.genUserShowInfoAtFirstFound)
-                userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestSeason(aShow), ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestSeason(aShow)))));
+                userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))))));
             else userSettings.addShowSettings(new UserShowSettings(aShow, 1, 1));
         }
     }

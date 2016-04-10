@@ -116,6 +116,14 @@ public class CheckShowFiles {
                             ArrayList<String> ignoredShows = ClassHandler.userInfoController().getIgnoredShows();
                             double percentagePer = percentageSplit / (changedShows.size() * 2);
                             changedShows.keySet().forEach(aNewShow -> {
+                                if (changedShows.get(aNewShow).getSeasons() != null)
+                                    changedShows.get(aNewShow).getSeasons().forEach((seasonInt, season) -> {
+                                        if (!season.getEpisodes().isEmpty()) {
+                                            int currentHighestFoundEpisode = ClassHandler.showInfoController().findHighestInteger(season.getEpisodes().keySet());
+                                            if (currentHighestFoundEpisode > season.getHighestFoundEpisode())
+                                                season.setHighestFoundEpisode(currentHighestFoundEpisode);
+                                        }
+                                    });
                                 aDirectory.getShows().put(aNewShow, changedShows.get(aNewShow));
                                 if (ignoredShows.contains(aNewShow))
                                     ClassHandler.userInfoController().setIgnoredStatus(aNewShow, false);

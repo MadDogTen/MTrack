@@ -306,6 +306,7 @@ public class ListSelectBox {
         Label label = new Label();
         label.textProperty().bind(Strings.PickTheSeasonAndEpisode);
 
+        // TODO Make this support option to display all known episodes or only currently found episodes.
         ArrayList<Integer> seasonsString = new ArrayList<>();
         seasonsString.addAll(showInfoController.getSeasonsList(aShow).stream().collect(Collectors.toList()));
         Collections.sort(seasonsString);

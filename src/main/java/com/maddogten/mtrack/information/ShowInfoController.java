@@ -85,45 +85,22 @@ public class ShowInfoController {
         return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) && showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
     }
 
-    // Returns the lowest found season in a show.
-    public int findLowestSeason(String aShow) {
+    // Returns the lowest found integer in a set.
+    public int findLowestInteger(Set<Integer> integers) {
         final int[] lowestSeason = {-1};
-        getSeasonsList(aShow).forEach(aSeason -> {
+        integers.forEach(aSeason -> {
             if (lowestSeason[0] == -1 || aSeason < lowestSeason[0]) lowestSeason[0] = aSeason;
         });
         return lowestSeason[0];
     }
 
-    // Returns the highest found season in a show.
-    public int findHighestSeason(String aShow) {
-        final int[] highestSeason = {-1};
-        Set<Integer> seasons = getSeasonsList(aShow);
-        seasons.forEach(aSeason -> {
-            if (highestSeason[0] == -1 || aSeason > highestSeason[0]) highestSeason[0] = aSeason;
+    // Returns the highest found integer in a set.
+    public int findHighestInteger(Set<Integer> integers) {
+        final int[] highestInteger = {-1};
+        integers.forEach(integer -> {
+            if (highestInteger[0] == -1 || integer > highestInteger[0]) highestInteger[0] = integer;
         });
-        return highestSeason[0];
-    }
-
-    // Returns the lowest episode in the given set.
-    public int findLowestEpisode(Set<Integer> episodes) {
-        final int[] lowestEpisodeString = new int[1];
-        final int[] lowestEpisodeInt = {-1};
-        episodes.forEach(aEpisode -> {
-            if (lowestEpisodeInt[0] == -1 || aEpisode < lowestEpisodeInt[0]) {
-                lowestEpisodeInt[0] = aEpisode;
-                lowestEpisodeString[0] = aEpisode;
-            }
-        });
-        return lowestEpisodeString[0];
-    }
-
-    // Returns the highest episode in the given set.
-    public int findHighestEpisode(Set<Integer> episodes) {
-        final int[] highestEpisode = {-1};
-        episodes.forEach(aEpisode -> {
-            if (highestEpisode[0] == -1 || aEpisode > highestEpisode[0]) highestEpisode[0] = aEpisode;
-        });
-        return highestEpisode[0];
+        return highestInteger[0];
     }
 
     public Map<Integer, Set<Integer>> getMissingEpisodes(String aShow) {

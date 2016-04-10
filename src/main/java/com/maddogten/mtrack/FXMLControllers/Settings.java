@@ -293,7 +293,7 @@ public class Settings implements Initializable {
                 ArrayList<String> showsList = ClassHandler.showInfoController().getShowsList();
                 for (String aShow : showsList) {
                     if (Variables.genUserShowInfoAtFirstFound)
-                        showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestSeason(aShow), ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestSeason(aShow)))));
+                        showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))))));
                     else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
                 }
                 new FileManager().save(new UserSettings(userName, showSettings, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);

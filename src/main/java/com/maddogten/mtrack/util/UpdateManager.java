@@ -60,7 +60,7 @@ public class UpdateManager {
             Map<String, UserShowSettings> showSettings = new HashMap<>();
             for (String aShow : ClassHandler.showInfoController().getShowsList()) {
                 if (Variables.genUserShowInfoAtFirstFound)
-                    showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestSeason(aShow), ClassHandler.showInfoController().findLowestEpisode(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestSeason(aShow)))));
+                    showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))))));
                 else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
             }
             new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
@@ -296,9 +296,9 @@ public class UpdateManager {
                             temp2.put("isActive", "false");
                             temp2.put("isIgnored", "false");
                             temp2.put("isHidden", "false");
-                            temp2.put("CurrentSeason", String.valueOf(ClassHandler.showInfoController().findLowestSeason(aShow)));
+                            temp2.put("CurrentSeason", String.valueOf(ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))));
                             Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, Integer.parseInt(temp2.get("CurrentSeason")));
-                            temp2.put("CurrentEpisode", String.valueOf(ClassHandler.showInfoController().findLowestEpisode(episodes)));
+                            temp2.put("CurrentEpisode", String.valueOf(ClassHandler.showInfoController().findLowestInteger(episodes)));
                             oldUserSettingsFile.get("ShowSettings").put(aShow, temp2);
                         }
                     });
@@ -433,6 +433,19 @@ public class UpdateManager {
                 directory = new Directory(directory.getDirectory(), directory.getFileName(), directory.getPriority(), directory.getShows());
                 log.info("Finished recreating directory: " + directory.getFileName());
                 updatedText(fileType, 1001, 1002);
+            case 1002:
+                directory.getShows().forEach((showName, show) -> {
+                    if (!show.getSeasons().isEmpty()) {
+                        show.getSeasons().forEach((seasonInt, season) -> {
+                            if (!season.getEpisodes().isEmpty()) {
+                                int currentHighestFoundEpisode = ClassHandler.showInfoController().findHighestInteger(season.getEpisodes().keySet());
+                                if (currentHighestFoundEpisode > season.getHighestFoundEpisode())
+                                    season.setHighestFoundEpisode(currentHighestFoundEpisode);
+                            }
+                        });
+                    }
+                });
+                updatedText(fileType, 1002, 1003);
                 updated = true;
         }
         if (updated) {

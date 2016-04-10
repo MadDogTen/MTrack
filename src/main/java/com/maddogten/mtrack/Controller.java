@@ -318,27 +318,23 @@ public class Controller implements Initializable {
         tableView.getSortOrder().add(shows);
         tableView.setRowFactory(
                 param -> {
+                    final Tooltip rowToolTip = new Tooltip();
+                    rowToolTip.getStyleClass().add("tooltip");
                     final TableRow<DisplayShow> row = new TableRow<DisplayShow>() {
                         @Override
                         protected void updateItem(DisplayShow item, boolean empty) {
                             super.updateItem(item, empty);
                             if (item != null) {
-                                if (currentList == 0 && ((Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(item.getShow())) || item.getRemaining() == -2)) {
+                                if (currentList == 0 && ((Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(item.getShow())) || item.getRemaining() == -2))
                                     setStyle("-fx-background-color: " + (item.getRemaining() == -2 ? Variables.ShowColorStatus.ADDED.getColor() : Variables.ShowColorStatus.ACTIVE.getColor()));
-                                    return;
-                                } else if (currentList == 1 && Variables.specialEffects && changedShows.containsKey(item.getShow()) && !isSelected()) {
+                                else if (currentList == 1 && Variables.specialEffects && changedShows.containsKey(item.getShow()) && !isSelected())
                                     setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(changedShows.get(item.getShow()), item.getRemaining()).getColor());
-                                    return;
-                                }
-                                if (getTooltip() == null || !getTooltip().getText().contains(getItem().getShow())) {
-                                    Tooltip rowToolTip = new Tooltip(getItem().getShow() + " - " + Strings.Season.getValue() + " " + getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + getItem().getEpisode() + " - " + getItem().getRemaining() + " " + Strings.Left.getValue());
-                                    rowToolTip.getStyleClass().add("tooltip");
-                                    setTooltip(rowToolTip);
-                                }
-                            }
-                            setStyle(Strings.EmptyString);
+                                else if (!getStyle().isEmpty()) setStyle(Strings.EmptyString);
+                                rowToolTip.textProperty().setValue(getItem().getShow() + " - " + Strings.Season.getValue() + " " + getItem().getSeason() + " - " + Strings.Episode.getValue() + " " + getItem().getEpisode() + " - " + getItem().getRemaining() + " " + Strings.Left.getValue());
+                            } else if (!getStyle().isEmpty()) setStyle(Strings.EmptyString);
                         }
                     };
+                    row.setTooltip(rowToolTip);
                     final ContextMenu rowMenuActive = new ContextMenu();
                     final ContextMenu rowMenuInactive = new ContextMenu();
 

@@ -21,7 +21,6 @@ public class MoveStage {
         final long[] timePressed = new long[1];
         region.setOnMousePressed(e -> {
             timePressed[0] = GenericMethods.getTimeMilliSeconds();
-            region.setCursor(Cursor.CLOSED_HAND);
             if (e.isPrimaryButtonDown()) {
                 offset[0] = e.getSceneX();
                 offset[1] = e.getSceneY();
@@ -29,6 +28,7 @@ public class MoveStage {
         });
         region.setOnMouseDragged(e -> {
             if (e.isPrimaryButtonDown() && GenericMethods.timeTakenMilli(timePressed[0]) > moveWaitTime) {
+                region.setCursor(Cursor.CLOSED_HAND);
                 region.getScene().getWindow().setX(e.getScreenX() - offset[0]);
                 region.getScene().getWindow().setY(e.getScreenY() - offset[1]);
                 if (parentStage != null && Variables.moveStageWithParent) {

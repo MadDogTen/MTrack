@@ -11,12 +11,15 @@ public class Season implements Serializable {
     private final int season;
     private final Map<Integer, Episode> episodes;
 
+    private int highestFoundEpisode;
+
     // TVMaze data
     private int numberOfEpisodes;
 
     public Season(int season, Map<Integer, Episode> episodes) {
         this.season = season;
         this.episodes = episodes;
+        this.highestFoundEpisode = -1;
         this.numberOfEpisodes = -1;
     }
 
@@ -42,5 +45,13 @@ public class Season implements Serializable {
 
     public void setNumberOfEpisodes(int numberOfEpisodes) {
         this.numberOfEpisodes = numberOfEpisodes;
+    }
+
+    public int getHighestFoundEpisode() {
+        return highestFoundEpisode;
+    }
+
+    public void setHighestFoundEpisode(int highestFoundEpisode) {
+        this.highestFoundEpisode = highestFoundEpisode;
     }
 }
