@@ -35,10 +35,10 @@ public class ShowInfoController {
             allShows.forEach(aShow -> {
                 Map<Integer, Season> fullSeasons = new HashMap<>();
                 HashSet<Integer> seasons = new HashSet<>();
-                directories.stream().filter(aDirectory -> aDirectory.getShows().containsKey(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
+                directories.stream().filter(aDirectory -> aDirectory.containsShow(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
                 seasons.forEach(aSeason -> {
                     Map<Integer, Episode> episodes = new HashMap<>();
-                    directories.stream().filter(aDirectory -> (aDirectory.getShows().containsKey(aShow) && aDirectory.getShows().get(aShow).getSeasons().containsKey(aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
+                    directories.stream().filter(aDirectory -> (aDirectory.containsShowAndSeason(aShow, aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
                     fullSeasons.put(aSeason, new Season(aSeason, episodes));
                 });
                 showsFile.put(aShow, new Show(aShow, fullSeasons));
@@ -145,7 +145,7 @@ public class ShowInfoController {
         final boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
             showsFileArray.forEach(aDirectory -> {
-                if (aDirectory.getShows().containsKey(aShow)) showExistsElsewhere[0] = true;
+                if (aDirectory.containsShow(aShow)) showExistsElsewhere[0] = true;
             });
         }
         if (showExistsElsewhere[0]) log.info(aShow + " exists elsewhere.");

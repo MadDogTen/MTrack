@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 public class DirectoryController {
     private final Logger log = Logger.getLogger(DirectoryController.class.getName());
     private final ArrayList<File> inactiveDirectories = new ArrayList<>();
+    private int lastActiveCheck = -2;
 
     // Saves all the directory paths that the program is currently set to check.
     public ArrayList<Directory> findDirectories(boolean includeInactive, boolean skipFoundInactiveDirectories, boolean skipRechecking) {
@@ -67,92 +68,63 @@ public class DirectoryController {
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
     private ArrayList<Directory> getActiveDirectories(ArrayList<Directory> untestedDirectories, boolean skipFoundInactiveDirectories) {
         ArrayList<Directory> activeDirectories = new ArrayList<>(untestedDirectories.size());
-        if (skipFoundInactiveDirectories) {
-            log.finer("skipFoundInactiveDirectories was true, Skipping known inactive directories.");
-            if (inactiveDirectories.isEmpty()) log.finer("inactiveDirectories was empty, checking all directories.");
-            else {
-                inactiveDirectories.forEach(directory -> {
-                    Iterator<Directory> directoryIterator = untestedDirectories.listIterator();
-                    while (directoryIterator.hasNext()) {
-                        if (directory.equals(directoryIterator.next().getDirectory())) {
-                            log.finer(directory + " was skipped in active check as it was previously found as inactive.");
-                            directoryIterator.remove();
-                            break;
+        if (lastActiveCheck == -2 || GenericMethods.timeTakenSeconds(lastActiveCheck) > Variables.timeBetweenRecheckingActiveDirectoriesSeconds) {
+            if (skipFoundInactiveDirectories) {
+                log.finer("skipFoundInactiveDirectories was true, Skipping known inactive directories.");
+                if (inactiveDirectories.isEmpty())
+                    log.finer("inactiveDirectories was empty, checking all directories.");
+                else {
+                    inactiveDirectories.forEach(directory -> {
+                        Iterator<Directory> directoryIterator = untestedDirectories.listIterator();
+                        while (directoryIterator.hasNext()) {
+                            if (directory.equals(directoryIterator.next().getDirectory())) {
+                                log.finer(directory + " was skipped in active check as it was previously found as inactive.");
+                                directoryIterator.remove();
+                                break;
+                            }
                         }
-                    }
-                });
-            }
-        } else log.finer("skipFoundInactiveDirectories was false, Rechecking all directories.");
-        final boolean[] reloadShowFile = {false};
-        String bsR1 = "\\\\";
-        Pattern drivePattern = Pattern.compile("[A-Z]:" + bsR1);
-        Pattern networkFolderPattern = Pattern.compile(bsR1 + bsR1 + "[0-9A-Za-z-]+" + bsR1);
-        Pattern ipPattern = Pattern.compile(bsR1 + bsR1 + "[0-9a-z][0-9.a-z:]+[.|:][0-9.a-z:]+[0-9a-z]" + bsR1);
-        ArrayList<File> previouslyInactive = new ArrayList<>(inactiveDirectories);
-        untestedDirectories.forEach(directory -> {
-            log.finer("Checking active status of " + directory.getDirectory() + '.');
-            Matcher driveMatcher = drivePattern.matcher(directory.getDirectory().toString());
-            Matcher networkFolderMatcher = networkFolderPattern.matcher(directory.getDirectory().toString());
-            String match = Strings.EmptyString;
-            boolean[] isDirectoryActive = {false};
-            boolean directoryChecked = false;
-            if (driveMatcher.find()) match = driveMatcher.group();
-            else if (networkFolderMatcher.find()) match = networkFolderMatcher.group();
-            if (!match.isEmpty()) {
-                log.finer(directory.getDirectory().toString() + " was detected as being a drive/networked directory.");
-                directoryChecked = true;
-                File baseDirectory = new File(match);
-                Task<Void> checkingTask = new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        isDirectoryActive[0] = baseDirectory.exists() && baseDirectory.canRead() && directory.getDirectory().exists() && directory.getDirectory().canRead();
-                        return null;
-                    }
-                };
-                Thread thread = new Thread(checkingTask);
-                thread.start();
-                try { // This is to give the Thread a chance to finish before the while loop starts. Mainly to avoid the "Time remaining" message without using a boolean.
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    GenericMethods.printStackTrace(log, e, this.getClass());
+                    });
                 }
-                int timer = GenericMethods.getTimeSeconds();
-                while (thread.isAlive()) {
-                    log.finer("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer)));
-                    if (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer) < 1) {
-                        log.finer(directory.getDirectory() + " took to long to respond to alive check, Check that the drive is plugged in & working.");
-                        thread.interrupt();
-                        break;
-                    } else {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            GenericMethods.printStackTrace(log, e, this.getClass());
-                        }
-                    }
-                    if (!Main.programRunning) thread.interrupt();
-                }
-            }
-            if (!directoryChecked) {
+            } else log.finer("skipFoundInactiveDirectories was false, Rechecking all directories.");
+            final boolean[] reloadShowFile = {false};
+            String bsR1 = "\\\\";
+            Pattern drivePattern = Pattern.compile("[A-Z]:" + bsR1);
+            Pattern networkFolderPattern = Pattern.compile(bsR1 + bsR1 + "[0-9A-Za-z-]+" + bsR1);
+            Pattern ipPattern = Pattern.compile(bsR1 + bsR1 + "[0-9a-z][0-9.a-z:]+[.|:][0-9.a-z:]+[0-9a-z]" + bsR1);
+            ArrayList<File> previouslyInactive = new ArrayList<>(inactiveDirectories);
+            untestedDirectories.forEach(directory -> {
+                log.finer("Checking active status of " + directory.getDirectory() + '.');
+                Matcher driveMatcher = drivePattern.matcher(directory.getDirectory().toString());
+                Matcher networkFolderMatcher = networkFolderPattern.matcher(directory.getDirectory().toString());
                 Matcher ipMatcher = ipPattern.matcher(directory.getDirectory().toString());
-                if (ipMatcher.find()) {
-                    log.finer(directory.getDirectory() + " was detected as being an ip address.");
-                    directoryChecked = true;
+                boolean[] isDirectoryActive = {false};
+                boolean directoryMatchFound = false;
+                File baseDirectory;
+                baseDirectory = driveMatcher.find() ? new File(driveMatcher.group()) : networkFolderMatcher.find() ? new File(networkFolderMatcher.group()) : ipMatcher.find() ? directory.getDirectory() : null;
+                if (baseDirectory != null) {
+                    boolean ipDrive = baseDirectory == directory.getDirectory();
+                    if (ipDrive) log.finer(directory.getDirectory() + " was detected as being an ip address.");
+                    else
+                        log.finer(directory.getDirectory().toString() + " was detected as being a drive/networked directory.");
+                    directoryMatchFound = true;
                     Task<Void> checkingTask = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
-                            isDirectoryActive[0] = directory.getDirectory().exists() && directory.getDirectory().canRead() && directory.getDirectory().getTotalSpace() > 0;
+                            if (ipDrive)
+                                isDirectoryActive[0] = directory.getDirectory().exists() && directory.getDirectory().canRead() && directory.getDirectory().getTotalSpace() > 0;
+                            else
+                                isDirectoryActive[0] = baseDirectory.exists() && baseDirectory.canRead() && directory.getDirectory().exists() && directory.getDirectory().canRead();
                             return null;
                         }
                     };
                     Thread thread = new Thread(checkingTask);
                     thread.start();
-                    try {
-                        Thread.sleep(1000);
+                    int timer = GenericMethods.getTimeSeconds();
+                    try { // This is to give the Thread a chance to finish before the while loop starts. Mainly to avoid the "Time remaining" message without using a boolean.
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         GenericMethods.printStackTrace(log, e, this.getClass());
                     }
-                    int timer = GenericMethods.getTimeSeconds();
                     while (thread.isAlive()) {
                         log.finer("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer)));
                         if (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer) < 1) {
@@ -169,37 +141,42 @@ public class DirectoryController {
                         if (!Main.programRunning) thread.interrupt();
                     }
                 }
-            }
-            if (directoryChecked) {
-                if (!skipFoundInactiveDirectories && isDirectoryActive[0] && previouslyInactive.contains(directory.getDirectory())) {
-                    inactiveDirectories.remove(directory.getDirectory());
-                    if (!reloadShowFile[0]) reloadShowFile[0] = true;
-                }
-                String activeStatus;
-                if (isDirectoryActive[0]) {
-                    activeStatus = "active.";
-                    activeDirectories.add(directory);
-                } else {
-                    activeStatus = "inactive.";
-                    Platform.runLater(() -> new MessageBox().message(new StringProperty[]{new SimpleStringProperty(Strings.Warning.getValue() + directory.getDirectory() + Strings.WasFoundToBeInactive.getValue()), Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
-                    if (!inactiveDirectories.contains(directory.getDirectory())) {
-                        log.finer(directory.getDirectory() + " was added to the inactiveDirectories list.");
-                        inactiveDirectories.add(directory.getDirectory());
+                if (directoryMatchFound) {
+                    if (!skipFoundInactiveDirectories && isDirectoryActive[0] && previouslyInactive.contains(directory.getDirectory())) {
+                        inactiveDirectories.remove(directory.getDirectory());
                         if (!reloadShowFile[0]) reloadShowFile[0] = true;
                     }
+                    String activeStatus;
+                    if (isDirectoryActive[0]) {
+                        activeStatus = "active.";
+                        activeDirectories.add(directory);
+                    } else {
+                        activeStatus = "inactive.";
+                        Platform.runLater(() -> new MessageBox().message(new StringProperty[]{new SimpleStringProperty(Strings.Warning.getValue() + directory.getDirectory() + Strings.WasFoundToBeInactive.getValue()), Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
+                        if (!inactiveDirectories.contains(directory.getDirectory())) {
+                            log.finer(directory.getDirectory() + " was added to the inactiveDirectories list.");
+                            inactiveDirectories.add(directory.getDirectory());
+                            if (!reloadShowFile[0]) reloadShowFile[0] = true;
+                        }
+                    }
+                    log.info("Finished checking \"" + directory.getDirectory() + "\". It was found to be " + activeStatus);
+                } else
+                    log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory.getDirectory());
+            });
+            if (reloadShowFile[0]) {
+                log.finer("Inactive directories list was changed, updating ShowsFile & Displayed list (If applicable)");
+                ClassHandler.showInfoController().loadShowsFile(activeDirectories);
+                if (Main.programFullyRunning) {
+                    inactiveDirectories.stream().filter(file -> !previouslyInactive.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, ClassHandler.showInfoController().doesShowExistElsewhere(showName, activeDirectories)))));
+                    previouslyInactive.stream().filter(file -> !inactiveDirectories.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, true))));
                 }
-                log.info("Finished checking \"" + directory.getDirectory() + "\". It was found to be " + activeStatus);
-            } else
-                log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory.getDirectory());
-        });
-        if (reloadShowFile[0]) {
-            log.finer("Inactive directories list was changed, updating ShowsFile & Displayed list (If applicable)");
-            ClassHandler.showInfoController().loadShowsFile(activeDirectories);
-            if (Main.programFullyRunning) {
-                inactiveDirectories.stream().filter(file -> !previouslyInactive.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, ClassHandler.showInfoController().doesShowExistElsewhere(showName, activeDirectories)))));
-                previouslyInactive.stream().filter(file -> !inactiveDirectories.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, true))));
             }
+            lastActiveCheck = GenericMethods.getTimeSeconds();
+        } else {
+            log.info("Already checked for active directories within " + Variables.timeBetweenRecheckingActiveDirectoriesSeconds + " seconds, Skipping check.");
+            untestedDirectories.stream().filter(directory -> !inactiveDirectories.contains(directory.getDirectory())).forEach(activeDirectories::add);
         }
+
         return activeDirectories;
     }
 

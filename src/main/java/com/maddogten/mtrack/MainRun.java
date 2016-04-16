@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /*
       MainRun handles starting the main logic of the program.
@@ -28,25 +27,19 @@ public class MainRun {
         // First it checks if the folder that contains the jar has the settings file.
         try {
             File path = fileManager.getJarLocationFolder();
-            File[] files = path.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    String[] splitFile = String.valueOf(file).split(Pattern.quote(Strings.FileSeparator));
-                    if (splitFile[splitFile.length - 1].matches(Strings.SettingsFileName + Variables.SettingFileExtension))
-                        Variables.setDataFolder(path);
-                }
+            if (new File(path, Strings.SettingsFileName + Variables.SettingFileExtension).exists())
+                Variables.setDataFolder(path);
+            else {
+                // If the above isn't the correct folder, it then checks if the Appdata Roaming folder is the correct one.
+                path = fileManager.findProgramFolder();
+                if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
             }
         } catch (UnsupportedEncodingException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        // If the above isn't the correct folder, it then checks if the Appdata Roaming folder is the correct one.
-        if (Variables.dataFolder.toString().isEmpty()) {
-            File path = fileManager.findProgramFolder();
-            if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
-        }
         // If one above is found and both Variables devMode & StartFresh are true, It will Delete ALL Files each time the program is ran.
         // noinspection PointlessBooleanExpression
-        if (Variables.devMode && Variables.startFresh && !Variables.dataFolder.toString().isEmpty()) {
+        if (Variables.startFresh && Variables.devMode && !Variables.dataFolder.toString().isEmpty()) {
             log.warning("Starting Fresh...");
             fileManager.clearProgramFiles();
             Variables.setDataFolder(new File(Strings.EmptyString));
@@ -67,6 +60,7 @@ public class MainRun {
                 updateManager.updateProgramSettingsFile();
             else new FirstRun().generateProgramSettingsFile();
             ClassHandler.programSettingsController().loadProgramSettingsFile();
+            loadProgramSettings();
             updateManager.updateShowFile();
             getLanguage();
             if (Variables.makeLanguageDefault)
@@ -76,7 +70,6 @@ public class MainRun {
             if (!continueStarting) return false;
             loadUser(updateManager, true);
         }
-
         if (Variables.enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
             try {
                 GenericMethods.initFileLogging(log);
@@ -84,11 +77,11 @@ public class MainRun {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
         }
-
         if (!needsToRun) {
             log.info("Username is set: " + Strings.UserName.getValue());
             updateManager.updateMainDirectoryVersion();
-            loadSettings(true);
+            loadUserSettings(true);
+            loadProgramSettings();
         }
         return continueStarting;
     }
@@ -104,10 +97,16 @@ public class MainRun {
         ClassHandler.userInfoController().loadUserInfo();
         log.info("Username is set: " + Strings.UserName.getValue());
         updateManager.updateMainDirectoryVersion();
-        loadSettings(mainLoad);
+        loadUserSettings(mainLoad);
     }
 
-    private void loadSettings(boolean mainLoad) {
+    private void loadUserSettings(boolean mainLoad) {
+        ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
+        if (!mainLoad)
+            ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
+    }
+
+    private void loadProgramSettings() {
         Variables.updateSpeed = ClassHandler.programSettingsController().getSettingsFile().getUpdateSpeed();
         Variables.timeToWaitForDirectory = ClassHandler.programSettingsController().getSettingsFile().getTimeToWaitForDirectory();
         Variables.recordChangesForNonActiveShows = ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows();
@@ -121,9 +120,6 @@ public class MainRun {
         Variables.useOnlineDatabase = ClassHandler.programSettingsController().getSettingsFile().isUseRemoteDatabase();
         Variables.show0Remaining = ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining();
         Variables.showActiveShows = ClassHandler.programSettingsController().getSettingsFile().isShowActiveShows();
-        ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
-        if (!mainLoad)
-            ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
     }
 
     void tick() {

@@ -65,7 +65,7 @@ public class CheckShowFiles {
             FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
             if (forceRun) runNumber = 0;
             else runNumber++;
-            while (isRecheckingShowFile) { // Just in case it had interrupted a run and it hasn't full finished stopping.
+            while (isRecheckingShowFile) { // Just in case it had interrupted a run and it hasn't fully finished stopping.
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -95,7 +95,7 @@ public class CheckShowFiles {
                     ArrayList<String> removedShows = new ArrayList<>();
                     // Check if any shows were removed.
                     ClassHandler.userInfoController().getAllNonIgnoredShows().stream().filter(aShow ->
-                            (aDirectory.getShows().containsKey(aShow) && !fileManager.checkFolderExistsAndReadable(new File(aDirectory.getDirectory() + Strings.FileSeparator + aShow)))).forEach(aShow -> {
+                            (aDirectory.containsShow(aShow) && !fileManager.checkFolderExistsAndReadable(new File(aDirectory.getDirectory() + Strings.FileSeparator + aShow)))).forEach(aShow -> {
                         aDirectory.getShows().remove(aShow);
                         removedShows.add(aShow);
                     });
@@ -142,10 +142,10 @@ public class CheckShowFiles {
                 });
 
                 if ((Main.programFullyRunning && forceRun) || !stopRunning) {
-                    if ((int) recheckShowFilePercentage == 100)
+                    if ((int) Math.ceil(recheckShowFilePercentage) == 100)
                         log.finer("recheckShowFilePercentage was within proper range.");
                     else
-                        log.warning("recheckShowFilePercentage was: \"" + (int) recheckShowFilePercentage + "\" and not 100, Must be an error in the calculation, Please correct.");
+                        log.warning("recheckShowFilePercentage was: \"" + recheckShowFilePercentage + "\" and not 100, Must be an error in the calculation, Please correct.");
                     recheckShowFilePercentage = 100;
                     if (hasChanged[0] && Main.programFullyRunning) {
                         ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
@@ -153,10 +153,10 @@ public class CheckShowFiles {
                             updatedShows.forEach(aShow -> Controller.updateShowField(aShow, true));
                         findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
                         log.info("Some shows have been updated.");
-                        log.info("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
+                        log.fine("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
                     } else if (Main.programFullyRunning) {
                         log.info("All shows were the same.");
-                        log.info("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
+                        log.fine("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
                     }
                 }
                 if (stopRunning) stopRunning = false;
@@ -219,18 +219,16 @@ public class CheckShowFiles {
             newEpisodesListFixed.add(EpisodeInfo[0]);
             if (EpisodeInfo[1] != -2) newEpisodesListFixed.add(EpisodeInfo[1]);
             if (oldEpisodeList.contains(EpisodeInfo[0])) {
-                if (!new File(showsFile.get(aShow).getSeason(aSeason).getEpisode(EpisodeInfo[0]).getEpisodeFilename()).exists()) {
+                if (showsFile.get(aShow).getSeason(aSeason).getEpisode(EpisodeInfo[0]).getEpisodeBareFilename().hashCode() != aNewEpisode.hashCode()) {
                     newEpisodesListFixed.add(EpisodeInfo[0]);
-                    if (EpisodeInfo[1] != -2 && oldEpisodeList.contains(EpisodeInfo[1])) {
+                    if (EpisodeInfo[1] != -2 && oldEpisodeList.contains(EpisodeInfo[1]))
                         newEpisodesListFixed.add(EpisodeInfo[1]);
-                    }
                 }
             }
         });
         ArrayList<Integer> changedEpisodes = new ArrayList<>(oldEpisodeList.size() + newEpisodesListFixed.size());
         changedEpisodes.addAll(oldEpisodeList.stream().filter(aOldEpisode -> !newEpisodesListFixed.contains(aOldEpisode)).collect(Collectors.toList()));
         changedEpisodes.addAll(newEpisodesListFixed.stream().filter(newEpisode -> !oldEpisodeList.contains(newEpisode)).collect(Collectors.toList()));
-        if (changedEpisodes.contains(-2)) changedEpisodes.remove(-2);
         return !changedEpisodes.isEmpty();
     }
 
@@ -239,10 +237,8 @@ public class CheckShowFiles {
         Set<Integer> oldSeasons = showsFile.get(aShow).getSeasons().keySet();
         ArrayList<Integer> newSeasons = new FindShows().findSeasons(folderLocation, aShow);
         Iterator<Integer> newSeasonsIterator = newSeasons.iterator();
-        while (newSeasonsIterator.hasNext()) {
-            int newSeason = newSeasonsIterator.next();
-            if (isSeasonEmpty(aShow, newSeason, folderLocation)) newSeasonsIterator.remove();
-        }
+        while (newSeasonsIterator.hasNext())
+            if (isSeasonEmpty(aShow, newSeasonsIterator.next(), folderLocation)) newSeasonsIterator.remove();
         Set<Integer> changedSeasons = new HashSet<>();
         changedSeasons.addAll(oldSeasons.stream().filter(aOldSeason -> !newSeasons.contains(aOldSeason)).collect(Collectors.toList()));
         changedSeasons.addAll(newSeasons.stream().filter(aNewSeason -> !oldSeasons.contains(aNewSeason)).collect(Collectors.toList()));

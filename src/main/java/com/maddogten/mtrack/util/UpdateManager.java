@@ -95,7 +95,7 @@ public class UpdateManager {
     }
 
     public void updateShowFile() {
-        if (-2 == ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion()) {
+        if (ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion() == -2) {
             log.info("Older show file(s) found, updating..." + Variables.DirectoryFileVersion + " - " + ClassHandler.programSettingsController().getSettingsFile().getShowFileVersion() + ", Updating...");
             convertShowFile();
         }

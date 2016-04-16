@@ -69,21 +69,6 @@ public class FileManager {
         return aFolder.isDirectory() && aFolder.canRead();
     }
 
-    // Detects the operating system that the program is current on. 
-    @SuppressWarnings("AccessOfSystemProperties")
-    private Variables.OperatingSystem getOS() {
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("windows")) return Variables.OperatingSystem.WINDOWS;
-        else if (os.contains("mac")) return Variables.OperatingSystem.MAC;
-        else if (os.contains("nix")) return Variables.OperatingSystem.NIX;
-        else if (os.contains("nux")) return Variables.OperatingSystem.NUX;
-        else if (os.contains("aix")) return Variables.OperatingSystem.AIX;
-        else {
-            log.warning("Your operating system is unknown, Assuming linux based, Using nix...");
-            return Variables.OperatingSystem.NIX;
-        }
-    }
-
     public void createFolder(String folder) {
         if (!new File(Variables.dataFolder + folder).mkdir())
             log.warning("Cannot make: " + Variables.dataFolder + folder);
@@ -94,7 +79,7 @@ public class FileManager {
     @SuppressWarnings("AccessOfSystemProperties")
     public File findProgramFolder() {
         String home = System.getProperty("user.home");
-        Variables.OperatingSystem os = getOS();
+        Variables.OperatingSystem os = Variables.currentOS;
         switch (os) {
             case WINDOWS:
                 home = System.getenv("appdata");
@@ -195,7 +180,7 @@ public class FileManager {
     }
 
     public boolean open(File file) {
-        Variables.OperatingSystem os = getOS();
+        Variables.OperatingSystem os = Variables.currentOS;
         try {
             if (os == Variables.OperatingSystem.WINDOWS) {
                 Process process = Runtime.getRuntime().exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", file.getPath()});

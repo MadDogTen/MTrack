@@ -66,7 +66,7 @@ public class ListSelectBox {
         submit.textProperty().bind(Strings.Submit);
         Object[] result = new Object[]{Strings.DefaultUsername, false};
         submit.setOnAction(e -> {
-            if (comboBox.getValue().contentEquals(Strings.AddNewUsername.getValue())) {
+            if (comboBox.getValue().equalsIgnoreCase(Strings.AddNewUsername.getValue())) {
                 result[0] = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, users, pickUserStage);
                 if (!result[0].toString().isEmpty()) {
                     pickUserStage.close();

@@ -1,6 +1,6 @@
 package com.maddogten.mtrack.information.show;
 
-import java.io.Serializable;
+import java.io.*;
 
 /*
       Episode stores the information pertaining to each found episode.
@@ -15,7 +15,7 @@ public class Episode implements Serializable {
     private final String episodeFilename;
     private final Boolean partOfDoubleEpisode;
 
-    public Episode(int episode, String episodeFilename, Boolean partOfDoubleEpisode) {
+    public Episode(int episode, String episodeFilename, boolean partOfDoubleEpisode) {
         this.episode = episode;
         this.episodeFilename = episodeFilename;
         this.partOfDoubleEpisode = partOfDoubleEpisode;
@@ -29,7 +29,19 @@ public class Episode implements Serializable {
         return episodeFilename;
     }
 
-    public Boolean isPartOfDoubleEpisode() {
+    public String getEpisodeBareFilename() {
+        return new File(episodeFilename).getName();
+    }
+
+    public boolean isPartOfDoubleEpisode() {
         return partOfDoubleEpisode;
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
     }
 }

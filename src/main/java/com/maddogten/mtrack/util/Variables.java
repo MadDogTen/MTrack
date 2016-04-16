@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /*
@@ -41,7 +42,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1006; // Was Changed
     public static final int DirectoryFileVersion = 1003; // Was Changed
 
-    public static final int InternalVersion = 36; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 37; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -50,6 +51,7 @@ public class Variables {
     public static final int defaultTimeToWaitForDirectory = 20;
     public static final int defaultSavingSpeed = 600;
     public static final int maxWaitTimeSeconds = 172800; // 2 Days will be the max wait time - Might be changed
+    public static final int timeBetweenRecheckingActiveDirectoriesSeconds = 2;
     public static final String Logo = "/image/MTrackLogo.png";
     public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
     public static final int checkSeasonsLowerThanCurrentInterval = 5;
@@ -67,6 +69,7 @@ public class Variables {
     public final static String getShowWithID = "http://api.tvmaze.com/shows/";
     public final static String episodesAddition = "/episodes";
     public static final Level loggerLevel = Level.INFO; // INFO
+    public static final OperatingSystem currentOS = OperatingSystem.getOS();
     @SuppressWarnings("PublicStaticArrayField")
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     static final int logMaxFileSize = 10000000;
@@ -104,9 +107,22 @@ public class Variables {
         haveStageBlockParentStage = stageMoveWithParentAndBlockParent;
     }
 
-
     public enum OperatingSystem {
-        WINDOWS, MAC, NIX, NUX, AIX
+        WINDOWS, MAC, NIX, NUX, AIX;
+
+        // Detects the operating system that the program is current on.
+        private static OperatingSystem getOS() {
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.contains("windows")) return Variables.OperatingSystem.WINDOWS;
+            else if (os.contains("mac")) return Variables.OperatingSystem.MAC;
+            else if (os.contains("nix")) return Variables.OperatingSystem.NIX;
+            else if (os.contains("nux")) return Variables.OperatingSystem.NUX;
+            else if (os.contains("aix")) return Variables.OperatingSystem.AIX;
+            else {
+                Logger.getGlobal().warning("Your operating system is unknown, Assuming linux based, Using nix...");
+                return Variables.OperatingSystem.NIX;
+            }
+        }
     }
 
     public enum ShowColorStatus {

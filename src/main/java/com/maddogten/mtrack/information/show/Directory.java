@@ -65,6 +65,14 @@ public class Directory implements Serializable {
         this.shows = shows;
     }
 
+    public boolean containsShow(String aShow) {
+        return this.shows.containsKey(aShow);
+    }
+
+    public boolean containsShowAndSeason(String aShow, int aSeason) {
+        return containsShow(aShow) && this.shows.get(aShow).containsSeason(aSeason);
+    }
+
     public int getDirectoryFileVersion() {
         return directoryFileVersion;
     }

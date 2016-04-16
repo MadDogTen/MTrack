@@ -4,7 +4,6 @@ import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.information.show.Show;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -83,7 +82,7 @@ public class FindChangedShows {
                                     ChangeReporter.addChange("+ " + showName + Strings.DashSeason.getValue() + seasonInt + Strings.DashEpisode.getValue() + episodeInt);
                                 }
                                 hasChanged[0] = true;
-                            } else if (!new File(this.oldShowsFile.get(showName).getSeason(seasonInt).getEpisode(episodeInt).getEpisodeFilename()).exists()) {
+                            } else if (this.oldShowsFile.get(showName).getSeason(seasonInt).getEpisode(episodeInt).getEpisodeFilename().hashCode() != aEpisode.getEpisodeFilename().hashCode()) {
                                 this.log.info(showName + " - Season " + seasonInt + " - Episode " + episodeInt + " Changed");
                                 this.log.info('\"' + this.oldShowsFile.get(showName).getSeason(seasonInt).getEpisode(episodeInt).getEpisodeFilename() + "\" -> \"" + aEpisode.getEpisodeFilename() + "\".");
                                 if (recordShowInformation && recordSeason) {
