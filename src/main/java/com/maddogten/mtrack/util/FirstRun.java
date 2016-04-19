@@ -42,15 +42,10 @@ public class FirstRun {
             StringProperty answer = new MultiChoice().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
             if (answer.getValue().matches(Strings.InAppData.getValue())) {
                 Variables.setDataFolder(appData);
-                fileManager.createFolder("");
-                fileManager.createFolder(Variables.DirectoriesFolder);
-                fileManager.createFolder(Variables.UsersFolder);
-                fileManager.createFolder(Variables.LogsFolder);
+                this.createFolders(true, fileManager);
             } else if (answer.getValue().matches(Strings.WithTheJar.getValue())) {
                 Variables.setDataFolder(jarLocation);
-                fileManager.createFolder(Variables.DirectoriesFolder);
-                fileManager.createFolder(Variables.UsersFolder);
-                fileManager.createFolder(Variables.LogsFolder);
+                this.createFolders(false, fileManager);
             } else return false;
             if (Variables.enableFileLogging) {
                 try {
@@ -74,7 +69,7 @@ public class FirstRun {
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
             boolean directoriesAlreadyAdded = hasImportedFiles && !ClassHandler.directoryController().findDirectories(true, false, true).isEmpty();
             Thread generateShowFilesThread = null;
-            if (!directoriesAlreadyAdded) {
+            if (!directoriesAlreadyAdded) { // TODO Add user visual while this is running.
                 addDirectories();
                 Task<Void> task = new Task<Void>() {
                     @Override
@@ -108,6 +103,13 @@ public class FirstRun {
 
         }
         return false;
+    }
+
+    private void createFolders(boolean createBaseFolder, FileManager fileManager) {
+        if (createBaseFolder) fileManager.createFolder("");
+        fileManager.createFolder(Variables.DirectoriesFolder);
+        fileManager.createFolder(Variables.UsersFolder);
+        fileManager.createFolder(Variables.LogsFolder);
     }
 
     // File Generators

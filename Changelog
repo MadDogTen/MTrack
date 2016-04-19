@@ -46,6 +46,7 @@ Changed "Set Season + Episode" to default the fields to the current season & epi
 Changed how the stages fading in/out work. Also added it for Settings, About box, & Change Box.
 Changed the level of some logging messages. Still needs quite a bit more work.
 Changed Directory "index" to "directoryID", and it now uses a randomly generated number.
+Changed the UI. Unified the Main and Settings window. Currently testing, things may revert back.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -85,6 +86,7 @@ Added color overlay to shows that have been changed, with the color showing how 
 Added Ability to pull data from a website (Currently using tvmaze). Currently disabled / highly unfinished.
 Added Ability to change the user by clicking the username on the main stage.
 Added Setting for Inactive list to include active shows.
+Added Ability to use the "Enter" key to start a show, and activate buttons on the show confirmation window.
 
 Fixes:
 Will now properly switch to new seasons when found.

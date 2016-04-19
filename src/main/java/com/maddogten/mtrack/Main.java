@@ -76,7 +76,7 @@ public class Main extends Application implements Runnable {
             stage = primaryStage;
             GenericMethods.setIcon(stage);
             stage.initStyle(StageStyle.UNDECORATED);
-            Pane root = FXMLLoader.load(getClass().getResource("/gui/MainGui.fxml"));
+            Pane root = FXMLLoader.load(getClass().getResource("/gui/MainGuiNew.fxml"));
             stage.setWidth(Variables.SIZE_WIDTH);
             stage.setHeight(Variables.SIZE_HEIGHT);
             Scene scene = new Scene(root);
@@ -109,6 +109,8 @@ public class Main extends Application implements Runnable {
                 }
             });
             thread.start();
+            ClassHandler.controller().requestFocus();
+            ClassHandler.controller().setTableSelection(0);
         }
     }
 

@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -135,6 +136,16 @@ public class ShowPlaying implements Initializable {
                 stage.close();
             }
         });
+
+        mainPane.setOnKeyReleased(e -> {
+            if (e.getCode().equals(KeyCode.ENTER)) {
+                if (yesButton.isFocused()) yesButton.fire();
+                else if (noButton.isFocused()) noButton.fire();
+                else if (nextEpisodeButton.isFocused()) nextEpisodeButton.fire();
+                else if (restartButton.isFocused()) restartButton.fire();
+            }
+        });
+
         new MoveStage().moveStage(mainPane, Main.stage);
 
         Platform.runLater(() -> {

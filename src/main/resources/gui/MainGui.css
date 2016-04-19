@@ -15,8 +15,14 @@
 }
 
 #settings {
-	-fx-content-display: graphic-only;
-    -fx-background-color: transparent;
+	//-fx-content-display: graphic-only;
+    //-fx-background-color: #cccccc;
+	-fx-background-radius: .6em;
+    -fx-min-width: 25px;
+    -fx-min-height: 25px;
+    -fx-max-width: 25px;
+    -fx-max-height: 25px;
+	//-fx-graphic: url("../image/UI/cog_icon&48.png");
 }
 
 #userComboBox {
