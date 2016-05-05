@@ -298,7 +298,7 @@ public class FileManager {
             }
             if (!firstRun && new ConfirmBox().confirm(Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved, stage))
                 Main.stop(stage, true, false);
-            else new MessageBox().message(new StringProperty[]{Strings.MTrackHasNowImportedTheFiles}, stage);
+            else new MessageBox(new StringProperty[]{Strings.MTrackHasNowImportedTheFiles}, stage);
         }
         log.info("importSettings has finished.");
         return result;

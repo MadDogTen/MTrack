@@ -70,7 +70,7 @@ public class ProgramSettingsController {
             try {
                 GenericMethods.initFileLogging(log);
             } catch (IOException e) {
-                e.printStackTrace();
+                GenericMethods.printStackTrace(log, e, this.getClass());
             }
         } else if (GenericMethods.isFileLoggingStarted()) GenericMethods.stopFileLogging(log);
     }

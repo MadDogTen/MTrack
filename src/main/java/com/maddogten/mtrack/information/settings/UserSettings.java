@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.information.settings;
 
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Variables;
 
 import java.io.Serializable;
@@ -46,6 +47,17 @@ public class UserSettings implements Serializable {
         this.changes = changes;
         this.changedShowsStatus = changedShowsStatus;
         this.lastProgramID = lastProgramID;
+    }
+
+    public UserSettings(String userName, Map<String, UserShowSettings> showSettings) {
+        this.userName = userName;
+        this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
+        this.userDirectoryVersion = 1;
+        this.showSettings = showSettings;
+        this.showUsername = true;
+        this.changes = new String[0];
+        this.changedShowsStatus = new HashMap<>();
+        this.lastProgramID = ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID();
     }
 
     public void addShowSettings(UserShowSettings userShowSettings) {

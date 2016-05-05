@@ -42,7 +42,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1006; // Was Changed
     public static final int DirectoryFileVersion = 1003; // Was Changed
 
-    public static final int InternalVersion = 37; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 40; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.

@@ -105,7 +105,7 @@ public class ChangesBox {
         };
         new Thread(task).start();
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, null));
+        Platform.runLater(() -> new MoveStage(layout, null, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/GenericStyle.css");

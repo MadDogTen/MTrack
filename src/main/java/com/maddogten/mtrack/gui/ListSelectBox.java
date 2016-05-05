@@ -105,7 +105,7 @@ public class ListSelectBox {
 
         pickUserStage.setScene(scene);
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, null));
+        Platform.runLater(() -> new MoveStage(layout, null, false));
 
         pickUserStage.showAndWait();
 
@@ -137,7 +137,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
-                    new MessageBox().message(new StringProperty[]{Strings.DefaultUserNotSet}, pickDefaultUserStage);
+                    new MessageBox(new StringProperty[]{Strings.DefaultUserNotSet}, pickDefaultUserStage);
                     pickDefaultUserStage.close();
                 } else {
                     userName[0] = comboBox.getValue();
@@ -161,7 +161,7 @@ public class ListSelectBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+        Platform.runLater(() -> new MoveStage(layout, oldStage, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
@@ -219,7 +219,7 @@ public class ListSelectBox {
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+        Platform.runLater(() -> new MoveStage(layout, oldStage, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
@@ -257,7 +257,7 @@ public class ListSelectBox {
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty())
-                    new MessageBox().message(new StringProperty[]{Strings.PleaseChooseAFolder}, pickDirectoryStage);
+                    new MessageBox(new StringProperty[]{Strings.PleaseChooseAFolder}, pickDirectoryStage);
                 else {
                     directory[0] = comboBox.getValue();
                     pickDirectoryStage.close();
@@ -277,7 +277,7 @@ public class ListSelectBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+        Platform.runLater(() -> new MoveStage(layout, oldStage, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
@@ -335,8 +335,8 @@ public class ListSelectBox {
                     choice[1] = episodesComboBox.getValue();
                     pickSeasonEpisodeStage.close();
                 } else
-                    new MessageBox().message(new StringProperty[]{Strings.YouHaveToPickAEpisode}, pickSeasonEpisodeStage);
-            } else new MessageBox().message(new StringProperty[]{Strings.YouHaveToPickASeason}, pickSeasonEpisodeStage);
+                    new MessageBox(new StringProperty[]{Strings.YouHaveToPickAEpisode}, pickSeasonEpisodeStage);
+            } else new MessageBox(new StringProperty[]{Strings.YouHaveToPickASeason}, pickSeasonEpisodeStage);
         });
         exit.setOnAction(e -> {
             choice[0] = -1;
@@ -361,13 +361,13 @@ public class ListSelectBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
 
-        final int[] oldValue = {-1};
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                int oldValue = -1;
                 while (pickSeasonEpisodeStage.isShowing()) {
-                    if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty() && seasonsComboBox.getValue() != oldValue[0]) {
-                        oldValue[0] = seasonsComboBox.getValue();
+                    if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty() && seasonsComboBox.getValue() != oldValue) {
+                        oldValue = seasonsComboBox.getValue();
                         episodesArrayList.clear();
                         episodesArrayList.addAll(showInfoController.getEpisodesList(aShow, seasonsComboBox.getValue()).stream().collect(Collectors.toList()));
                         Collections.sort(episodesArrayList);
@@ -383,7 +383,7 @@ public class ListSelectBox {
         };
 
         Platform.runLater(() -> {
-            new MoveStage().moveStage(layout, oldStage);
+            new MoveStage(layout, oldStage, false);
             new Thread(task).start();
         });
 
@@ -450,7 +450,7 @@ public class ListSelectBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+        Platform.runLater(() -> new MoveStage(layout, oldStage, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");
@@ -506,7 +506,7 @@ public class ListSelectBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+        Platform.runLater(() -> new MoveStage(layout, oldStage, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/ListSelectBox.css");

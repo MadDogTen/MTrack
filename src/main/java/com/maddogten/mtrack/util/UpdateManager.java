@@ -29,7 +29,7 @@ public class UpdateManager {
         Object programSettingsFile = new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
         if (programSettingsFile instanceof ProgramSettings) {
             ProgramSettings programSettings = (ProgramSettings) programSettingsFile;
-            if (Variables.ProgramSettingsFileVersion == programSettings.getProgramSettingsFileVersion())
+            if (programSettings.getProgramSettingsFileVersion() == Variables.ProgramSettingsFileVersion)
                 log.info("Program settings file versions matched.");
             else {
                 log.info("Program settings file versions didn't match " + Variables.ProgramSettingsFileVersion + " - " + programSettings.getProgramSettingsFileVersion() + ", Updating...");
@@ -42,7 +42,7 @@ public class UpdateManager {
             if (oldProgramSettingsFile.containsKey("ProgramVersions"))
                 currentVersion = Integer.parseInt(oldProgramSettingsFile.get("ProgramVersions").get(0));
             else currentVersion = -2;
-            if (Variables.ProgramSettingsFileVersion == currentVersion)
+            if (currentVersion == Variables.ProgramSettingsFileVersion)
                 log.info("Program settings file versions matched.");
             else {
                 log.info("Program settings file versions didn't match " + Variables.ProgramSettingsFileVersion + " - " + currentVersion + ", Updating...");
@@ -60,17 +60,17 @@ public class UpdateManager {
             Map<String, UserShowSettings> showSettings = new HashMap<>();
             for (String aShow : ClassHandler.showInfoController().getShowsList()) {
                 if (Variables.genUserShowInfoAtFirstFound)
-                    showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))))));
+                    showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
                 else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
             }
-            new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
+            new FileManager().save(new UserSettings(Strings.UserName.getValue(), showSettings), Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension, false);
             log.info("User settings file was generated, skipping version check.");
             return;
         }
         Object userSettingsFile = new FileManager().loadFile(Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension);
         if (userSettingsFile instanceof UserSettings) {
             UserSettings userSettings = (UserSettings) userSettingsFile;
-            if (Variables.UserSettingsFileVersion == userSettings.getUserSettingsFileVersion())
+            if (userSettings.getUserSettingsFileVersion() == Variables.UserSettingsFileVersion)
                 log.info("User settings file versions matched.");
             else {
                 log.info("User settings file versions didn't match " + Variables.UserSettingsFileVersion + " - " + userSettings.getUserSettingsFileVersion() + ", Updating...");
@@ -83,7 +83,7 @@ public class UpdateManager {
             if (oldUserSettingsFile.containsKey("UserSettings"))
                 oldVersion = Integer.parseInt(oldUserSettingsFile.get("UserSettings").get("UserVersions").get("0"));
             else oldVersion = -2;
-            if (Variables.UserSettingsFileVersion == oldVersion) log.info("User settings file versions matched.");
+            if (oldVersion == Variables.UserSettingsFileVersion) log.info("User settings file versions matched.");
             else {
                 log.info("User settings file versions didn't match " + Variables.UserSettingsFileVersion + " - " + oldVersion + ", Updating...");
                 convertUserSettingsFile(oldVersion, Variables.UserSettingsFileVersion);
@@ -101,7 +101,7 @@ public class UpdateManager {
         }
 
         for (Directory directory : ClassHandler.directoryController().findDirectories(true, false, true)) {
-            if (Variables.DirectoryFileVersion == directory.getDirectoryFileVersion())
+            if (directory.getDirectoryFileVersion() == Variables.DirectoryFileVersion)
                 log.info(directory.getFileName() + " directory versions matched.");
             else {
                 log.info(directory.getFileName() + " directory version didn't match " + Variables.DirectoryFileVersion + " - " + directory.getDirectoryFileVersion() + ", Updating...");
@@ -296,9 +296,9 @@ public class UpdateManager {
                             temp2.put("isActive", "false");
                             temp2.put("isIgnored", "false");
                             temp2.put("isHidden", "false");
-                            temp2.put("CurrentSeason", String.valueOf(ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))));
+                            temp2.put("CurrentSeason", String.valueOf(ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))));
                             Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, Integer.parseInt(temp2.get("CurrentSeason")));
-                            temp2.put("CurrentEpisode", String.valueOf(ClassHandler.showInfoController().findLowestInteger(episodes)));
+                            temp2.put("CurrentEpisode", String.valueOf(ClassHandler.showInfoController().findLowestInt(episodes)));
                             oldUserSettingsFile.get("ShowSettings").put(aShow, temp2);
                         }
                     });
@@ -311,7 +311,7 @@ public class UpdateManager {
                 case 1001:
                     Map<String, UserShowSettings> showsConverted = new HashMap<>();
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
-                    userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID());
+                    userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted);
                     updatedText(fileType, 1001, 1002);
                     oldVersion = 1002;
             }
@@ -319,22 +319,19 @@ public class UpdateManager {
             ClassHandler.userInfoController().loadUserInfo();
             userSettings = ClassHandler.userInfoController().getUserSettings();
         }
+        assert userSettings != null;
         switch (oldVersion) {
             case 1002:
-                //noinspection ConstantConditions
                 userSettings.setChanges(new String[0]);
                 updatedText(fileType, 1002, 1003);
             case 1003:
-                //noinspection ConstantConditions
                 userSettings.setShowUsername(true);
                 updatedText(fileType, 1003, 1004);
             case 1004:
-                //noinspection ConstantConditions
                 userSettings.setChangedShowsStatus(new HashMap<>());
                 updatedText(fileType, 1004, 1005);
             case 1005:
-                if (userSettings != null)
-                    userSettings.getShowSettings().forEach((showName, userShowSettings) -> userShowSettings.setRemaining(ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showName)));
+                userSettings.getShowSettings().forEach((showName, userShowSettings) -> userShowSettings.setRemaining(ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showName)));
                 updatedText(fileType, 1005, 1006);
                 updated = true;
         }
@@ -438,7 +435,7 @@ public class UpdateManager {
                     if (!show.getSeasons().isEmpty()) {
                         show.getSeasons().forEach((seasonInt, season) -> {
                             if (!season.getEpisodes().isEmpty()) {
-                                int currentHighestFoundEpisode = ClassHandler.showInfoController().findHighestInteger(season.getEpisodes().keySet());
+                                int currentHighestFoundEpisode = ClassHandler.showInfoController().findHighestInt(season.getEpisodes().keySet());
                                 if (currentHighestFoundEpisode > season.getHighestFoundEpisode())
                                     season.setHighestFoundEpisode(currentHighestFoundEpisode);
                             }

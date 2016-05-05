@@ -51,7 +51,7 @@ public class FirstRun {
                 try {
                     GenericMethods.initFileLogging(log);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    GenericMethods.printStackTrace(log, e, this.getClass());
                 }
             }
             boolean hasImportedFiles = false;
@@ -136,7 +136,7 @@ public class FirstRun {
         Map<String, UserShowSettings> showSettings = new HashMap<>();
         for (String aShow : ClassHandler.showInfoController().getShowsList()) {
             if (Variables.genUserShowInfoAtFirstFound)
-                showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))))));
+                showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
             else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
         }
         new FileManager().save(new UserSettings(userName, showSettings, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
@@ -150,7 +150,7 @@ public class FirstRun {
         while (addAnother) {
             Long[] matched = ClassHandler.directoryController().addDirectory(textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), null));
             if (matched[0] == null && matched[1] == null)
-                new MessageBox().message(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
+                new MessageBox(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
             else if (matched[1] != null) break;
             if (!confirmBox.confirm(Strings.AddAnotherDirectory, null)) addAnother = false;
         }

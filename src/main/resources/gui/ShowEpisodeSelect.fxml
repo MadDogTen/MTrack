@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
+      minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="132.0" prefWidth="184.0" stylesheets="@ShowEpisodeSelect.css"
+      xmlns="http://javafx.com/javafx/8">
+    <TextField fx:id="seasonTextField" focusTraversable="false" layoutX="29.0" layoutY="70.0" prefHeight="25.0"
+               prefWidth="58.0" text="11"/>
+    <TextField fx:id="episodeTextField" focusTraversable="false" layoutX="97.0" layoutY="70.0" prefHeight="25.0"
+               prefWidth="58.0" text="12"/>
+    <Text fx:id="setText" layoutX="77.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Set:"/>
+    <Text fx:id="seasonText" layoutX="39.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Season"
+          underline="true"/>
+    <Text fx:id="episodeText" layoutX="105.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Episode"
+          underline="true"/>
+    <ComboBox fx:id="seasonComboBox" layoutX="29.0" layoutY="42.0" prefHeight="25.0" prefWidth="58.0"/>
+    <ComboBox fx:id="episodeComboBox" layoutX="97.0" layoutY="42.0" prefHeight="25.0" prefWidth="58.0"/>
+    <Button fx:id="exitButton" layoutX="158.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+    <Pane fx:id="movePane" layoutY="100.0" prefHeight="25.0" prefWidth="184.0">
+        <Button fx:id="submitButton" layoutX="119.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0"
+                text="Submit" textOverrun="CLIP"/>
+        <SplitMenuButton fx:id="resetTooMenuButton" layoutX="8.0" mnemonicParsing="false" prefHeight="25.0"
+                         prefWidth="107.0" text="Reset to...">
+            <items>
+                <MenuItem fx:id="resetBeginningButton" mnemonicParsing="false" text="Beginning"/>
+                <MenuItem fx:id="resetEndButton" mnemonicParsing="false" text="End"/>
+            </items>
+        </SplitMenuButton>
+    </Pane>
+    <Button id="toggleTextFields" fx:id="toggleTextFieldsButton" layoutX="6.0" layoutY="47.0" mnemonicParsing="false"/>
+    <ImageView fx:id="toggleTextFieldsButtonImage" fitHeight="20.0" fitWidth="18.0" layoutX="5.0" layoutY="46.0"
+               mouseTransparent="true" pickOnBounds="true" preserveRatio="true" scaleX="0.6" scaleY="0.6" scaleZ="0.6">
+        <Image url="@../image/UI/arrow_bottom_icon&amp;48.png"/>
+    </ImageView>
+</Pane>

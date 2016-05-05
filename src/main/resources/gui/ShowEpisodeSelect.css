@@ -1,0 +1,7 @@
+#toggleTextFields {
+    -fx-background-radius: .1em;
+    -fx-min-width: 16px;
+    -fx-min-height: 16px;
+    -fx-max-width: 16px;
+    -fx-max-height: 16px;
+}

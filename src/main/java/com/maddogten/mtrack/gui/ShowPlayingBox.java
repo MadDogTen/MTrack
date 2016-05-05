@@ -1,10 +1,9 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.FXMLControllers.ShowPlaying;
 import com.maddogten.mtrack.Main;
-import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.information.show.DisplayShow;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -39,18 +38,18 @@ public class ShowPlayingBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public void showConfirm(DisplayShow show, Controller controller, UserInfoController userInfoController, Stage oldStage) throws IOException {
+    public void showConfirm(DisplayShow show, Stage oldStage) throws IOException {
         log.fine("showConfirm has been opened.");
 
-        if (userInfoController.doesEpisodeExistInShowFile(show.getShow()) || userInfoController.isProperEpisodeInNextSeason(show.getShow())) {
-            if (!userInfoController.playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+        if (ClassHandler.userInfoController().doesEpisodeExistInShowFile(show.getShow()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(show.getShow())) {
+            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
-                new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
+                new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 return;
             }
         } else {
             log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
-            new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
+            new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
             return;
         }
 
@@ -61,7 +60,7 @@ public class ShowPlayingBox {
         GenericMethods.setIcon(stage);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/ShowPlaying.fxml"));
-        fxmlLoader.setController(new ShowPlaying(show, controller, userInfoController));
+        fxmlLoader.setController(new ShowPlaying(show));
 
         stage.setResizable(false);
 

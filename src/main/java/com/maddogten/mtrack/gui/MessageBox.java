@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class MessageBox {
     private final Logger log = Logger.getLogger(MessageBox.class.getName());
 
-    public void message(StringProperty[] message, Stage oldStage) {
+    public MessageBox(StringProperty[] message, Stage oldStage) {
         log.fine("message has been opened.");
 
         Stage messageStage = new Stage();
@@ -58,7 +58,7 @@ public class MessageBox {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(6, 6, 6, 6));
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+        Platform.runLater(() -> new MoveStage(layout, oldStage, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/GenericStyle.css");

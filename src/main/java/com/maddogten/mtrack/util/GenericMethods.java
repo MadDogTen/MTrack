@@ -62,13 +62,14 @@ public class GenericMethods {
         final int[] i = {0};
         String newLine = splitWithNewLine ? "\n" : Strings.EmptyString;
         //noinspection unchecked
-        arrayList.forEach(printString -> print[i[0]++] = newLine + printString.toString());
+        arrayList.forEach(printString -> print[i[0]++] = newLine + printString);
         log.log(level, Arrays.toString(print));
     }
 
     // Handles Exceptions
     public static void printStackTrace(Logger log, Exception exception, Class exceptionClass) {
-        if (Variables.devMode) exception.printStackTrace();
+        if (Variables.devMode) //noinspection CallToPrintStackTrace
+            exception.printStackTrace();
         else {
             String[] stackTrace = new String[exception.getStackTrace().length + 2];
             stackTrace[0] = '\n' + exceptionClass.getName();

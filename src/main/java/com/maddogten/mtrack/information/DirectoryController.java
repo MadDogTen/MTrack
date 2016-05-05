@@ -105,7 +105,7 @@ public class DirectoryController {
                     boolean ipDrive = baseDirectory == directory.getDirectory();
                     if (ipDrive) log.finer(directory.getDirectory() + " was detected as being an ip address.");
                     else
-                        log.finer(directory.getDirectory().toString() + " was detected as being a drive/networked directory.");
+                        log.finer(directory.getDirectory() + " was detected as being a drive/networked directory.");
                     directoryMatchFound = true;
                     Task<Void> checkingTask = new Task<Void>() {
                         @Override
@@ -120,7 +120,7 @@ public class DirectoryController {
                     Thread thread = new Thread(checkingTask);
                     thread.start();
                     int timer = GenericMethods.getTimeSeconds();
-                    try { // This is to give the Thread a chance to finish before the while loop starts. Mainly to avoid the "Time remaining" message without using a boolean.
+                    try { // This is to give the Thread a chance to finish before the while loop starts. Mainly to avoid the "Time remaining" message.
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         GenericMethods.printStackTrace(log, e, this.getClass());
@@ -152,7 +152,7 @@ public class DirectoryController {
                         activeDirectories.add(directory);
                     } else {
                         activeStatus = "inactive.";
-                        Platform.runLater(() -> new MessageBox().message(new StringProperty[]{new SimpleStringProperty(Strings.Warning.getValue() + directory.getDirectory() + Strings.WasFoundToBeInactive.getValue()), Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
+                        Platform.runLater(() -> new MessageBox(new StringProperty[]{new SimpleStringProperty(Strings.Warning.getValue() + directory.getDirectory() + Strings.WasFoundToBeInactive.getValue()), Strings.PleaseCorrectTheIssueThenForceRefresh}, null));
                         if (!inactiveDirectories.contains(directory.getDirectory())) {
                             log.finer(directory.getDirectory() + " was added to the inactiveDirectories list.");
                             inactiveDirectories.add(directory.getDirectory());

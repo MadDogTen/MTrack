@@ -14,14 +14,22 @@
     -fx-max-height: 12px;
 }
 
+#toggleMenu {
+    -fx-background-radius: .1em;
+    -fx-min-width: 16px;
+    -fx-min-height: 16px;
+    -fx-max-width: 16px;
+    -fx-max-height: 16px;
+}
+
 #settings {
 	//-fx-content-display: graphic-only;
     //-fx-background-color: #cccccc;
 	-fx-background-radius: .6em;
-    -fx-min-width: 25px;
-    -fx-min-height: 25px;
-    -fx-max-width: 25px;
-    -fx-max-height: 25px;
+    -fx-min-width: 23px;
+    -fx-min-height: 23px;
+    -fx-max-width: 23px;
+    -fx-max-height: 23px;
 	//-fx-graphic: url("../image/UI/cog_icon&48.png");
 }
 
@@ -61,4 +69,12 @@
     -fx-font-family: "Helvetica";
     -fx-font-size: .92em;
     -fx-font-weight: bold;
+}
+
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
 }

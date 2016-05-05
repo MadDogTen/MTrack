@@ -119,7 +119,7 @@ public class CheckShowFiles {
                                 if (changedShows.get(aNewShow).getSeasons() != null)
                                     changedShows.get(aNewShow).getSeasons().forEach((seasonInt, season) -> {
                                         if (!season.getEpisodes().isEmpty()) {
-                                            int currentHighestFoundEpisode = ClassHandler.showInfoController().findHighestInteger(season.getEpisodes().keySet());
+                                            int currentHighestFoundEpisode = ClassHandler.showInfoController().findHighestInt(season.getEpisodes().keySet());
                                             if (currentHighestFoundEpisode > season.getHighestFoundEpisode())
                                                 season.setHighestFoundEpisode(currentHighestFoundEpisode);
                                         }

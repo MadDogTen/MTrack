@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class AboutBox {
     private static final Logger log = Logger.getLogger(AboutBox.class.getName());
 
-    public void display(Stage oldStage) throws Exception {
+    public AboutBox(Stage oldStage) throws Exception {
         log.fine("AboutBox has been opened.");
         Stage aboutStage = new Stage();
         GenericMethods.setIcon(aboutStage);
@@ -29,7 +29,7 @@ public class AboutBox {
         scene.setFill(Color.WHITESMOKE);
         aboutStage.setResizable(false);
         aboutStage.setScene(scene);
-        Platform.runLater(() -> new MoveStage().moveStage(root, oldStage));
+        Platform.runLater(() -> new MoveStage(root, oldStage, false));
         aboutStage.show();
         aboutStage.hide();
         aboutStage.setX(aboutStage.getOwner().getX() + (aboutStage.getOwner().getWidth() / 2) - (aboutStage.getWidth() / 2));

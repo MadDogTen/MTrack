@@ -96,7 +96,7 @@ public class MultiChoice {
         mainLayout.setSpacing(3);
         mainLayout.setAlignment(Pos.CENTER);
 
-        Platform.runLater(() -> new MoveStage().moveStage(mainLayout, parentStage));
+        Platform.runLater(() -> new MoveStage(mainLayout, parentStage, false));
 
         Scene scene = new Scene(mainLayout);
         scene.getStylesheets().add("/gui/GenericStyle.css");
@@ -189,7 +189,7 @@ public class MultiChoice {
                 if (checkBox.isSelected()) result.add(checkBox.textProperty().getValue());
             });
             if (result.isEmpty())
-                new MessageBox().message(new StringProperty[]{Strings.YouMustSelectACheckbox}, multipleCheckbox);
+                new MessageBox(new StringProperty[]{Strings.YouMustSelectACheckbox}, multipleCheckbox);
             else multipleCheckbox.close();
         });
         Button exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
@@ -205,7 +205,7 @@ public class MultiChoice {
         mainLayout.setSpacing(3);
         mainLayout.setAlignment(Pos.CENTER);
 
-        Platform.runLater(() -> new MoveStage().moveStage(mainLayout, parentStage));
+        Platform.runLater(() -> new MoveStage(mainLayout, parentStage, false));
 
         Scene scene = new Scene(mainLayout);
         scene.getStylesheets().add("/gui/GenericStyle.css");

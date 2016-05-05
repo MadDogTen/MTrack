@@ -86,7 +86,7 @@ public class ShowInfoController {
     }
 
     // Returns the lowest found integer in a set.
-    public int findLowestInteger(Set<Integer> integers) {
+    public int findLowestInt(Set<Integer> integers) {
         final int[] lowestSeason = {-1};
         integers.forEach(aSeason -> {
             if (lowestSeason[0] == -1 || aSeason < lowestSeason[0]) lowestSeason[0] = aSeason;
@@ -95,7 +95,7 @@ public class ShowInfoController {
     }
 
     // Returns the highest found integer in a set.
-    public int findHighestInteger(Set<Integer> integers) {
+    public int findHighestInt(Set<Integer> integers) {
         final int[] highestInteger = {-1};
         integers.forEach(integer -> {
             if (highestInteger[0] == -1 || integer > highestInteger[0]) highestInteger[0] = integer;

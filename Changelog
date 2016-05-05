@@ -47,6 +47,10 @@ Changed how the stages fading in/out work. Also added it for Settings, About box
 Changed the level of some logging messages. Still needs quite a bit more work.
 Changed Directory "index" to "directoryID", and it now uses a randomly generated number.
 Changed the UI. Unified the Main and Settings window. Currently testing, things may revert back.
+Changed the UI even more, The Main UI now has a button to expand to reveal further controls.
+Changed currentList to an Enum, With ACTIVE & INACTIVE.
+Changed the Set Season & Episode window completely, merging a few things, and adding the option to enter it yourself.
+Changed the main scene to instead have the search & other buttons instead be hidden by default, and revealed by clicking a button.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -87,6 +91,8 @@ Added Ability to pull data from a website (Currently using tvmaze). Currently di
 Added Ability to change the user by clicking the username on the main stage.
 Added Setting for Inactive list to include active shows.
 Added Ability to use the "Enter" key to start a show, and activate buttons on the show confirmation window.
+Added MenuItem for inactive shows to have it open the set episode window and set it active (Show is only set active if you submit a season & episode).
+Added back the option to Show 0 Remaining shows by right clicking on the "Left" column and selecting it.
 
 Fixes:
 Will now properly switch to new seasons when found.

@@ -53,7 +53,6 @@ public class Main extends Application implements Runnable {
                 }
             }
             Controller.closeChangeBoxStage();
-            Controller.getSettingsWindow().closeSettings();
             Controller.closeShowPlayingBoxStage();
             if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 10, log, Main.class);
             if (stage != null) stage.close();
@@ -76,7 +75,7 @@ public class Main extends Application implements Runnable {
             stage = primaryStage;
             GenericMethods.setIcon(stage);
             stage.initStyle(StageStyle.UNDECORATED);
-            Pane root = FXMLLoader.load(getClass().getResource("/gui/MainGuiNew.fxml"));
+            Pane root = FXMLLoader.load(getClass().getResource("/gui/MainGui.fxml"));
             stage.setWidth(Variables.SIZE_WIDTH);
             stage.setHeight(Variables.SIZE_HEIGHT);
             Scene scene = new Scene(root);
@@ -99,7 +98,8 @@ public class Main extends Application implements Runnable {
             programFullyRunning = true;
             thread = new Thread(this);
             Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-                if (Variables.devMode) exception.printStackTrace();
+                if (Variables.devMode) //noinspection CallToPrintStackTrace
+                    exception.printStackTrace();
                 else {
                     String[] stackTrace = new String[exception.getStackTrace().length + 1];
                     stackTrace[0] = exception.toString();
@@ -109,8 +109,6 @@ public class Main extends Application implements Runnable {
                 }
             });
             thread.start();
-            ClassHandler.controller().requestFocus();
-            ClassHandler.controller().setTableSelection(0);
         }
     }
 

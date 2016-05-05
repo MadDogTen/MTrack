@@ -181,20 +181,6 @@ public class UserInfoController {
         return ClassHandler.showInfoController().getSeasonsList(aShow).contains(++season);
     }
 
-    // Sets a show to the very first season & episode.
-    public void setToBeginning(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())));
-        log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
-    }
-
-    // Sets a show to the last season and to the last found episode + 1.
-    public void setToEnd(String aShow) {
-        userSettings.getAShowSettings(aShow).setCurrentSeason(ClassHandler.showInfoController().findHighestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)));
-        userSettings.getAShowSettings(aShow).setCurrentEpisode(ClassHandler.showInfoController().findHighestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, userSettings.getAShowSettings(aShow).getCurrentSeason())) + 1);
-        log.info(aShow + " is reset to Season " + userSettings.getAShowSettings(aShow).getCurrentSeason() + " episode " + userSettings.getAShowSettings(aShow).getCurrentEpisode());
-    }
-
     // Checks if the given episode has been found for a show.
     private boolean doesEpisodeExistInShowFile(String aShow, int aSeason, int aEpisode) {
         Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, aSeason);
@@ -227,7 +213,7 @@ public class UserInfoController {
                 seasonEpisodeReturn[0] = season;
                 if (!ClassHandler.showInfoController().getEpisodesList(aShow, season).isEmpty()) {
                     Set<Integer> episodesPreviousSeason = ClassHandler.showInfoController().getEpisodesList(aShow, season);
-                    int episode1 = ClassHandler.showInfoController().findHighestInteger(episodesPreviousSeason);
+                    int episode1 = ClassHandler.showInfoController().findHighestInt(episodesPreviousSeason);
                     if (episodesPreviousSeason.contains(episode1)) {
                         seasonEpisodeReturn[1] = episode1;
                         return seasonEpisodeReturn;
@@ -324,7 +310,7 @@ public class UserInfoController {
         if (!userSettings.getShowSettings().containsKey(aShow)) {
             log.fine("Adding " + aShow + " to user settings file.");
             if (Variables.genUserShowInfoAtFirstFound)
-                userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInteger(ClassHandler.showInfoController().getSeasonsList(aShow))))));
+                userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
             else userSettings.addShowSettings(new UserShowSettings(aShow, 1, 1));
         }
     }

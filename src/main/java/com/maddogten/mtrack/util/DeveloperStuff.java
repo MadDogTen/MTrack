@@ -48,7 +48,7 @@ public class DeveloperStuff {
     public void clearDirectory(Stage stage) {
         ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
         if (directories.isEmpty())
-            new MessageBox().message(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, stage);
+            new MessageBox(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, stage);
         else {
             Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, directories, stage);
             if (directoryToClear != null && !directoryToClear.getDirectory().toString().isEmpty()) {

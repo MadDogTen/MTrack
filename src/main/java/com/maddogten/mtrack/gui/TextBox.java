@@ -77,7 +77,7 @@ public class TextBox {
         layout.getChildren().addAll(label, textField, buttonLayout);
         layout.setAlignment(Pos.CENTER);
 
-        Platform.runLater(() -> new MoveStage().moveStage(layout, oldStage));
+        Platform.runLater(() -> new MoveStage(layout, oldStage, false));
 
         Scene scene = new Scene(layout);
         scene.getStylesheets().add("/gui/GenericStyle.css");
@@ -98,11 +98,11 @@ public class TextBox {
     private boolean isUserValid(String user, ArrayList<String> allUsers, Stage oldStage) {
         log.fine("isUserValid has been called.");
         if (user.contentEquals(Strings.AddNewUsername.getValue()) || !user.matches("^[a-zA-Z0-9]+$"))
-            new MessageBox().message(new StringProperty[]{Strings.UsernameIsntValid}, oldStage);
+            new MessageBox(new StringProperty[]{Strings.UsernameIsntValid}, oldStage);
         else if (allUsers.contains(user))
-            new MessageBox().message(new StringProperty[]{Strings.UsernameAlreadyTaken}, oldStage);
+            new MessageBox(new StringProperty[]{Strings.UsernameAlreadyTaken}, oldStage);
         else if (user.length() > 20)
-            new MessageBox().message(new StringProperty[]{Strings.UsernameIsTooLong}, oldStage);
+            new MessageBox(new StringProperty[]{Strings.UsernameIsTooLong}, oldStage);
         else return true;
         return false;
     }
@@ -163,7 +163,7 @@ public class TextBox {
         layout.setSpacing(3);
 
         Platform.runLater(() -> {
-            new MoveStage().moveStage(layout, oldStage);
+            new MoveStage(layout, oldStage, false);
             addDirectoryStage.requestFocus();
         });
 
@@ -186,11 +186,11 @@ public class TextBox {
     private boolean isDirectoryValid(ArrayList<String> currentDirectories, String directory, Stage oldStage) {
         log.fine("isDirectoryValid has been called.");
         if (currentDirectories.contains(directory))
-            new MessageBox().message(new StringProperty[]{Strings.DirectoryIsAlreadyAdded}, oldStage);
+            new MessageBox(new StringProperty[]{Strings.DirectoryIsAlreadyAdded}, oldStage);
         else if (new FileManager().checkFolderExistsAndReadable(new File(directory))) return true;
         else if (directory.isEmpty())
-            new MessageBox().message(new StringProperty[]{Strings.YouNeedToEnterADirectory}, oldStage);
-        else new MessageBox().message(new StringProperty[]{Strings.DirectoryIsInvalid}, oldStage);
+            new MessageBox(new StringProperty[]{Strings.YouNeedToEnterADirectory}, oldStage);
+        else new MessageBox(new StringProperty[]{Strings.DirectoryIsInvalid}, oldStage);
         return false;
     }
 
@@ -256,7 +256,7 @@ public class TextBox {
         layout.setSpacing(3);
 
         Platform.runLater(() -> {
-            new MoveStage().moveStage(layout, oldStage);
+            new MoveStage(layout, oldStage, false);
             pickFile.requestFocus();
         });
 
@@ -290,9 +290,9 @@ public class TextBox {
                 return !new File(fileName).exists() || new ConfirmBox().confirm(Strings.FileAlreadyExistsOverwriteIt, oldStage);
             else if (new File(fileName).exists()) return true;
             else
-                new MessageBox().message(new StringProperty[]{Strings.FileDoesNotExists}, oldStage);
+                new MessageBox(new StringProperty[]{Strings.FileDoesNotExists}, oldStage);
         else
-            new MessageBox().message(new StringProperty[]{new SimpleStringProperty(Strings.FilenameMustEndIn.getValue() + Arrays.toString(extensions))}, oldStage);
+            new MessageBox(new StringProperty[]{new SimpleStringProperty(Strings.FilenameMustEndIn.getValue() + Arrays.toString(extensions))}, oldStage);
         return false;
     }
 }

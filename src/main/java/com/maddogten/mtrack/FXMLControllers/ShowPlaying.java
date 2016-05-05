@@ -3,9 +3,9 @@ package com.maddogten.mtrack.FXMLControllers;
 import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
-import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.MoveStage;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -30,8 +30,6 @@ public class ShowPlaying implements Initializable {
     private static final Logger log = Logger.getLogger(ShowPlaying.class.getName());
 
     private final DisplayShow show;
-    private final Controller controller;
-    private final UserInfoController userInfoController;
 
     @FXML
     private Button restartButton;
@@ -66,10 +64,8 @@ public class ShowPlaying implements Initializable {
     @FXML
     private Text episodeText;
 
-    public ShowPlaying(DisplayShow show, Controller controller, UserInfoController userInfoController) {
+    public ShowPlaying(DisplayShow show) {
         this.show = show;
-        this.controller = controller;
-        this.userInfoController = userInfoController;
     }
 
     @Override
@@ -88,57 +84,54 @@ public class ShowPlaying implements Initializable {
         showNameText.setText(show.getShow());
         Tooltip showNameTextTooltip = new Tooltip(show.getShow());
         showNameTextTooltip.getStyleClass().add("tooltip");
-        Tooltip.install(
-                showNameText,
-                showNameTextTooltip
-        );
+        Tooltip.install(showNameText, showNameTextTooltip);
 
         setSeasonEpisodeText();
 
         yesButton.setOnAction(e -> {
-            userInfoController.changeEpisode(show.getShow(), -2);
+            ClassHandler.userInfoController().changeEpisode(show.getShow(), -2);
             Controller.updateShowField(show.getShow(), true);
-            controller.setTableSelection(-2);
+            ClassHandler.controller().setTableSelection(-2);
             Stage stage = (Stage) mainPane.getScene().getWindow();
             stage.close();
         });
         noButton.setOnAction(e -> {
-            controller.setTableSelection(-2);
+            ClassHandler.controller().setTableSelection(-2);
             Stage stage = (Stage) mainPane.getScene().getWindow();
             stage.close();
         });
         nextEpisodeButton.setDisable(!(show.getRemaining() > 1));
         nextEpisodeButton.setOnAction(e -> {
-            userInfoController.changeEpisode(show.getShow(), -2);
+            ClassHandler.userInfoController().changeEpisode(show.getShow(), -2);
             Controller.updateShowField(show.getShow(), true);
             setSeasonEpisodeText();
             if (show.getRemaining() <= 1)
                 nextEpisodeButton.setDisable(true);
-            if (userInfoController.doesEpisodeExistInShowFile(show.getShow()) || userInfoController.isProperEpisodeInNextSeason(show.getShow())) {
-                if (!userInfoController.playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+            if (ClassHandler.userInfoController().doesEpisodeExistInShowFile(show.getShow()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(show.getShow())) {
+                if (!ClassHandler.userInfoController().playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
                     log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
-                    new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
+                    new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                     Stage stage = (Stage) mainPane.getScene().getWindow();
                     stage.close();
                 }
             } else {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
-                new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
+                new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 stage.close();
             }
         });
         restartButton.setOnAction(e -> {
-            if (!userInfoController.playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
-                new MessageBox().message(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
+                new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 stage.close();
             }
         });
 
         mainPane.setOnKeyReleased(e -> {
-            if (e.getCode().equals(KeyCode.ENTER)) {
+            if (e.getCode() == KeyCode.ENTER) {
                 if (yesButton.isFocused()) yesButton.fire();
                 else if (noButton.isFocused()) noButton.fire();
                 else if (nextEpisodeButton.isFocused()) nextEpisodeButton.fire();
@@ -146,7 +139,7 @@ public class ShowPlaying implements Initializable {
             }
         });
 
-        new MoveStage().moveStage(mainPane, Main.stage);
+        new MoveStage(mainPane, Main.stage, false);
 
         Platform.runLater(() -> {
             Stage stage = (Stage) mainPane.getScene().getWindow();

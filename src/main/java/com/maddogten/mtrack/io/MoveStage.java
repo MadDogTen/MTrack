@@ -15,7 +15,7 @@ public class MoveStage {
     private static final Logger log = Logger.getLogger(MoveStage.class.getName());
     private final int moveWaitTime = 120;
 
-    public void moveStage(final Region region, final Stage parentStage) {
+    public MoveStage(final Region region, final Stage parentStage, final boolean removeDelay) {
         log.finest("moveStage Pane is now running.");
         final double[] offset = new double[2];
         final long[] timePressed = new long[1];
@@ -27,7 +27,7 @@ public class MoveStage {
             }
         });
         region.setOnMouseDragged(e -> {
-            if (e.isPrimaryButtonDown() && GenericMethods.timeTakenMilli(timePressed[0]) > moveWaitTime) {
+            if (e.isPrimaryButtonDown() && (removeDelay || GenericMethods.timeTakenMilli(timePressed[0]) > moveWaitTime)) {
                 region.setCursor(Cursor.CLOSED_HAND);
                 region.getScene().getWindow().setX(e.getScreenX() - offset[0]);
                 region.getScene().getWindow().setY(e.getScreenY() - offset[1]);
