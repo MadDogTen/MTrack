@@ -33,7 +33,7 @@ public class LanguageHandler {
         return languageNames;
     }
 
-    public boolean setLanguage(String name) {
+    public boolean setLanguage(final String name) {
         log.finer("Attempting to set language to " + name);
         if (languages.containsKey(name)) {
             languages.get(name).setAllStrings();
@@ -232,7 +232,7 @@ public class LanguageHandler {
         log.info("Finished checking for missing strings.");
     }
 
-    private void findAndSetMissingStrings(StringProperty stringToCheck) {
+    private void findAndSetMissingStrings(final StringProperty stringToCheck) {
         if (stringToCheck.getValue() == null && stringToCheck.getValue().isEmpty()) {
             stringToCheck.setValue(Strings.TextMissing.getValue());
             log.warning("\"" + stringToCheck.getName() + "\" didn't have a string, Please correct.");

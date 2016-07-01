@@ -114,7 +114,7 @@ public class ProgramSettings implements Serializable {
         return programSettingsFileVersion;
     }
 
-    public void setProgramSettingsFileVersion(int version) {
+    public void setProgramSettingsFileVersion(final int version) {
         programSettingsFileVersion = version;
     }
 
@@ -122,7 +122,7 @@ public class ProgramSettings implements Serializable {
         return mainDirectoryVersion;
     }
 
-    public void setMainDirectoryVersion(int version) {
+    public void setMainDirectoryVersion(final int version) {
         mainDirectoryVersion = version;
     }
 
@@ -130,7 +130,7 @@ public class ProgramSettings implements Serializable {
         return showFileVersion;
     }
 
-    public void setShowFileVersion(int version) {
+    public void setShowFileVersion(final int version) {
         showFileVersion = version;
     }
 
@@ -138,7 +138,7 @@ public class ProgramSettings implements Serializable {
         return updateSpeed;
     }
 
-    public void setUpdateSpeed(int updateSpeed) {
+    public void setUpdateSpeed(final int updateSpeed) {
         this.updateSpeed = updateSpeed;
         Variables.updateSpeed = updateSpeed;
     }
@@ -147,7 +147,7 @@ public class ProgramSettings implements Serializable {
         return disableAutomaticShowUpdating;
     }
 
-    public void setDisableAutomaticShowUpdating(boolean disableAutomaticShowUpdating) {
+    public void setDisableAutomaticShowUpdating(final boolean disableAutomaticShowUpdating) {
         this.disableAutomaticShowUpdating = disableAutomaticShowUpdating;
         Variables.disableAutomaticRechecking = disableAutomaticShowUpdating;
     }
@@ -156,7 +156,7 @@ public class ProgramSettings implements Serializable {
         return timeToWaitForDirectory;
     }
 
-    public void setTimeToWaitForDirectory(int timeToWaitForDirectory) {
+    public void setTimeToWaitForDirectory(final int timeToWaitForDirectory) {
         this.timeToWaitForDirectory = timeToWaitForDirectory;
         Variables.timeToWaitForDirectory = timeToWaitForDirectory;
     }
@@ -165,7 +165,7 @@ public class ProgramSettings implements Serializable {
         return show0Remaining;
     }
 
-    public void setShow0Remaining(boolean show0Remaining) {
+    public void setShow0Remaining(final boolean show0Remaining) {
         this.show0Remaining = show0Remaining;
         Variables.show0Remaining = show0Remaining;
     }
@@ -174,7 +174,7 @@ public class ProgramSettings implements Serializable {
         return showActiveShows;
     }
 
-    public void setShowActiveShows(boolean showActiveShows) {
+    public void setShowActiveShows(final boolean showActiveShows) {
         this.showActiveShows = showActiveShows;
         Variables.showActiveShows = showActiveShows;
     }
@@ -183,7 +183,7 @@ public class ProgramSettings implements Serializable {
         return language;
     }
 
-    public void setLanguage(String language) {
+    public void setLanguage(final String language) {
         this.language = language;
         Variables.language = language;
     }
@@ -192,7 +192,7 @@ public class ProgramSettings implements Serializable {
         return recordChangesForNonActiveShows;
     }
 
-    public void setRecordChangesForNonActiveShows(boolean recordChangesForNonActiveShows) {
+    public void setRecordChangesForNonActiveShows(final boolean recordChangesForNonActiveShows) {
         this.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
         Variables.recordChangesForNonActiveShows = recordChangesForNonActiveShows;
     }
@@ -201,7 +201,7 @@ public class ProgramSettings implements Serializable {
         return recordChangedSeasonsLowerThanCurrent;
     }
 
-    public void setRecordChangedSeasonsLowerThanCurrent(boolean recordChangedSeasonsLowerThanCurrent) {
+    public void setRecordChangedSeasonsLowerThanCurrent(final boolean recordChangedSeasonsLowerThanCurrent) {
         this.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
         Variables.recordChangedSeasonsLowerThanCurrent = recordChangedSeasonsLowerThanCurrent;
     }
@@ -210,7 +210,7 @@ public class ProgramSettings implements Serializable {
         return moveStageWithParent;
     }
 
-    private void setMoveStageWithParent(boolean moveStageWithParent) {
+    private void setMoveStageWithParent(final boolean moveStageWithParent) {
         this.moveStageWithParent = moveStageWithParent;
         Variables.moveStageWithParent = moveStageWithParent;
     }
@@ -219,7 +219,7 @@ public class ProgramSettings implements Serializable {
         return haveStageBlockParentStage;
     }
 
-    private void setHaveStageBlockParentStage(boolean haveStageBlockParentStage) {
+    private void setHaveStageBlockParentStage(final boolean haveStageBlockParentStage) {
         this.haveStageBlockParentStage = haveStageBlockParentStage;
         Variables.haveStageBlockParentStage = haveStageBlockParentStage;
     }
@@ -228,7 +228,7 @@ public class ProgramSettings implements Serializable {
         return isMoveStageWithParent() && isHaveStageBlockParentStage();
     }
 
-    public void setStageMoveWithParentAndBlockParent(boolean moveAndBlock) {
+    public void setStageMoveWithParentAndBlockParent(final boolean moveAndBlock) {
         setMoveStageWithParent(moveAndBlock);
         setHaveStageBlockParentStage(moveAndBlock);
     }
@@ -237,7 +237,7 @@ public class ProgramSettings implements Serializable {
         return enableSpecialEffects;
     }
 
-    public void setEnableSpecialEffects(boolean enableSpecialEffects) {
+    public void setEnableSpecialEffects(final boolean enableSpecialEffects) {
         this.enableSpecialEffects = enableSpecialEffects;
         Variables.specialEffects = enableSpecialEffects;
     }
@@ -246,7 +246,7 @@ public class ProgramSettings implements Serializable {
         return useDefaultUser;
     }
 
-    public void setUseDefaultUser(boolean useDefaultUser) {
+    public void setUseDefaultUser(final boolean useDefaultUser) {
         this.useDefaultUser = useDefaultUser;
     }
 
@@ -254,7 +254,7 @@ public class ProgramSettings implements Serializable {
         return defaultUser;
     }
 
-    public void setDefaultUser(String defaultUser) {
+    public void setDefaultUser(final String defaultUser) {
         this.defaultUser = defaultUser;
     }
 
@@ -262,7 +262,7 @@ public class ProgramSettings implements Serializable {
         return enableAutomaticSaving;
     }
 
-    public void setEnableAutomaticSaving(boolean enableAutomaticSaving) {
+    public void setEnableAutomaticSaving(final boolean enableAutomaticSaving) {
         this.enableAutomaticSaving = enableAutomaticSaving;
         Variables.enableAutoSavingOnTimer = enableAutomaticSaving;
     }
@@ -271,7 +271,7 @@ public class ProgramSettings implements Serializable {
         return saveSpeed;
     }
 
-    public void setSaveSpeed(int saveSpeed) {
+    public void setSaveSpeed(final int saveSpeed) {
         this.saveSpeed = saveSpeed;
         Variables.savingSpeed = saveSpeed;
     }
@@ -280,7 +280,7 @@ public class ProgramSettings implements Serializable {
         return fileLogging;
     }
 
-    public void setFileLogging(boolean fileLogging) {
+    public void setFileLogging(final boolean fileLogging) {
         this.fileLogging = fileLogging;
         Variables.enableFileLogging = fileLogging;
     }
@@ -289,7 +289,7 @@ public class ProgramSettings implements Serializable {
         return useRemoteDatabase;
     }
 
-    public void setUseRemoteDatabase(boolean useRemoteDatabase) {
+    public void setUseRemoteDatabase(final boolean useRemoteDatabase) {
         this.useRemoteDatabase = useRemoteDatabase;
         Variables.useOnlineDatabase = useRemoteDatabase;
     }
@@ -298,7 +298,7 @@ public class ProgramSettings implements Serializable {
         return showColumnWidth;
     }
 
-    public void setShowColumnWidth(double showColumnWidth) {
+    public void setShowColumnWidth(final double showColumnWidth) {
         this.showColumnWidth = showColumnWidth;
     }
 
@@ -306,7 +306,7 @@ public class ProgramSettings implements Serializable {
         return remainingColumnWidth;
     }
 
-    public void setRemainingColumnWidth(double remainingColumnWidth) {
+    public void setRemainingColumnWidth(final double remainingColumnWidth) {
         this.remainingColumnWidth = remainingColumnWidth;
     }
 
@@ -314,7 +314,7 @@ public class ProgramSettings implements Serializable {
         return seasonColumnWidth;
     }
 
-    public void setSeasonColumnWidth(double seasonColumnWidth) {
+    public void setSeasonColumnWidth(final double seasonColumnWidth) {
         this.seasonColumnWidth = seasonColumnWidth;
     }
 
@@ -322,7 +322,7 @@ public class ProgramSettings implements Serializable {
         return episodeColumnWidth;
     }
 
-    public void setEpisodeColumnWidth(double episodeColumnWidth) {
+    public void setEpisodeColumnWidth(final double episodeColumnWidth) {
         this.episodeColumnWidth = episodeColumnWidth;
     }
 
@@ -330,7 +330,7 @@ public class ProgramSettings implements Serializable {
         return showColumnVisibility;
     }
 
-    public void setShowColumnVisibility(boolean showColumnVisibility) {
+    public void setShowColumnVisibility(final boolean showColumnVisibility) {
         this.showColumnVisibility = showColumnVisibility;
     }
 
@@ -338,7 +338,7 @@ public class ProgramSettings implements Serializable {
         return remainingColumnVisibility;
     }
 
-    public void setRemainingColumnVisibility(boolean remainingColumnVisibility) {
+    public void setRemainingColumnVisibility(final boolean remainingColumnVisibility) {
         this.remainingColumnVisibility = remainingColumnVisibility;
     }
 
@@ -346,7 +346,7 @@ public class ProgramSettings implements Serializable {
         return seasonColumnVisibility;
     }
 
-    public void setSeasonColumnVisibility(boolean seasonColumnVisibility) {
+    public void setSeasonColumnVisibility(final boolean seasonColumnVisibility) {
         this.seasonColumnVisibility = seasonColumnVisibility;
     }
 
@@ -354,7 +354,7 @@ public class ProgramSettings implements Serializable {
         return episodeColumnVisibility;
     }
 
-    public void setEpisodeColumnVisibility(boolean episodeColumnVisibility) {
+    public void setEpisodeColumnVisibility(final boolean episodeColumnVisibility) {
         this.episodeColumnVisibility = episodeColumnVisibility;
     }
 
@@ -362,7 +362,7 @@ public class ProgramSettings implements Serializable {
         return numberOfDirectories;
     }
 
-    public void setNumberOfDirectories(int numberOfDirectories) {
+    public void setNumberOfDirectories(final int numberOfDirectories) {
         this.numberOfDirectories = numberOfDirectories;
     }
 }

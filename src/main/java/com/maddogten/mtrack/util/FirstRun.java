@@ -38,7 +38,7 @@ public class FirstRun {
             } catch (UnsupportedEncodingException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
-            File appData = fileManager.findProgramFolder();
+            File appData = OperatingSystem.programFolder;
             StringProperty answer = new MultiChoice().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
             if (answer.getValue().matches(Strings.InAppData.getValue())) {
                 Variables.setDataFolder(appData);
@@ -67,9 +67,9 @@ public class FirstRun {
             ClassHandler.programSettingsController().loadProgramSettingsFile();
             if (Variables.makeLanguageDefault)
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
-            boolean directoriesAlreadyAdded = hasImportedFiles && !ClassHandler.directoryController().findDirectories(true, false, true).isEmpty();
+            boolean addDirectories = !hasImportedFiles || ClassHandler.directoryController().findDirectories(true, false, true).isEmpty();
             Thread generateShowFilesThread = null;
-            if (!directoriesAlreadyAdded) { // TODO Add user visual while this is running.
+            if (addDirectories) { // TODO Add user visual while this is running.
                 addDirectories();
                 Task<Void> task = new Task<Void>() {
                     @Override
@@ -88,7 +88,7 @@ public class FirstRun {
                 Strings.UserName.setValue(textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, new ArrayList<>(), null));
             if (Strings.UserName.getValue().isEmpty()) ClassHandler.mainRun().continueStarting = false;
             else {
-                if (!directoriesAlreadyAdded) {
+                if (addDirectories) {
                     try {
                         generateShowFilesThread.join();
                     } catch (InterruptedException e) {
@@ -105,7 +105,7 @@ public class FirstRun {
         return false;
     }
 
-    private void createFolders(boolean createBaseFolder, FileManager fileManager) {
+    private void createFolders(final boolean createBaseFolder, final FileManager fileManager) {
         if (createBaseFolder) fileManager.createFolder("");
         fileManager.createFolder(Variables.DirectoriesFolder);
         fileManager.createFolder(Variables.UsersFolder);
@@ -131,7 +131,7 @@ public class FirstRun {
     }
 
     // Generates a user settings file for the given username.
-    public void generateUserSettingsFile(String userName) {
+    public void generateUserSettingsFile(final String userName) {
         log.info("Attempting to generate settings file for " + userName + '.');
         Map<String, UserShowSettings> showSettings = new HashMap<>();
         for (String aShow : ClassHandler.showInfoController().getShowsList()) {
@@ -157,7 +157,7 @@ public class FirstRun {
     }
 
     // This generates a new showsFile for the given folder, then saves it as "Directory-[index].[ShowFileExtension].
-    public void generateShowsFile(Directory directory) {
+    public void generateShowsFile(final Directory directory) {
         FileManager fileManager = new FileManager();
         String fileName = "";
         if (!fileManager.checkFileExists(Variables.DirectoriesFolder, fileName, Variables.ShowFileExtension)) {

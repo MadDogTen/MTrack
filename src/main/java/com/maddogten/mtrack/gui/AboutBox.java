@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class AboutBox {
     private static final Logger log = Logger.getLogger(AboutBox.class.getName());
 
-    public AboutBox(Stage oldStage) throws Exception {
+    public AboutBox(final Stage oldStage) throws Exception {
         log.fine("AboutBox has been opened.");
         Stage aboutStage = new Stage();
         GenericMethods.setIcon(aboutStage);

@@ -64,12 +64,12 @@ public class ShowPlaying implements Initializable {
     @FXML
     private Text episodeText;
 
-    public ShowPlaying(DisplayShow show) {
+    public ShowPlaying(final DisplayShow show) {
         this.show = show;
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(final URL location, final ResourceBundle resources) {
         haveYouWatchedText.textProperty().bind(Strings.HaveYouWatchedTheShow);
         haveYouWatchedText.setTextAlignment(TextAlignment.CENTER);
         yesButton.textProperty().bind(Strings.Yes);

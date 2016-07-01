@@ -32,11 +32,8 @@ public class Main extends Application implements Runnable {
         launch(args);
     }
 
-    public synchronized static void stop(Stage stage, boolean forceStop, boolean saveSettings) {
-        ConfirmBox confirmBox = new ConfirmBox();
-        boolean answer = true;
-        if (!forceStop) answer = confirmBox.confirm(Strings.AreYouSure, stage);
-        if (answer) {
+    public synchronized static void stop(final Stage stage, final boolean forceStop, final boolean saveSettings) {
+        if (forceStop || new ConfirmBox().confirm(Strings.AreYouSure, stage)) {
             if (saveSettings) GenericMethods.saveSettings();
             programFullyRunning = false;
             programRunning = false;
@@ -44,7 +41,6 @@ public class Main extends Application implements Runnable {
             if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
             else log.info("The program has been running for " + timeRan + " Seconds.");
             log.warning("Program is exiting");
-
             while (ClassHandler.checkShowFiles().isRecheckingShowFile()) {
                 try {
                     Thread.sleep(200);
@@ -68,7 +64,7 @@ public class Main extends Application implements Runnable {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) throws Exception {
         GenericMethods.initLogger();
         boolean continueStarting = ClassHandler.mainRun().startBackend();
         if (continueStarting) {

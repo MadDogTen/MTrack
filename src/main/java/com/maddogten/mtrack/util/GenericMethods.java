@@ -38,26 +38,26 @@ public class GenericMethods {
         return (int) (System.nanoTime() / 1000000000);
     }
 
-    public static long timeTakenMilli(long timer) {
+    public static long timeTakenMilli(final long timer) {
         return (getTimeMilliSeconds() - timer);
     }
 
-    public static int timeTakenSeconds(int timer) {
+    public static int timeTakenSeconds(final int timer) {
         return getTimeSeconds() - timer;
     }
 
     // Loads Images.
     @SuppressWarnings("SameParameterValue")
-    public static Image getImage(String directory) {
+    public static Image getImage(final String directory) {
         return new Image(directory);
     }
 
-    public static void setIcon(Stage stage) {
+    public static void setIcon(final Stage stage) {
         stage.getIcons().add(getImage(Variables.Logo));
     }
 
     @SuppressWarnings("SameParameterValue")
-    static void printArrayList(Level level, Logger log, ArrayList arrayList, boolean splitWithNewLine) {
+    static void printArrayList(final Level level, final Logger log, final ArrayList arrayList, final boolean splitWithNewLine) {
         String[] print = new String[arrayList.size()];
         final int[] i = {0};
         String newLine = splitWithNewLine ? "\n" : Strings.EmptyString;
@@ -67,7 +67,7 @@ public class GenericMethods {
     }
 
     // Handles Exceptions
-    public static void printStackTrace(Logger log, Exception exception, Class exceptionClass) {
+    public static void printStackTrace(final Logger log, final Exception exception, final Class exceptionClass) {
         if (Variables.devMode) //noinspection CallToPrintStackTrace
             exception.printStackTrace();
         else {
@@ -105,12 +105,12 @@ public class GenericMethods {
         rootLog.getHandlers()[0].setFilter(filter);
     }
 
-    public static void setLoggerLevel(Level loggerLevel) {
+    public static void setLoggerLevel(final Level loggerLevel) {
         rootLog.setLevel(loggerLevel);
         rootLog.getHandlers()[0].setLevel(loggerLevel);
     }
 
-    public static void initFileLogging(Logger log) throws IOException, SecurityException {
+    public static void initFileLogging(final Logger log) throws IOException, SecurityException {
         if (Variables.enableFileLogging && !isFileLoggingStarted()) {
             File logFolder = new File(Variables.dataFolder + Variables.LogsFolder);
             if (!logFolder.exists())
@@ -157,7 +157,7 @@ public class GenericMethods {
         }
     }
 
-    public static void fadeStageIn(Stage stage, int fadeTime, Logger log, Class stageClass) {
+    public static void fadeStageIn(final Stage stage, final int fadeTime, final Logger log, final Class stageClass) {
         stage.setOpacity(0);
         Platform.runLater(() -> {
             while (true) {
@@ -173,7 +173,7 @@ public class GenericMethods {
         });
     }
 
-    public static void fadeStageOut(Stage stage, int fadeTime, Logger log, Class stageClass) {
+    public static void fadeStageOut(final Stage stage, final int fadeTime, final Logger log, final Class stageClass) {
         while (true) {
             stage.setOpacity(stage.getOpacity() - .01 >= 0 ? stage.getOpacity() - .01 : 0);
             if (stage.getOpacity() > 0) {
@@ -186,7 +186,7 @@ public class GenericMethods {
         }
     }
 
-    public static void stopFileLogging(Logger log) {
+    public static void stopFileLogging(final Logger log) {
         if (isFileLoggingStarted()) {
             fileHandler.close();
             fileHandler = null;

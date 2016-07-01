@@ -22,7 +22,7 @@ public class FindChangedShows {
     private final Map<String, Integer> showRemaining;
 
     // This class is initialized with a unchanged showsFile.
-    public FindChangedShows(Map<String, Show> oldShowsFile, UserInfoController userInfoController) {
+    public FindChangedShows(final Map<String, Show> oldShowsFile, final UserInfoController userInfoController) {
         this.oldShowsFile = oldShowsFile;
         this.userInfoController = userInfoController;
 
@@ -31,7 +31,7 @@ public class FindChangedShows {
     }
 
     // This compares the showFile that is unchanged with the new updated showsFile and reports any changes found to the ChangeReporter.
-    public void findShowFileDifferences(Map<String, Show> newShowsFile) {
+    public void findShowFileDifferences(final Map<String, Show> newShowsFile) {
         log.info("findShowFileDifferences running...");
         boolean[] hasChanged = new boolean[]{false};
         oldShowsFile.forEach((showName, aShow) -> {

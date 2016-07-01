@@ -22,9 +22,9 @@ import java.util.logging.Logger;
  */
 
 public class MessageBox {
-    private final Logger log = Logger.getLogger(MessageBox.class.getName());
+    private static final Logger log = Logger.getLogger(MessageBox.class.getName());
 
-    public MessageBox(StringProperty[] message, Stage oldStage) {
+    public MessageBox(final StringProperty[] message, final Stage oldStage) {
         log.fine("message has been opened.");
 
         Stage messageStage = new Stage();

@@ -20,11 +20,11 @@ import java.util.regex.Pattern;
 public class FindShows {
     private final Logger log = Logger.getLogger(FindShows.class.getName());
 
-    public final ArrayList<String> findShows(File dir) {
+    public final ArrayList<String> findShows(final File dir) {
         return new ArrayList<>(Arrays.asList(dir.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
     }
 
-    public final ArrayList<Integer> findSeasons(File dir, String show) {
+    public final ArrayList<Integer> findSeasons(final File dir, final String show) {
         log.finest("Searching for seasons for: " + show + '.');
         ArrayList<String> showFolder = new ArrayList<>(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
         ArrayList<Integer> seasonNumber = new ArrayList<>(showFolder.size());
@@ -36,7 +36,7 @@ public class FindShows {
         return seasonNumber;
     }
 
-    public final ArrayList<String> findEpisodes(File dir, String ShowName, Integer season) {
+    public final ArrayList<String> findEpisodes(final File dir, final String ShowName, final Integer season) {
         log.finest("Searching for episodes for: " + ShowName + " || Season: " + season + '.');
         File folder = new File(dir + Strings.FileSeparator + ShowName + Strings.FileSeparator + Strings.Season.getValue() + ' ' + season);
         if (new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)

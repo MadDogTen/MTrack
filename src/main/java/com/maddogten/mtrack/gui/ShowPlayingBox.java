@@ -38,7 +38,7 @@ public class ShowPlayingBox {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public void showConfirm(DisplayShow show, Stage oldStage) throws IOException {
+    public void showConfirm(final DisplayShow show, final Stage oldStage) throws IOException {
         log.fine("showConfirm has been opened.");
 
         if (ClassHandler.userInfoController().doesEpisodeExistInShowFile(show.getShow()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(show.getShow())) {

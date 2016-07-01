@@ -6,7 +6,6 @@ import com.maddogten.mtrack.information.show.Season;
 import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 
 import java.util.*;
@@ -23,7 +22,7 @@ public class ShowInfoController {
     private Map<String, Show> showsFile;
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
-    public void loadShowsFile(ArrayList<Directory> directories) {
+    public void loadShowsFile(final ArrayList<Directory> directories) {
         if (directories.size() == 1) {
             showsFile = directories.get(0).getShows();
             log.info("showsFile was loaded, Only one Directory.");
@@ -64,29 +63,29 @@ public class ShowInfoController {
     }
 
     // Returns a Set of all season in a given show.
-    public Set<Integer> getSeasonsList(String show) {
+    public Set<Integer> getSeasonsList(final String show) {
         return showsFile.get(show).getSeasons().keySet();
     }
 
     // Returns a Set of all episodes in a given shows season.
-    public Set<Integer> getEpisodesList(String show, int season) {
+    public Set<Integer> getEpisodesList(final String show, final int season) {
         if (showsFile.containsKey(show) && showsFile.get(show).getSeasons().containsKey(season)) {
             return showsFile.get(show).getSeason(season).getEpisodes().keySet();
         } else return new HashSet<>();
     }
 
     // Returns a given episode from a given season in a given show.
-    public String getEpisode(String show, int season, int episode) {
-        return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) ? showsFile.get(show).getSeason(season).getEpisode(episode).getEpisodeFilename() : Strings.EmptyString;
+    public Episode getEpisode(final String show, final int season, final int episode) {
+        return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) ? showsFile.get(show).getSeason(season).getEpisode(episode) : null;
     }
 
     // Returns whether or not an episode is part of a double episode.
-    public boolean isDoubleEpisode(String show, int season, int episode) {
+    public boolean isDoubleEpisode(final String show, final int season, final int episode) {
         return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) && showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
     }
 
     // Returns the lowest found integer in a set.
-    public int findLowestInt(Set<Integer> integers) {
+    public int findLowestInt(final Set<Integer> integers) {
         final int[] lowestSeason = {-1};
         integers.forEach(aSeason -> {
             if (lowestSeason[0] == -1 || aSeason < lowestSeason[0]) lowestSeason[0] = aSeason;
@@ -95,7 +94,7 @@ public class ShowInfoController {
     }
 
     // Returns the highest found integer in a set.
-    public int findHighestInt(Set<Integer> integers) {
+    public int findHighestInt(final Set<Integer> integers) {
         final int[] highestInteger = {-1};
         integers.forEach(integer -> {
             if (highestInteger[0] == -1 || integer > highestInteger[0]) highestInteger[0] = integer;
@@ -103,7 +102,7 @@ public class ShowInfoController {
         return highestInteger[0];
     }
 
-    public Map<Integer, Set<Integer>> getMissingEpisodes(String aShow) {
+    public Map<Integer, Set<Integer>> getMissingEpisodes(final String aShow) {
         if (showsFile.containsKey(aShow) && showsFile.get(aShow).isShowData()) {
             Show show = ClassHandler.showInfoController().getShowsFile().get(aShow);
             int currentSeason = ClassHandler.userInfoController().getCurrentSeason(aShow);
@@ -141,7 +140,7 @@ public class ShowInfoController {
     }
 
     // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
-    public boolean doesShowExistElsewhere(String aShow, ArrayList<Directory> showsFileArray) {
+    public boolean doesShowExistElsewhere(final String aShow, final ArrayList<Directory> showsFileArray) {
         final boolean[] showExistsElsewhere = {false};
         if (!showsFileArray.isEmpty()) {
             showsFileArray.forEach(aDirectory -> {
@@ -154,7 +153,7 @@ public class ShowInfoController {
     }
 
     // Uses the given string (The full filename of an episode of a show) and returns the episode or episodes if its a double episode.
-    public int[] getEpisodeInfo(String aEpisode) {
+    public int[] getEpisodeInfo(final String aEpisode) {
         final int[] bothInt = new int[]{-2, -2};
         Arrays.asList(Variables.doubleEpisodePatterns, Variables.singleEpisodePatterns).forEach(aPatternArray -> aPatternArray.forEach(aPattern -> {
             if (bothInt[0] == -2) {

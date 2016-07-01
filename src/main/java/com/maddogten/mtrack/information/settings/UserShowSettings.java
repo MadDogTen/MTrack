@@ -22,9 +22,10 @@ public class UserShowSettings implements Serializable {
     private int currentSeason;
     private int currentEpisode;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private int remaining = -2;
 
-    public UserShowSettings(String showName, int currentSeason, int currentEpisode) {
+    public UserShowSettings(final String showName, final int currentSeason, final int currentEpisode) {
         this.showName = showName;
         active = false;
         ignored = false;
@@ -33,7 +34,7 @@ public class UserShowSettings implements Serializable {
         this.currentEpisode = currentEpisode;
     }
 
-    public UserShowSettings(String showName, boolean active, boolean ignored, boolean hidden, int currentSeason, int currentEpisode) {
+    public UserShowSettings(final String showName, final boolean active, final boolean ignored, final boolean hidden, final int currentSeason, final int currentEpisode) {
         this.showName = showName;
         this.active = active;
         this.ignored = ignored;
@@ -52,7 +53,7 @@ public class UserShowSettings implements Serializable {
         return active;
     }
 
-    public void setActive(boolean isActive) {
+    public void setActive(final boolean isActive) {
         this.active = isActive;
     }
 
@@ -60,7 +61,7 @@ public class UserShowSettings implements Serializable {
         return ignored;
     }
 
-    public void setIgnored(boolean isIgnored) {
+    public void setIgnored(final boolean isIgnored) {
         this.ignored = isIgnored;
     }
 
@@ -68,7 +69,7 @@ public class UserShowSettings implements Serializable {
         return hidden;
     }
 
-    public void setHidden(boolean isHidden) {
+    public void setHidden(final boolean isHidden) {
         this.hidden = isHidden;
     }
 
@@ -76,7 +77,7 @@ public class UserShowSettings implements Serializable {
         return currentSeason;
     }
 
-    public void setCurrentSeason(int currentSeason) {
+    public void setCurrentSeason(final int currentSeason) {
         this.currentSeason = currentSeason;
     }
 
@@ -84,7 +85,7 @@ public class UserShowSettings implements Serializable {
         return currentEpisode;
     }
 
-    public void setCurrentEpisode(int currentEpisode) {
+    public void setCurrentEpisode(final int currentEpisode) {
         this.currentEpisode = currentEpisode;
     }
 
@@ -92,7 +93,7 @@ public class UserShowSettings implements Serializable {
         return remaining;
     }*/
 
-    public void setRemaining(int remaining) {
+    public void setRemaining(final int remaining) {
         this.remaining = remaining;
     }
 }

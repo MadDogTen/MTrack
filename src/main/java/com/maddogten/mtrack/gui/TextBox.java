@@ -35,7 +35,7 @@ public class TextBox {
     private static final Logger log = Logger.getLogger(TextBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public String addUser(StringProperty message, StringProperty messageIfNameFieldIsBlank, String defaultValue, ArrayList<String> allUsers, Stage oldStage) {
+    public String addUser(final StringProperty message, final StringProperty messageIfNameFieldIsBlank, final String defaultValue, final ArrayList<String> allUsers, final Stage oldStage) {
         log.fine("addUser display has been opened.");
 
         Stage addUserStage = new Stage();
@@ -95,7 +95,7 @@ public class TextBox {
         return userName[0];
     }
 
-    private boolean isUserValid(String user, ArrayList<String> allUsers, Stage oldStage) {
+    private boolean isUserValid(final String user, final ArrayList<String> allUsers, final Stage oldStage) {
         log.fine("isUserValid has been called.");
         if (user.contentEquals(Strings.AddNewUsername.getValue()) || !user.matches("^[a-zA-Z0-9]+$"))
             new MessageBox(new StringProperty[]{Strings.UsernameIsntValid}, oldStage);
@@ -107,7 +107,7 @@ public class TextBox {
         return false;
     }
 
-    public File addDirectory(@SuppressWarnings("SameParameterValue") StringProperty message, ArrayList<Directory> currentDirectories, Stage oldStage) {
+    public File addDirectory(@SuppressWarnings("SameParameterValue") final StringProperty message, final ArrayList<Directory> currentDirectories, final Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage addDirectoryStage = new Stage();
@@ -183,7 +183,7 @@ public class TextBox {
         return directories[0];
     }
 
-    private boolean isDirectoryValid(ArrayList<String> currentDirectories, String directory, Stage oldStage) {
+    private boolean isDirectoryValid(final ArrayList<String> currentDirectories, final String directory, final Stage oldStage) {
         log.fine("isDirectoryValid has been called.");
         if (currentDirectories.contains(directory))
             new MessageBox(new StringProperty[]{Strings.DirectoryIsAlreadyAdded}, oldStage);
@@ -194,7 +194,7 @@ public class TextBox {
         return false;
     }
 
-    public File pickFile(StringProperty message, StringProperty defaultFilename, StringProperty[] extensionText, String[] extensions, boolean saveFile, Stage oldStage) {
+    public File pickFile(final StringProperty message, final StringProperty defaultFilename, final StringProperty[] extensionText, final String[] extensions, final boolean saveFile, final Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage pickFile = new Stage();
@@ -276,7 +276,7 @@ public class TextBox {
         return directories[0];
     }
 
-    private boolean isFileNameValid(String fileName, String[] extensions, boolean saveFile, Stage oldStage) {
+    private boolean isFileNameValid(final String fileName, final String[] extensions, final boolean saveFile, final Stage oldStage) {
         log.fine("isDirectoryValid has been called.");
         boolean properExtension = false;
         for (String extension : extensions) {

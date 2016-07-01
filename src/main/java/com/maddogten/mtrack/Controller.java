@@ -263,7 +263,7 @@ public class Controller implements Initializable {
     private RadioMenuItem show0RemainingRadioMenuItem;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
-    private static ObservableList<DisplayShow> MakeTableViewFields(ArrayList<String> showList) {
+    private static ObservableList<DisplayShow> MakeTableViewFields(final ArrayList<String> showList) {
         ObservableList<DisplayShow> list = FXCollections.observableArrayList();
         if (!showList.isEmpty()) {
             if (currentList.isActive() && !Variables.show0Remaining) {
@@ -283,7 +283,7 @@ public class Controller implements Initializable {
     }
 
     // This sets the current tableView to whichever you want.
-    public static void setTableViewFields(currentList type) {
+    public static void setTableViewFields(final currentList type) {
         switch (type) {
             case INACTIVE:
                 if (currentList.getStatus() != currentList.INACTIVE) currentList.setStatus(currentList.INACTIVE);
@@ -298,7 +298,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private static DisplayShow getDisplayShowFromShow(String aShow) {
+    private static DisplayShow getDisplayShowFromShow(final String aShow) {
         String showReplaced = aShow.replaceAll(Variables.fileNameReplace, "");
         for (DisplayShow show : tableViewFields) {
             if (show.getShow().replaceAll(Variables.fileNameReplace, "").matches(showReplaced)) {
@@ -309,7 +309,7 @@ public class Controller implements Initializable {
     }
 
     // Public method to update a particular show with new information. If the show happens to have been remove, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
-    public static void updateShowField(String aShow, boolean showExists) {
+    public static void updateShowField(final String aShow, final boolean showExists) {
         DisplayShow currentShow = getDisplayShowFromShow(aShow);
         final boolean isShowActive = showExists && ClassHandler.showInfoController().getShowsList().contains(aShow) && ClassHandler.userInfoController().isShowActive(aShow);
         if ((!currentList.isActive() || isShowActive) && (!currentList.isInactive() || !isShowActive)) {
@@ -328,7 +328,7 @@ public class Controller implements Initializable {
     }
 
     // Used to remove the show from the current list. If you are on the active list and set a show inactive, then it will remove it; and the same if you make a show active on the inactive list.
-    private static void removeShowField(int index) {
+    private static void removeShowField(final int index) {
         tableViewFields.remove(index);
     }
 
@@ -376,7 +376,7 @@ public class Controller implements Initializable {
         if (ClassHandler.controller() != null) ClassHandler.controller().showPlayingBox.closeStage();
     }
 
-    public static void setShowUsernameVisibility(boolean isVisible) {
+    public static void setShowUsernameVisibility(final boolean isVisible) {
         ClassHandler.controller().userName.setVisible(isVisible);
         ClassHandler.controller().userNameComboBox.setVisible(isVisible);
         ClassHandler.controller().userNameComboBox.setDisable(!isVisible);
@@ -386,11 +386,11 @@ public class Controller implements Initializable {
         return this.changedShows;
     }
 
-    public void setChangedShows(Map<String, Integer> newShows) {
+    public void setChangedShows(final Map<String, Integer> newShows) {
         newShows.forEach(this.changedShows::put);
     }
 
-    public void addChangedShow(String aShow, int remaining) {
+    public void addChangedShow(final String aShow, final int remaining) {
         if (!this.changedShows.containsKey(aShow)) {
             this.changedShows.put(aShow, remaining);
             tableView.refresh();
@@ -414,7 +414,7 @@ public class Controller implements Initializable {
     }
 
     @Override
-    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
+    public void initialize(final URL fxmlFileLocation, final ResourceBundle resources) {
         log.finer("Controller Running...");
         ClassHandler.setController(this);
         this.setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
@@ -451,8 +451,7 @@ public class Controller implements Initializable {
                             super.updateItem(item, empty);
                             if (item != null) {
                                 if (getTooltip() == null) setTooltip(rowToolTip);
-                                if (rowToolTip.textProperty().getValue().isEmpty())
-                                    rowToolTip.textProperty().bind(Bindings.concat(getItem().showProperty(), " - ", Strings.Season, " ", getItem().seasonProperty(), " - ", Strings.Episode, " ", getItem().episodeProperty(), " - ", getItem().remainingProperty(), " ", Strings.Left));
+                                rowToolTip.textProperty().bind(Bindings.concat(getItem().showProperty(), " - ", Strings.Season, " ", getItem().seasonProperty(), " - ", Strings.Episode, " ", getItem().episodeProperty(), " - ", getItem().remainingProperty(), " ", Strings.Left));
                                 if (currentList.isInactive() && ((Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(item.getShow())) || (changedShows.containsKey(item.getShow()) && changedShows.get(item.getShow()) == -2)))
                                     setStyle("-fx-background-color: " + ((changedShows.containsKey(item.getShow()) && changedShows.get(item.getShow()) == -2) ? Variables.ShowColorStatus.ADDED.getColor() : Variables.ShowColorStatus.ACTIVE.getColor()));
                                 else if (currentList.isActive() && Variables.specialEffects && changedShows.containsKey(item.getShow()) && !isSelected())
@@ -575,7 +574,7 @@ public class Controller implements Initializable {
                             if (fileName.exists())
                                 folders.add(new Directory(fileName, fileName.toString(), -2, null));
                         });
-                        if (folders.size() == 1) fileManager.open(folders.get(0).getDirectory());
+                        if (folders.size() == 1) fileManager.openFolder(folders.get(0).getDirectory());
                         else new ListSelectBox().openDirectory(folders, (Stage) pane.getScene().getWindow());
                         log.info("Finished opening show directory...");
                     });
@@ -757,8 +756,15 @@ public class Controller implements Initializable {
         pingingDirectoryTooltip.getStyleClass().add("tooltip");
         Tooltip.install(pingingDirectoryPane, pingingDirectoryTooltip);
 
-
         //TODO Start
+        mainTab.textProperty().bind(Strings.Main);
+        usersTab.textProperty().bind(Strings.Users);
+        showTab.textProperty().bind(Strings.Shows);
+        uiTab.textProperty().bind(Strings.UI);
+        otherTab.textProperty().bind(Strings.Other);
+        developerTab.textProperty().bind(Strings.Dev);
+        dev1Tab.textProperty().bind(Strings.Dev1);
+        dev2Tab.textProperty().bind(Strings.Dev2);
         // Main
         updateText.textProperty().bind(Strings.UpdateTime);
         updateText.setTextAlignment(TextAlignment.CENTER);
@@ -1287,13 +1293,13 @@ public class Controller implements Initializable {
         });
     }
 
-    private void buttonMenuVisibility(boolean buttonVisible) {
+    private void buttonMenuVisibility(final boolean buttonVisible) {
         textField.setVisible(buttonVisible);
         changeTableViewButton.setVisible(buttonVisible);
         settingsButton.setVisible(buttonVisible);
     }
 
-    public void setTableSelection(int row) {
+    public void setTableSelection(final int row) {
         if (row == -2) tableView.getSelectionModel().clearSelection();
         else tableView.getSelectionModel().select(row);
     }
@@ -1320,7 +1326,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private void playShow(DisplayShow displayShow) {
+    private void playShow(final DisplayShow displayShow) {
         showCurrentlyPlaying = displayShow;
         userNameComboBox.setDisable(true);
         currentUserComboBox.setDisable(true);
@@ -1334,7 +1340,7 @@ public class Controller implements Initializable {
         showCurrentlyPlaying = null;
     }
 
-    private boolean isNumberValid(String textFieldValue, int minValue) {
+    private boolean isNumberValid(final String textFieldValue, final int minValue) {
         log.finest("isNumberValid has been called.");
         if (textFieldValue.isEmpty() || !textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) > Variables.maxWaitTimeSeconds || Integer.parseInt(textFieldValue) < minValue) {
             new MessageBox(new StringProperty[]{new SimpleStringProperty(Strings.MustBeANumberBetween.getValue() + minValue + " - " + Variables.maxWaitTimeSeconds)}, (Stage) this.tabPane.getScene().getWindow());
@@ -1342,11 +1348,11 @@ public class Controller implements Initializable {
         } else return true;
     }
 
-    public void toggleUsernameUsability(boolean disable) {
+    public void toggleUsernameUsability(final boolean disable) {
         setButtonDisable(disable, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
     }
 
-    private void setButtonDisable(boolean isDisable, Region... regions) {
+    private void setButtonDisable(final boolean isDisable, final Region... regions) {
         for (Region aRegion : regions) {
             if (isShowCurrentlyPlaying() && aRegion == currentUserComboBox) return;
             aRegion.setDisable(isDisable);
@@ -1365,7 +1371,7 @@ public class Controller implements Initializable {
             return currentStatus;
         }
 
-        public static void setStatus(currentList status) {
+        public static void setStatus(final currentList status) {
             currentStatus = status;
             isActive.setValue(currentStatus == ACTIVE);
             isInactive.setValue(currentStatus == INACTIVE);

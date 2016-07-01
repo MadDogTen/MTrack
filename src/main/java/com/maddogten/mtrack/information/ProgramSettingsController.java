@@ -23,37 +23,37 @@ public class ProgramSettingsController {
         this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
     }
 
-    public void setDefaultLanguage(String language) {
+    public void setDefaultLanguage(final String language) {
         settingsFile.setLanguage(language);
         log.info("Default language was set to " + language + '.');
     }
 
-    public void setUpdateSpeed(int updateSpeed) {
+    public void setUpdateSpeed(final int updateSpeed) {
         settingsFile.setUpdateSpeed(updateSpeed);
         log.info("Update speed is now set to: " + updateSpeed);
     }
 
-    public void setSavingSpeed(int savingSpeed) {
+    public void setSavingSpeed(final int savingSpeed) {
         settingsFile.setSaveSpeed(savingSpeed);
         log.info("Save speed is now set to: " + savingSpeed);
     }
 
-    public void setTimeToWaitForDirectory(int timeToWaitForDirectory) {
+    public void setTimeToWaitForDirectory(final int timeToWaitForDirectory) {
         settingsFile.setTimeToWaitForDirectory(timeToWaitForDirectory);
         log.info("Time to wait for directory is now set to: " + timeToWaitForDirectory);
     }
 
-    public void setDefaultUsername(String userName, boolean useDefaultUser) {
+    public void setDefaultUsername(final String userName, final boolean useDefaultUser) {
         log.info("DefaultUsername is being set...");
         settingsFile.setUseDefaultUser(useDefaultUser);
         settingsFile.setDefaultUser(userName);
         log.info("DefaultUsername is set as " + userName + '.');
     }
 
-    public void setMainDirectoryVersion(int version) {
-        if (mainDirectoryVersionAlreadyChanged) {
+    public void setMainDirectoryVersion(final int version) {
+        if (mainDirectoryVersionAlreadyChanged)
             log.info("Already changed main directory version this run, no further change needed.");
-        } else {
+        else {
             settingsFile.setMainDirectoryVersion(version);
             // Current User should always be up to date, so its version can be updated with the Main Directory Version.
             if (!ClassHandler.mainRun().firstRun)
@@ -64,7 +64,7 @@ public class ProgramSettingsController {
         }
     }
 
-    public void setFileLogging(boolean enableFileLogging) {
+    public void setFileLogging(final boolean enableFileLogging) {
         settingsFile.setFileLogging(enableFileLogging);
         if (enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
             try {
@@ -79,7 +79,7 @@ public class ProgramSettingsController {
         return settingsFile;
     }
 
-    public void setSettingsFile(ProgramSettings settingsFile) {
+    public void setSettingsFile(final ProgramSettings settingsFile) {
         this.settingsFile = settingsFile;
     }
 

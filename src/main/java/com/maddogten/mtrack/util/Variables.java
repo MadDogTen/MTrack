@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /*
@@ -42,7 +41,7 @@ public class Variables {
     public static final int UserSettingsFileVersion = 1006; // Was Changed
     public static final int DirectoryFileVersion = 1003; // Was Changed
 
-    public static final int InternalVersion = 40; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 42; // To help keep track of what I'm currently working on / testing.
 
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
@@ -69,7 +68,6 @@ public class Variables {
     public final static String getShowWithID = "http://api.tvmaze.com/shows/";
     public final static String episodesAddition = "/episodes";
     public static final Level loggerLevel = Level.INFO; // INFO
-    public static final OperatingSystem currentOS = OperatingSystem.getOS();
     @SuppressWarnings("PublicStaticArrayField")
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     static final int logMaxFileSize = 10000000;
@@ -107,34 +105,16 @@ public class Variables {
         haveStageBlockParentStage = stageMoveWithParentAndBlockParent;
     }
 
-    public enum OperatingSystem {
-        WINDOWS, MAC, NIX, NUX, AIX;
-
-        // Detects the operating system that the program is current on.
-        private static OperatingSystem getOS() {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("windows")) return Variables.OperatingSystem.WINDOWS;
-            else if (os.contains("mac")) return Variables.OperatingSystem.MAC;
-            else if (os.contains("nix")) return Variables.OperatingSystem.NIX;
-            else if (os.contains("nux")) return Variables.OperatingSystem.NUX;
-            else if (os.contains("aix")) return Variables.OperatingSystem.AIX;
-            else {
-                Logger.getGlobal().warning("Your operating system is unknown, Assuming linux based, Using nix...");
-                return Variables.OperatingSystem.NIX;
-            }
-        }
-    }
-
     public enum ShowColorStatus {
         REMOVED("LightCoral"), ADDED("DeepSkyBlue"), DEFAULT("LimeGreen"), ACTIVE("LightGrey");
 
         private final String color;
 
-        ShowColorStatus(String color) {
+        ShowColorStatus(final String color) {
             this.color = color;
         }
 
-        public static ShowColorStatus findColorFromRemaining(int previouslyRemaining, int currentlyRemaining) {
+        public static ShowColorStatus findColorFromRemaining(final int previouslyRemaining, final int currentlyRemaining) {
             if (previouslyRemaining < currentlyRemaining) {
                 return previouslyRemaining == -2 && currentlyRemaining == 0 ? DEFAULT : ADDED;
             }

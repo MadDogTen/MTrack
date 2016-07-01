@@ -29,7 +29,7 @@ public class ShowEpisodeSelectBox {
         stage = null;
     }
 
-    public int[] seasonEpisodeSelect(DisplayShow show, Stage oldStage) throws IOException {
+    public int[] seasonEpisodeSelect(final DisplayShow show, final Stage oldStage) throws IOException {
         log.fine("seasonEpisodeSelect has been opened.");
         stage = new Stage();
         if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);

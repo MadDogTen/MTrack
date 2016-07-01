@@ -149,10 +149,11 @@ public class UpdateManager {
 
     // These are ran if the versions didn't match, and updates the file with the latest information. It uses the oldVersion to find where it last updated, and runs through all the cases at and below it to catch it up, than updates the file to the latest version if it ran successfully.
     @SuppressWarnings("SameParameterValue")
-    private void convertProgramSettingsFile(int oldVersion, int newVersion) {
+    private void convertProgramSettingsFile(final int oldVersion, final int newVersion) {
         ProgramSettings programSettings;
         boolean updated = false;
         String fileType = "Program settings";
+        int updatedVersion = -2;
         if (oldVersion <= 1008) {
             @SuppressWarnings("unchecked") HashMap<String, ArrayList<String>> oldProgramSettingsFile = (HashMap<String, ArrayList<String>>) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
             programSettings = new ProgramSettings();
@@ -225,13 +226,13 @@ public class UpdateManager {
                     programSettings.setEpisodeColumnVisibility(Boolean.parseBoolean(oldProgramSettingsFile.get("GuiBooleanSettings").get(3)));
                     neededObjects = new Object[]{oldProgramSettingsFile.get("Directories")};
                     updatedText(fileType, 1008, 1009);
-                    oldVersion = 1009; //This is so the next switch will run from where this left off.
+                    updatedVersion = 1009; //This is so the next switch will run from where this left off.
             }
         } else {
             ClassHandler.programSettingsController().loadProgramSettingsFile();
             programSettings = ClassHandler.programSettingsController().getSettingsFile();
         }
-        switch (oldVersion) {
+        switch (updatedVersion != -2 ? updatedVersion : oldVersion) {
             case 1009:
                 programSettings.setTimeToWaitForDirectory(Variables.defaultTimeToWaitForDirectory);
                 updatedText(fileType, 1009, 1010);
@@ -266,10 +267,11 @@ public class UpdateManager {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private void convertUserSettingsFile(int oldVersion, int newVersion) {
+    private void convertUserSettingsFile(final int oldVersion, final int newVersion) {
         UserSettings userSettings = null;
         boolean updated = false;
         String fileType = "User settings";
+        int updatedVersion = -2;
         if (oldVersion <= 1001) {
             @SuppressWarnings("unchecked") HashMap<String, HashMap<String, HashMap<String, String>>> oldUserSettingsFile = (HashMap<String, HashMap<String, HashMap<String, String>>>) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension);
             switch (oldVersion) {
@@ -313,14 +315,14 @@ public class UpdateManager {
                     oldUserSettingsFile.get("ShowSettings").forEach((showName, showSettings) -> showsConverted.put(showName, new UserShowSettings(showName, Boolean.parseBoolean(showSettings.get("isActive")), Boolean.parseBoolean(showSettings.get("isIgnored")), Boolean.parseBoolean(showSettings.get("isHidden")), Integer.parseInt(showSettings.get("CurrentSeason")), Integer.parseInt(showSettings.get("CurrentEpisode")))));
                     userSettings = new UserSettings(Strings.UserName.getValue(), showsConverted);
                     updatedText(fileType, 1001, 1002);
-                    oldVersion = 1002;
+                    updatedVersion = 1002;
             }
         } else {
             ClassHandler.userInfoController().loadUserInfo();
             userSettings = ClassHandler.userInfoController().getUserSettings();
         }
         assert userSettings != null;
-        switch (oldVersion) {
+        switch (updatedVersion != -2 ? updatedVersion : oldVersion) {
             case 1002:
                 userSettings.setChanges(new String[0]);
                 updatedText(fileType, 1002, 1003);
@@ -392,7 +394,7 @@ public class UpdateManager {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private void convertDirectory(Directory directory, int oldVersion, int newVersion) {
+    private void convertDirectory(Directory directory, final int oldVersion, final int newVersion) {
         boolean updated = false;
         String fileType = "ShowsFile";
         GetShowInfo getShowInfo = new GetShowInfo();
@@ -453,7 +455,7 @@ public class UpdateManager {
     }
 
     // This finds what shows have been added / remove if another user has ran the program (and found updated information) since you last ran your profile.
-    private void updateUserShows(int newVersion) {
+    private void updateUserShows(final int newVersion) {
         ArrayList<String> shows = ClassHandler.showInfoController().getShowsList();
         ArrayList<String> userShows = ClassHandler.userInfoController().getAllNonIgnoredShows();
         ArrayList<String> ignoredShows = ClassHandler.userInfoController().getIgnoredShows();
@@ -496,7 +498,7 @@ public class UpdateManager {
         ClassHandler.userInfoController().getUserSettings().setUserDirectoryVersion(newVersion);
     }
 
-    private void updatedText(String fileType, int oldVersion, int newVersion) {
+    private void updatedText(final String fileType, final int oldVersion, final int newVersion) {
         log.info(fileType + " file has been updated from version " + oldVersion + " -> " + newVersion);
     }
 }

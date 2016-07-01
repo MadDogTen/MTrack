@@ -27,7 +27,7 @@ public class Directory implements Serializable {
     private int directoryFileVersion;
     private long lastProgramID;
 
-    public Directory(File directory, String fileName, int priority, Map<String, Show> shows) {
+    public Directory(final File directory, final String fileName, final int priority, final Map<String, Show> shows) {
         this.directory = directory;
         this.fileName = fileName;
         this.directoryID = new Random().nextLong() + 1;
@@ -61,15 +61,15 @@ public class Directory implements Serializable {
         return shows;
     }
 
-    public void setShows(Map<String, Show> shows) {
+    public void setShows(final Map<String, Show> shows) {
         this.shows = shows;
     }
 
-    public boolean containsShow(String aShow) {
+    public boolean containsShow(final String aShow) {
         return this.shows.containsKey(aShow);
     }
 
-    public boolean containsShowAndSeason(String aShow, int aSeason) {
+    public boolean containsShowAndSeason(final String aShow, final int aSeason) {
         return containsShow(aShow) && this.shows.get(aShow).containsSeason(aSeason);
     }
 
@@ -77,7 +77,7 @@ public class Directory implements Serializable {
         return directoryFileVersion;
     }
 
-    public void setDirectoryFileVersion(int directoryFileVersion) {
+    public void setDirectoryFileVersion(final int directoryFileVersion) {
         this.directoryFileVersion = directoryFileVersion;
     }
 
@@ -85,7 +85,7 @@ public class Directory implements Serializable {
         return lastProgramID;
     }
 
-    public void setLastProgramID(long lastProgramID) {
+    public void setLastProgramID(final long lastProgramID) {
         this.lastProgramID = lastProgramID;
     }
 

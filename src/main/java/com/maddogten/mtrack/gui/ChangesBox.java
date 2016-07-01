@@ -39,7 +39,7 @@ public class ChangesBox {
     }
 
     // Displays a stage showing everything contained in the changes String[]. It will automatically updated when changes are found.
-    public void openChanges(Stage oldStage) {
+    public void openChanges(final Stage oldStage) {
         log.finest("openChanges has been opened.");
         if (currentlyOpen) {
             changesStage.toFront();

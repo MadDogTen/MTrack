@@ -43,7 +43,7 @@ public class ListSelectBox {
     private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public Object[] pickUser(StringProperty message, ArrayList<String> users) {
+    public Object[] pickUser(final StringProperty message, final ArrayList<String> users) {
         log.fine("pickUser has been opened.");
 
         Stage pickUserStage = new Stage();
@@ -113,7 +113,7 @@ public class ListSelectBox {
         return result;
     }
 
-    public String pickDefaultUser(StringProperty message, ArrayList<String> users, String currentDefaultUser, Stage oldStage) {
+    public String pickDefaultUser(final StringProperty message, final ArrayList<String> users, final String currentDefaultUser, final Stage oldStage) {
         log.fine("pickDefaultUser has been opened.");
 
         Stage pickDefaultUserStage = new Stage();
@@ -177,7 +177,7 @@ public class ListSelectBox {
         return userName[0];
     }
 
-    public void openDirectory(ArrayList<Directory> directories, Stage oldStage) {
+    public void openDirectory(final ArrayList<Directory> directories, final Stage oldStage) {
         log.fine("openDirectory has been opened.");
 
         Stage openDirectoryStage = new Stage();
@@ -199,11 +199,11 @@ public class ListSelectBox {
         openSelectedButton.textProperty().bind(Strings.OpenSelected);
         openAllButton.setOnAction(e -> {
             FileManager fileManager = new FileManager();
-            directories.forEach(directory -> fileManager.open(directory.getDirectory()));
+            directories.forEach(directory -> fileManager.openFolder(directory.getDirectory()));
             openDirectoryStage.close();
         });
         openSelectedButton.setOnAction(event -> {
-            new FileManager().open(directoryComboBox.getValue().getDirectory());
+            new FileManager().openFolder(directoryComboBox.getValue().getDirectory());
             openDirectoryStage.close();
         });
         exitButton.setOnAction(e -> openDirectoryStage.close());
@@ -234,7 +234,7 @@ public class ListSelectBox {
         log.fine("openDirectory has been closed.");
     }
 
-    public Directory pickDirectory(StringProperty message, ArrayList<Directory> files, Stage oldStage) {
+    public Directory pickDirectory(final StringProperty message, final ArrayList<Directory> files, final Stage oldStage) {
         log.fine("pickDirectory has been opened.");
 
         Stage pickDirectoryStage = new Stage();
@@ -293,7 +293,7 @@ public class ListSelectBox {
         return directory[0];
     }
 
-    public int[] pickSeasonEpisode(String aShow, ShowInfoController showInfoController, Stage oldStage) {
+    public int[] pickSeasonEpisode(final String aShow, final ShowInfoController showInfoController, final Stage oldStage) {
         log.fine("pickSeasonEpisode has been opened.");
 
         Stage pickSeasonEpisodeStage = new Stage();
@@ -318,7 +318,7 @@ public class ListSelectBox {
 
         int season = ClassHandler.userInfoController().getCurrentSeason(aShow);
         int episode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
-        if (ClassHandler.showInfoController().getEpisode(aShow, season, episode).isEmpty()) {
+        if (ClassHandler.showInfoController().getEpisode(aShow, season, episode) == null || ClassHandler.showInfoController().getEpisode(aShow, season, episode).getEpisodeFilename().isEmpty()) {
             episodesComboBox.setDisable(true);
         } else {
             seasonsComboBox.getSelectionModel().select((Integer) season);
@@ -400,7 +400,7 @@ public class ListSelectBox {
         return choice;
     }
 
-    public Object[] pickLanguage(Collection<String> languages, boolean preSelectDefault, Stage oldStage) {
+    public Object[] pickLanguage(final Collection<String> languages, final boolean preSelectDefault, final Stage oldStage) {
         log.fine("pickLanguage has been opened.");
 
         Stage pickLanguageStage = new Stage();
@@ -468,7 +468,7 @@ public class ListSelectBox {
         return result;
     }
 
-    public String pickShow(ArrayList<String> shows, Stage oldStage) {
+    public String pickShow(final ArrayList<String> shows, final Stage oldStage) {
         log.fine("pickShow has been opened.");
 
         Stage pickShowStage = new Stage();

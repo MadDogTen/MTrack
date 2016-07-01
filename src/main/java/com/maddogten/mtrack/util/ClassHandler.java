@@ -50,7 +50,7 @@ public class ClassHandler {
         return controller;
     }
 
-    public static void setController(Controller controller) {
+    public static void setController(final Controller controller) {
         if (ClassHandler.controller == null) ClassHandler.controller = controller;
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--suppress JavaFxDefaultTag -->
+<!--suppress JavaFxDefaultTag, XmlPathReference -->
 
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.*?>
@@ -9,7 +9,8 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.*?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" id="pane" fx:id="pane" prefHeight="454.0" prefWidth="281.0"
-      stylesheets="@MainGui.css" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.Controller">
+      stylesheets="@MainGui.css" xmlns="http://javafx.com/javafx/8.0.65"
+      fx:controller="com.maddogten.mtrack.Controller">
     <children>
         <Pane fx:id="topBarRectangle">
             <children>
@@ -68,7 +69,7 @@
                 </ImageView>
             </children>
         </Pane>
-        <AnchorPane fx:id="settingsAnchorPane" layoutY="30.0" prefHeight="426.0" prefWidth="281.0" visible="false">
+        <AnchorPane fx:id="settingsAnchorPane" layoutY="30.0" prefHeight="426.0" prefWidth="281.0">
             <children>
                 <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
                          minWidth="-Infinity" prefHeight="426.0" prefWidth="281.0" tabClosingPolicy="UNAVAILABLE">
@@ -78,26 +79,46 @@
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
                                         <Text fx:id="updateText" layoutX="54.0" layoutY="57.0" strokeType="OUTSIDE"
-                                              strokeWidth="0.0" text="Searching Wait Time (Seconds):"/>
+                                              strokeWidth="0.0" text="Searching Wait Time (Seconds):"
+                                              textAlignment="JUSTIFY"/>
                                         <TextField fx:id="updateTimeTextField" layoutX="101.0" layoutY="65.0"
-                                                   prefHeight="25.0" prefWidth="36.0"/>
+                                                   prefHeight="25.0" prefWidth="36.0" AnchorPane.bottomAnchor="307.0"
+                                                   AnchorPane.leftAnchor="101.0" AnchorPane.rightAnchor="144.0"
+                                                   AnchorPane.topAnchor="65.0"/>
                                         <Button fx:id="setUpdateTime" layoutX="143.0" layoutY="65.0"
-                                                mnemonicParsing="false" text="Set"/>
+                                                mnemonicParsing="false" text="Set" textAlignment="JUSTIFY"
+                                                AnchorPane.bottomAnchor="310.0" AnchorPane.leftAnchor="143.0"
+                                                AnchorPane.rightAnchor="106.0" AnchorPane.topAnchor="65.0"/>
                                         <Separator layoutX="70.0" layoutY="164.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Text fx:id="notifyChangesText" layoutX="84.0" layoutY="186.0"
-                                              strokeType="OUTSIDE" strokeWidth="0.0" text="Notify Changes For:"/>
+                                              strokeType="OUTSIDE" strokeWidth="0.0" text="Notify Changes For:"
+                                              textAlignment="JUSTIFY" AnchorPane.bottomAnchor="208.404296875"
+                                              AnchorPane.leftAnchor="83.66015625" AnchorPane.rightAnchor="98.33984375"
+                                              AnchorPane.topAnchor="174.595703125"/>
                                         <CheckBox fx:id="inactiveShowsCheckBox" layoutX="88.0" layoutY="194.0"
                                                   mnemonicParsing="false" prefHeight="17.0" prefWidth="105.0"
-                                                  text="Inactive Shows"/>
+                                                  text="Inactive Shows" textAlignment="JUSTIFY"
+                                                  AnchorPane.bottomAnchor="186.0" AnchorPane.leftAnchor="88.0"
+                                                  AnchorPane.rightAnchor="88.0" AnchorPane.topAnchor="194.0"/>
                                         <CheckBox fx:id="olderSeasonsCheckBox" layoutX="88.0" layoutY="215.0"
-                                                  mnemonicParsing="false" text="Older Seasons"/>
+                                                  mnemonicParsing="false" text="Older Seasons" textAlignment="JUSTIFY"
+                                                  AnchorPane.bottomAnchor="166.0" AnchorPane.leftAnchor="88.0"
+                                                  AnchorPane.rightAnchor="103.0" AnchorPane.topAnchor="215.0"/>
                                         <Text fx:id="onlyChecksEveryText" layoutX="72.0" layoutY="246.0"
-                                              strokeType="OUTSIDE" strokeWidth="0.0" text="Only checks every 5 runs"/>
+                                              strokeType="OUTSIDE" strokeWidth="0.0" text="Only checks every 5 runs"
+                                              textAlignment="JUSTIFY" AnchorPane.bottomAnchor="148.404296875"
+                                              AnchorPane.leftAnchor="71.962890625" AnchorPane.rightAnchor="87.037109375"
+                                              AnchorPane.topAnchor="234.595703125"/>
                                         <Separator layoutX="70.0" layoutY="246.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Button fx:id="about" layoutX="118.0" layoutY="353.0" mnemonicParsing="false"
-                                                text="About"/>
+                                                text="About" textAlignment="RIGHT" AnchorPane.bottomAnchor="22.0"
+                                                AnchorPane.leftAnchor="118.0" AnchorPane.rightAnchor="117.0"
+                                                AnchorPane.topAnchor="353.0"/>
                                         <CheckBox fx:id="disableAutomaticShowUpdating" layoutX="40.0" layoutY="95.0"
-                                                  mnemonicParsing="false" text="Disable Automatic Show Searching"/>
+                                                  mnemonicParsing="false" text="Disable Automatic Show Searching"
+                                                  textAlignment="JUSTIFY" AnchorPane.bottomAnchor="286.0"
+                                                  AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="48.0"
+                                                  AnchorPane.topAnchor="95.0"/>
                                     </children>
                                 </AnchorPane>
                             </content>
@@ -107,21 +128,34 @@
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="180.0">
                                     <children>
                                         <Button fx:id="setDefaultUsername" layoutX="69.0" layoutY="192.0"
-                                                mnemonicParsing="false" text="Set Default User"/>
+                                                mnemonicParsing="false" text="Set Default User" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="183.0" AnchorPane.leftAnchor="69.0"
+                                                AnchorPane.rightAnchor="116.0" AnchorPane.topAnchor="192.0"/>
                                         <Button fx:id="clearDefaultUsername" layoutX="173.0" layoutY="192.0"
-                                                mnemonicParsing="false" text="Reset"/>
+                                                mnemonicParsing="false" text="Reset" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="183.0" AnchorPane.leftAnchor="173.0"
+                                                AnchorPane.rightAnchor="65.0" AnchorPane.topAnchor="192.0"/>
                                         <Button fx:id="deleteUser" layoutX="140.0" layoutY="257.0"
-                                                mnemonicParsing="false" text="Delete User">
+                                                mnemonicParsing="false" text="Delete User" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="118.0" AnchorPane.leftAnchor="140.0"
+                                                AnchorPane.rightAnchor="68.0" AnchorPane.topAnchor="257.0">
                                             <tooltip>
                                                 <Tooltip id="tooltip" fx:id="deleteUserTooltip"/>
                                             </tooltip>
                                         </Button>
                                         <Button fx:id="addUser" layoutX="73.0" layoutY="257.0" mnemonicParsing="false"
-                                                text="Add User"/>
+                                                text="Add User" textAlignment="CENTER" AnchorPane.bottomAnchor="118.0"
+                                                AnchorPane.leftAnchor="73.0" AnchorPane.rightAnchor="145.0"
+                                                AnchorPane.topAnchor="257.0"/>
                                         <Text fx:id="currentUserText" layoutX="105.0" layoutY="82.0"
-                                              strokeType="OUTSIDE" strokeWidth="0.0" text="Current User:"/>
+                                              strokeType="OUTSIDE" strokeWidth="0.0" text="Current User:"
+                                              textAlignment="CENTER" AnchorPane.bottomAnchor="312.404296875"
+                                              AnchorPane.leftAnchor="105.0" AnchorPane.rightAnchor="110.3515625"
+                                              AnchorPane.topAnchor="71.306640625"/>
                                         <ComboBox fx:id="currentUserComboBox" layoutX="65.0" layoutY="90.0"
-                                                  prefWidth="150.0"/>
+                                                  prefWidth="150.0" AnchorPane.bottomAnchor="285.0"
+                                                  AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="66.0"
+                                                  AnchorPane.topAnchor="90.0"/>
                                         <Separator layoutX="71.0" layoutY="60.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="71.0" layoutY="117.0" prefHeight="14.0" prefWidth="134.0"/>
                                     </children>
@@ -133,14 +167,24 @@
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
                                         <Button fx:id="forceRecheck" layoutX="77.0" layoutY="92.0"
-                                                mnemonicParsing="false" text="Force Recheck Shows"/>
+                                                mnemonicParsing="false" text="Force Recheck Shows"
+                                                textAlignment="CENTER" AnchorPane.bottomAnchor="283.0"
+                                                AnchorPane.leftAnchor="77.0" AnchorPane.rightAnchor="81.0"
+                                                AnchorPane.topAnchor="92.0"/>
                                         <Button fx:id="unHideShow" layoutX="97.0" layoutY="140.0"
-                                                mnemonicParsing="false" text="Unhide Show"/>
+                                                mnemonicParsing="false" text="Unhide Show" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="235.0" AnchorPane.leftAnchor="97.0"
+                                                AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="140.0"/>
                                         <CheckBox fx:id="useOnlineDatabaseCheckbox" layoutX="76.0" layoutY="190.0"
-                                                  mnemonicParsing="false" text="Use Online Database"/>
+                                                  mnemonicParsing="false" text="Use Online Database"
+                                                  textAlignment="CENTER" AnchorPane.bottomAnchor="191.0"
+                                                  AnchorPane.leftAnchor="76.0" AnchorPane.rightAnchor="82.0"
+                                                  AnchorPane.topAnchor="190.0"/>
                                         <Text fx:id="onlineWarningText" layoutX="48.0" layoutY="222.0"
                                               strokeType="OUTSIDE" strokeWidth="0.0"
-                                              text="Warning- Connects to remote website."/>
+                                              text="Warning- Connects to remote website." textAlignment="CENTER"
+                                              AnchorPane.bottomAnchor="172.404296875" AnchorPane.leftAnchor="47.9453125"
+                                              AnchorPane.rightAnchor="48.0546875" AnchorPane.topAnchor="210.595703125"/>
                                         <Separator layoutX="74.0" layoutY="74.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="74.0" layoutY="122.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="74.0" layoutY="173.0" prefHeight="14.0" prefWidth="134.0"/>
@@ -155,24 +199,42 @@
                                     <children>
                                         <CheckBox fx:id="unlockParentScene" layoutX="33.0" layoutY="55.0"
                                                   mnemonicParsing="false" prefHeight="25.0" prefWidth="215.0"
-                                                  text="Allow Full Window Movement/Use"/>
+                                                  text="Allow Full Window Movement/Use" textAlignment="CENTER"
+                                                  AnchorPane.bottomAnchor="317.0" AnchorPane.leftAnchor="33.0"
+                                                  AnchorPane.rightAnchor="33.0" AnchorPane.topAnchor="55.0"/>
                                         <Button fx:id="changeLanguage" layoutX="85.0" layoutY="283.0"
-                                                mnemonicParsing="false" text="Change Language"/>
+                                                mnemonicParsing="false" text="Change Language" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="92.0" AnchorPane.leftAnchor="85.0"
+                                                AnchorPane.rightAnchor="93.0" AnchorPane.topAnchor="283.0"/>
                                         <CheckBox fx:id="showUsername" layoutX="88.0" layoutY="93.0"
-                                                  mnemonicParsing="false" text="Show Username"/>
+                                                  mnemonicParsing="false" text="Show Username" textAlignment="CENTER"
+                                                  AnchorPane.bottomAnchor="288.0" AnchorPane.leftAnchor="88.0"
+                                                  AnchorPane.rightAnchor="93.0" AnchorPane.topAnchor="93.0"/>
                                         <CheckBox fx:id="automaticSaving" layoutX="64.0" layoutY="183.0"
-                                                  mnemonicParsing="false" text="Enable Automatic Saving"/>
+                                                  mnemonicParsing="false" text="Enable Automatic Saving"
+                                                  textAlignment="CENTER" AnchorPane.bottomAnchor="198.0"
+                                                  AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="72.0"
+                                                  AnchorPane.topAnchor="183.0"/>
                                         <Text fx:id="savingText" layoutX="66.0" layoutY="223.0" strokeType="OUTSIDE"
-                                              strokeWidth="0.0" text="Saving Wait Time (Seconds):"/>
+                                              strokeWidth="0.0" text="Saving Wait Time (Seconds):"
+                                              textAlignment="CENTER" AnchorPane.bottomAnchor="171.404296875"
+                                              AnchorPane.leftAnchor="65.30078125" AnchorPane.rightAnchor="72.69921875"
+                                              AnchorPane.topAnchor="211.595703125"/>
                                         <TextField fx:id="updateSavingTextField" layoutX="98.0" layoutY="231.0"
-                                                   prefHeight="25.0" prefWidth="36.0"/>
+                                                   prefHeight="25.0" prefWidth="36.0" AnchorPane.bottomAnchor="141.0"
+                                                   AnchorPane.leftAnchor="98.0" AnchorPane.rightAnchor="147.0"
+                                                   AnchorPane.topAnchor="231.0"/>
                                         <Button fx:id="setSavingTime" layoutX="140.0" layoutY="231.0"
-                                                mnemonicParsing="false" text="Set"/>
+                                                mnemonicParsing="false" text="Set" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="144.0" AnchorPane.leftAnchor="140.0"
+                                                AnchorPane.rightAnchor="109.0" AnchorPane.topAnchor="231.0"/>
                                         <Separator layoutX="67.0" layoutY="164.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="67.0" layoutY="259.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="67.0" layoutY="116.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <CheckBox fx:id="specialEffects" layoutX="86.0" layoutY="138.0"
-                                                  mnemonicParsing="false" text="Special Effects"/>
+                                                  mnemonicParsing="false" text="Special Effects" textAlignment="CENTER"
+                                                  AnchorPane.bottomAnchor="243.0" AnchorPane.leftAnchor="86.0"
+                                                  AnchorPane.rightAnchor="101.0" AnchorPane.topAnchor="138.0"/>
                                     </children>
                                 </AnchorPane>
                             </content>
@@ -182,31 +244,55 @@
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
                                         <Button fx:id="openProgramFolder" layoutX="82.0" layoutY="300.0"
-                                                mnemonicParsing="false" text="Open Settings Folder"/>
+                                                mnemonicParsing="false" text="Open Settings Folder"
+                                                textAlignment="CENTER" AnchorPane.bottomAnchor="75.0"
+                                                AnchorPane.leftAnchor="82.0" AnchorPane.rightAnchor="81.0"
+                                                AnchorPane.topAnchor="300.0"/>
                                         <Button fx:id="addDirectory" layoutX="35.0" layoutY="78.0"
-                                                mnemonicParsing="false" text="Add Directory"/>
+                                                mnemonicParsing="false" text="Add Directory" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="297.0" AnchorPane.leftAnchor="35.0"
+                                                AnchorPane.rightAnchor="160.0" AnchorPane.topAnchor="78.0"/>
                                         <Button fx:id="removeDirectory" layoutX="142.0" layoutY="78.0"
-                                                mnemonicParsing="false" text="Remove Directory"/>
+                                                mnemonicParsing="false" text="Remove Directory" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="297.0" AnchorPane.leftAnchor="142.0"
+                                                AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="78.0"/>
                                         <Button fx:id="setDirectoryTimeout" layoutX="146.0" layoutY="132.0"
-                                                mnemonicParsing="false" text="Set"/>
+                                                mnemonicParsing="false" text="Set" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="243.0" AnchorPane.leftAnchor="146.0"
+                                                AnchorPane.rightAnchor="103.0" AnchorPane.topAnchor="132.0"/>
                                         <TextField fx:id="directoryTimeoutTextField" layoutX="100.0" layoutY="132.0"
-                                                   prefHeight="25.0" prefWidth="36.0"/>
+                                                   prefHeight="25.0" prefWidth="36.0" AnchorPane.bottomAnchor="240.0"
+                                                   AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="145.0"
+                                                   AnchorPane.topAnchor="132.0"/>
                                         <Text fx:id="directoryTimeoutText" layoutX="66.0" layoutY="120.0"
-                                              strokeType="OUTSIDE" strokeWidth="0.0"
-                                              text="Directory Timeout (Seconds):"/>
+                                              strokeType="OUTSIDE" strokeWidth="0.0" text="Directory Timeout (Seconds):"
+                                              textAlignment="CENTER" AnchorPane.bottomAnchor="274.404296875"
+                                              AnchorPane.leftAnchor="65.958984375" AnchorPane.rightAnchor="71.041015625"
+                                              AnchorPane.topAnchor="108.595703125"/>
                                         <ToggleButton fx:id="toggleDevMode" layoutX="105.0" layoutY="270.0"
                                                       mnemonicParsing="false" prefHeight="25.0" prefWidth="82.0"
-                                                      text="Toggle Dev"/>
+                                                      text="Toggle Dev" textAlignment="CENTER"
+                                                      AnchorPane.bottomAnchor="102.0" AnchorPane.leftAnchor="105.0"
+                                                      AnchorPane.rightAnchor="94.0" AnchorPane.topAnchor="270.0"/>
                                         <Button fx:id="exportSettings" layoutX="47.0" layoutY="230.0"
-                                                mnemonicParsing="false" text="Export Settings"/>
+                                                mnemonicParsing="false" text="Export Settings" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="145.0" AnchorPane.leftAnchor="47.0"
+                                                AnchorPane.rightAnchor="143.0" AnchorPane.topAnchor="230.0"/>
                                         <Button fx:id="importSettings" layoutX="146.0" layoutY="230.0"
-                                                mnemonicParsing="false" text="Import Settings"/>
+                                                mnemonicParsing="false" text="Import Settings" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="145.0" AnchorPane.leftAnchor="146.0"
+                                                AnchorPane.rightAnchor="44.0" AnchorPane.topAnchor="230.0"/>
                                         <Separator layoutX="70.0" layoutY="46.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="70.0" layoutY="164.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Text fx:id="directoryText" layoutX="112.0" layoutY="70.0" strokeType="OUTSIDE"
-                                              strokeWidth="0.0" text="Directory" underline="true"/>
+                                              strokeWidth="0.0" text="Directory" textAlignment="CENTER" underline="true"
+                                              AnchorPane.bottomAnchor="324.404296875"
+                                              AnchorPane.topAnchor="58.595703125"/>
                                         <CheckBox fx:id="enableLoggingCheckbox" layoutX="75.0" layoutY="183.0"
-                                                  mnemonicParsing="false" text="Enable File Logging"/>
+                                                  mnemonicParsing="false" text="Enable File Logging"
+                                                  textAlignment="CENTER" AnchorPane.bottomAnchor="198.0"
+                                                  AnchorPane.leftAnchor="75.0" AnchorPane.rightAnchor="86.0"
+                                                  AnchorPane.topAnchor="183.0"/>
                                         <Separator layoutX="70.0" layoutY="206.0" prefHeight="14.0" prefWidth="134.0"/>
                                     </children>
                                 </AnchorPane>
@@ -312,7 +398,7 @@
                 </Button>
             </children>
         </AnchorPane>
-        <Pane fx:id="mainPane" layoutY="30.0">
+        <Pane fx:id="mainPane" layoutY="30.0" visible="false">
             <children>
                 <TextField fx:id="textField" layoutX="5.0" layoutY="3.0" visible="false"/>
                 <Button id="clearTextField" fx:id="clearTextField" layoutX="136.0" layoutY="8.0" mnemonicParsing="false"

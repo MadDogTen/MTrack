@@ -51,6 +51,8 @@ Changed the UI even more, The Main UI now has a button to expand to reveal furth
 Changed currentList to an Enum, With ACTIVE & INACTIVE.
 Changed the Set Season & Episode window completely, merging a few things, and adding the option to enter it yourself.
 Changed the main scene to instead have the search & other buttons instead be hidden by default, and revealed by clicking a button.
+Changed rechecking so that each directory will run on a separate thread, speeding up the search. - Currently Untested
+Moved the OperatingSystem enum into it's own class, and changed how it & related fields worked.
 
 Additions:
 Made an Abstract Language class and use that in LanguageHandler to load the languages.
@@ -93,6 +95,7 @@ Added Setting for Inactive list to include active shows.
 Added Ability to use the "Enter" key to start a show, and activate buttons on the show confirmation window.
 Added MenuItem for inactive shows to have it open the set episode window and set it active (Show is only set active if you submit a season & episode).
 Added back the option to Show 0 Remaining shows by right clicking on the "Left" column and selecting it.
+Started work on adding the ability to input where you left off on a show, and resume it there automatically the next time you play it (Only works with supported media players [VLC only currently]).
 
 Fixes:
 Will now properly switch to new seasons when found.

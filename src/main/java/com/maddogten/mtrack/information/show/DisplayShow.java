@@ -15,7 +15,7 @@ public class DisplayShow {
     private final SimpleIntegerProperty season;
     private final SimpleIntegerProperty episode;
 
-    public DisplayShow(String show, int remaining, int season, int episode) {
+    public DisplayShow(final String show, final int remaining, final int season, final int episode) {
         this.show = new SimpleStringProperty(show);
         this.remaining = new SimpleIntegerProperty(remaining);
         this.season = new SimpleIntegerProperty(season);
@@ -38,7 +38,7 @@ public class DisplayShow {
         return remaining.get();
     }
 
-    public void setRemaining(Integer remaining) {
+    public void setRemaining(final Integer remaining) {
         if (!remaining.equals(this.getRemaining())) {
             this.remaining.setValue(remaining);
         }
@@ -52,7 +52,7 @@ public class DisplayShow {
         return season.get();
     }
 
-    public void setSeason(Integer season) {
+    public void setSeason(final Integer season) {
         this.season.setValue(season);
     }
 
@@ -64,7 +64,7 @@ public class DisplayShow {
         return episode.get();
     }
 
-    public void setEpisode(Integer episode) {
+    public void setEpisode(final Integer episode) {
         this.episode.setValue(episode);
     }
 }

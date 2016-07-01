@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
     public boolean firstRun = false, continueStarting = true;
-    private boolean hasRan = false, forceRun = true;
+    private boolean starting = true, forceRun = true;
     private int recheckTimer, saveTimer;
 
     boolean startBackend() {
@@ -31,7 +31,7 @@ public class MainRun {
                 Variables.setDataFolder(path);
             else {
                 // If the above isn't the correct folder, it then checks if the Appdata Roaming folder is the correct one.
-                path = fileManager.findProgramFolder();
+                path = OperatingSystem.programFolder;
                 if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
             }
         } catch (UnsupportedEncodingException e) {
@@ -86,7 +86,7 @@ public class MainRun {
         return continueStarting;
     }
 
-    public void loadUser(UpdateManager updateManager, boolean mainLoad) {
+    void loadUser(final UpdateManager updateManager, final boolean mainLoad) {
         if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
             new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
         if (ClassHandler.showInfoController().getShowsFile() == null)
@@ -100,7 +100,7 @@ public class MainRun {
         loadUserSettings(mainLoad);
     }
 
-    private void loadUserSettings(boolean mainLoad) {
+    private void loadUserSettings(final boolean mainLoad) {
         ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
         if (!mainLoad)
             ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
@@ -123,11 +123,11 @@ public class MainRun {
     }
 
     void tick() {
-        if (!hasRan) {
+        if (starting) {
             log.finer("MainRun Running...");
             this.recheckTimer = GenericMethods.getTimeSeconds();
             this.saveTimer = GenericMethods.getTimeSeconds();
-            hasRan = true;
+            starting = false;
         }
         recheck();
         saveSettings();

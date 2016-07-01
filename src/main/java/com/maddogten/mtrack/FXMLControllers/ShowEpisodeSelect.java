@@ -75,7 +75,7 @@ public class ShowEpisodeSelect implements Initializable {
     @FXML
     private Pane movePane;
 
-    public ShowEpisodeSelect(ShowEpisodeSelectBox showEpisodeSelectBox, DisplayShow show) {
+    public ShowEpisodeSelect(final ShowEpisodeSelectBox showEpisodeSelectBox, final DisplayShow show) {
         this.show = show;
         this.showEpisodeSelectBox = showEpisodeSelectBox;
         this.selectedSeason.setValue(this.show.getSeason());
@@ -83,7 +83,7 @@ public class ShowEpisodeSelect implements Initializable {
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(final URL location, final ResourceBundle resources) {
         ArrayList<Integer> seasonsInt = new ArrayList<>();
         seasonsInt.addAll(ClassHandler.showInfoController().getSeasonsList(show.getShow()).stream().collect(Collectors.toList()));
         ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsInt);
@@ -233,7 +233,6 @@ public class ShowEpisodeSelect implements Initializable {
                 textFieldVisibility(!isExpanded);
                 isExpanded = !isExpanded;
             }
-
         });
 
         Task<Void> task = new Task<Void>() {
@@ -283,7 +282,7 @@ public class ShowEpisodeSelect implements Initializable {
         });
     }
 
-    private void textFieldVisibility(boolean isVisible) {
+    private void textFieldVisibility(final boolean isVisible) {
         seasonTextField.setVisible(isVisible);
         episodeTextField.setVisible(isVisible);
     }

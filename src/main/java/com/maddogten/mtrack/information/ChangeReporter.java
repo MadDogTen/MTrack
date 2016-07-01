@@ -16,7 +16,7 @@ public class ChangeReporter {
     private static boolean isChanges = false;
 
     // This first saves the current list, Reinitialize changes as the the old length + 1, Adds the newInfo to changes[0], then iterates thorough the rest adding them started at changes[1].
-    public static void addChange(String newInfo) {
+    public static void addChange(final String newInfo) {
         int toRemove = -1; // This is to verify no duplicates are added to the list. If one is found, it removes it, and continues adding the new one (So it appears at the top of the list).
         for (int i = 0; i < changes.length; i++) {
             if (changes[i].replace("+", "a").replace("-", "m").matches(newInfo.replace("+", "a").replace("-", "m"))) {
@@ -32,7 +32,7 @@ public class ChangeReporter {
         }
 
         log.fine("Adding new change: \"" + newInfo + "\".");
-        String[] currentList = changes;
+        String[] currentList = changes.clone();
         changes = new String[currentList.length + 1];
         changes[0] = newInfo;
         int iterator = 1;
@@ -57,10 +57,10 @@ public class ChangeReporter {
         return changes;
     }
 
-    public static void setChanges(String[] newChangeList) {
+    public static void setChanges(final String[] newChangeList) {
         if (changes.length == 0) changes = newChangeList;
         else {
-            String[] tempSave = changes;
+            String[] tempSave = changes.clone();
             changes = newChangeList;
             for (int i = tempSave.length - 1; i >= 0; i--) addChange(tempSave[i]);
         }

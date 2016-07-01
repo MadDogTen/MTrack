@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 public class ConfirmBox {
     private static final Logger log = Logger.getLogger(ConfirmBox.class.getName());
 
-    public boolean confirm(StringProperty message, Stage oldStage) {
+    public boolean confirm(final StringProperty message, final Stage oldStage) {
         log.finest("confirm has been opened.");
 
         Stage confirmStage = new Stage();

@@ -44,12 +44,11 @@ public class About implements Initializable {
     private Tooltip versionNumberTooltip;
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(final URL location, final ResourceBundle resources) {
         log.finest("About has been opened.");
         programName.textProperty().bind(Strings.ProgramTitle);
         programName.setAlignment(Pos.CENTER);
         versionNumber.textProperty().bind(Strings.MTrackVersion);
-        versionNumber.setAlignment(Pos.CENTER);
         if (Variables.showInternalVersion) versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
         else versionNumber.setTooltip(null);
         codedBy.textProperty().bind(Strings.CodedBy);

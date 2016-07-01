@@ -45,7 +45,7 @@ public class DeveloperStuff {
         log.info("Finished printing out all directories.");
     }
 
-    public void clearDirectory(Stage stage) {
+    public void clearDirectory(final Stage stage) {
         ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
         if (directories.isEmpty())
             new MessageBox(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, stage);
@@ -69,7 +69,7 @@ public class DeveloperStuff {
     }
 
     //---- ShowInfoController ----\\
-    public void printShowInformation(String aShow) {
+    public void printShowInformation(final String aShow) {
         log.info("Printing out information for: " + aShow);
         Show show = ClassHandler.showInfoController().getShowsFile().get(aShow);
         String[] print = new String[1 + (show.getSeasons().keySet().size() * 2)];

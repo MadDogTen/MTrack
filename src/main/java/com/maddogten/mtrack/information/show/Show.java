@@ -21,7 +21,7 @@ public class Show implements Serializable {
     private int showID;
     private int numberOfSeasons;
 
-    public Show(String name, Map<Integer, Season> seasons) {
+    public Show(final String name, final Map<Integer, Season> seasons) {
         this.name = name;
         this.seasons = seasons;
         this.showID = -1;
@@ -36,15 +36,15 @@ public class Show implements Serializable {
         return seasons;
     }
 
-    public Season getSeason(int season) {
+    public Season getSeason(final int season) {
         return seasons.get(season);
     }
 
-    public boolean containsSeason(int season) {
+    public boolean containsSeason(final int season) {
         return seasons.containsKey(season);
     }
 
-    public void addOrReplaceSeason(int seasonInt, Season season) {
+    public void addOrReplaceSeason(final int seasonInt, final Season season) {
         if (seasons.containsKey(seasonInt)) {
             seasons.replace(seasonInt, season);
         } else {
@@ -52,7 +52,7 @@ public class Show implements Serializable {
         }
     }
 
-    public void removeSeason(int seasonInt) {
+    public void removeSeason(final int seasonInt) {
         if (seasons.containsKey(seasonInt)) {
             seasons.remove(seasonInt);
         }
@@ -66,7 +66,7 @@ public class Show implements Serializable {
         return showID;
     }
 
-    public void setShowID(int showID) {
+    public void setShowID(final int showID) {
         this.showID = showID;
     }
 
@@ -74,7 +74,7 @@ public class Show implements Serializable {
         return numberOfSeasons;
     }
 
-    public void setNumberOfSeasons(int numberOfSeasons) {
+    public void setNumberOfSeasons(final int numberOfSeasons) {
         this.numberOfSeasons = numberOfSeasons;
     }
 }

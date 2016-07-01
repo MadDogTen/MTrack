@@ -38,7 +38,7 @@ public class UserSettings implements Serializable {
     private long lastProgramID;
 
     @SuppressWarnings("SameParameterValue")
-    public UserSettings(String userName, Map<String, UserShowSettings> showSettings, boolean showUsername, String[] changes, HashMap<String, Integer> changedShowsStatus, long lastProgramID) {
+    public UserSettings(final String userName, final Map<String, UserShowSettings> showSettings, final boolean showUsername, final String[] changes, final HashMap<String, Integer> changedShowsStatus, final long lastProgramID) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
@@ -49,7 +49,7 @@ public class UserSettings implements Serializable {
         this.lastProgramID = lastProgramID;
     }
 
-    public UserSettings(String userName, Map<String, UserShowSettings> showSettings) {
+    public UserSettings(final String userName, final Map<String, UserShowSettings> showSettings) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
@@ -60,7 +60,7 @@ public class UserSettings implements Serializable {
         this.lastProgramID = ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID();
     }
 
-    public void addShowSettings(UserShowSettings userShowSettings) {
+    public void addShowSettings(final UserShowSettings userShowSettings) {
         showSettings.put(userShowSettings.getShowName(), userShowSettings);
     }
 
@@ -74,7 +74,7 @@ public class UserSettings implements Serializable {
         return userSettingsFileVersion;
     }
 
-    public void setUserSettingsFileVersion(int userSettingsFileVersion) {
+    public void setUserSettingsFileVersion(final int userSettingsFileVersion) {
         this.userSettingsFileVersion = userSettingsFileVersion;
     }
 
@@ -82,7 +82,7 @@ public class UserSettings implements Serializable {
         return userDirectoryVersion;
     }
 
-    public void setUserDirectoryVersion(int userDirectoryVersion) {
+    public void setUserDirectoryVersion(final int userDirectoryVersion) {
         this.userDirectoryVersion = userDirectoryVersion;
     }
 
@@ -90,7 +90,7 @@ public class UserSettings implements Serializable {
         return showSettings;
     }
 
-    public UserShowSettings getAShowSettings(String aShow) {
+    public UserShowSettings getAShowSettings(final String aShow) {
         return showSettings.get(aShow);
     }
 
@@ -98,7 +98,7 @@ public class UserSettings implements Serializable {
         return showUsername;
     }
 
-    public void setShowUsername(boolean showUsername) {
+    public void setShowUsername(final boolean showUsername) {
         this.showUsername = showUsername;
     }
 
@@ -106,7 +106,7 @@ public class UserSettings implements Serializable {
         return changes;
     }
 
-    public void setChanges(String[] changes) {
+    public void setChanges(final String[] changes) {
         this.changes = changes;
     }
 
@@ -114,7 +114,7 @@ public class UserSettings implements Serializable {
         return changedShowsStatus;
     }
 
-    public void setChangedShowsStatus(Map<String, Integer> changedShowsStatus) {
+    public void setChangedShowsStatus(final Map<String, Integer> changedShowsStatus) {
         this.changedShowsStatus = changedShowsStatus;
     }
 }

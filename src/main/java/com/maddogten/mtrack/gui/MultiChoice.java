@@ -32,7 +32,7 @@ public class MultiChoice {
     private static final Logger log = Logger.getLogger(MultiChoice.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public StringProperty multipleButtons(StringProperty[] messages, StringProperty[] choices, StringProperty[] tooltips, Stage parentStage) {
+    public StringProperty multipleButtons(final StringProperty[] messages, final StringProperty[] choices, final StringProperty[] tooltips, final Stage parentStage) {
         log.fine("dualChoiceButtons has been opened.");
 
         Stage multipleButtons = new Stage();
@@ -114,7 +114,7 @@ public class MultiChoice {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public ArrayList<String> multipleCheckbox(StringProperty[] messages, StringProperty[] choices, StringProperty[] tooltips, StringProperty isAll, boolean onlyOneAllowed, Stage parentStage) {
+    public ArrayList<String> multipleCheckbox(final StringProperty[] messages, final StringProperty[] choices, final StringProperty[] tooltips, final StringProperty isAll, final boolean onlyOneAllowed, final Stage parentStage) {
         log.fine("dualChoiceButtons has been opened.");
 
         Stage multipleCheckbox = new Stage();

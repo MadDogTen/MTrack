@@ -28,7 +28,7 @@ public class DirectoryController {
     private int lastActiveCheck = -2;
 
     // Saves all the directory paths that the program is currently set to check.
-    public ArrayList<Directory> findDirectories(boolean includeInactive, boolean skipFoundInactiveDirectories, boolean skipRechecking) {
+    public ArrayList<Directory> findDirectories(final boolean includeInactive, final boolean skipFoundInactiveDirectories, final boolean skipRechecking) {
         ArrayList<Directory> directories = new ArrayList<>();
         File[] files = new File(Variables.dataFolder + Variables.DirectoriesFolder).listFiles();
         if (files != null) {
@@ -49,7 +49,7 @@ public class DirectoryController {
     }
 
     // Loads all the directory files. You can tell it to skip a particular directory if you don't need it.
-    public ArrayList<Directory> findDirectories(long skip, boolean includeInactive, Boolean skipFoundInactiveDirectories, @SuppressWarnings("SameParameterValue") boolean skipRechecking) {
+    public ArrayList<Directory> findDirectories(final long skip, final boolean includeInactive, final Boolean skipFoundInactiveDirectories, @SuppressWarnings("SameParameterValue") final boolean skipRechecking) {
         // ArrayList = Shows list from all added Directories
         if (skip == -2) return findDirectories(includeInactive, skipFoundInactiveDirectories, skipRechecking);
         else {
@@ -66,7 +66,7 @@ public class DirectoryController {
     }
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    private ArrayList<Directory> getActiveDirectories(ArrayList<Directory> untestedDirectories, boolean skipFoundInactiveDirectories) {
+    private ArrayList<Directory> getActiveDirectories(final ArrayList<Directory> untestedDirectories, final boolean skipFoundInactiveDirectories) {
         ArrayList<Directory> activeDirectories = new ArrayList<>(untestedDirectories.size());
         if (lastActiveCheck == -2 || GenericMethods.timeTakenSeconds(lastActiveCheck) > Variables.timeBetweenRecheckingActiveDirectoriesSeconds) {
             if (skipFoundInactiveDirectories) {
@@ -181,7 +181,7 @@ public class DirectoryController {
     }
 
     // Add a new directory.
-    public Long[] addDirectory(File folder) {
+    public Long[] addDirectory(final File folder) {
         ArrayList<Directory> directories = findDirectories(true, false, true);
         Long[] answer = {null, null};
         boolean directoryDoesNotExist = true;
@@ -210,7 +210,7 @@ public class DirectoryController {
     }
 
     // Gets a single directory map using the given index.
-    public Directory getDirectory(long directoryID) {
+    public Directory getDirectory(final long directoryID) {
         for (Directory directory : findDirectories(true, false, true)) {
             if (directory.getDirectoryID() == directoryID) return directory;
         }
@@ -218,14 +218,14 @@ public class DirectoryController {
         return new Directory(new File("Empty"), "Empty", -1, new HashMap<>());
     }
 
-    public void saveDirectory(Directory directory, Boolean loadMap) {
+    public void saveDirectory(final Directory directory, final Boolean loadMap) {
         new FileManager().save(directory, Variables.DirectoriesFolder, directory.getFileName(), Variables.ShowFileExtension, true);
         if (loadMap)
             ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
     }
 
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
-    public void removeDirectory(Directory aDirectory) {
+    public void removeDirectory(final Directory aDirectory) {
         log.info("Currently processing removal of: " + aDirectory.getFileName());
         if (!new FileManager().deleteFile(Variables.DirectoriesFolder, aDirectory.getFileName(), Variables.ShowFileExtension))
             log.info("Wasn't able to delete directory.");

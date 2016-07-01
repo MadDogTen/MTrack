@@ -15,7 +15,7 @@ public class WebsiteHandler {
     private final URL url;
     private final String websiteData;
 
-    public WebsiteHandler(String string) throws IOException {
+    public WebsiteHandler(final String string) throws IOException {
         if (!Variables.useOnlineDatabase) {
             this.url = new URL("");
             this.websiteData = "";
@@ -27,9 +27,10 @@ public class WebsiteHandler {
     }
 
     private String readDataFromWebsite() throws IOException {
-        BufferedReader bufferedReaderIn = new BufferedReader(new InputStreamReader(url.openStream()));
-        String data = bufferedReaderIn.readLine();
-        bufferedReaderIn.close();
+        String data;
+        try (BufferedReader bufferedReaderIn = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            data = bufferedReaderIn.readLine();
+        }
         return data;
     }
 
