@@ -3,6 +3,7 @@ package com.maddogten.mtrack.util;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public enum OperatingSystem {
@@ -17,11 +18,27 @@ public enum OperatingSystem {
     public static boolean openVideo(final File file, final int startTime) {
         try {
             if (startTime != 0) log.info("Show is continuing at: \"" + startTime + "\"");
-            ProcessBuilder processBuilder;
+            ProcessBuilder processBuilder = null;
             switch (operatingSystem) {
                 case WINDOWS:
-                    processBuilder = new ProcessBuilder("C:\\Program Files\\VideoLAN\\VLC\\vlc.exe", "--start-time=" + startTime, /*"--stop-time=" + stopTime,*/ file.getPath());
-                    return processBuilder.start().isAlive();
+                    VideoPlayer videoPlayer = ClassHandler.userInfoController().getUserSettings().getVideoPlayer();
+                    if (videoPlayer.getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) {
+                        Desktop.getDesktop().open(file);
+                        return true;
+                    } else {
+                        switch (videoPlayer.getVideoPlayerEnum()) {
+                            case VLC:
+                                processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), Variables.playFullScreen ? "--fullscreen" : "", "--start-time=" + startTime, file.getPath());
+                                break;
+                            case BS_PLAYER:
+                                processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), file.getPath(), Variables.playFullScreen ? " -fs" : "", "-stime= " + startTime);
+                                break;
+                            case MEDIA_PLAYER_CLASSIC:
+                                processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), file.getPath(), Variables.playFullScreen ? " /fullscreen" : "", " /start ", String.valueOf(startTime * 1000));
+                                break;
+                        }
+                        return processBuilder != null && processBuilder.start().isAlive();
+                    }
                 case MAC:
                 case NIX:
                 case NUX:
@@ -73,5 +90,16 @@ public enum OperatingSystem {
         File dir = new File(home + Variables.ProgramRootFolder);
         log.info("Appdata folder: \"" + dir.getAbsolutePath() + "\".");
         return new File(dir.getAbsolutePath());
+    }
+
+    public static ArrayList<File> findVideoPlayers(VideoPlayer.VideoPlayerEnum videoPlayer) {
+        ArrayList<File> locations = new ArrayList<>();
+        if (operatingSystem == WINDOWS) {
+            if (Variables.supportedVideoPlayers_Windows.containsKey(videoPlayer))
+                Variables.supportedVideoPlayers_Windows.get(videoPlayer).forEach(file -> {
+                    if (file.exists()) locations.add(file);
+                });
+        }
+        return locations;
     }
 }

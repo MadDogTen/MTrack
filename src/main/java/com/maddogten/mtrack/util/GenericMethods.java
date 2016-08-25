@@ -122,7 +122,7 @@ public class GenericMethods {
             while (files.length > Variables.logMaxNumberOfFiles - 1) { // Delete any extra log files.
                 Matcher lowest = null;
                 String toDelete = null;
-                Pattern pattern = Pattern.compile("M?Log(?:_\\d{1,2}){1,2}-(\\d\\d)[\\-\\.](\\d\\d)[\\-\\.](\\d\\d)_(\\d\\d)[\\-\\.](\\d\\d)[\\-\\.](\\d\\d)");
+                Pattern pattern = Pattern.compile("M?Log(?:_\\d{1,2}){1,2}-(\\d\\d)[\\-.](\\d\\d)[\\-.](\\d\\d)_(\\d\\d)[\\-.](\\d\\d)[\\-.](\\d\\d)");
                 for (File file : files) {
                     Matcher matcher = pattern.matcher(file.getName());
                     if (matcher.find()) {
@@ -155,6 +155,20 @@ public class GenericMethods {
 
             log.info("-------- Program Logging Started --------");
         }
+    }
+
+    public static void initExceptionHandler(@SuppressWarnings("SameParameterValue") Logger log) {
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            if (Variables.devMode) //noinspection CallToPrintStackTrace
+                exception.printStackTrace();
+            else {
+                String[] stackTrace = new String[exception.getStackTrace().length + 1];
+                stackTrace[0] = exception.toString();
+                for (int i = 1; i < exception.getStackTrace().length; i++)
+                    stackTrace[i] = exception.getStackTrace()[i].toString();
+                log.severe(Arrays.toString(stackTrace));
+            }
+        });
     }
 
     public static void fadeStageIn(final Stage stage, final int fadeTime, final Logger log, final Class stageClass) {
@@ -196,5 +210,16 @@ public class GenericMethods {
 
     public static boolean isFileLoggingStarted() {
         return fileHandler != null;
+    }
+
+    public static String getSeasonFolderName(final File dir, final String showName, final int season) {
+        Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + season);
+        for (String fileName : new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator).list()) {
+            Matcher matcher = pattern.matcher(fileName.toLowerCase());
+            if (matcher.find()) {
+                return fileName;
+            }
+        }
+        return "";
     }
 }

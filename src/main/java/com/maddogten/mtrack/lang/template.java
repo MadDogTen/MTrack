@@ -204,5 +204,8 @@ public class template extends Language {
         Strings.SavingWaitTimeSeconds.setValue("");
         Strings.CurrentUser.setValue("");
         Strings.WarningConnectsToRemoteWebsite.setValue("");
+        Strings.SetActiveAndPickCurrentEpisode.setValue("");
+        Strings.ShowIsCurrentlyPlayingAndCannotBeEdited.setValue("");
+        Strings.Show0Remaining.setValue("");
     }
 }

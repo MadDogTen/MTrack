@@ -9,8 +9,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.*?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" id="pane" fx:id="pane" prefHeight="454.0" prefWidth="281.0"
-      stylesheets="@MainGui.css" xmlns="http://javafx.com/javafx/8.0.65"
-      fx:controller="com.maddogten.mtrack.Controller">
+      stylesheets="@MainGui.css" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.Controller">
     <children>
         <Pane fx:id="topBarRectangle">
             <children>
@@ -69,7 +68,7 @@
                 </ImageView>
             </children>
         </Pane>
-        <AnchorPane fx:id="settingsAnchorPane" layoutY="30.0" prefHeight="426.0" prefWidth="281.0">
+        <AnchorPane fx:id="settingsAnchorPane" layoutY="30.0" prefHeight="426.0" prefWidth="281.0" visible="false">
             <children>
                 <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
                          minWidth="-Infinity" prefHeight="426.0" prefWidth="281.0" tabClosingPolicy="UNAVAILABLE">
@@ -171,10 +170,11 @@
                                                 textAlignment="CENTER" AnchorPane.bottomAnchor="283.0"
                                                 AnchorPane.leftAnchor="77.0" AnchorPane.rightAnchor="81.0"
                                                 AnchorPane.topAnchor="92.0"/>
-                                        <Button fx:id="unHideShow" layoutX="97.0" layoutY="140.0"
-                                                mnemonicParsing="false" text="Unhide Show" textAlignment="CENTER"
-                                                AnchorPane.bottomAnchor="235.0" AnchorPane.leftAnchor="97.0"
-                                                AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="140.0"/>
+                                        <Button fx:id="unHideShow" layoutX="92.0" layoutY="143.0"
+                                                mnemonicParsing="false" prefHeight="22.0" prefWidth="91.0"
+                                                text="Unhide Show" textAlignment="CENTER"
+                                                AnchorPane.bottomAnchor="232.0" AnchorPane.leftAnchor="92.0"
+                                                AnchorPane.rightAnchor="98.0" AnchorPane.topAnchor="143.0"/>
                                         <CheckBox fx:id="useOnlineDatabaseCheckbox" layoutX="76.0" layoutY="190.0"
                                                   mnemonicParsing="false" text="Use Online Database"
                                                   textAlignment="CENTER" AnchorPane.bottomAnchor="191.0"
@@ -189,6 +189,8 @@
                                         <Separator layoutX="74.0" layoutY="122.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="74.0" layoutY="173.0" prefHeight="14.0" prefWidth="134.0"/>
                                         <Separator layoutX="74.0" layoutY="230.0" prefHeight="14.0" prefWidth="134.0"/>
+                                        <Button fx:id="changeVideoPlayerButton" layoutX="75.0" layoutY="251.0"
+                                                mnemonicParsing="false" text="Change Video Player"/>
                                     </children>
                                 </AnchorPane>
                             </content>
@@ -398,7 +400,7 @@
                 </Button>
             </children>
         </AnchorPane>
-        <Pane fx:id="mainPane" layoutY="30.0" visible="false">
+        <Pane fx:id="mainPane" layoutY="30.0">
             <children>
                 <TextField fx:id="textField" layoutX="5.0" layoutY="3.0" visible="false"/>
                 <Button id="clearTextField" fx:id="clearTextField" layoutX="136.0" layoutY="8.0" mnemonicParsing="false"

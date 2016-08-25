@@ -1,0 +1,8 @@
+.root {
+    -fx-font-size: 12px;
+    -fx-font-family: "Times New Roman";
+}
+
+.combo-box > .list-cell {
+  -fx-text-overrun: clip ;
+}

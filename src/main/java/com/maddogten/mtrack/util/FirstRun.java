@@ -1,9 +1,7 @@
 package com.maddogten.mtrack.util;
 
-import com.maddogten.mtrack.gui.ConfirmBox;
-import com.maddogten.mtrack.gui.MessageBox;
-import com.maddogten.mtrack.gui.MultiChoice;
-import com.maddogten.mtrack.gui.TextBox;
+import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.gui.*;
 import com.maddogten.mtrack.information.settings.ProgramSettings;
 import com.maddogten.mtrack.information.settings.UserSettings;
 import com.maddogten.mtrack.information.settings.UserShowSettings;
@@ -27,7 +25,7 @@ import java.util.logging.Logger;
 public class FirstRun {
     private final Logger log = Logger.getLogger(FirstRun.class.getName());
 
-    public boolean programFirstRun() {
+    public boolean programFirstRun() throws IOException {
         log.info("First Run, Generating Files...");
         ClassHandler.mainRun().getLanguage();
         if (ClassHandler.mainRun().continueStarting) {
@@ -131,15 +129,16 @@ public class FirstRun {
     }
 
     // Generates a user settings file for the given username.
-    public void generateUserSettingsFile(final String userName) {
+    public void generateUserSettingsFile(final String userName) throws IOException {
         log.info("Attempting to generate settings file for " + userName + '.');
         Map<String, UserShowSettings> showSettings = new HashMap<>();
         for (String aShow : ClassHandler.showInfoController().getShowsList()) {
             if (Variables.genUserShowInfoAtFirstFound)
                 showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
-            else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
+            else
+                showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().getEpisode(aShow, 1, 0) != null ? 0 : 1, 1));
         }
-        new FileManager().save(new UserSettings(userName, showSettings, true, new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
+        new FileManager().save(new UserSettings(userName, showSettings, true, new VideoPlayerSelectorBox().videoPlayerSelector(null), new String[0], new HashMap<>(), ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
     }
 
     // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
@@ -165,22 +164,24 @@ public class FirstRun {
             FindShows findShows = new FindShows();
             Map<String, Show> shows = new HashMap<>();
             final ArrayList<String> ignoredShows;
-            if (ClassHandler.userInfoController().getAllUsers().isEmpty()) ignoredShows = new ArrayList<>();
+            if (!Main.programFullyRunning || ClassHandler.userInfoController().getAllUsers().isEmpty())
+                ignoredShows = new ArrayList<>();
             else ignoredShows = ClassHandler.userInfoController().getIgnoredShows();
             findShows.findShows(directory.getDirectory()).forEach(aShow -> {
                 log.info("Currently Processing: " + aShow);
                 Map<Integer, Season> seasons = new HashMap<>();
                 findShows.findSeasons(directory.getDirectory(), aShow).forEach(aSeason -> {
                     log.info("Season: " + aSeason);
+                    String seasonFolderName = GenericMethods.getSeasonFolderName(directory.getDirectory(), aShow, aSeason);
                     Map<Integer, Episode> episodes = new HashMap<>();
                     ArrayList<String> episodesFull = findShows.findEpisodes(directory.getDirectory(), aShow, aSeason);
                     episodesFull.forEach(aEpisode -> {
                         log.info("Episode: " + aEpisode);
                         int[] episode = ClassHandler.showInfoController().getEpisodeInfo(aEpisode);
                         if (episode[0] != -2) {
-                            episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), false));
+                            episodes.put(episode[0], new Episode(episode[0], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + seasonFolderName + Strings.FileSeparator + aEpisode), false));
                             if (episode[1] != -2)
-                                episodes.put(episode[1], new Episode(episode[1], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + "Season " + aSeason + Strings.FileSeparator + aEpisode), true));
+                                episodes.put(episode[1], new Episode(episode[1], (directory.getDirectory() + Strings.FileSeparator + aShow + Strings.FileSeparator + seasonFolderName + Strings.FileSeparator + aEpisode), true));
                         }
                     });
                     if (!episodes.isEmpty()) seasons.put(aSeason, new Season(aSeason, episodes));
@@ -192,7 +193,8 @@ public class FirstRun {
             });
             directory.setShows(shows);
             ClassHandler.directoryController().saveDirectory(directory, false);
-            ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
+            if (Main.programFullyRunning)
+                ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
         }
     }
 }

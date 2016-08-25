@@ -16,13 +16,10 @@ public class Episode implements Serializable {
     private final String episodeFilename;
     private final Boolean partOfDoubleEpisode;
 
-    private int savedPlayTime;
-
     public Episode(final int episode, final String episodeFilename, final boolean partOfDoubleEpisode) {
         this.episode = episode;
         this.episodeFilename = episodeFilename;
         this.partOfDoubleEpisode = partOfDoubleEpisode;
-        savedPlayTime = 0;
     }
 
     public int getEpisode() {
@@ -39,13 +36,5 @@ public class Episode implements Serializable {
 
     public boolean isPartOfDoubleEpisode() {
         return partOfDoubleEpisode;
-    }
-
-    public int getSavedPlayTime() {
-        return savedPlayTime;
-    }
-
-    public void setSavedPlayTime(final int savedPlayTime) {
-        this.savedPlayTime = savedPlayTime;
     }
 }

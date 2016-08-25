@@ -201,8 +201,11 @@ public class en_US extends Language {
         Strings.FileDoesNotExists.setValue("File doesn't exists.");
         Strings.CurrentlyPlaying.setValue("Currently Playing:");
         Strings.WasUnableToPlayTheEpisode.setValue("Was unable to play the episode.");
-        Strings.SavingWaitTimeSeconds.setValue("Saving Wait Time (Seconds):");
+        Strings.SavingWaitTimeSeconds.setValue("Save Interval (Seconds):");
         Strings.CurrentUser.setValue("Current User:");
         Strings.WarningConnectsToRemoteWebsite.setValue("Warning- Connects to remote website.");
+        Strings.SetActiveAndPickCurrentEpisode.setValue("Set active and pick current episode");
+        Strings.ShowIsCurrentlyPlayingAndCannotBeEdited.setValue("Show is currently playing, and cannot be edited.");
+        Strings.Show0Remaining.setValue("Show 0 Remaining");
     }
 }

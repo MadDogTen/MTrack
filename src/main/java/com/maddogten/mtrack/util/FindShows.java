@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 
 /*
       FindShows looks for Shows, Their Seasons, and Their Episodes with the given information. It filters
-      any files that don't match what it's looking for.
+      any files that doesn't match what it's looking for.
 
-      Only Episode Extension's Currently accepted: ".mkv", ".avi", ".mp4", ".ts".
-      Other extensions are supported, and just need to be added if needed.
+      Only Video Extension's Currently supported: ".mkv", ".avi", ".mp4", ".ts".
+      Other extensions can be added on a as needed bases.
  */
 
 public class FindShows {
@@ -28,7 +28,7 @@ public class FindShows {
         log.finest("Searching for seasons for: " + show + '.');
         ArrayList<String> showFolder = new ArrayList<>(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
         ArrayList<Integer> seasonNumber = new ArrayList<>(showFolder.size());
-        Pattern pattern = Pattern.compile(Strings.seasonRegex);
+        Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + Strings.seasonNumberRegex);
         showFolder.forEach(aShowFolder -> {
             Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());
             if (matcher.find()) seasonNumber.add(Integer.parseInt(matcher.group().toLowerCase().split(" ")[1]));
@@ -36,16 +36,19 @@ public class FindShows {
         return seasonNumber;
     }
 
-    public final ArrayList<String> findEpisodes(final File dir, final String ShowName, final Integer season) {
-        log.finest("Searching for episodes for: " + ShowName + " || Season: " + season + '.');
-        File folder = new File(dir + Strings.FileSeparator + ShowName + Strings.FileSeparator + Strings.Season.getValue() + ' ' + season);
-        if (new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
-            return new ArrayList<>(Arrays.asList(folder.list((dir1, name) -> {
-                for (String extension : Variables.showExtensions)
-                    if (new File(dir1 + Strings.FileSeparator + name).isFile() && name.toLowerCase().endsWith(extension))
-                        return true;
-                return false;
-            })));
-        return new ArrayList<>();
+    public final ArrayList<String> findEpisodes(final File dir, final String showName, final int season) {
+        log.finest("Searching for episodes for: " + showName + " || Season: " + season + '.');
+        String seasonFolder = GenericMethods.getSeasonFolderName(dir, showName, season);
+        if (!seasonFolder.isEmpty()) {
+            File folder = new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator + seasonFolder);
+            if (folder.exists() && new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
+                return new ArrayList<>(Arrays.asList(folder.list((dir1, name) -> {
+                    for (String extension : Variables.showExtensions)
+                        if (new File(dir1 + Strings.FileSeparator + name).isFile() && name.toLowerCase().endsWith(extension) && ClassHandler.showInfoController().getEpisodeInfo(name)[0] != -2)
+                            return true;
+                    return false;
+                })));
+        }
+        return new ArrayList<>(0);
     }
 }

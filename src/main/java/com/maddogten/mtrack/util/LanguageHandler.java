@@ -229,6 +229,9 @@ public class LanguageHandler {
         findAndSetMissingStrings(Strings.SavingWaitTimeSeconds);
         findAndSetMissingStrings(Strings.CurrentUser);
         findAndSetMissingStrings(Strings.WarningConnectsToRemoteWebsite);
+        findAndSetMissingStrings(Strings.SetActiveAndPickCurrentEpisode);
+        findAndSetMissingStrings(Strings.ShowIsCurrentlyPlayingAndCannotBeEdited);
+        findAndSetMissingStrings(Strings.Show0Remaining);
         log.info("Finished checking for missing strings.");
     }
 

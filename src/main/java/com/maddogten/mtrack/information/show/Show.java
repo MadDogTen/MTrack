@@ -70,9 +70,9 @@ public class Show implements Serializable {
         this.showID = showID;
     }
 
-    public int getNumberOfSeasons() {
+    /*public int getNumberOfSeasons() {
         return numberOfSeasons;
-    }
+    }*/
 
     public void setNumberOfSeasons(final int numberOfSeasons) {
         this.numberOfSeasons = numberOfSeasons;

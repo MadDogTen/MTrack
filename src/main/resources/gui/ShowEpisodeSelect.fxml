@@ -35,6 +35,7 @@
     <Button id="toggleTextFields" fx:id="toggleTextFieldsButton" layoutX="6.0" layoutY="47.0" mnemonicParsing="false"/>
     <ImageView fx:id="toggleTextFieldsButtonImage" fitHeight="20.0" fitWidth="18.0" layoutX="5.0" layoutY="46.0"
                mouseTransparent="true" pickOnBounds="true" preserveRatio="true" scaleX="0.6" scaleY="0.6" scaleZ="0.6">
+        <!--suppress XmlPathReference -->
         <Image url="@../image/UI/arrow_bottom_icon&amp;48.png"/>
     </ImageView>
 </Pane>

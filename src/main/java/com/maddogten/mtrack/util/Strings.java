@@ -16,9 +16,9 @@ public class Strings {
     //---------- Main Strings ----------\\
     public static final StringProperty MTrackVersion = new SimpleStringProperty("Alpha 1.0.0");
     public static final StringProperty CodedBy = new SimpleStringProperty("MadDogTen");
-    public static final StringProperty CodedUsing = new SimpleStringProperty("Intellij IDEA 2016.1.1");
+    public static final StringProperty CodedUsing = new SimpleStringProperty("Intellij IDEA 2016.2.1");
     public static final StringProperty CodedIn = new SimpleStringProperty("Java");
-    public static final StringProperty JavaVersion = new SimpleStringProperty("1.8.0_91");
+    public static final StringProperty JavaVersion = new SimpleStringProperty("1.8.0_101");
     //Other
     public static final String SettingsFileName = "Program";
     // Other
@@ -206,10 +206,14 @@ public class Strings {
     public static final StringProperty SavingWaitTimeSeconds = new SimpleStringProperty();
     public static final StringProperty CurrentUser = new SimpleStringProperty();
     public static final StringProperty WarningConnectsToRemoteWebsite = new SimpleStringProperty();
-    // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
-    public static final String seasonRegex = "[s][e][a][s][o][n]\\s\\d{1,4}";
+    public static final StringProperty SetActiveAndPickCurrentEpisode = new SimpleStringProperty();
+    public static final StringProperty ShowIsCurrentlyPlayingAndCannotBeEdited = new SimpleStringProperty();
+    public static final StringProperty Show0Remaining = new SimpleStringProperty();
     // Strings set by program
     public static final StringProperty UserName = new SimpleStringProperty();
+    // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
+    static final String seasonRegex = "[s][e][a][s][o][n]";
+    static final String seasonNumberRegex = "\\d{1,4}";
     // All Other Text
     public static String DefaultUsername;
 }

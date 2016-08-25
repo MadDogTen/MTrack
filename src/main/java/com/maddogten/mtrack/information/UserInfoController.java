@@ -31,8 +31,9 @@ public class UserInfoController {
         File folder = new File(Variables.dataFolder + Variables.UsersFolder);
         if (folder.exists()) {
             ArrayList<String> users = new ArrayList<>(folder.list().length);
-            if (new FileManager().checkFolderExistsAndReadable(folder))
+            if (new FileManager().checkFolderExistsAndReadable(folder)) {
                 Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UserFileExtension) && !name.toLowerCase().matches("Program"))));
+            }
             ArrayList<String> usersCleaned = new ArrayList<>(users.size());
             users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UserFileExtension, Strings.EmptyString)));
             if (usersCleaned.isEmpty()) log.info("Users folder was empty.");
@@ -125,7 +126,8 @@ public class UserInfoController {
         else {
             log.finer("Known show location: " + episode.getEpisodeFilename());
             File file = new File(episode.getEpisodeFilename());
-            if (file.exists()) return OperatingSystem.openVideo(file, episode.getSavedPlayTime());
+            if (file.exists())
+                return OperatingSystem.openVideo(file, userSettings.getShowSettings().get(aShow).getEpisodePosition(aSeason, aEpisode));
             else log.warning("File \"" + file + "\" doesn't exists!");
         }
         return false;
@@ -313,7 +315,8 @@ public class UserInfoController {
             log.fine("Adding " + aShow + " to user settings file.");
             if (Variables.genUserShowInfoAtFirstFound)
                 userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
-            else userSettings.addShowSettings(new UserShowSettings(aShow, 1, 1));
+            else
+                userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().getEpisode(aShow, 1, 0) != null ? 0 : 1, 1));
         }
     }
 

@@ -1,6 +1,8 @@
 package com.maddogten.mtrack.information.settings;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
       UserShowSettings stores each shows settings.
@@ -22,8 +24,10 @@ public class UserShowSettings implements Serializable {
     private int currentSeason;
     private int currentEpisode;
 
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private int remaining = -2;
+
+    private Map<Integer, SavedInformation> savedInformationMap;
 
     public UserShowSettings(final String showName, final int currentSeason, final int currentEpisode) {
         this.showName = showName;
@@ -32,6 +36,7 @@ public class UserShowSettings implements Serializable {
         hidden = false;
         this.currentSeason = currentSeason;
         this.currentEpisode = currentEpisode;
+        savedInformationMap = new HashMap<>();
     }
 
     public UserShowSettings(final String showName, final boolean active, final boolean ignored, final boolean hidden, final int currentSeason, final int currentEpisode) {
@@ -41,6 +46,7 @@ public class UserShowSettings implements Serializable {
         this.hidden = hidden;
         this.currentSeason = currentSeason;
         this.currentEpisode = currentEpisode;
+        savedInformationMap = new HashMap<>();
     }
 
     // Basic Getters and Setters
@@ -96,4 +102,66 @@ public class UserShowSettings implements Serializable {
     public void setRemaining(final int remaining) {
         this.remaining = remaining;
     }
+
+    public void addEpisodeTimePosition(int season, int episode, int timePosition) {
+        createSavedInformationMapIfNull();
+        if (!savedInformationMap.containsKey(season)) savedInformationMap.put(season, new SavedInformation());
+        savedInformationMap.get(season).addEpisodePosition(episode, timePosition);
+    }
+
+    public void removeEpisodeTimePosition(int season, int episode) {
+        createSavedInformationMapIfNull();
+        if (savedInformationMap.containsKey(season)) savedInformationMap.get(season).removeEpisode(episode);
+    }
+
+    public int getEpisodePosition(int season, int episode) {
+        createSavedInformationMapIfNull();
+        return savedInformationMap.containsKey(season) ? savedInformationMap.get(season).getEpisodePosition(episode) : 0;
+    }
+
+    private void createSavedInformationMapIfNull() {
+        if (savedInformationMap == null) savedInformationMap = new HashMap<>();
+    }
+
+
+    private class SavedInformation implements Serializable {
+        private static final long serialVersionUID = 8456648000944054454L;
+        private final Map<Integer, EpisodeInfo> episodeInfo;
+
+        SavedInformation() {
+            this.episodeInfo = new HashMap<>();
+        }
+
+        void addEpisodePosition(int episode, int position) {
+            if (!episodeInfo.containsKey(episode)) episodeInfo.put(episode, new EpisodeInfo(position));
+            else episodeInfo.get(episode).setPosition(position);
+        }
+
+        int getEpisodePosition(int episode) {
+            return episodeInfo.containsKey(episode) ? episodeInfo.get(episode).getPosition() : 0;
+        }
+
+        void removeEpisode(int episode) {
+            if (episodeInfo.containsKey(episode)) episodeInfo.remove(episode);
+        }
+
+        private class EpisodeInfo implements Serializable {
+            private static final long serialVersionUID = -2659853882202221187L;
+            private int position;
+
+            EpisodeInfo(int position) {
+                this.position = position;
+            }
+
+            int getPosition() {
+                return position;
+            }
+
+            void setPosition(int position) {
+                this.position = position;
+            }
+        }
+    }
+
+
 }

@@ -1,10 +1,7 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ConfirmBox;
-import com.maddogten.mtrack.util.ClassHandler;
-import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.util.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -14,11 +11,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 /*
-      Main is the entrance into the program. Loads, holds, and passed out the DirectoryController, ShowInfoController, UserInfoController, CheckShowFiles, and MainRun.
+      Main is the entrance into the program. Loads, holds, and passes out the DirectoryController, ShowInfoController, UserInfoController, CheckShowFiles, and MainRun.
  */
 
 public class Main extends Application implements Runnable {
@@ -65,7 +61,9 @@ public class Main extends Application implements Runnable {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
+        DeveloperStuff.startupTest();
         GenericMethods.initLogger();
+        GenericMethods.initExceptionHandler(log);
         boolean continueStarting = ClassHandler.mainRun().startBackend();
         if (continueStarting) {
             stage = primaryStage;
@@ -93,17 +91,6 @@ public class Main extends Application implements Runnable {
         if (!programFullyRunning) {
             programFullyRunning = true;
             thread = new Thread(this);
-            Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-                if (Variables.devMode) //noinspection CallToPrintStackTrace
-                    exception.printStackTrace();
-                else {
-                    String[] stackTrace = new String[exception.getStackTrace().length + 1];
-                    stackTrace[0] = exception.toString();
-                    for (int i = 1; i < exception.getStackTrace().length; i++)
-                        stackTrace[i] = exception.getStackTrace()[i].toString();
-                    log.severe(Arrays.toString(stackTrace));
-                }
-            });
             thread.start();
         }
     }

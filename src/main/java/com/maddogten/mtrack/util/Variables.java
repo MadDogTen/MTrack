@@ -3,14 +3,12 @@ package com.maddogten.mtrack.util;
 import javafx.scene.text.Font;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 /*
-      Variables holds the variables for various things, Most variable should be put into here.
+ *    Variables holds the variables for various things, Most variable should be put into here.
  */
 
 @SuppressWarnings("ClassWithoutLogger")
@@ -22,27 +20,22 @@ public class Variables {
     public static final short REMAINING_COLUMN_WIDTH = 29;
     public static final short SEASONS_COLUMN_WIDTH = 48;
     public static final short EPISODE_COLUMN_WIDTH = 50;
-
-    // Base Directories
-    public static final String ProgramRootFolder = Strings.FileSeparator + "MTrack";
     public static final String DirectoriesFolder = Strings.FileSeparator + "Directories";
     public static final String UsersFolder = Strings.FileSeparator + "Users";
     // Extensions
     public static final String ShowFileExtension = ".shows";
     public static final String UserFileExtension = ".user";
     public static final String SettingFileExtension = ".settings";
-    public static final String LogExtension = ".log";
+    public static final String TempExtension = ".temp";
     // Other
     public static final Font Font = javafx.scene.text.Font.font(("Times New Roman"));
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
     // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
     public static final int ProgramSettingsFileVersion = 1015; // Was Changed // Note- Remove all "Was Changed" before merging with master.
-    public static final int UserSettingsFileVersion = 1006; // Was Changed
-    public static final int DirectoryFileVersion = 1003; // Was Changed
-
-    public static final int InternalVersion = 42; // To help keep track of what I'm currently working on / testing.
-
+    public static final int UserSettingsFileVersion = 1008; // Was Changed
+    public static final int DirectoryFileVersion = 1004; // Was Changed
+    public static final int InternalVersion = 50; // To help keep track of what I'm currently working on / testing.
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
@@ -61,13 +54,19 @@ public class Variables {
     @SuppressWarnings("PublicStaticCollectionField")
     public static final ArrayList<Pattern> doubleEpisodePatterns = new ArrayList<>(Collections.singletonList(Pattern.compile("s\\d{1,4}e(\\d{1,4})[e|-](\\d{1,4})")));
     @SuppressWarnings("PublicStaticCollectionField")
-    public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})")));
+    public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})"), Pattern.compile("(\\d{1,4})")));
     public static final String fileNameReplace = "[(]|[)]|[\\\\]|[\\[]]|[\\]]|[\\[]|[\\]]|[+][\\{][\\}]";
     public static final String LogsFolder = Strings.FileSeparator + "Logs";
-    public final static String findShowURL = "http://api.tvmaze.com/singlesearch/shows?q=";
-    public final static String getShowWithID = "http://api.tvmaze.com/shows/";
-    public final static String episodesAddition = "/episodes";
     public static final Level loggerLevel = Level.INFO; // INFO
+    public static final int sleepTimeDelay = 60;
+    // Base Directories
+    static final String ProgramRootFolder = Strings.FileSeparator + "MTrack";
+    static final String LogExtension = ".log";
+    final static String findShowURL = "http://api.tvmaze.com/singlesearch/shows?q=";
+    final static String getShowWithID = "http://api.tvmaze.com/shows/";
+    final static String episodesAddition = "/episodes";
+    static final Map<VideoPlayer.VideoPlayerEnum, Set<File>> supportedVideoPlayers_Windows;
+    static final boolean playFullScreen = false; // TODO Add user setting
     @SuppressWarnings("PublicStaticArrayField")
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     static final int logMaxFileSize = 10000000;
@@ -95,6 +94,24 @@ public class Variables {
     //---------- TV Maze ----------\\
     @SuppressWarnings("CanBeFinal")
     public static boolean useOnlineDatabase; // TODO Still highly unfinished.
+
+    static {
+        supportedVideoPlayers_Windows = new HashMap<>();
+
+        // VLC
+        supportedVideoPlayers_Windows.put(VideoPlayer.VideoPlayerEnum.VLC, new HashSet<>());
+        supportedVideoPlayers_Windows.get(VideoPlayer.VideoPlayerEnum.VLC).add(new File("C:" + Strings.FileSeparator + "Program Files (x86)" + Strings.FileSeparator + "VideoLAN" + Strings.FileSeparator + "VLC" + Strings.FileSeparator + "vlc.exe"));
+        supportedVideoPlayers_Windows.get(VideoPlayer.VideoPlayerEnum.VLC).add(new File("C:" + Strings.FileSeparator + "Program Files" + Strings.FileSeparator + "VideoLAN" + Strings.FileSeparator + "VLC" + Strings.FileSeparator + "vlc.exe"));
+
+        // BS Player
+        supportedVideoPlayers_Windows.put(VideoPlayer.VideoPlayerEnum.BS_PLAYER, new HashSet<>());
+        supportedVideoPlayers_Windows.get(VideoPlayer.VideoPlayerEnum.BS_PLAYER).add(new File("C:" + Strings.FileSeparator + "Program Files (x86)" + Strings.FileSeparator + "Webteh" + Strings.FileSeparator + "BSPlayer" + Strings.FileSeparator + "bsplayer.exe"));
+
+        // MPC
+        supportedVideoPlayers_Windows.put(VideoPlayer.VideoPlayerEnum.MEDIA_PLAYER_CLASSIC, new HashSet<>());
+        supportedVideoPlayers_Windows.get(VideoPlayer.VideoPlayerEnum.MEDIA_PLAYER_CLASSIC).add(new File("C:" + Strings.FileSeparator + "Program Files" + Strings.FileSeparator + "MPC-HC" + Strings.FileSeparator + "mpc-hc64.exe"));
+
+    }
 
     public static void setDataFolder(File file) {
         dataFolder = file;
@@ -126,4 +143,5 @@ public class Variables {
             return color;
         }
     }
+
 }

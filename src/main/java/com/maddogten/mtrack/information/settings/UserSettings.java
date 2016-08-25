@@ -2,6 +2,7 @@ package com.maddogten.mtrack.information.settings;
 
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.util.VideoPlayer;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class UserSettings implements Serializable {
 
     // Options
     private boolean showUsername;
+    private VideoPlayer videoPlayer;
 
     // Changes List
     private String[] changes;
@@ -38,23 +40,25 @@ public class UserSettings implements Serializable {
     private long lastProgramID;
 
     @SuppressWarnings("SameParameterValue")
-    public UserSettings(final String userName, final Map<String, UserShowSettings> showSettings, final boolean showUsername, final String[] changes, final HashMap<String, Integer> changedShowsStatus, final long lastProgramID) {
+    public UserSettings(final String userName, final Map<String, UserShowSettings> showSettings, final boolean showUsername, final VideoPlayer videoPlayer, final String[] changes, final HashMap<String, Integer> changedShowsStatus, final long lastProgramID) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
         this.showSettings = showSettings;
         this.showUsername = showUsername;
+        this.videoPlayer = videoPlayer;
         this.changes = changes;
         this.changedShowsStatus = changedShowsStatus;
         this.lastProgramID = lastProgramID;
     }
 
-    public UserSettings(final String userName, final Map<String, UserShowSettings> showSettings) {
+    public UserSettings(final String userName, final Map<String, UserShowSettings> showSettings, final VideoPlayer videoPlayer) {
         this.userName = userName;
         this.userSettingsFileVersion = Variables.UserSettingsFileVersion;
         this.userDirectoryVersion = 1;
         this.showSettings = showSettings;
         this.showUsername = true;
+        this.videoPlayer = videoPlayer;
         this.changes = new String[0];
         this.changedShowsStatus = new HashMap<>();
         this.lastProgramID = ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsID();
@@ -100,6 +104,14 @@ public class UserSettings implements Serializable {
 
     public void setShowUsername(final boolean showUsername) {
         this.showUsername = showUsername;
+    }
+
+    public VideoPlayer getVideoPlayer() {
+        return videoPlayer;
+    }
+
+    public void setVideoPlayer(VideoPlayer videoPlayer) {
+        this.videoPlayer = videoPlayer;
     }
 
     public String[] getChanges() {

@@ -261,6 +261,8 @@ public class Controller implements Initializable {
     private Pane mainPane;
     @FXML
     private RadioMenuItem show0RemainingRadioMenuItem;
+    @FXML
+    private Button changeVideoPlayerButton;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShow> MakeTableViewFields(final ArrayList<String> showList) {
@@ -308,21 +310,21 @@ public class Controller implements Initializable {
         return null;
     }
 
-    // Public method to update a particular show with new information. If the show happens to have been remove, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
+    // Public method to update a particular show with new information. If the show happens to have been removed, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
     public static void updateShowField(final String aShow, final boolean showExists) {
         DisplayShow currentShow = getDisplayShowFromShow(aShow);
         final boolean isShowActive = showExists && ClassHandler.showInfoController().getShowsList().contains(aShow) && ClassHandler.userInfoController().isShowActive(aShow);
-        if ((!currentList.isActive() || isShowActive) && (!currentList.isInactive() || !isShowActive)) {
+        if ((!currentList.isActive() || isShowActive) && (!currentList.isInactive() || (Variables.showActiveShows || !isShowActive))) {
             int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow);
             int season = ClassHandler.userInfoController().getCurrentSeason(aShow);
             int episode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
             if (currentShow != null) {
-                if (remaining != 0 || Variables.show0Remaining || currentList.isInactive()) {
+                if (remaining != 0 || Variables.show0Remaining || (currentList.isInactive())) {
                     if (currentShow.getSeason() != season) currentShow.setSeason(season);
                     if (currentShow.getEpisode() != episode) currentShow.setEpisode(episode);
                     if (currentShow.getRemaining() != remaining) currentShow.setRemaining(remaining);
                 } else tableViewFields.remove(currentShow);
-            } else if (Variables.show0Remaining || currentList.isInactive() || remaining != 0)
+            } else if (remaining != 0 || Variables.show0Remaining || currentList.isInactive())
                 tableViewFields.add(new DisplayShow(aShow, remaining, season, episode));
         } else if (currentShow != null) tableViewFields.remove(currentShow);
     }
@@ -374,12 +376,6 @@ public class Controller implements Initializable {
 
     public static void closeShowPlayingBoxStage() {
         if (ClassHandler.controller() != null) ClassHandler.controller().showPlayingBox.closeStage();
-    }
-
-    public static void setShowUsernameVisibility(final boolean isVisible) {
-        ClassHandler.controller().userName.setVisible(isVisible);
-        ClassHandler.controller().userNameComboBox.setVisible(isVisible);
-        ClassHandler.controller().userNameComboBox.setDisable(!isVisible);
     }
 
     public Map<String, Integer> getChangedShows() {
@@ -532,7 +528,7 @@ public class Controller implements Initializable {
                         tableView.getSelectionModel().clearSelection();
                     });
                     MenuItem setActiveAndSetEpisode = new MenuItem();
-                    setActiveAndSetEpisode.textProperty().setValue("Set active and pick current episode"); // TODO Add localization
+                    setActiveAndSetEpisode.textProperty().bind(Strings.SetActiveAndPickCurrentEpisode);
                     setActiveAndSetEpisode.setOnAction(e -> {
                         String show = row.getItem().getShow();
                         int[] seasonEpisode = new int[0];
@@ -615,7 +611,7 @@ public class Controller implements Initializable {
                         }
                     });
                     MenuItem showCurrentlyPlayingMenuItem = new MenuItem();
-                    showCurrentlyPlayingMenuItem.textProperty().setValue("Show is currently playing, and cannot be edited."); //TODO Add Localization
+                    showCurrentlyPlayingMenuItem.textProperty().bind(Strings.ShowIsCurrentlyPlayingAndCannotBeEdited);
                     row.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
                             if (currentList.isActive()) {
@@ -680,7 +676,11 @@ public class Controller implements Initializable {
                 GenericMethods.saveSettings();
                 Strings.UserName.setValue(userNameComboBox.getValue());
                 ChangeReporter.resetChanges();
-                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
+                try {
+                    ClassHandler.mainRun().loadUser(new UpdateManager(), false);
+                } catch (IOException e1) {
+                    GenericMethods.printStackTrace(log, e1, getClass());
+                }
                 Controller.setTableViewFields();
             }
         });
@@ -731,7 +731,7 @@ public class Controller implements Initializable {
         changesAlert.setOnAction(e -> openChangeBox());
         if (Variables.specialEffects) changesAlert.setOpacity(0.0);
         else changesAlert.setOpacity(1.0);
-        show0RemainingRadioMenuItem.textProperty().setValue("Show 0 Remaining"); // TODO Add localizations.
+        show0RemainingRadioMenuItem.textProperty().bind(Strings.Show0Remaining);
         show0RemainingRadioMenuItem.setSelected(ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining());
         show0RemainingRadioMenuItem.setOnAction(e -> {
             ClassHandler.programSettingsController().getSettingsFile().setShow0Remaining(!ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining());
@@ -823,7 +823,11 @@ public class Controller implements Initializable {
                 GenericMethods.saveSettings();
                 Strings.UserName.setValue(currentUserComboBox.getValue());
                 ChangeReporter.resetChanges();
-                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
+                try {
+                    ClassHandler.mainRun().loadUser(new UpdateManager(), false);
+                } catch (IOException e1) {
+                    GenericMethods.printStackTrace(log, e1, getClass());
+                }
                 Controller.setTableViewFields();
             }
         });
@@ -850,9 +854,10 @@ public class Controller implements Initializable {
                 for (String aShow : showsList) {
                     if (Variables.genUserShowInfoAtFirstFound)
                         showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
-                    else showSettings.put(aShow, new UserShowSettings(aShow, 1, 1));
+                    else
+                        showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().getEpisode(aShow, 1, 0) != null ? 0 : 1, 1));
                 }
-                new FileManager().save(new UserSettings(userName, showSettings), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
+                new FileManager().save(new UserSettings(userName, showSettings, ClassHandler.userInfoController().getUserSettings().getVideoPlayer()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
                 log.info(userName + " was added.");
             }
             currentUserComboBox.getItems().clear();
@@ -920,6 +925,13 @@ public class Controller implements Initializable {
         });
         onlineWarningText.textProperty().bind(Strings.WarningConnectsToRemoteWebsite);
         useOnlineDatabaseCheckbox.setDisable(true);
+        changeVideoPlayerButton.setOnAction(e -> { // TODO Add Localization
+            try {
+                ClassHandler.userInfoController().getUserSettings().setVideoPlayer(new VideoPlayerSelectorBox().videoPlayerSelector((Stage) tabPane.getScene().getWindow()));
+            } catch (IOException e1) {
+                GenericMethods.printStackTrace(log, e1, getClass());
+            }
+        });
 
         // UI
         unlockParentScene.textProperty().bind(Strings.AllowFullWindowMovementUse);
@@ -928,6 +940,8 @@ public class Controller implements Initializable {
             ClassHandler.programSettingsController().getSettingsFile().setStageMoveWithParentAndBlockParent(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
             Variables.setStageMoveWithParentAndBlockParent(ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
             log.info("MoveAndBlock has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+            if (!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent())
+                new MessageBox(new StringProperty[]{new SimpleStringProperty("Warning- Using this can cause things to break if used improperly.")}, (Stage) mainPane.getScene().getWindow()); // TODO Add localization
         });
         showUsername.textProperty().bind(Strings.ShowUsername);
         showUsername.setSelected(ClassHandler.userInfoController().getUserSettings().isShowUsername());
@@ -1383,10 +1397,6 @@ public class Controller implements Initializable {
 
         public static boolean isInactive() {
             return isInactive.getValue();
-        }
-
-        public static BooleanProperty isActiveProperty() {
-            return isActive;
         }
 
         public static BooleanProperty isInactiveProperty() {

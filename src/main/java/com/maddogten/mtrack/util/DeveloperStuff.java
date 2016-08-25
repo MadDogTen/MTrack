@@ -25,6 +25,10 @@ public class DeveloperStuff {
 
     //---- ProgramSettingsController ----\\
 
+    @SuppressWarnings({"UseOfSystemOutOrSystemErr", "CallToPrintStackTrace", "EmptyMethod"})
+    public static void startupTest() {
+    }
+
     //---- DirectoryController ----\\
     // Debugging tool - Prints all directories to console.
     public void printAllDirectories() {
@@ -203,9 +207,12 @@ public class DeveloperStuff {
         log.info("Finished printing all user info.");
     }
 
+    //---- CheckShowFiles ----\\
+
+    //---- Test Stuff ----\\
+
     public void toggleIsChanges() {
         ChangeReporter.setIsChanges(!ChangeReporter.getIsChanges());
     }
 
-    //---- CheckShowFiles ----\\
 }

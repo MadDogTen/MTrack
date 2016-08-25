@@ -4,6 +4,7 @@
 
 
 Current:
+Make backup of working files on start / exit, and verify the backup, and delete older backups (Keep 2 of each). On start, If files don't work, automatically load backup and notify user.
 Code Cleanup.
 Add comments to more things.
 Add Button in settings to show Changes Box & Button to have it automatically open.
@@ -14,7 +15,7 @@ Short Term:
 
 Long Term:
 Handle all "Note-" tasks.
-Remove lipsum fully and template from loading.
+Remove lipsum and template from loading.
 Add console to see log output in real time.
 
 
@@ -30,7 +31,7 @@ Find a better way to getActiveDirectories
 
 ~~~~~~~~Bugs~~~~~~~~
 All-
-If a show starts on episode 0, and !genUserShowInfoAtFirstFound, Then it won't start there.
+None.
 
 Windows-
 Clicking the TaskBar icon doesn't minimize the program.

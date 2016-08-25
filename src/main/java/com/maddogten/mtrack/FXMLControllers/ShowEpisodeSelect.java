@@ -34,6 +34,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("ALL")
 public class ShowEpisodeSelect implements Initializable {
     private static final Logger log = Logger.getLogger(ShowEpisodeSelect.class.getName());
 

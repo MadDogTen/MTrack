@@ -12,3 +12,17 @@
     -fx-font-size: .92em;
     -fx-font-weight: bold;
 }
+
+#moreOptionsMenu {
+    -fx-background-radius: 5em;
+    -fx-min-width: 14px;
+    -fx-min-height: 14px;
+    -fx-max-width: 14px;
+    -fx-max-height: 14px;
+    //-fx-background-color: clear;
+    -fx-text-fill: clear;
+}
+
+#moreOptionsMenu .arrow {
+  -fx-background-color: transparent;
+}

@@ -206,5 +206,8 @@ public class lipsum extends Language {
         Strings.SavingWaitTimeSeconds.setValue("Gilamaga");
         Strings.CurrentUser.setValue("Olomo:");
         Strings.WarningConnectsToRemoteWebsite.setValue("Tulumoto");
+        Strings.SetActiveAndPickCurrentEpisode.setValue("Naculathru");
+        Strings.ShowIsCurrentlyPlayingAndCannotBeEdited.setValue("Catho");
+        Strings.Show0Remaining.setValue("Mavaca");
     }
 }

@@ -3,16 +3,19 @@ package com.maddogten.mtrack.FXMLControllers;
 import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
+import com.maddogten.mtrack.gui.TextBox;
 import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -64,6 +67,9 @@ public class ShowPlaying implements Initializable {
     @FXML
     private Text episodeText;
 
+    @FXML
+    private MenuItem setShowPositionMenuItem;
+
     public ShowPlaying(final DisplayShow show) {
         this.show = show;
     }
@@ -89,6 +95,8 @@ public class ShowPlaying implements Initializable {
         setSeasonEpisodeText();
 
         yesButton.setOnAction(e -> {
+            if (ClassHandler.userInfoController().getUserSettings().getShowSettings().get(show.getShow()).getEpisodePosition(show.getSeason(), show.getEpisode()) != 0)
+                ClassHandler.userInfoController().getUserSettings().getShowSettings().get(show.getShow()).removeEpisodeTimePosition(show.getSeason(), show.getEpisode());
             ClassHandler.userInfoController().changeEpisode(show.getShow(), -2);
             Controller.updateShowField(show.getShow(), true);
             ClassHandler.controller().setTableSelection(-2);
@@ -125,6 +133,16 @@ public class ShowPlaying implements Initializable {
             if (!ClassHandler.userInfoController().playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
+                Stage stage = (Stage) mainPane.getScene().getWindow();
+                stage.close();
+            }
+        });
+
+        setShowPositionMenuItem.setOnAction(e -> {
+            int position[] = new TextBox().enterNumber(new SimpleStringProperty("Enter the shows current position in seconds:"), new StringProperty[]{new SimpleStringProperty("Hour"), new SimpleStringProperty("Minute"), new SimpleStringProperty("Second")}, 3, (Stage) mainPane.getScene().getWindow());
+            int timeInSeconds = ((position[0] * 60) * 60) + (position[1] * 60) + position[2];
+            if (timeInSeconds > 0) {
+                ClassHandler.userInfoController().getUserSettings().getShowSettings().get(show.getShow()).addEpisodeTimePosition(show.getSeason(), show.getEpisode(), timeInSeconds);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 stage.close();
             }

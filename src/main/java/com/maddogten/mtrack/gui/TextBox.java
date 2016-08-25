@@ -5,6 +5,7 @@ import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -231,7 +232,7 @@ public class TextBox {
         });
         submit.textProperty().bind(Strings.Submit);
         submit.setOnAction(e -> {
-            if (isFileNameValid(textField.getText(), extensions, saveFile, pickFile)) {
+            if (isFileNameValid(textField.getText(), extensions, saveFile, pickFile) || textField.getText().endsWith(".xml")) {
                 directories[0] = new File(textField.getText());
                 pickFile.close();
             }
@@ -291,8 +292,95 @@ public class TextBox {
             else if (new File(fileName).exists()) return true;
             else
                 new MessageBox(new StringProperty[]{Strings.FileDoesNotExists}, oldStage);
-        else
-            new MessageBox(new StringProperty[]{new SimpleStringProperty(Strings.FilenameMustEndIn.getValue() + Arrays.toString(extensions))}, oldStage);
+        else {
+            if (!fileName.endsWith(".xml"))
+                new MessageBox(new StringProperty[]{new SimpleStringProperty(Strings.FilenameMustEndIn.getValue() + Arrays.toString(extensions))}, oldStage);
+        }
         return false;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    public int[] enterNumber(final StringProperty message, final StringProperty[] fieldText, final int numberOfFields, final Stage oldStage) {
+        log.fine("addDirectory has been opened.");
+
+        Stage enterNumber = new Stage();
+        if (oldStage != null) enterNumber.initOwner(oldStage);
+        enterNumber.initStyle(StageStyle.UNDECORATED);
+        enterNumber.initModality(Modality.APPLICATION_MODAL);
+        enterNumber.setMinWidth(250);
+        GenericMethods.setIcon(enterNumber);
+
+        Label label = new Label();
+        label.textProperty().bind(message);
+
+        ArrayList<TextField> textFields = new ArrayList<>();
+        for (int x = 0; x < numberOfFields; x++) {
+            TextField textField = new TextField();
+            textField.promptTextProperty().bind(fieldText[x]);
+            textField.setPrefWidth(60);
+            textFields.add(textField);
+        }
+
+        final int[] numberResult = new int[numberOfFields];
+        Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
+        submit.textProperty().bind(Strings.Submit);
+        submit.setOnAction(e -> {
+            boolean allValid = true;
+            for (TextField textField : textFields) {
+                if (isNumberValid(textField.getText(), 0, oldStage)) {
+                    numberResult[textFields.indexOf(textField)] = textField.getText().isEmpty() ? 0 : Integer.parseInt(textField.getText());
+                } else allValid = false;
+            }
+            if (allValid) enterNumber.close();
+        });
+        exit.setOnAction(e -> {
+            for (int x = 0; x < numberOfFields; x++) {
+                numberResult[x] = 0;
+            }
+            enterNumber.close();
+        });
+
+        HBox hBox = new HBox(), hBox1 = new HBox();
+        hBox.getChildren().addAll(textFields);
+        hBox.setAlignment(Pos.CENTER);
+        hBox.setSpacing(3);
+        hBox1.getChildren().addAll(submit, exit);
+        hBox1.setAlignment(Pos.CENTER);
+        hBox1.setSpacing(3);
+
+        VBox layout = new VBox();
+        layout.getChildren().addAll(label, hBox, hBox1);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(6, 6, 6, 6));
+        layout.setSpacing(3);
+
+        Platform.runLater(() -> {
+            new MoveStage(layout, oldStage, false);
+            enterNumber.requestFocus();
+        });
+
+        Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/gui/TextBox.css");
+
+        enterNumber.setScene(scene);
+        enterNumber.show();
+        enterNumber.hide();
+        if (enterNumber.getOwner() != null) {
+            enterNumber.setX(enterNumber.getOwner().getX() + (enterNumber.getOwner().getWidth() / 2) - (enterNumber.getWidth() / 2));
+            enterNumber.setY(enterNumber.getOwner().getY() + (enterNumber.getOwner().getHeight() / 2) - (enterNumber.getHeight() / 2));
+        }
+        enterNumber.showAndWait();
+
+        log.fine("addDirectory has been closed.");
+        return numberResult;
+    }
+
+    private boolean isNumberValid(final String textFieldValue, @SuppressWarnings("SameParameterValue") final int minValue, final Stage oldStage) {
+        log.finest("isNumberValid has been called.");
+        if ((!textFieldValue.matches("^[0-9]+$") || Integer.parseInt(textFieldValue) > Variables.maxWaitTimeSeconds || Integer.parseInt(textFieldValue) < minValue)) {
+            if (textFieldValue.isEmpty()) return true;
+            new MessageBox(new StringProperty[]{new SimpleStringProperty(Strings.MustBeANumberBetween.getValue() + minValue + " - " + Variables.maxWaitTimeSeconds)}, oldStage);
+            return false;
+        } else return true;
     }
 }

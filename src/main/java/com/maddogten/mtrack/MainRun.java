@@ -1,6 +1,7 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ListSelectBox;
+import com.maddogten.mtrack.gui.VideoPlayerSelectorBox;
 import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.*;
@@ -19,10 +20,10 @@ import java.util.logging.Logger;
 public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
     public boolean firstRun = false, continueStarting = true;
-    private boolean starting = true, forceRun = true;
-    private int recheckTimer, saveTimer;
+    private boolean starting = true, forceRun = true, disableChecking = false;
+    private int recheckTimer, saveTimer, currentTime, waitTime;
 
-    boolean startBackend() {
+    boolean startBackend() throws IOException {
         FileManager fileManager = new FileManager();
         // First it checks if the folder that contains the jar has the settings file.
         try {
@@ -86,7 +87,7 @@ public class MainRun {
         return continueStarting;
     }
 
-    void loadUser(final UpdateManager updateManager, final boolean mainLoad) {
+    void loadUser(final UpdateManager updateManager, final boolean mainLoad) throws IOException {
         if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
             new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
         if (ClassHandler.showInfoController().getShowsFile() == null)
@@ -100,10 +101,12 @@ public class MainRun {
         loadUserSettings(mainLoad);
     }
 
-    private void loadUserSettings(final boolean mainLoad) {
+    private void loadUserSettings(final boolean mainLoad) throws IOException {
         ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
         if (!mainLoad)
             ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
+        if (ClassHandler.userInfoController().getUserSettings().getVideoPlayer() == null || (ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerEnum() != VideoPlayer.VideoPlayerEnum.OTHER && !ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerLocation().exists()))
+            ClassHandler.userInfoController().getUserSettings().setVideoPlayer(new VideoPlayerSelectorBox().videoPlayerSelector(null));
     }
 
     private void loadProgramSettings() {
@@ -127,15 +130,31 @@ public class MainRun {
             log.finer("MainRun Running...");
             this.recheckTimer = GenericMethods.getTimeSeconds();
             this.saveTimer = GenericMethods.getTimeSeconds();
+            this.currentTime = GenericMethods.getTimeSeconds();
             starting = false;
         }
+        timeCheck();
         recheck();
         saveSettings();
     }
 
+    private void timeCheck() {
+        if (GenericMethods.timeTakenSeconds(currentTime) > 30) {
+            disableChecking = true;
+            waitTime = GenericMethods.getTimeSeconds();
+            log.info(GenericMethods.timeTakenSeconds(currentTime) + " seconds since last timeCheck, Setting a " + Variables.sleepTimeDelay + " rechecking delay.");
+        }
+        if (disableChecking && GenericMethods.timeTakenSeconds(waitTime) > Variables.sleepTimeDelay) {
+            waitTime = 0;
+            disableChecking = false;
+            log.info("Rechecking delay finished, Re-enabling.");
+        }
+        currentTime = GenericMethods.getTimeSeconds();
+    }
+
     private void recheck() {
         // noinspection PointlessBooleanExpression
-        if (!(Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > Variables.updateSpeed) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (Variables.updateSpeed * 10))) {
+        if (!(disableChecking || Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > Variables.updateSpeed) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (Variables.updateSpeed * 10))) {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {

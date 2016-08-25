@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
+      minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="251.0"
+      stylesheets="@VideoPlayerSelector.css" xmlns="http://javafx.com/javafx/8"
+      fx:controller="com.maddogten.mtrack.FXMLControllers.VideoPlayerSelector">
+    <Text fx:id="videoPlayerLocationText" layoutX="58.0" layoutY="14.0" strokeType="OUTSIDE" strokeWidth="0.0"
+          text="Video Player Location:"/>
+    <TextField fx:id="videoPlayerLocationTextField" layoutX="2.0" layoutY="21.0"/>
+    <Button fx:id="submitButton" layoutX="61.0" layoutY="48.0" mnemonicParsing="false" text="Submit"/>
+    <Button fx:id="autoDetectButton" layoutX="135.0" layoutY="48.0" mnemonicParsing="false" prefHeight="25.0"
+            prefWidth="81.0" text="Auto Detect"/>
+    <Button fx:id="closeButton" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" text="Close"/>
+    <ComboBox fx:id="videoPlayerTypeComboBox" layoutX="154.0" layoutY="21.0" prefHeight="25.0" prefWidth="90.0"/>
+    <ComboBox fx:id="videoPlayerChoicesComboBox" layoutX="2.0" layoutY="21.0" prefHeight="25.0" prefWidth="149.0"
+              visible="false"/>
+</Pane>

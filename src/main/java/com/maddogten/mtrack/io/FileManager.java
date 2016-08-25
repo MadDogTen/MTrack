@@ -1,23 +1,33 @@
 package com.maddogten.mtrack.io;
 
+import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
-import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.OperatingSystem;
-import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.information.settings.UserSettings;
+import com.maddogten.mtrack.information.settings.UserShowSettings;
+import com.maddogten.mtrack.util.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.io.*;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -34,9 +44,19 @@ public class FileManager {
     public void save(final Serializable objectToSerialise, final String folder, final String filename, final String extension, final boolean overWrite) {
         if (!new File(Variables.dataFolder + folder).isDirectory()) createFolder(folder);
         if (overWrite || !checkFileExists(folder, filename, extension)) {
+            String file = Variables.dataFolder + folder + Strings.FileSeparator + filename + extension;
             try {
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Variables.dataFolder + folder + Strings.FileSeparator + filename + extension))) {
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file + Variables.TempExtension))) {
                     oos.writeObject(objectToSerialise);
+                    oos.close();
+                    File fileNew = new File(file + Variables.TempExtension);
+                    if (fileNew.exists()) {
+                        File fileOld = new File(file);
+                        if (fileOld.exists()) deleteFile(fileOld, true);
+                        if (!fileNew.renameTo(new File(file))) {
+                            Files.move(Paths.get(file + Variables.TempExtension), Paths.get(file));
+                        }
+                    }
                 }
             } catch (IOException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
@@ -50,11 +70,21 @@ public class FileManager {
             try {
                 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension)))) {
                     loadedFile = ois.readObject();
+                } catch (EOFException e) {
+                    log.severe("\"" + Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension + "\" was corrupt, Please correct the issue and try again.");
+                    new MessageBox(new StringProperty[]{(new SimpleStringProperty("\"" + Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension + "\" was corrupt, Please correct the issue and try again."))}, null);
                 }
             } catch (ClassNotFoundException | IOException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
             return loadedFile;
+        } else if (!extension.endsWith(Variables.TempExtension) & checkFileExists(folder, theFile, extension + Variables.TempExtension)) {
+            try {
+                Files.move(Paths.get(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension + Variables.TempExtension), Paths.get(Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));
+            } catch (IOException e) {
+                GenericMethods.printStackTrace(log, e, getClass());
+            }
+            if (checkFileExists(folder, theFile, extension)) return loadFile(folder, theFile, extension);
         }
         log.info("File doesn't exist - " + (Variables.dataFolder + folder + Strings.FileSeparator + theFile + extension));
         //noinspection ReturnOfNull
@@ -108,17 +138,17 @@ public class FileManager {
                     }
                     if (valid) {
                         if (file.isDirectory()) deleteFolder(file);
-                        else deleteFile(file);
+                        else deleteFile(file, false);
                     }
                 }
             }
         }
     }
 
-    private boolean deleteFile(final File file) {
+    private boolean deleteFile(final File file, final boolean suppressMessage) {
         if (file.exists() && file.isFile()) {
             if (file.canWrite() && file.delete() && !file.exists()) {
-                log.info("\"" + file + "\" was successfully deleted.");
+                if (!suppressMessage) log.info("\"" + file + "\" was successfully deleted.");
                 return true;
             } else log.warning("Cannot delete: " + file);
         } else log.info("File " + file + " does not exist!");
@@ -147,7 +177,7 @@ public class FileManager {
                 File[] files = toDeleteFolder.listFiles();
                 if (files != null) {
                     for (File aFile : files) {
-                        if (aFile.isFile() && deleteFile(aFile)) log.info(aFile + " was deleted.");
+                        if (aFile.isFile() && deleteFile(aFile, false)) log.info(aFile + " was deleted.");
                         else if (aFile.isDirectory()) deleteFolder(aFile);
                     }
                 }
@@ -226,41 +256,77 @@ public class FileManager {
 
     public boolean importSettings(final boolean firstRun, final Stage stage) {
         log.info("importSettings has been started.");
-        boolean result = false;
+        boolean result = false, showRestartWindow = true;
         File importFile = new TextBox().pickFile(Strings.EnterFileLocation, new SimpleStringProperty(Strings.EmptyString), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, false, stage);
         if (importFile.toString().isEmpty()) log.info("importFile was empty, Nothing imported.");
         else {
-            try {
-                byte[] buffer = new byte[2048];
-                try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(importFile))) {
-                    ZipEntry zipEntry = zipInputStream.getNextEntry();
-                    boolean autoOverwrite = firstRun || new ConfirmBox().confirm(Strings.AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile, stage);
-                    while (zipEntry != null) {
-                        String entryName = zipEntry.getName();
-                        File file = new File(Variables.dataFolder + Strings.FileSeparator + entryName);
-                        log.info("Next file to be imported: \"" + file + '\"');
-                        if (!file.exists() || (autoOverwrite || new ConfirmBox().confirm(new SimpleStringProperty(Strings.Warning.getValue() + " \"" + entryName + "\" " + Strings.AlreadyExistsOverwriteIt.getValue()), stage))) {
-                            if (zipEntry.isDirectory()) log.info(file + " is a directory.");
-                            else {
-                                try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                                    int count;
-                                    while ((count = zipInputStream.read(buffer)) > 0) {
-                                        fileOutputStream.write(buffer, 0, count);
+            // Start of custom code for personal use only.
+            log.info("XML importing has started.");
+            if (!firstRun && importFile.getName().endsWith(".xml")) {
+                try {
+                    NodeList nodeList = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(importFile).getElementsByTagName("Series");
+                    Set<String> shows = new HashSet<>();
+                    for (int x = 0; x < nodeList.getLength(); x++) {
+                        Node node = nodeList.item(x);
+                        if (node.getNodeType() == Node.ELEMENT_NODE) {
+                            Element element = (Element) node;
+                            String show = element.getElementsByTagName("SeriesName").item(0).getTextContent();
+                            shows.add(show);
+                            log.info("Found Show in XML: \"" + show + "\".");
+                            int season = Integer.parseInt(element.getElementsByTagName("Season").item(0).getTextContent()), episode = Integer.parseInt(element.getElementsByTagName("Episode").item(0).getTextContent()) + 1;
+                            UserSettings userSettings = ClassHandler.userInfoController().getUserSettings();
+                            if (userSettings.getShowSettings().containsKey(show)) {
+                                log.info("Show: \"" + show + "\" was found in user file, Updating Season & Episode...");
+                                if (!userSettings.getShowSettings().get(show).isActive())
+                                    userSettings.getShowSettings().get(show).setActive(true);
+                                userSettings.getShowSettings().get(show).setCurrentSeason(season);
+                                userSettings.getShowSettings().get(show).setCurrentEpisode(episode);
+                            } else {
+                                log.info("Show: \"" + show + "\" wasn't found in user file, Adding...");
+                                userSettings.getShowSettings().put(show, new UserShowSettings(show, true, false, false, season, episode));
+                            }
+                            log.info(show + " |||| " + season + " || " + episode);
+                        }
+                    }
+                    if (!shows.isEmpty()) shows.forEach(show -> Controller.updateShowField(show, true));
+                    showRestartWindow = false;
+                } catch (SAXException | IOException | ParserConfigurationException e) {
+                    GenericMethods.printStackTrace(log, e, getClass());
+                }
+                log.info("XML importing is now finished.");
+            } // end of custom code for personal use only.
+            else {
+                try {
+                    byte[] buffer = new byte[2048];
+                    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(importFile))) {
+                        ZipEntry zipEntry = zipInputStream.getNextEntry();
+                        boolean autoOverwrite = firstRun || new ConfirmBox().confirm(Strings.AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile, stage);
+                        while (zipEntry != null) {
+                            String entryName = zipEntry.getName();
+                            File file = new File(Variables.dataFolder + Strings.FileSeparator + entryName);
+                            log.info("Next file to be imported: \"" + file + '\"');
+                            if (!file.exists() || (autoOverwrite || new ConfirmBox().confirm(new SimpleStringProperty(Strings.Warning.getValue() + " \"" + entryName + "\" " + Strings.AlreadyExistsOverwriteIt.getValue()), stage))) {
+                                if (zipEntry.isDirectory()) log.info(file + " is a directory.");
+                                else {
+                                    try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                                        int count;
+                                        while ((count = zipInputStream.read(buffer)) > 0)
+                                            fileOutputStream.write(buffer, 0, count);
                                     }
                                 }
-                            }
-                            log.info("File imported successfully.");
-                        } else log.info("File wasn't imported.");
+                                log.info("File imported successfully.");
+                            } else log.info("File wasn't imported.");
+                            zipInputStream.closeEntry();
+                            zipEntry = zipInputStream.getNextEntry();
+                        }
                         zipInputStream.closeEntry();
-                        zipEntry = zipInputStream.getNextEntry();
                     }
-                    zipInputStream.closeEntry();
+                    result = true;
+                } catch (Exception e) {
+                    GenericMethods.printStackTrace(log, e, FileManager.class);
                 }
-                result = true;
-            } catch (Exception e) {
-                GenericMethods.printStackTrace(log, e, FileManager.class);
             }
-            if (!firstRun && new ConfirmBox().confirm(Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved, stage))
+            if (showRestartWindow && !firstRun && new ConfirmBox().confirm(Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved, stage))
                 Main.stop(stage, true, false);
             else new MessageBox(new StringProperty[]{Strings.MTrackHasNowImportedTheFiles}, stage);
         }
