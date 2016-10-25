@@ -272,12 +272,11 @@ public class UserInfoController {
                         Collections.sort(episodesArray);
                         Iterator<Integer> episodesIterator = episodesArray.iterator();
                         ArrayList<Integer> episodesAllowed = new ArrayList<>(episodesArray.size());
-                        if (isCurrentSeason) {
-                            while (episodesIterator.hasNext()) {
-                                int next = episodesIterator.next();
-                                if (next >= currentEpisode) episodesAllowed.add(next);
-                            }
-                        } else episodesArray.forEach(episodesAllowed::add);
+                        while (episodesIterator.hasNext()) {
+                            int next = episodesIterator.next();
+                            if (isCurrentSeason && next >= currentEpisode) episodesAllowed.add(next);
+                            else if (!isCurrentSeason && next > 0) episodesAllowed.add(next);
+                        }
                         Collections.sort(episodesAllowed);
                         Iterator<Integer> episodesIterator2 = episodesAllowed.iterator();
                         while (episodesIterator2.hasNext()) {

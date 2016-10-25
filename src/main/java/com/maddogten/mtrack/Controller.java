@@ -460,7 +460,6 @@ public class Controller implements Initializable {
                         }
                     };
                     final ContextMenu rowMenu = new ContextMenu();
-
                     row.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         if (row.getItem() != null) {
                             if (!row.isSelected() && currentList.isInactive() && Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(row.getItem().getShow())) {

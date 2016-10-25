@@ -2,6 +2,7 @@ package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.util.ClassHandler;
 
+import java.util.*;
 import java.util.logging.Logger;
 
 /*
@@ -73,5 +74,95 @@ public class ChangeReporter {
 
     public static void setIsChanges(final boolean isChanges) {
         ChangeReporter.isChanges = isChanges;
+    }
+
+
+    public class ChangedShows {
+        private final String show;
+        private final boolean isNew;
+        private final boolean wasRemoved;
+
+        private final Map<Integer, Set<ChangedEpisode>> changedInfo;
+
+        public ChangedShows(String show) {
+            this.show = show;
+            this.isNew = false;
+            this.wasRemoved = false;
+
+            changedInfo = new HashMap<>();
+        }
+
+        public ChangedShows(String show, boolean isNew, boolean wasRemoved) {
+            this.show = show;
+            this.isNew = isNew;
+            this.wasRemoved = wasRemoved;
+            if (isNew == wasRemoved) {
+                // Do something
+            }
+
+            changedInfo = new HashMap<>();
+        }
+
+        public LinkedHashSet<String> getText() { // TODO Add localization
+            LinkedHashSet<String> textResult = new LinkedHashSet<>();
+            if (isNew || wasRemoved) textResult.add(show + " was " + (isNew ? " added." : " removed."));
+
+            Map<Integer, Set<Integer>> addedStuff = new HashMap<>();
+            Map<Integer, Set<Integer>> removedStuff = new HashMap<>();
+
+            changedInfo.forEach((seasonInt, changedEpisodes) -> {
+                changedEpisodes.forEach(changedEpisode -> {
+                    if (changedEpisode.isNew) {
+                        if (!addedStuff.containsKey(seasonInt)) addedStuff.put(seasonInt, new HashSet<>());
+                        addedStuff.get(seasonInt).add(changedEpisode.getEpisode());
+                    } else if (changedEpisode.wasRemoved) {
+                        if (!removedStuff.containsKey(seasonInt)) removedStuff.put(seasonInt, new HashSet<>());
+                        removedStuff.get(seasonInt).add(changedEpisode.getEpisode());
+                    }
+                });
+            });
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Added: ");
+            addedStuff.forEach((seasonInt, seasonEpisodes) -> {
+                stringBuilder.append("Season: ");
+                seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
+                stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
+            });
+            textResult.add(stringBuilder.toString());
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("Removed: ");
+            removedStuff.forEach((seasonInt, seasonEpisodes) -> {
+                stringBuilder.append("Season: ");
+                seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
+                stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
+            });
+            //textResult.add(stringBuilder.toString())
+            return textResult;
+        }
+
+        class ChangedEpisode {
+            private final int episode;
+            private final boolean isNew;
+            private final boolean wasRemoved;
+
+            public ChangedEpisode(int episode, boolean isNew, boolean wasRemoved) {
+                this.episode = episode;
+                this.isNew = isNew;
+                this.wasRemoved = wasRemoved;
+            }
+
+            public int getEpisode() {
+                return episode;
+            }
+
+            public boolean isNew() {
+                return isNew;
+            }
+
+            public boolean isWasRemoved() {
+                return wasRemoved;
+            }
+        }
     }
 }

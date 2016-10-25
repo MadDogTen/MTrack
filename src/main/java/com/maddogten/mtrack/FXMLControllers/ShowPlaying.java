@@ -164,33 +164,6 @@ public class ShowPlaying implements Initializable {
             if (com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(show.getShow(), Variables.Font) < stage.getWidth())
                 showNameText.setX((stage.getWidth() / 2) - (showNameText.getLayoutBounds().getWidth() / 2));
         });
-        // This makes the Show name scroll if text goes out of stage. I decided not to do it this way in favor of a tooltip, But am keeping it in case I change my mind.
-        /*Task<Void> moveText = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                Thread.sleep(500);
-                Stage stage = (Stage) mainPane.getScene().getWindow();
-                double textLength = com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(aShow, Variables.Font);
-                if (textLength > stage.getWidth()) {
-                    int time = GenericMethods.getTimeSeconds();
-                    boolean moveLeft = true, pause = false;
-                    while (stage.isShowing()) {
-                        if (!pause) {
-                            if ((showNameText.getX() + textLength) < stage.getWidth() - 8 || showNameText.getX() > 8) {
-                                moveLeft = !moveLeft;
-                                time = GenericMethods.getTimeSeconds();
-                                pause = true;
-                            }
-                            if (moveLeft) showNameText.setX(showNameText.getX() - .5);
-                            if (!moveLeft) showNameText.setX(showNameText.getX() + .5);
-                        } else if (GenericMethods.timeTakenSeconds(time) > 4) pause = false;
-                        Thread.sleep(80);
-                    }
-                } else showNameText.setX((stage.getWidth() / 2) - (showNameText.getLayoutBounds().getWidth() / 2));
-                return null;
-            }
-        };
-        new Thread(moveText).start();*/
     }
 
     private void setSeasonEpisodeText() {

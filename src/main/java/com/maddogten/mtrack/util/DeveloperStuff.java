@@ -26,7 +26,7 @@ public class DeveloperStuff {
     //---- ProgramSettingsController ----\\
 
     @SuppressWarnings({"UseOfSystemOutOrSystemErr", "CallToPrintStackTrace", "EmptyMethod"})
-    public static void startupTest() {
+    public static void startupTest() { // Place to test code before the rest of the program is started.
     }
 
     //---- DirectoryController ----\\

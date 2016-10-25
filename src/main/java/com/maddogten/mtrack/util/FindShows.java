@@ -29,9 +29,14 @@ public class FindShows {
         ArrayList<String> showFolder = new ArrayList<>(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
         ArrayList<Integer> seasonNumber = new ArrayList<>(showFolder.size());
         Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + Strings.seasonNumberRegex);
+        Pattern pattern1 = Pattern.compile("s" + Strings.seasonNumberRegex);
         showFolder.forEach(aShowFolder -> {
             Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());
             if (matcher.find()) seasonNumber.add(Integer.parseInt(matcher.group().toLowerCase().split(" ")[1]));
+            else {
+                matcher = pattern1.matcher(aShowFolder.toLowerCase());
+                if (matcher.find()) seasonNumber.add(Integer.parseInt(matcher.group().toLowerCase().replace("s", "")));
+            }
         });
         return seasonNumber;
     }

@@ -48,7 +48,7 @@ public class VideoPlayerSelector implements Initializable {
     private VideoPlayer result;
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) { // TODO Add localization whole file
+    public void initialize(final URL location, final ResourceBundle resources) { // TODO Add localization whole file
         videoPlayerTypeComboBox.getItems().addAll(VideoPlayer.VideoPlayerEnum.values());
         if (ClassHandler.userInfoController().getUserSettings().getVideoPlayer() == null) result = new VideoPlayer();
         else result = ClassHandler.userInfoController().getUserSettings().getVideoPlayer();

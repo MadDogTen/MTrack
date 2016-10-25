@@ -35,7 +35,7 @@ public class Variables {
     public static final int ProgramSettingsFileVersion = 1015; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1008; // Was Changed
     public static final int DirectoryFileVersion = 1004; // Was Changed
-    public static final int InternalVersion = 50; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 52; // To help keep track of what I'm currently working on / testing.
     /**/public static final boolean showOptionToToggleDevMode = true; // false
     /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
@@ -58,7 +58,7 @@ public class Variables {
     public static final String fileNameReplace = "[(]|[)]|[\\\\]|[\\[]]|[\\]]|[\\[]|[\\]]|[+][\\{][\\}]";
     public static final String LogsFolder = Strings.FileSeparator + "Logs";
     public static final Level loggerLevel = Level.INFO; // INFO
-    public static final int sleepTimeDelay = 60;
+    public static final int sleepTimeDelay = 61;
     // Base Directories
     static final String ProgramRootFolder = Strings.FileSeparator + "MTrack";
     static final String LogExtension = ".log";

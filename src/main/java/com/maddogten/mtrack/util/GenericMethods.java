@@ -214,10 +214,13 @@ public class GenericMethods {
 
     public static String getSeasonFolderName(final File dir, final String showName, final int season) {
         Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + season);
+        Pattern pattern1 = Pattern.compile("s" + ((season < 10) ? 0 : "") + season);
         for (String fileName : new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator).list()) {
             Matcher matcher = pattern.matcher(fileName.toLowerCase());
-            if (matcher.find()) {
-                return fileName;
+            if (matcher.find()) return fileName;
+            else {
+                matcher = pattern1.matcher(fileName.toLowerCase());
+                if (matcher.find()) return fileName;
             }
         }
         return "";

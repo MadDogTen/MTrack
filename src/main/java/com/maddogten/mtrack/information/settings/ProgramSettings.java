@@ -18,7 +18,6 @@ public class ProgramSettings implements Serializable {
     private final long programGeneratedID; /*programGeneratedID is generated per programs file. It is used to compare against the programGeneratedID's in UserSettings and Directory, and if they are different,
     do the appropriate tasks, and set it to this one.*/
 
-
     // Versions
     private int programSettingsFileVersion; /*Used to check if the saved ProgramSettings file is up to date with the program, and if not, update it.*/
     private int mainDirectoryVersion; /*If multiple users use the program and new shows are found, this number is used to check if the other users files are outdated on next run, and update them.
@@ -55,7 +54,6 @@ public class ProgramSettings implements Serializable {
 
     // TV Maze
     private boolean useRemoteDatabase;
-
 
     private int numberOfDirectories; /*Stores the number of directories it last ended with, and if different, handles adding them to the program. */
 

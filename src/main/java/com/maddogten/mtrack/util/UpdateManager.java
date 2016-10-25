@@ -28,6 +28,7 @@ public class UpdateManager {
     // These both compare the version defined in Variables (Latest Version) with the version the files are currently at (Old Version), and if they don't match, converts the files to the latest version.
     public void updateProgramSettingsFile() {
         Object programSettingsFile = new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
+        log.info("Program File Location: \"" + Variables.dataFolder + Strings.EmptyString + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension + "\".");
         boolean tryAgain = false;
         do {
             if (programSettingsFile instanceof ProgramSettings) {
@@ -54,7 +55,6 @@ public class UpdateManager {
             } else {
                 log.warning("Unable to load program file, attempting to load a valid backup...");
                 programSettingsFile = new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
-                log.info(String.valueOf(programSettingsFile.getClass()));
                 if (!(programSettingsFile instanceof ProgramSettings) && !(programSettingsFile instanceof HashMap)) {
                     log.severe("Unable to load program file or find a valid backup, Forcing shut down.");
                     System.exit(0);
