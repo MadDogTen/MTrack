@@ -40,7 +40,7 @@ public class MainRun {
         }
         // If one above is found and both Variables devMode & StartFresh are true, It will Delete ALL Files each time the program is ran.
         // noinspection PointlessBooleanExpression
-        if (Variables.startFresh && Variables.devMode && !Variables.dataFolder.toString().isEmpty()) {
+        if (DeveloperStuff.startFresh && DeveloperStuff.devMode && !Variables.dataFolder.toString().isEmpty()) {
             log.warning("Starting Fresh...");
             fileManager.clearProgramFiles();
             Variables.setDataFolder(new File(Strings.EmptyString));

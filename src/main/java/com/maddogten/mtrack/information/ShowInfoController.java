@@ -20,34 +20,40 @@ import java.util.regex.Matcher;
 public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
     private Map<String, Show> showsFile;
+    private int previousDirectoriesHash;
 
     // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
     public void loadShowsFile(final ArrayList<Directory> directories) {
-        if (directories.size() == 1) {
-            showsFile = directories.get(0).getShows();
-            log.info("showsFile was loaded, Only one Directory.");
-        } else if (directories.size() > 1) {
-            long timer = GenericMethods.getTimeMilliSeconds();
-            showsFile = new HashMap<>();
-            HashSet<String> allShows = new HashSet<>();
-            directories.stream().filter(aMap -> aMap != null).forEach(showsHashSet -> showsHashSet.getShows().forEach((aShow, Show) -> allShows.add(aShow)));
-            allShows.forEach(aShow -> {
-                Map<Integer, Season> fullSeasons = new HashMap<>();
-                HashSet<Integer> seasons = new HashSet<>();
-                directories.stream().filter(aDirectory -> aDirectory.containsShow(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
-                seasons.forEach(aSeason -> {
-                    Map<Integer, Episode> episodes = new HashMap<>();
-                    directories.stream().filter(aDirectory -> (aDirectory.containsShowAndSeason(aShow, aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
-                    fullSeasons.put(aSeason, new Season(aSeason, episodes));
+        if (directories.hashCode() == previousDirectoriesHash)
+            log.fine("Directory Hashes Match, Skipping loading showsFile.");
+        else {
+            previousDirectoriesHash = directories.hashCode();
+            if (directories.size() == 1) {
+                showsFile = directories.get(0).getShows();
+                log.info("showsFile was loaded, Only one Directory.");
+            } else if (directories.size() > 1) {
+                long timer = GenericMethods.getTimeMilliSeconds();
+                showsFile = new HashMap<>();
+                HashSet<String> allShows = new HashSet<>();
+                directories.stream().filter(Objects::nonNull).forEach(showsHashSet -> showsHashSet.getShows().forEach((aShow, Show) -> allShows.add(aShow)));
+                allShows.forEach(aShow -> {
+                    Map<Integer, Season> fullSeasons = new HashMap<>();
+                    HashSet<Integer> seasons = new HashSet<>();
+                    directories.stream().filter(aDirectory -> aDirectory.containsShow(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
+                    seasons.forEach(aSeason -> {
+                        Map<Integer, Episode> episodes = new HashMap<>();
+                        directories.stream().filter(aDirectory -> (aDirectory.containsShowAndSeason(aShow, aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
+                        fullSeasons.put(aSeason, new Season(aSeason, episodes));
+                    });
+                    showsFile.put(aShow, new Show(aShow, fullSeasons));
                 });
-                showsFile.put(aShow, new Show(aShow, fullSeasons));
-            });
-            log.info("showsFile was loaded, It took " + GenericMethods.timeTakenMilli(timer) + " nanoseconds to combine all files");
-        } else {
-            if (directories.isEmpty())
-                log.info("showsFile was loaded empty, No directories found.");
-            else log.info("showsFile loaded empty, Unknown reason.");
-            showsFile = new HashMap<>();
+                log.info("showsFile was loaded, It took " + GenericMethods.timeTakenMilli(timer) + " nanoseconds to combine all files");
+            } else {
+                if (directories.isEmpty())
+                    log.info("showsFile was loaded empty, No directories found.");
+                else log.info("showsFile loaded empty, Unknown reason.");
+                showsFile = new HashMap<>();
+            }
         }
     }
 
@@ -80,7 +86,7 @@ public class ShowInfoController {
     }
 
     // Returns whether or not an episode is part of a double episode.
-    public boolean isDoubleEpisode(final String show, final int season, final int episode) {
+    boolean isDoubleEpisode(final String show, final int season, final int episode) {
         return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) && showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
     }
 

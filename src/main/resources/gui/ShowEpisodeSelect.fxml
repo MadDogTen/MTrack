@@ -6,24 +6,22 @@
 <Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
       minHeight="-Infinity" minWidth="-Infinity" prefHeight="106.0" prefWidth="184.0"
       stylesheets="@ShowEpisodeSelect.css" xmlns="http://javafx.com/javafx/8">
-    <children>
-        <Text fx:id="setText" layoutX="77.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Set:"/>
-        <Text fx:id="seasonText" layoutX="39.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Season"
-              underline="true"/>
-        <Text fx:id="episodeText" layoutX="105.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Episode"
-              underline="true"/>
-        <ComboBox fx:id="seasonComboBox" layoutX="29.0" layoutY="42.0" prefHeight="25.0" prefWidth="58.0"/>
-        <ComboBox fx:id="episodeComboBox" layoutX="97.0" layoutY="42.0" prefHeight="25.0" prefWidth="58.0"/>
-        <Button fx:id="exitButton" layoutX="158.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
-        <Button fx:id="submitButton" layoutX="117.0" layoutY="73.0" mnemonicParsing="false" prefHeight="25.0"
-                prefWidth="58.0" text="Submit" textOverrun="CLIP"/>
-        <SplitMenuButton fx:id="resetTooMenuButton" layoutX="4.0" layoutY="73.0" mnemonicParsing="false"
-                         prefHeight="25.0" prefWidth="107.0" text="Reset to...">
-            <items>
-                <MenuItem fx:id="resetBeginningButton" mnemonicParsing="false" text="Beginning"/>
-                <MenuItem fx:id="resetEndButton" mnemonicParsing="false" text="End"/>
-            </items>
-        </SplitMenuButton>
-        <CheckBox fx:id="editSeasonEpisodeCheckbox" layoutX="6.0" layoutY="46.0" mnemonicParsing="false"/>
-    </children>
+    <Text fx:id="setText" layoutX="77.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Set:"/>
+    <Text fx:id="seasonText" layoutX="39.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Season"
+          underline="true"/>
+    <Text fx:id="episodeText" layoutX="105.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Episode"
+          underline="true"/>
+    <ComboBox fx:id="seasonComboBox" layoutX="29.0" layoutY="42.0" prefHeight="25.0" prefWidth="58.0"/>
+    <ComboBox fx:id="episodeComboBox" layoutX="97.0" layoutY="42.0" prefHeight="25.0" prefWidth="58.0"/>
+    <Button fx:id="exitButton" layoutX="158.0" layoutY="2.0" mnemonicParsing="false" text="X"/>
+    <Button fx:id="submitButton" layoutX="117.0" layoutY="73.0" mnemonicParsing="false" prefHeight="25.0"
+            prefWidth="58.0" text="Submit" textOverrun="CLIP"/>
+    <SplitMenuButton fx:id="resetTooMenuButton" layoutX="4.0" layoutY="73.0" mnemonicParsing="false"
+                     prefHeight="25.0" prefWidth="107.0" text="Reset to...">
+        <items>
+            <MenuItem fx:id="resetBeginningButton" mnemonicParsing="false" text="Beginning"/>
+            <MenuItem fx:id="resetEndButton" mnemonicParsing="false" text="End"/>
+        </items>
+    </SplitMenuButton>
+    <CheckBox fx:id="editSeasonEpisodeCheckbox" layoutX="6.0" layoutY="46.0" mnemonicParsing="false"/>
 </Pane>

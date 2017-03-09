@@ -1,7 +1,7 @@
 package com.maddogten.mtrack.lang;
 
+import com.maddogten.mtrack.util.DeveloperStuff;
 import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
 
 import java.util.logging.Logger;
 
@@ -113,7 +113,7 @@ public class en_US extends Language {
         Strings.CurrentlyRechecking.setValue("Currently Searching Shows...");
         Strings.DeleteUsersNoteCantDeleteCurrentUser.setValue("Note: Can't delete current user!");
         Strings.WarningUnrecoverable.setValue("Warning, Unrecoverable!");
-        Strings.InternalVersion.setValue("Internal Version: " + Variables.InternalVersion);
+        Strings.InternalVersion.setValue("Internal Version: " + DeveloperStuff.InternalVersion);
         Strings.MakeUserDefault.setValue("Make User Default");
         Strings.MakeLanguageDefault.setValue("Make Language Default");
         Strings.ToggleActiveShowsVisibility.setValue("Toggle active shows visibility.");

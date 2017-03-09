@@ -110,17 +110,15 @@ public class ChangeReporter {
             Map<Integer, Set<Integer>> addedStuff = new HashMap<>();
             Map<Integer, Set<Integer>> removedStuff = new HashMap<>();
 
-            changedInfo.forEach((seasonInt, changedEpisodes) -> {
-                changedEpisodes.forEach(changedEpisode -> {
-                    if (changedEpisode.isNew) {
-                        if (!addedStuff.containsKey(seasonInt)) addedStuff.put(seasonInt, new HashSet<>());
-                        addedStuff.get(seasonInt).add(changedEpisode.getEpisode());
-                    } else if (changedEpisode.wasRemoved) {
-                        if (!removedStuff.containsKey(seasonInt)) removedStuff.put(seasonInt, new HashSet<>());
-                        removedStuff.get(seasonInt).add(changedEpisode.getEpisode());
-                    }
-                });
-            });
+            changedInfo.forEach((seasonInt, changedEpisodes) -> changedEpisodes.forEach(changedEpisode -> {
+                if (changedEpisode.isNew) {
+                    if (!addedStuff.containsKey(seasonInt)) addedStuff.put(seasonInt, new HashSet<>());
+                    addedStuff.get(seasonInt).add(changedEpisode.getEpisode());
+                } else if (changedEpisode.wasRemoved) {
+                    if (!removedStuff.containsKey(seasonInt)) removedStuff.put(seasonInt, new HashSet<>());
+                    removedStuff.get(seasonInt).add(changedEpisode.getEpisode());
+                }
+            }));
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Added: ");

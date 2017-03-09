@@ -56,6 +56,7 @@ public class Main extends Application implements Runnable {
                     GenericMethods.printStackTrace(log, e, Main.class);
                 }
             }
+            if (!DeveloperStuff.devMode) System.exit(0);
         }
     }
 

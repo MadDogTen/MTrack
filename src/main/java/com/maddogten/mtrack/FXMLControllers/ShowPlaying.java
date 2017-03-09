@@ -12,6 +12,7 @@ import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -33,6 +34,7 @@ public class ShowPlaying implements Initializable {
     private static final Logger log = Logger.getLogger(ShowPlaying.class.getName());
 
     private final DisplayShow show;
+    private boolean runTask = true;
 
     @FXML
     private Button restartButton;
@@ -101,11 +103,13 @@ public class ShowPlaying implements Initializable {
             Controller.updateShowField(show.getShow(), true);
             ClassHandler.controller().setTableSelection(-2);
             Stage stage = (Stage) mainPane.getScene().getWindow();
+            runTask = false;
             stage.close();
         });
         noButton.setOnAction(e -> {
             ClassHandler.controller().setTableSelection(-2);
             Stage stage = (Stage) mainPane.getScene().getWindow();
+            runTask = false;
             stage.close();
         });
         nextEpisodeButton.setDisable(!(show.getRemaining() > 1));
@@ -120,12 +124,14 @@ public class ShowPlaying implements Initializable {
                     log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                     new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                     Stage stage = (Stage) mainPane.getScene().getWindow();
+                    runTask = false;
                     stage.close();
                 }
             } else {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
+                runTask = false;
                 stage.close();
             }
         });
@@ -134,6 +140,7 @@ public class ShowPlaying implements Initializable {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
+                runTask = false;
                 stage.close();
             }
         });
@@ -144,6 +151,7 @@ public class ShowPlaying implements Initializable {
             if (timeInSeconds > 0) {
                 ClassHandler.userInfoController().getUserSettings().getShowSettings().get(show.getShow()).addEpisodeTimePosition(show.getSeason(), show.getEpisode(), timeInSeconds);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
+                runTask = false;
                 stage.close();
             }
         });
@@ -163,6 +171,16 @@ public class ShowPlaying implements Initializable {
             Stage stage = (Stage) mainPane.getScene().getWindow();
             if (com.sun.javafx.tk.Toolkit.getToolkit().getFontLoader().computeStringWidth(show.getShow(), Variables.Font) < stage.getWidth())
                 showNameText.setX((stage.getWidth() / 2) - (showNameText.getLayoutBounds().getWidth() / 2));
+            new Thread(new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    while (runTask) {
+                        wait(1000);
+                        nextEpisodeButton.setDisable(!(show.getRemaining() > 1));
+                    }
+                    return null;
+                }
+            }).start();
         });
     }
 

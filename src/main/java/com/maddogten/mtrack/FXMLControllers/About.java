@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.FXMLControllers;
 
+import com.maddogten.mtrack.util.DeveloperStuff;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -49,7 +50,7 @@ public class About implements Initializable {
         programName.textProperty().bind(Strings.ProgramTitle);
         programName.setAlignment(Pos.CENTER);
         versionNumber.textProperty().bind(Strings.MTrackVersion);
-        if (Variables.showInternalVersion) versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
+        if (DeveloperStuff.showInternalVersion) versionNumberTooltip.textProperty().bind(Strings.InternalVersion);
         else versionNumber.setTooltip(null);
         codedBy.textProperty().bind(Strings.CodedBy);
         codedBy.setAlignment(Pos.CENTER);

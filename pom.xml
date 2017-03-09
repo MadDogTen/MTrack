@@ -7,6 +7,13 @@
     <groupId>com.maddogten.mtrack</groupId>
     <artifactId>MTrack</artifactId>
     <version>Alpha-0.1</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+    </dependencies>
     <packaging>jar</packaging>
 
     <name>MTrack</name>

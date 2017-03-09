@@ -172,10 +172,10 @@ public class CheckShowFiles {
                             updatedShows.forEach(aShow -> Controller.updateShowField(aShow, true));
                         findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
                         log.info("Some shows have been updated.");
-                        log.fine("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
+                        log.info("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
                     } else if (Main.programFullyRunning) {
                         log.info("All shows were the same.");
-                        log.fine("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
+                        log.info("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
                     }
                 }
                 if (stopRunning) stopRunning = false;
@@ -302,8 +302,13 @@ public class CheckShowFiles {
                 if (Main.programFullyRunning && !oldShows.contains(aShow) && !emptyShows.contains(aShow) || ignoredShows.contains(aShow) && !emptyShows.contains(aShow)) {
                     log.fine("Currently checking if new & valid: " + aShow);
                     Map<Integer, Season> seasonEpisode = putSeasonInMap(aShow, folderLocation);
-                    if (seasonEpisode.keySet().isEmpty()) emptyShows.add(aShow);
-                    else newShows.put(aShow, new Show(aShow, seasonEpisode));
+                    if (seasonEpisode.keySet().isEmpty()) {
+                        emptyShows.add(aShow);
+                        log.fine(aShow + " wasn't new & valid.");
+                    } else {
+                        newShows.put(aShow, new Show(aShow, seasonEpisode));
+                        log.fine(aShow + " was new & valid.");
+                    }
                 }
                 recheckShowFilePercentage += percentagePer;
             });

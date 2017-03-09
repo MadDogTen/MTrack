@@ -35,7 +35,9 @@ public class DirectoryController {
             for (File file : files) {
                 String[] fileSplit = file.toString().split(Pattern.quote(Strings.FileSeparator));
                 String properFileString = fileSplit[fileSplit.length - 1];
-                directories.add((Directory) new FileManager().loadFile(Variables.DirectoriesFolder, properFileString, Strings.EmptyString));
+                Directory directory = (Directory) new FileManager().loadFile(Variables.DirectoriesFolder, properFileString, Strings.EmptyString);
+                if (directory != null)
+                    directories.add((Directory) new FileManager().loadFile(Variables.DirectoriesFolder, properFileString, Strings.EmptyString));
             }
         }
 

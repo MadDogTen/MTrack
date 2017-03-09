@@ -35,10 +35,6 @@ public class Variables {
     public static final int ProgramSettingsFileVersion = 1015; // Was Changed // Note- Remove all "Was Changed" before merging with master.
     public static final int UserSettingsFileVersion = 1008; // Was Changed
     public static final int DirectoryFileVersion = 1004; // Was Changed
-    public static final int InternalVersion = 52; // To help keep track of what I'm currently working on / testing.
-    /**/public static final boolean showOptionToToggleDevMode = true; // false
-    /**/public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
-    public static final boolean showInternalVersion = true; // Set to false or remove before full release
     public static final int defaultUpdateSpeed = 120;
     public static final int defaultTimeToWaitForDirectory = 20;
     public static final int defaultSavingSpeed = 600;
@@ -72,7 +68,6 @@ public class Variables {
     static final int logMaxFileSize = 10000000;
     static final int logMaxNumberOfFiles = 10;
     public static boolean disableAutomaticRechecking;
-    /**/public static boolean devMode = false; // false
     public static int updateSpeed;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);

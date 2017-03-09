@@ -88,7 +88,6 @@ public class ShowEpisodeSelect implements Initializable {
         else episodeComboBox.setValue(selectedEpisode.getValue());
 
         seasonComboBox.setOnAction(e -> {
-            log.info("Ran1");
             if (!changingComboBoxes) {
                 selectedSeason.setValue(seasonComboBox.getValue());
 

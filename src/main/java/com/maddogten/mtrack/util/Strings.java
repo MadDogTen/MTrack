@@ -16,9 +16,9 @@ public class Strings {
     //---------- Main Strings ----------\\
     public static final StringProperty MTrackVersion = new SimpleStringProperty("Alpha 1.0.0");
     public static final StringProperty CodedBy = new SimpleStringProperty("MadDogTen");
-    public static final StringProperty CodedUsing = new SimpleStringProperty("Intellij IDEA 2016.2.1");
+    public static final StringProperty CodedUsing = new SimpleStringProperty("Intellij IDEA 2016.3");
     public static final StringProperty CodedIn = new SimpleStringProperty("Java");
-    public static final StringProperty JavaVersion = new SimpleStringProperty("1.8.0_101");
+    public static final StringProperty JavaVersion = new SimpleStringProperty("1.8.0_112");
     //Other
     public static final String SettingsFileName = "Program";
     // Other

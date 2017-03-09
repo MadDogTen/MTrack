@@ -315,9 +315,9 @@ public class Controller implements Initializable {
         DisplayShow currentShow = getDisplayShowFromShow(aShow);
         final boolean isShowActive = showExists && ClassHandler.showInfoController().getShowsList().contains(aShow) && ClassHandler.userInfoController().isShowActive(aShow);
         if ((!currentList.isActive() || isShowActive) && (!currentList.isInactive() || (Variables.showActiveShows || !isShowActive))) {
-            int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow);
-            int season = ClassHandler.userInfoController().getCurrentSeason(aShow);
-            int episode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
+            int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(aShow),
+                    season = ClassHandler.userInfoController().getCurrentSeason(aShow),
+                    episode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
             if (currentShow != null) {
                 if (remaining != 0 || Variables.show0Remaining || (currentList.isInactive())) {
                     if (currentShow.getSeason() != season) currentShow.setSeason(season);
@@ -622,7 +622,7 @@ public class Controller implements Initializable {
                                         rowMenu.getItems().addAll(setSeasonEpisode, toggleActive, openDirectory);
                                 } else
                                     rowMenu.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, toggleActive, openDirectory);
-                                if (Variables.devMode)
+                                if (DeveloperStuff.devMode)
                                     rowMenu.getItems().addAll(getRemaining, printCurrentSeasonEpisode, printShowInformation, getMissingEpisodes);
                             } else if (currentList.isInactive()) {
                                 rowMenu.getItems().clear();
@@ -631,7 +631,7 @@ public class Controller implements Initializable {
                                         rowMenu.getItems().add(toggleActive);
                                     else rowMenu.getItems().add(showCurrentlyPlayingMenuItem);
                                 } else {
-                                    if (Variables.devMode)
+                                    if (DeveloperStuff.devMode)
                                         rowMenu.getItems().addAll(toggleActive, setActiveAndSetEpisode, setHidden, getRemaining, openDirectory, printShowInformation);
                                     else
                                         rowMenu.getItems().addAll(toggleActive, setActiveAndSetEpisode, setHidden, openDirectory);
@@ -1091,12 +1091,12 @@ public class Controller implements Initializable {
         exportSettings.setOnAction(e -> new FileManager().exportSettings((Stage) tabPane.getScene().getWindow()));
         importSettings.textProperty().bind(Strings.ImportSettings);
         importSettings.setOnAction(e -> new FileManager().importSettings(false, (Stage) tabPane.getScene().getWindow()));
-        if (Variables.showOptionToToggleDevMode) {
-            if (Variables.devMode) toggleDevMode.setSelected(true);
+        if (DeveloperStuff.showOptionToToggleDevMode) {
+            if (DeveloperStuff.devMode) toggleDevMode.setSelected(true);
             toggleDevMode.textProperty().bind(Strings.ToggleDevMode);
             toggleDevMode.setOnAction(e -> {
-                Variables.devMode = !Variables.devMode;
-                if (Variables.devMode) {
+                DeveloperStuff.devMode = !DeveloperStuff.devMode;
+                if (DeveloperStuff.devMode) {
                     developerTab.setDisable(false);
                     tabPane.getTabs().add(developerTab);
                     GenericMethods.setLoggerLevel(Level.ALL);
@@ -1115,7 +1115,7 @@ public class Controller implements Initializable {
                 GenericMethods.printStackTrace(log, e1, this.getClass());
             }
         });
-        if (!Variables.devMode) {
+        if (!DeveloperStuff.devMode) {
             developerTab.setDisable(true);
             tabPane.getTabs().remove(developerTab);
         }

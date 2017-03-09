@@ -68,7 +68,7 @@ public class GenericMethods {
 
     // Handles Exceptions
     public static void printStackTrace(final Logger log, final Exception exception, final Class exceptionClass) {
-        if (Variables.devMode) //noinspection CallToPrintStackTrace
+        if (DeveloperStuff.devMode) //noinspection CallToPrintStackTrace
             exception.printStackTrace();
         else {
             String[] stackTrace = new String[exception.getStackTrace().length + 2];
@@ -100,7 +100,7 @@ public class GenericMethods {
     // Initiate logging rules.
     public static void initLogger() {
         rootLog = Logger.getLogger("");
-        setLoggerLevel(Variables.devMode ? Level.ALL : Variables.loggerLevel);
+        setLoggerLevel(DeveloperStuff.devMode ? Level.ALL : Variables.loggerLevel);
         rootLog.setFilter(filter);
         rootLog.getHandlers()[0].setFilter(filter);
     }
@@ -159,7 +159,7 @@ public class GenericMethods {
 
     public static void initExceptionHandler(@SuppressWarnings("SameParameterValue") Logger log) {
         Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-            if (Variables.devMode) //noinspection CallToPrintStackTrace
+            if (DeveloperStuff.devMode) //noinspection CallToPrintStackTrace
                 exception.printStackTrace();
             else {
                 String[] stackTrace = new String[exception.getStackTrace().length + 1];
