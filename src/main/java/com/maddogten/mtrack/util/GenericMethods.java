@@ -145,14 +145,12 @@ public class GenericMethods {
                 }
                 log.info("\"" + files.length + "\" log files were found (Limit: " + Variables.logMaxNumberOfFiles + "). Deleted: \"" + toDelete + "\".");
                 if (!new FileManager().deleteFile(Variables.LogsFolder, toDelete, "")) break;
-
                 files = logFolder.listFiles((dir, name) -> name.endsWith(".txt") || name.endsWith(Variables.LogExtension));
             }
             fileHandler = new FileHandler(logFolder + Strings.FileSeparator + "MLog_%u_%g-" + new SimpleDateFormat("MM-dd-yy_HH-mm-ss").format(new Date()) + Variables.LogExtension, Variables.logMaxFileSize, Variables.logMaxNumberOfFiles);
             rootLog.addHandler(fileHandler);
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setFilter(filter);
-
             log.info("-------- Program Logging Started --------");
         }
     }

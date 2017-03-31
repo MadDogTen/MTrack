@@ -240,9 +240,10 @@ public class CheckShowFiles {
             if (EpisodeInfo[1] != -2) newEpisodesListFixed.add(EpisodeInfo[1]);
             if (oldEpisodeList.contains(EpisodeInfo[0])) {
                 if (showsFile.get(aShow).getSeason(aSeason).getEpisode(EpisodeInfo[0]).getEpisodeBareFilename().hashCode() != aNewEpisode.hashCode()) {
-                    newEpisodesListFixed.add(EpisodeInfo[0]);
+                    log.finest("Hashes didn't match for \"" + aShow + "\' | Season \"" + aSeason + "\" Episode \"" + EpisodeInfo[0] + ((EpisodeInfo[1] != -2) ? " | " + EpisodeInfo[1] : "") + "\", Episode filename must have chanced, updating...");
+                    oldEpisodeList.remove(EpisodeInfo[0]);
                     if (EpisodeInfo[1] != -2 && oldEpisodeList.contains(EpisodeInfo[1]))
-                        newEpisodesListFixed.add(EpisodeInfo[1]);
+                        oldEpisodeList.remove(EpisodeInfo[1]);
                 }
             }
         });

@@ -211,7 +211,7 @@ public class Strings {
     public static final StringProperty Show0Remaining = new SimpleStringProperty();
     // Strings set by program
     public static final StringProperty UserName = new SimpleStringProperty();
-    // Other Language Specific Stuff // Todo - Add appropriate code - ie, To lang files, potentially allow multiple regex's / Season folder names
+    // Other Language Specific Stuff
     static final String seasonRegex = "[s][e][a][s][o][n]";
     static final String seasonNumberRegex = "\\d{1,4}";
     // All Other Text

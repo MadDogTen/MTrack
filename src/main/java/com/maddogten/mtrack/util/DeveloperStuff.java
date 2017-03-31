@@ -21,33 +21,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DeveloperStuff {
-    public static final int InternalVersion = 54; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 55; // To help keep track of what I'm currently working on / testing.
     public static final boolean showOptionToToggleDevMode = true; // false
     public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
-    public static boolean devMode = false; // false
+    public static boolean devMode = true; // false
     private final Logger log = Logger.getLogger(DeveloperStuff.class.getName());
 
     //---- ProgramSettingsController ----\\
 
     @SuppressWarnings({"UseOfSystemOutOrSystemErr", "CallToPrintStackTrace", "EmptyMethod"})
     public static void startupTest() { // Place to test code before the rest of the program is started.
-       /* boolean createDB = false;
-        if (createDB) {
-            try {
-                CreateDB.createDB();
-            } catch (ClassNotFoundException | SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        if (!createDB) {
-            try {
-                QueryDB.QueryDB();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        System.exit(0);*/
+
     }
 
     //---- DirectoryController ----\\

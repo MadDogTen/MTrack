@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -108,7 +109,7 @@ public class TextBox {
         return false;
     }
 
-    public File addDirectory(@SuppressWarnings("SameParameterValue") final StringProperty message, final ArrayList<Directory> currentDirectories, final Stage oldStage) {
+    public ArrayList<File> addDirectory(@SuppressWarnings("SameParameterValue") final StringProperty message, final ArrayList<Directory> currentDirectories, final Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage addDirectoryStage = new Stage();
@@ -121,12 +122,12 @@ public class TextBox {
         Label label = new Label();
         label.textProperty().bind(message);
 
-        TextField textField = new TextField();
-        textField.setPromptText(Strings.FileSeparator + Strings.PathToDirectory.getValue() + Strings.FileSeparator + Strings.Shows.getValue());
+        TextArea textArea = new TextArea();
+        textArea.setPromptText(Strings.FileSeparator + Strings.PathToDirectory.getValue() + Strings.FileSeparator + Strings.Shows.getValue());
+        textArea.setPrefSize(240, 60);
 
         ArrayList<String> directoryPaths = new ArrayList<>(currentDirectories.size());
         currentDirectories.forEach(aDirectory -> directoryPaths.add(String.valueOf(aDirectory.getDirectory())));
-        final File[] directories = new File[1];
         DirectoryChooser DirectoryChooser = new DirectoryChooser();
 
         Button filePicker = new Button(), submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
@@ -134,23 +135,44 @@ public class TextBox {
         filePicker.setOnAction(e -> {
             File file = DirectoryChooser.showDialog(addDirectoryStage);
             if (file != null && !file.toString().isEmpty()) {
-                textField.setText(String.valueOf(file));
+                textArea.setText((textArea.getText().isEmpty() ? "" : textArea.getText() + "\n") + String.valueOf(file));
             }
         });
+        ArrayList<File> directories = new ArrayList<>();
+
         submit.textProperty().bind(Strings.Submit);
         submit.setOnAction(e -> {
-            if (isDirectoryValid(directoryPaths, textField.getText(), addDirectoryStage)) {
-                directories[0] = new File(textField.getText());
-                addDirectoryStage.close();
+            if (!textArea.getText().isEmpty()) {
+                if (textArea.getText().contains("\n") || textArea.getText().contains(",")) {
+                    String string = textArea.getText();
+                    string = string.replaceAll(",", "\n");
+                    String[] files = string.split("\n");
+                    for (String file : files) {
+                        if (!file.isEmpty()) {
+                            if (isDirectoryValid(directoryPaths, file, addDirectoryStage))
+                                directories.add(new File(file));
+                            else
+                                log.info("File: \"" + file + "\" was invalid, and not added."); // TODO Add user popup notification that groups all issues
+                        }
+                    }
+                } else {
+                    if (isDirectoryValid(directoryPaths, textArea.getText(), addDirectoryStage))
+                        directories.add(new File(textArea.getText()));
+                    else log.info("File: \"" + textArea.getText() + "\" was invalid, and not added.");
+                }
             }
+
+            if (!directories.isEmpty()) addDirectoryStage.close();
+            else new MessageBox(new StringProperty[]{Strings.YouNeedToEnterADirectory}, oldStage);
         });
+
         exit.setOnAction(e -> {
-            directories[0] = new File(Strings.EmptyString);
+            directories.clear();
             addDirectoryStage.close();
         });
 
         HBox hBox = new HBox(), hBox1 = new HBox();
-        hBox.getChildren().addAll(textField, filePicker);
+        hBox.getChildren().addAll(textArea, filePicker);
         hBox.setAlignment(Pos.CENTER);
         hBox.setSpacing(3);
         hBox1.getChildren().addAll(submit, exit);
@@ -181,17 +203,18 @@ public class TextBox {
         addDirectoryStage.showAndWait();
 
         log.fine("addDirectory has been closed.");
-        return directories[0];
+        return directories;
     }
 
     private boolean isDirectoryValid(final ArrayList<String> currentDirectories, final String directory, final Stage oldStage) {
         log.fine("isDirectoryValid has been called.");
         if (currentDirectories.contains(directory))
-            new MessageBox(new StringProperty[]{Strings.DirectoryIsAlreadyAdded}, oldStage);
+            new MessageBox(new StringProperty[]{Strings.DirectoryIsAlreadyAdded, new SimpleStringProperty(directory)}, oldStage);
         else if (new FileManager().checkFolderExistsAndReadable(new File(directory))) return true;
         else if (directory.isEmpty())
             new MessageBox(new StringProperty[]{Strings.YouNeedToEnterADirectory}, oldStage);
-        else new MessageBox(new StringProperty[]{Strings.DirectoryIsInvalid}, oldStage);
+        else
+            new MessageBox(new StringProperty[]{Strings.DirectoryIsInvalid, new SimpleStringProperty(directory)}, oldStage);
         return false;
     }
 

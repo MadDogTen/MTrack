@@ -196,15 +196,15 @@ public class DirectoryController {
         if (!folder.toString().isEmpty() && directoryDoesNotExist) {
             log.info("Added Directory");
             String[] splitResult = String.valueOf(folder).split(Pattern.quote(Strings.FileSeparator));
-            String fileName = "";
+            StringBuilder fileName = new StringBuilder();
             for (String singleSplit : splitResult) {
                 if (singleSplit.contains(":")) singleSplit = singleSplit.replace(":", "");
                 if (!singleSplit.isEmpty()) {
-                    if (fileName.isEmpty()) fileName = singleSplit;
-                    else fileName += '_' + singleSplit;
+                    if (fileName.length() == 0) fileName = new StringBuilder(singleSplit);
+                    else fileName.append('_').append(singleSplit);
                 }
             }
-            Directory directory = new Directory(folder, fileName, -2, new HashMap<>());
+            Directory directory = new Directory(folder, fileName.toString(), -2, new HashMap<>());
             saveDirectory(directory, false);
             answer[0] = directory.getDirectoryID();
         } else if (folder.toString().isEmpty()) answer[1] = (long) -1;

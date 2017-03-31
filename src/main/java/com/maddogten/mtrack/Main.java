@@ -14,7 +14,7 @@ import javafx.stage.StageStyle;
 import java.util.logging.Logger;
 
 /*
-      Main is the entrance into the program. Loads, holds, and passes out the DirectoryController, ShowInfoController, UserInfoController, CheckShowFiles, and MainRun.
+      Main is the entrance into the program.
  */
 
 public class Main extends Application implements Runnable {

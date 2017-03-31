@@ -2,7 +2,6 @@ package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.util.ClassHandler;
 
-import java.util.*;
 import java.util.logging.Logger;
 
 /*
@@ -77,7 +76,7 @@ public class ChangeReporter {
     }
 
 
-    public class ChangedShows {
+    /*public class ChangedShows {
         private final String show;
         private final boolean isNew;
         private final boolean wasRemoved;
@@ -162,5 +161,5 @@ public class ChangeReporter {
                 return wasRemoved;
             }
         }
-    }
+    }*/
 }

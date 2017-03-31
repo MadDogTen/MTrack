@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /*
       ListSelectBox has multiple different stages it can display. All of them display a list to choose from, Then returns the choice.
@@ -308,7 +307,7 @@ public class ListSelectBox {
 
         // TODO Make this support option to display all known episodes or only currently found episodes.
         ArrayList<Integer> seasonsString = new ArrayList<>();
-        seasonsString.addAll(showInfoController.getSeasonsList(aShow).stream().collect(Collectors.toList()));
+        seasonsString.addAll(new ArrayList<>(showInfoController.getSeasonsList(aShow)));
         Collections.sort(seasonsString);
         ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsString);
         ComboBox<Integer> seasonsComboBox = new ComboBox<>(seasonsList);
@@ -369,7 +368,7 @@ public class ListSelectBox {
                     if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty() && seasonsComboBox.getValue() != oldValue) {
                         oldValue = seasonsComboBox.getValue();
                         episodesArrayList.clear();
-                        episodesArrayList.addAll(showInfoController.getEpisodesList(aShow, seasonsComboBox.getValue()).stream().collect(Collectors.toList()));
+                        episodesArrayList.addAll(new ArrayList<>(showInfoController.getEpisodesList(aShow, seasonsComboBox.getValue())));
                         Collections.sort(episodesArrayList);
                         Platform.runLater(() -> {
                             episodesList.clear();

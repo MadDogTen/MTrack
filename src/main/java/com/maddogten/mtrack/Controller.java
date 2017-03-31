@@ -1005,32 +1005,35 @@ public class Controller implements Initializable {
         addDirectory.textProperty().bind(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
             setButtonDisable(true, addDirectory, removeDirectory);
-            Long[] wasAdded = ClassHandler.directoryController().addDirectory(new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow()));
-            if (wasAdded[0] != null && wasAdded[1] == null) {
-                log.info("Directory was added.");
-                FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
-                Task<Void> task = new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        new FirstRun().generateShowsFile(ClassHandler.directoryController().getDirectory(wasAdded[0]));
-                        return null;
+            ArrayList<File> directories = new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow());
+            directories.forEach(file -> {
+                Long[] wasAdded = ClassHandler.directoryController().addDirectory(file);
+                if (wasAdded[0] != null && wasAdded[1] == null) {
+                    log.info("Directory was added.");
+                    FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
+                    Task<Void> task = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            new FirstRun().generateShowsFile(ClassHandler.directoryController().getDirectory(wasAdded[0]));
+                            return null;
+                        }
+                    };
+                    Thread generateShowsFileThread = new Thread(task);
+                    generateShowsFileThread.start();
+                    try {
+                        generateShowsFileThread.join();
+                    } catch (InterruptedException e1) {
+                        GenericMethods.printStackTrace(log, e1, this.getClass());
                     }
-                };
-                Thread generateShowsFileThread = new Thread(task);
-                generateShowsFileThread.start();
-                try {
-                    generateShowsFileThread.join();
-                } catch (InterruptedException e1) {
-                    GenericMethods.printStackTrace(log, e1, this.getClass());
-                }
-                ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
-                findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
-                ClassHandler.directoryController().getDirectory(wasAdded[0]).getShows().keySet().forEach(aShow -> {
-                    ClassHandler.userInfoController().addNewShow(aShow);
-                    Controller.updateShowField(aShow, true);
-                });
-                ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
-            } else log.info("Directory wasn't added.");
+                    ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
+                    findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
+                    ClassHandler.directoryController().getDirectory(wasAdded[0]).getShows().keySet().forEach(aShow -> {
+                        ClassHandler.userInfoController().addNewShow(aShow);
+                        Controller.updateShowField(aShow, true);
+                    });
+                    ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
+                } else log.info("Directory \"" + file + "\" wasn't added.");
+            });
             setButtonDisable(false, addDirectory, removeDirectory);
         });
         removeDirectory.textProperty().bind(Strings.RemoveDirectory);

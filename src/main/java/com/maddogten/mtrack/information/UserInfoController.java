@@ -268,7 +268,7 @@ public class UserInfoController {
                     Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(aShow, Integer.parseInt(String.valueOf(aSeason)));
                     if (!episodes.isEmpty()) {
                         ArrayList<Integer> episodesArray = new ArrayList<>(episodes.size());
-                        episodes.forEach(episodesArray::add);
+                        episodesArray.addAll(episodes);
                         Collections.sort(episodesArray);
                         Iterator<Integer> episodesIterator = episodesArray.iterator();
                         ArrayList<Integer> episodesAllowed = new ArrayList<>(episodesArray.size());

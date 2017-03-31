@@ -31,7 +31,7 @@ public class MainRun {
             if (new File(path, Strings.SettingsFileName + Variables.SettingFileExtension).exists())
                 Variables.setDataFolder(path);
             else {
-                // If the above isn't the correct folder, it then checks if the Appdata Roaming folder is the correct one.
+                // If the above isn't the correct folder, it then checks if the default storage folder contains it.
                 path = OperatingSystem.programFolder;
                 if (fileManager.checkFolderExistsAndReadable(path)) Variables.setDataFolder(path);
             }

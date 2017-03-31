@@ -67,7 +67,7 @@ public class FirstRun {
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
             boolean addDirectories = !hasImportedFiles || ClassHandler.directoryController().findDirectories(true, false, true).isEmpty();
             Thread generateShowFilesThread = null;
-            if (addDirectories) { // TODO Add user visual while this is running.
+            if (addDirectories) {
                 addDirectories();
                 Task<Void> task = new Task<Void>() {
                     @Override
@@ -87,11 +87,8 @@ public class FirstRun {
             if (Strings.UserName.getValue().isEmpty()) ClassHandler.mainRun().continueStarting = false;
             else {
                 if (addDirectories) {
-                    try {
-                        generateShowFilesThread.join();
-                    } catch (InterruptedException e) {
-                        GenericMethods.printStackTrace(log, e, this.getClass());
-                    }
+                    LoadingBox loadingBox = new LoadingBox();
+                    if (generateShowFilesThread.isAlive()) loadingBox.loadingBox(generateShowFilesThread);
                 }
                 log.info(Strings.UserName.getValue());
                 ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
@@ -143,16 +140,13 @@ public class FirstRun {
 
     // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
     private void addDirectories() {
-        boolean addAnother = true;
         TextBox textBox = new TextBox();
-        ConfirmBox confirmBox = new ConfirmBox();
-        while (addAnother) {
-            Long[] matched = ClassHandler.directoryController().addDirectory(textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), null));
+        ArrayList<File> directories = textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), null);
+        directories.forEach(file -> {
+            Long[] matched = ClassHandler.directoryController().addDirectory(file);
             if (matched[0] == null && matched[1] == null)
-                new MessageBox(new StringProperty[]{Strings.DirectoryWasADuplicate}, null);
-            else if (matched[1] != null) break;
-            if (!confirmBox.confirm(Strings.AddAnotherDirectory, null)) addAnother = false;
-        }
+                new MessageBox(new StringProperty[]{Strings.DirectoryWasADuplicate, new SimpleStringProperty(file.toString())}, null);
+        });
     }
 
     // This generates a new showsFile for the given folder, then saves it as "Directory-[index].[ShowFileExtension].

@@ -40,6 +40,7 @@ public class UpdateManager {
                     convertProgramSettingsFile(programSettings.getProgramSettingsFileVersion(), Variables.ProgramSettingsFileVersion);
                 }
             } else if (programSettingsFile instanceof HashMap) {
+                log.info("Old HashMap settings file found...");
                 //noinspection unchecked
                 HashMap<String, ArrayList<String>> oldProgramSettingsFile = (HashMap<String, ArrayList<String>>) programSettingsFile;
                 int currentVersion;
@@ -58,7 +59,10 @@ public class UpdateManager {
                 if (!(programSettingsFile instanceof ProgramSettings) && !(programSettingsFile instanceof HashMap)) {
                     log.severe("Unable to load program file or find a valid backup, Forcing shut down.");
                     System.exit(0);
-                } else tryAgain = true;
+                } else {
+                    tryAgain = true;
+                    log.warning("Backup located, Checking for updated version...");
+                }
             }
         } while (tryAgain);
     }
@@ -353,10 +357,11 @@ public class UpdateManager {
                 userSettings.getShowSettings().forEach((showName, userShowSettings) -> userShowSettings.setRemaining(ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showName)));
                 updatedText(fileType, 1005, 1006);
             case 1006:
-                userSettings.getShowSettings().forEach((showName, userShowSettings) -> {
-                    UserShowSettings oldSettings = userShowSettings;
-                    userShowSettings = new UserShowSettings(oldSettings.getShowName(), oldSettings.isActive(), oldSettings.isIgnored(), oldSettings.isHidden(), oldSettings.getCurrentSeason(), oldSettings.getCurrentEpisode());
-                });
+                Map<String, UserShowSettings> updatedLists = new HashMap<>();
+                userSettings.getShowSettings().forEach((showName, userShowSettings) -> updatedLists.put(showName, new UserShowSettings(userShowSettings.getShowName(), userShowSettings.isActive(), userShowSettings.isIgnored(), userShowSettings.isHidden(), userShowSettings.getCurrentSeason(), userShowSettings.getCurrentEpisode())));
+                for (String showName : updatedLists.keySet()) {
+                    userSettings.getShowSettings().replace(showName, updatedLists.get(showName));
+                }
                 updatedText(fileType, 1006, 1007);
             case 1007:
                 userSettings.setVideoPlayer(new VideoPlayerSelectorBox().videoPlayerSelector(null));
@@ -403,15 +408,15 @@ public class UpdateManager {
                 showsMap.put(showName, new Show(showName, seasonsMap));
             });
             String[] splitResult = directory.split(">")[1].split(Pattern.quote(Strings.FileSeparator));
-            String fileName = "";
+            StringBuilder fileName = new StringBuilder();
             for (String singleSplit : splitResult) {
                 if (singleSplit.contains(":")) singleSplit = singleSplit.replace(":", "");
                 if (!singleSplit.isEmpty()) {
-                    if (fileName.isEmpty()) fileName = singleSplit;
-                    else fileName += '_' + singleSplit;
+                    if (fileName.length() == 0) fileName = new StringBuilder(singleSplit);
+                    else fileName.append('_').append(singleSplit);
                 }
             }
-            ClassHandler.directoryController().saveDirectory(new Directory(new File(directory.split(">")[1]), fileName, -1, showsMap), false);
+            ClassHandler.directoryController().saveDirectory(new Directory(new File(directory.split(">")[1]), fileName.toString(), -1, showsMap), false);
         });
         updatedText("ShowsFile", -2, 1000);
         // Update Program Settings File Version

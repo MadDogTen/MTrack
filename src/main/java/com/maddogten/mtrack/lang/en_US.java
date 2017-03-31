@@ -150,7 +150,7 @@ public class en_US extends Language {
         Strings.AreYouSureToWantToDelete.setValue("Are you sure to want to delete ");
         Strings.EnterHowFastYouWantItToScanTheShowsFolders.setValue("Enter how fast you want it to scan the show(s) folder(s)");
         Strings.LeaveItAsIs.setValue("Leave it as is?");
-        Strings.PleaseEnterShowsDirectory.setValue("Please enter shows directory");
+        Strings.PleaseEnterShowsDirectory.setValue("Please enter shows directory's (Separate with a comma or new line)");
         Strings.YouNeedToEnterADirectory.setValue("You need to enter a directory.");
         Strings.DirectoryIsInvalid.setValue("Directory is invalid.");
         Strings.ThereAreNoDirectoriesToDelete.setValue("There are no directories to delete.");

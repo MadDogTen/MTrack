@@ -125,7 +125,7 @@ public class VideoPlayerSelector implements Initializable {
         });
 
         closeButton.setOnAction(event -> {
-            if (ClassHandler.userInfoController().getUserSettings().getVideoPlayer() != null && ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerEnum() != VideoPlayer.VideoPlayerEnum.OTHER && ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerLocation().exists())
+            if (ClassHandler.userInfoController() != null && ClassHandler.userInfoController().getUserSettings() != null && ClassHandler.userInfoController().getUserSettings().getVideoPlayer() != null && ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerEnum() != VideoPlayer.VideoPlayerEnum.OTHER && ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerLocation().exists())
                 result = ClassHandler.userInfoController().getUserSettings().getVideoPlayer();
            /* if (userSettings.getVideoPlayer().getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) { // TODO Finish
                 // Open Window warning some features won't be supported.
