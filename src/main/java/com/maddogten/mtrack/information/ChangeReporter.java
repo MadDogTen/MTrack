@@ -76,90 +76,101 @@ public class ChangeReporter {
     }
 
 
-    /*public class ChangedShows {
+    /*public class ChangedShow {
         private final String show;
-        private final boolean isNew;
-        private final boolean wasRemoved;
+        private final Status status;
 
         private final Map<Integer, Set<ChangedEpisode>> changedInfo;
 
-        public ChangedShows(String show) {
+        public ChangedShow(String show) {
             this.show = show;
-            this.isNew = false;
-            this.wasRemoved = false;
+            this.status = Status.UNCHANGED;
 
             changedInfo = new HashMap<>();
         }
 
-        public ChangedShows(String show, boolean isNew, boolean wasRemoved) {
+        public ChangedShow(String show, Status status) {
             this.show = show;
-            this.isNew = isNew;
-            this.wasRemoved = wasRemoved;
-            if (isNew == wasRemoved) {
-                // Do something
-            }
+            this.status = status;
 
             changedInfo = new HashMap<>();
         }
 
         public LinkedHashSet<String> getText() { // TODO Add localization
             LinkedHashSet<String> textResult = new LinkedHashSet<>();
-            if (isNew || wasRemoved) textResult.add(show + " was " + (isNew ? " added." : " removed."));
+            if (status != Status.UNCHANGED) textResult.add(show + " was " + status.statusTextProperty());
 
             Map<Integer, Set<Integer>> addedStuff = new HashMap<>();
             Map<Integer, Set<Integer>> removedStuff = new HashMap<>();
 
             changedInfo.forEach((seasonInt, changedEpisodes) -> changedEpisodes.forEach(changedEpisode -> {
-                if (changedEpisode.isNew) {
-                    if (!addedStuff.containsKey(seasonInt)) addedStuff.put(seasonInt, new HashSet<>());
-                    addedStuff.get(seasonInt).add(changedEpisode.getEpisode());
-                } else if (changedEpisode.wasRemoved) {
-                    if (!removedStuff.containsKey(seasonInt)) removedStuff.put(seasonInt, new HashSet<>());
-                    removedStuff.get(seasonInt).add(changedEpisode.getEpisode());
+                switch (changedEpisode.getStatus()) {
+                    case ADDED:
+                        if (!addedStuff.containsKey(seasonInt)) addedStuff.put(seasonInt, new HashSet<>());
+                        addedStuff.get(seasonInt).add(changedEpisode.getEpisode());
+                    case REMOVED:
+                        if (!removedStuff.containsKey(seasonInt)) removedStuff.put(seasonInt, new HashSet<>());
+                        removedStuff.get(seasonInt).add(changedEpisode.getEpisode());
                 }
             }));
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Added: ");
-            addedStuff.forEach((seasonInt, seasonEpisodes) -> {
-                stringBuilder.append("Season: ");
-                seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
-                stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
-            });
-            textResult.add(stringBuilder.toString());
-            stringBuilder.delete(0, stringBuilder.length());
-            stringBuilder.append("Removed: ");
-            removedStuff.forEach((seasonInt, seasonEpisodes) -> {
-                stringBuilder.append("Season: ");
-                seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
-                stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
-            });
-            //textResult.add(stringBuilder.toString())
+            if (!addedStuff.isEmpty()) {
+                stringBuilder.append("Added: ");
+                addedStuff.forEach((seasonInt, seasonEpisodes) -> {
+                    stringBuilder.append("Season: ");
+                    seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
+                    stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
+                });
+                textResult.add(stringBuilder.toString());
+                stringBuilder.delete(0, stringBuilder.length());
+            }
+            if (!removedStuff.isEmpty()) {
+                stringBuilder.append("Removed: ");
+                removedStuff.forEach((seasonInt, seasonEpisodes) -> {
+                    stringBuilder.append("Season: ");
+                    seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
+                    stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
+                });
+                textResult.add(stringBuilder.toString());
+                stringBuilder.delete(0, stringBuilder.length());
+            }
             return textResult;
         }
 
         class ChangedEpisode {
             private final int episode;
-            private final boolean isNew;
-            private final boolean wasRemoved;
+            private final Status status;
 
-            public ChangedEpisode(int episode, boolean isNew, boolean wasRemoved) {
+            public ChangedEpisode(int episode, Status status) {
                 this.episode = episode;
-                this.isNew = isNew;
-                this.wasRemoved = wasRemoved;
+                this.status = status;
             }
 
             public int getEpisode() {
                 return episode;
             }
 
-            public boolean isNew() {
-                return isNew;
+            public Status getStatus() {
+                return status;
             }
+        }
+    }
 
-            public boolean isWasRemoved() {
-                return wasRemoved;
-            }
+    private enum Status {
+        ADDED(new SimpleStringProperty(" added.")), REMOVED(new SimpleStringProperty(" removed.")), UNCHANGED(new SimpleStringProperty("")); //TODO Add localization
+        private final StringProperty statusText;
+
+        public String getStatusText() {
+            return statusText.get();
+        }
+
+        public StringProperty statusTextProperty() {
+            return statusText;
+        }
+
+        Status(StringProperty text) {
+            this.statusText = text;
         }
     }*/
 }

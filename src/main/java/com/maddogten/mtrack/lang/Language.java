@@ -7,10 +7,6 @@ public abstract class Language {
     public void setAllStrings() {
     }
 
-    public void setAllRegex() {
-
-    }
-
     public String getName() {
         return LanguageName;
     }
