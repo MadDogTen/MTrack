@@ -315,7 +315,7 @@ public class UserInfoController {
             if (Variables.genUserShowInfoAtFirstFound)
                 userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
             else
-                userSettings.addShowSettings(new UserShowSettings(aShow, ClassHandler.showInfoController().getEpisode(aShow, 1, 0) != null ? 0 : 1, 1));
+                userSettings.addShowSettings(new UserShowSettings(aShow, 1, ClassHandler.showInfoController().getEpisode(aShow, 1, 0) != null ? 0 : 1));
         }
     }
 
