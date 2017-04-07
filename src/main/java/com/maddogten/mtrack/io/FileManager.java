@@ -169,7 +169,7 @@ public class FileManager {
         return false;
     }
 
-    private void deleteFolder(final File toDeleteFolder) {
+    public void deleteFolder(final File toDeleteFolder) {
         if (!checkFolderExistsAndReadable(toDeleteFolder)) log.warning(toDeleteFolder + " does not exist!");
         if (toDeleteFolder.canWrite()) {
             if (toDeleteFolder.list().length == 0) {

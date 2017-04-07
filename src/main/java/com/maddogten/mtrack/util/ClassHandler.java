@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.Database.DatabaseManager;
 import com.maddogten.mtrack.MainRun;
 import com.maddogten.mtrack.information.DirectoryController;
 import com.maddogten.mtrack.information.ProgramSettingsController;
@@ -16,6 +17,7 @@ public class ClassHandler {
     private static final CheckShowFiles checkShowFiles = new CheckShowFiles();
     private static final DeveloperStuff developerStuff = new DeveloperStuff();
     private static final MainRun mainRun = new MainRun();
+    private static DatabaseManager databaseManager = null;
     private static Controller controller = null;
 
     public static DirectoryController directoryController() {
@@ -52,5 +54,17 @@ public class ClassHandler {
 
     public static void setController(final Controller controller) {
         if (ClassHandler.controller == null) ClassHandler.controller = controller;
+    }
+
+    public static DatabaseManager getDatabaseManager() {
+        if (databaseManager == null) {
+            throw new IllegalStateException("DatabaseManager was null, This shouldn't be called until after it was set.");
+        }
+        assert databaseManager != null;
+        return databaseManager;
+    }
+
+    public static void setDatabaseManager(final DatabaseManager databaseManager) {
+        ClassHandler.databaseManager = databaseManager;
     }
 }

@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 /*
@@ -46,6 +47,11 @@ public class Main extends Application implements Runnable {
             }
             Controller.closeChangeBoxStage();
             Controller.closeShowPlayingBoxStage();
+            try {
+                ClassHandler.getDatabaseManager().closeConnection();
+            } catch (SQLException e) {
+                GenericMethods.printStackTrace(log, e, Main.class);
+            }
             if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 10, log, Main.class);
             if (stage != null) stage.close();
             Platform.exit();

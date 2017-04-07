@@ -28,7 +28,7 @@ public class MainRun {
         // First it checks if the folder that contains the jar has the settings file.
         try {
             File path = fileManager.getJarLocationFolder();
-            if (new File(path, Strings.SettingsFileName + Variables.SettingFileExtension).exists())
+            if (new File(path, Variables.DatabaseFolderName).exists())
                 Variables.setDataFolder(path);
             else {
                 // If the above isn't the correct folder, it then checks if the default storage folder contains it.

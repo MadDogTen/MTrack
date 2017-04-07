@@ -1,6 +1,8 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.Database.DatabaseManager;
+import com.maddogten.mtrack.Database.DatabaseUserManager;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.ListSelectBox;
 import com.maddogten.mtrack.gui.MessageBox;
@@ -14,6 +16,7 @@ import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,8 +34,103 @@ public class DeveloperStuff {
     //---- ProgramSettingsController ----\\
 
     @SuppressWarnings({"UseOfSystemOutOrSystemErr", "CallToPrintStackTrace", "EmptyMethod"})
-    public static void startupTest() { // Place to test code before the rest of the program is started.
+    public static void startupTest() throws Exception { // Place to test code before the rest of the program is started.
+         /* String userHomeDir = System.getProperty("user.home", ".");
+        String systemDir = userHomeDir + "/.addressbook";
+        System.out.print(systemDir);*/
 
+
+        String directory = "C:" + Strings.FileSeparator + "Test Folder";
+        //if (new File(directory).exists()) new FileManager().deleteFolder(new File(directory));
+        DatabaseManager DONOTUSEdatabaseManager = new DatabaseManager(directory, !new File(directory + Strings.FileSeparator + "MTrackDB").exists());
+
+        ClassHandler.setDatabaseManager(DONOTUSEdatabaseManager);
+
+        Connection connection = ClassHandler.getDatabaseManager().getDatabaseConnection();
+
+
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+
+            statement.execute("DELETE FROM USERS");
+
+            DatabaseUserManager DatabaseUserManager = new DatabaseUserManager();
+            DatabaseUserManager.addUser("User1", false);
+            DatabaseUserManager.addUser("Use23523");
+            DatabaseUserManager.addUser("gdfgsdfgsf");
+            DatabaseUserManager.addUser("SDFgdsgfsFdfgds", false);
+
+            System.out.println("Values inserted.");
+
+
+            /*ResultSet resultSet = statement.executeQuery("SELECT USERNAME FROM USERS");
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();*/
+
+            int i = 0;
+            do {
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM USERS");
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                int columnCount = resultSetMetaData.getColumnCount();
+                for (int x = 1; x <= columnCount; x++)
+                    System.out.format("%20s", resultSetMetaData.getColumnName(x) + " | ");
+                while (resultSet.next()) {
+                    System.out.println("");
+                    for (int x = 1; x <= columnCount; x++) System.out.format("%20s", resultSet.getString(x) + " | ");
+                }
+                DatabaseUserManager.changeUsername("User1", "FunNewUsername!");
+                i++;
+                System.out.print("\n\n\n\n");
+            } while (i < 2);
+
+
+            ResultSet resultSet = DatabaseUserManager.getAllUsers();
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString(DatabaseStrings.UsernameField));
+            }
+
+            System.out.println("\n\n" + DatabaseUserManager.getShowUsername("Use23523"));
+
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+              /* Statement statement = null;
+        try {
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                statement.execute("create table person ("
+                                + "id integer not null generated always as"
+                                + " identity (start with 1, increment by 1),   "
+                                + "name varchar(30) not null, email varchar(30), phone varchar(10),"
+                                + "constraint primary_key primary key (id))");
+
+                PreparedStatement preparedStatement = connection.prepareStatement("insert into person (name,email,phone) values(?,?,?)");
+                preparedStatement.setString(1, "Hagar the Horrible");
+                preparedStatement.setString(2, "hagar@somewhere.com");
+                preparedStatement.setString(3, "1234567890");
+                preparedStatement.executeUpdate();
+
+                ResultSet resultSet = statement.executeQuery("select * from person");
+                while (resultSet.next()) {
+                    System.out.printf("%d %s %s %s\n",
+                            resultSet.getInt(1), resultSet.getString(2),
+                            resultSet.getString(3), resultSet.getString(4));
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }*/
+
+
+        System.exit(0);
     }
 
     //---- DirectoryController ----\\

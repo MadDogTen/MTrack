@@ -22,6 +22,7 @@ public class Variables {
     public static final short EPISODE_COLUMN_WIDTH = 50;
     public static final String DirectoriesFolder = Strings.FileSeparator + "Directories";
     public static final String UsersFolder = Strings.FileSeparator + "Users";
+    public static final String DatabaseFolderName = Strings.FileSeparator + "MTrackDB";
     // Extensions
     public static final String ShowFileExtension = ".shows";
     public static final String UserFileExtension = ".user";
