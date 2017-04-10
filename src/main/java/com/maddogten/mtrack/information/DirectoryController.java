@@ -167,7 +167,7 @@ public class DirectoryController {
             });
             if (reloadShowFile[0]) {
                 log.finer("Inactive directories list was changed, updating ShowsFile & Displayed list (If applicable)");
-                ClassHandler.showInfoController().loadShowsFile(activeDirectories);
+                //ClassHandler.showInfoController().loadShowsFile(activeDirectories);
                 if (Main.programFullyRunning) {
                     inactiveDirectories.stream().filter(file -> !previouslyInactive.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, ClassHandler.showInfoController().doesShowExistElsewhere(showName, activeDirectories)))));
                     previouslyInactive.stream().filter(file -> !inactiveDirectories.contains(file)).forEach(file -> untestedDirectories.stream().filter(directory -> directory.getDirectory() == file).forEach(directory -> directory.getShows().forEach((showName, aShow) -> Controller.updateShowField(showName, true))));

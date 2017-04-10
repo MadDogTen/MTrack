@@ -48,7 +48,7 @@ public class Main extends Application implements Runnable {
             Controller.closeChangeBoxStage();
             Controller.closeShowPlayingBoxStage();
             try {
-                ClassHandler.getDatabaseManager().closeConnection();
+                ClassHandler.getDBManager().closeConnection();
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, Main.class);
             }
@@ -68,10 +68,10 @@ public class Main extends Application implements Runnable {
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        DeveloperStuff.startupTest();
         GenericMethods.initLogger();
         GenericMethods.initExceptionHandler(log);
         boolean continueStarting = ClassHandler.mainRun().startBackend();
+        DeveloperStuff.startupTest();
         if (continueStarting) {
             stage = primaryStage;
             GenericMethods.setIcon(stage);

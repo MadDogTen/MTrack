@@ -223,4 +223,10 @@ public class GenericMethods {
         }
         return "";
     }
+
+    public static int concatenateDigits(int... values) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int value : values) stringBuilder.append(value).append("");
+        return Integer.valueOf(stringBuilder.toString());
+    }
 }

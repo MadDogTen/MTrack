@@ -1,8 +1,7 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.Controller;
-import com.maddogten.mtrack.Database.DatabaseManager;
-import com.maddogten.mtrack.Database.DatabaseUserManager;
+import com.maddogten.mtrack.Database.*;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.ListSelectBox;
 import com.maddogten.mtrack.gui.MessageBox;
@@ -28,12 +27,12 @@ public class DeveloperStuff {
     public static final boolean showOptionToToggleDevMode = true; // false
     public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
+    private static final Logger log = Logger.getLogger(DeveloperStuff.class.getName());
     public static boolean devMode = true; // false
-    private final Logger log = Logger.getLogger(DeveloperStuff.class.getName());
 
     //---- ProgramSettingsController ----\\
 
-    @SuppressWarnings({"UseOfSystemOutOrSystemErr", "CallToPrintStackTrace", "EmptyMethod"})
+    @SuppressWarnings({"CallToPrintStackTrace", "EmptyMethod"})
     public static void startupTest() throws Exception { // Place to test code before the rest of the program is started.
          /* String userHomeDir = System.getProperty("user.home", ".");
         String systemDir = userHomeDir + "/.addressbook";
@@ -41,27 +40,36 @@ public class DeveloperStuff {
 
 
         String directory = "C:" + Strings.FileSeparator + "Test Folder";
-        //if (new File(directory).exists()) new FileManager().deleteFolder(new File(directory));
-        DatabaseManager DONOTUSEdatabaseManager = new DatabaseManager(directory, !new File(directory + Strings.FileSeparator + "MTrackDB").exists());
+        if (new File(directory + Strings.FileSeparator + "MTrackDB").exists())
+            new FileManager().deleteFolder(new File(directory + Strings.FileSeparator + "MTrackDB"));
 
-        ClassHandler.setDatabaseManager(DONOTUSEdatabaseManager);
+        log.info("\n\n\n\n");
+        DBManager DONOTUSEdatabaseManager = new DBManager(directory, !new File(directory + Strings.FileSeparator + "MTrackDB").exists());
 
-        Connection connection = ClassHandler.getDatabaseManager().getDatabaseConnection();
+        ClassHandler.setDBManager(DONOTUSEdatabaseManager);
+
+        Connection connection = ClassHandler.getDBManager().getConnection();
 
 
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
 
-            statement.execute("DELETE FROM USERS");
+            //statement.execute("DELETE FROM USERS");
 
-            DatabaseUserManager DatabaseUserManager = new DatabaseUserManager();
-            DatabaseUserManager.addUser("User1", false);
-            DatabaseUserManager.addUser("Use23523");
-            DatabaseUserManager.addUser("gdfgsdfgsf");
-            DatabaseUserManager.addUser("SDFgdsgfsFdfgds", false);
+            String user1 = "User1", user2 = "Use23523", user3 = "gdfgsdfgsf", user4 = "SDFgdsgfsFdfgds";
 
-            System.out.println("Values inserted.");
+            DBDirectoryHandler dbDirectoryHandler = new DBDirectoryHandler();
+            DBShowManager dbShowManager = new DBShowManager();
+            DBUserSettingsManager DBUserSettingsManager = new DBUserSettingsManager();
+            DBUserManager DBUserManager = new DBUserManager();
+            DBUserManager.addUser(user1, false);
+            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user1));
+            DBUserManager.addUser(user2);
+            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user2));
+            DBUserManager.addUser(user3);
+            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user3));
+            DBUserManager.addUser(user4, false);
+            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user4));
+
 
 
             /*ResultSet resultSet = statement.executeQuery("SELECT USERNAME FROM USERS");
@@ -69,34 +77,65 @@ public class DeveloperStuff {
 
             int i = 0;
             do {
+                log.info("");
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM USERS");
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int columnCount = resultSetMetaData.getColumnCount();
+                StringBuilder stringBuilder = new StringBuilder();
                 for (int x = 1; x <= columnCount; x++)
-                    System.out.format("%20s", resultSetMetaData.getColumnName(x) + " | ");
+                    stringBuilder.append(resultSetMetaData.getColumnName(x)).append(" | ");
+                log.info(stringBuilder.toString());
+                stringBuilder = new StringBuilder();
                 while (resultSet.next()) {
-                    System.out.println("");
-                    for (int x = 1; x <= columnCount; x++) System.out.format("%20s", resultSet.getString(x) + " | ");
+                    for (int x = 1; x <= columnCount; x++) stringBuilder.append(resultSet.getString(x)).append(" | ");
+                    log.info(stringBuilder.toString());
+                    stringBuilder = new StringBuilder();
                 }
-                DatabaseUserManager.changeUsername("User1", "FunNewUsername!");
+                if (i == 0) {
+                    DBUserManager.changeUsername(user1, "FunNewUsername!");
+                    user1 = "FunNewUsername!";
+                    int id = DBUserManager.getUserID(user4);
+                    DBUserSettingsManager.changeIntegerSetting(id, 40, StringDB.updateSpeed);
+                    DBUserSettingsManager.changeFloatSetting(id, 25.6f, StringDB.episodeColumnWidth);
+                    DBUserSettingsManager.changeBooleanSetting(id, false, StringDB.automaticShowUpdating);
+                    log.info(String.valueOf(DBUserSettingsManager.getIntegerSetting(id, StringDB.updateSpeed)));
+                    log.info(String.valueOf(DBUserSettingsManager.getFloatSetting(id, StringDB.episodeColumnWidth)));
+                    log.info(String.valueOf(DBUserSettingsManager.getBooleanSetting(id, StringDB.automaticShowUpdating)));
+                }
                 i++;
-                System.out.print("\n\n\n\n");
             } while (i < 2);
+            log.info("");
+
+            DBUserManager.deleteUser(user3);
+
+            log.info(String.valueOf(DBUserManager.getAllUsers()));
+
+            log.info(String.valueOf(DBUserManager.getShowUsername(user2)));
 
 
-            ResultSet resultSet = DatabaseUserManager.getAllUsers();
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(DatabaseStrings.UsernameField));
-            }
+            ClassHandler.showInfoController().getShows().forEach(show -> {
+                try {
+                    dbShowManager.addShow(show);
+                    int showID = dbShowManager.getShowID(show);
+                    ClassHandler.showInfoController().getSeasonsList(show).forEach(season -> {
+                        dbShowManager.addSeason(showID, season);
+                        ClassHandler.showInfoController().getEpisodesList(show, season).forEach(episode -> {
+                            dbShowManager.addEpisode(showID, season, episode, ClassHandler.showInfoController().isDoubleEpisode(show, season, episode), ClassHandler.showInfoController().getEpisode(show, season, episode).getEpisodeFilename());
+                        });
+                    });
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
 
-            System.out.println("\n\n" + DatabaseUserManager.getShowUsername("Use23523"));
-
-            if (statement != null) statement.close();
-            if (connection != null) connection.close();
+            ClassHandler.directoryController().findDirectories(true, false, false).forEach(directory1 -> {
+                dbDirectoryHandler.addDirectory(directory1.getDirectory().toString());
+            });
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        connection.close();
 
 
 
@@ -276,7 +315,7 @@ public class DeveloperStuff {
     }
 
     public void setAllShowsActive() {
-        ArrayList<String> showsList = ClassHandler.showInfoController().getShowsList();
+        ArrayList<String> showsList = ClassHandler.showInfoController().getShows();
         if (showsList.isEmpty()) log.info("No shows to change.");
         else {
             showsList.forEach(aShow -> {
@@ -288,7 +327,7 @@ public class DeveloperStuff {
     }
 
     public void setAllShowsInactive() {
-        ArrayList<String> showsList = ClassHandler.showInfoController().getShowsList();
+        ArrayList<String> showsList = ClassHandler.showInfoController().getShows();
         if (showsList.isEmpty()) log.info("No shows to change.");
         else {
             showsList.forEach(aShow -> {

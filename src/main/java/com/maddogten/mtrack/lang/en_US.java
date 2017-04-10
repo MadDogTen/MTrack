@@ -105,7 +105,7 @@ public class en_US extends Language {
         Strings.ShowUsername.setValue("Show Username");
         Strings.SpecialEffects.setValue("Special Effects");
         Strings.EnableAutomaticSaving.setValue("Enable Automatic Saving");
-        Strings.UseOnlineDatabase.setValue("Use Online DatabaseManager");
+        Strings.UseOnlineDatabase.setValue("Use Online DBManager");
         Strings.EnableFileLogging.setValue("Enable File Logging");
 
         // Tooltip Text

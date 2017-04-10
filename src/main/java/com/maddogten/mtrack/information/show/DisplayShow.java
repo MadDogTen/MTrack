@@ -14,12 +14,14 @@ public class DisplayShow {
     private final SimpleIntegerProperty remaining;
     private final SimpleIntegerProperty season;
     private final SimpleIntegerProperty episode;
+    private final SimpleIntegerProperty showID;
 
-    public DisplayShow(final String show, final int remaining, final int season, final int episode) {
+    public DisplayShow(final String show, final int remaining, final int season, final int episode, final int showID) {
         this.show = new SimpleStringProperty(show);
         this.remaining = new SimpleIntegerProperty(remaining);
         this.season = new SimpleIntegerProperty(season);
         this.episode = new SimpleIntegerProperty(episode);
+        this.showID = new SimpleIntegerProperty(showID);
     }
 
     public SimpleStringProperty showProperty() {
@@ -66,5 +68,17 @@ public class DisplayShow {
 
     public void setEpisode(final Integer episode) {
         this.episode.setValue(episode);
+    }
+
+    public SimpleIntegerProperty showIDProperty() {
+        return this.showID;
+    }
+
+    public Integer getshowID() {
+        return showID.get();
+    }
+
+    public void setshowID(final Integer showID) {
+        this.showID.setValue(showID);
     }
 }

@@ -3,7 +3,6 @@ package com.maddogten.mtrack.information;
 import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.information.settings.UserSettings;
 import com.maddogten.mtrack.information.settings.UserShowSettings;
-import com.maddogten.mtrack.information.show.Episode;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.OperatingSystem;
@@ -20,26 +19,15 @@ import java.util.logging.Logger;
 
 public class UserInfoController {
     private final Logger log = Logger.getLogger(UserInfoController.class.getName());
-    private UserSettings userSettings;
+    // private UserSettings userSettings;
 
-    public void loadUserInfo() {
+    /*public void loadUserInfo() {
         this.userSettings = (UserSettings) new FileManager().loadFile(Variables.UsersFolder, Strings.UserName.getValue(), Variables.UserFileExtension);
-    }
+    }*/
 
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
-    public ArrayList<String> getAllUsers() {
-        File folder = new File(Variables.dataFolder + Variables.UsersFolder);
-        if (folder.exists()) {
-            ArrayList<String> users = new ArrayList<>(folder.list().length);
-            if (new FileManager().checkFolderExistsAndReadable(folder)) {
-                Collections.addAll(users, folder.list((dir, name) -> (name.toLowerCase().endsWith(Variables.UserFileExtension) && !name.toLowerCase().matches("Program"))));
-            }
-            ArrayList<String> usersCleaned = new ArrayList<>(users.size());
-            users.forEach(aUser -> usersCleaned.add(aUser.replace(Variables.UserFileExtension, Strings.EmptyString)));
-            if (usersCleaned.isEmpty()) log.info("Users folder was empty.");
-            return usersCleaned;
-        } else log.fine("Users folder doesn't exists.");
-        return new ArrayList<>();
+    public ArrayList<Integer> getAllUsers() {
+        return ClassHandler.getDBManager().getDbUserManager().getAllUsers();
     }
 
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
@@ -63,11 +51,11 @@ public class UserInfoController {
         userSettings.getAShowSettings(aShow).setActive(active);
     }
 
-    public boolean isShowActive(final String aShow) {
+    public boolean isShowActive(final int showID) {
         return userSettings.getAShowSettings(aShow).isActive();
     }
 
-    public ArrayList<String> getActiveShows() {
+    public ArrayList<Integer> getActiveShows() {
         ArrayList<String> activeShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden())
@@ -77,7 +65,7 @@ public class UserInfoController {
     }
 
     // Returns all the shows that the user isn't currently watching. (Other than ignored or hidden shows)
-    public ArrayList<String> getInactiveShows() {
+    public ArrayList<Integer> getInactiveShows() {
         ArrayList<String> inActiveShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (!showSettings.isActive() && !showSettings.isIgnored() && !showSettings.isHidden())
@@ -86,7 +74,7 @@ public class UserInfoController {
         return inActiveShows;
     }
 
-    public ArrayList<String> getUsersShows() {
+    public ArrayList<Integer> getUsersShows() {
         ArrayList<String> shows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (!showSettings.isIgnored() && !showSettings.isHidden())
@@ -96,7 +84,7 @@ public class UserInfoController {
     }
 
     // Returns all the shows the program currently has being tracked.
-    public ArrayList<String> getAllNonIgnoredShows() {
+    public ArrayList<Integer> getAllNonIgnoredShows() {
         ArrayList<String> nonIgnoredShows = new ArrayList<>(userSettings.getShowSettings().size());
         userSettings.getShowSettings().forEach((showName, showSettings) -> {
             if (!showSettings.isIgnored()) nonIgnoredShows.add(showSettings.getShowName());
@@ -119,16 +107,15 @@ public class UserInfoController {
     }
 
     // Attempts to play the file using the default program for the extension.
-    public boolean playAnyEpisode(final String aShow, final int aSeason, final int aEpisode) {
-        log.info("Attempting to play " + aShow + " Season: " + aSeason + " - Episode: " + aEpisode);
-        Episode episode = ClassHandler.showInfoController().getEpisode(aShow, aSeason, aEpisode);
-        if (episode == null || episode.getEpisodeFilename().isEmpty()) log.warning("showLocation is empty!");
+    public boolean playAnyEpisode(final int showID, final int aSeason, final int aEpisode) {
+        log.info("Attempting to play " + ClassHandler.getDBManager().getDbShowManager().getShowName(showID) + " Season: " + aSeason + " - Episode: " + aEpisode);
+        File episode = ClassHandler.getDBManager().getDbShowManager().getEpisodeFile(showID, aSeason, aEpisode);
+        if (episode == null) log.warning("Episode wasn't found in database!");
         else {
-            log.finer("Known show location: " + episode.getEpisodeFilename());
-            File file = new File(episode.getEpisodeFilename());
-            if (file.exists())
-                return OperatingSystem.openVideo(file, userSettings.getShowSettings().get(aShow).getEpisodePosition(aSeason, aEpisode));
-            else log.warning("File \"" + file + "\" doesn't exists!");
+            log.finer("Known show location: " + episode);
+            if (episode.exists())
+                return OperatingSystem.openVideo(episode, userSettings.getShowSettings().get(aShow).getEpisodePosition(aSeason, aEpisode));
+            else log.warning("File \"" + episode + "\" doesn't exists!");
         }
         return false;
     }
@@ -233,17 +220,17 @@ public class UserInfoController {
         return seasonEpisodeReturn;
     }
 
-    public int getCurrentSeason(final String aShow) {
+    public int getCurrentSeason(final int showID) {
         return userSettings.getAShowSettings(aShow).getCurrentSeason();
     }
 
-    public int getCurrentEpisode(final String aShow) {
+    public int getCurrentEpisode(final int showID) {
         return userSettings.getAShowSettings(aShow).getCurrentEpisode();
     }
 
     // Finds out how many episodes you have following the currently one. If it finds incrementing episodes all the way from the current one,
     // Then checks for a following season that contains episode 1.
-    public int getRemainingNumberOfEpisodes(final String aShow) {
+    public int getRemainingNumberOfEpisodes(final int showID) {
         int remaining = 0;
         if (ClassHandler.showInfoController().getShowsFile().containsKey(aShow)) {
             int currentSeason = userSettings.getAShowSettings(aShow).getCurrentSeason(), currentEpisode = userSettings.getAShowSettings(aShow).getCurrentEpisode();

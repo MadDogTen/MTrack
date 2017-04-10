@@ -129,7 +129,7 @@ public class FirstRun {
     public void generateUserSettingsFile(final String userName) throws IOException {
         log.info("Attempting to generate settings file for " + userName + '.');
         Map<String, UserShowSettings> showSettings = new HashMap<>();
-        for (String aShow : ClassHandler.showInfoController().getShowsList()) {
+        for (String aShow : ClassHandler.showInfoController().getShows()) {
             if (Variables.genUserShowInfoAtFirstFound)
                 showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
             else

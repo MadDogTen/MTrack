@@ -51,6 +51,8 @@ public class CheckShowFiles {
         return currentlyCheckingDirectories;
     }
 
+
+    // TODO Add new way to find changed shows
     // This fully rechecks for any new / removed shows, seasons, and episodes from all directories. If directory is unresponsive, it skips it.
     public void recheckShowFile(final boolean forceRun) {
         if (!isRecheckingShowFile || (forceRun && keepRunning)) {
@@ -63,7 +65,7 @@ public class CheckShowFiles {
             keepRunning = !forceRun;
             FileManager fileManager = new FileManager();
             // Need to set the FindChangedShows showsFile to the current, unchanged one to later find the changes.
-            FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
+            //FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
             if (forceRun) runNumber = 0;
             else runNumber++;
             while (isRecheckingShowFile) { // Just in case it had interrupted a run and it hasn't fully finished stopping.
@@ -138,7 +140,7 @@ public class CheckShowFiles {
                                         recheckShowFilePercentage += percentagePer;
                                     });
                                     ClassHandler.directoryController().saveDirectory(aDirectory, false);
-                                    ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
+                                    //ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
                                     changedShows.keySet().forEach(aNewShow -> {
                                         ClassHandler.userInfoController().addNewShow(aNewShow);
                                         Controller.updateShowField(aNewShow, true);
@@ -167,10 +169,10 @@ public class CheckShowFiles {
                         log.warning("recheckShowFilePercentage was: \"" + recheckShowFilePercentage + "\" and not 100, Must be an error in the calculation, Please correct.");
                     recheckShowFilePercentage = 100;
                     if (hasChanged[0] && Main.programFullyRunning) {
-                        ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
+                        //ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
                         if (!updatedShows.isEmpty())
                             updatedShows.forEach(aShow -> Controller.updateShowField(aShow, true));
-                        findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
+                        //findChangedShows.findShowFileDifferences(ClassHandler.showInfoController().getShowsFile());
                         log.info("Some shows have been updated.");
                         log.info("Finished Rechecking Shows! - It took " + GenericMethods.timeTakenSeconds(timer) + " seconds.");
                     } else if (Main.programFullyRunning) {

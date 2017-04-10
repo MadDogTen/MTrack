@@ -24,7 +24,7 @@ public class VideoPlayer implements Serializable {
         this.videoPlayerLocation = videoPlayerLocation;
     }
 
-    public enum VideoPlayerEnum {
+    public enum VideoPlayerEnum { // TODO Add setting for this
         VLC("VLC", "vlc"), MEDIA_PLAYER_CLASSIC("MPC", "mpc-hc"), BS_PLAYER("BSPlayer", "bsplayer"), OTHER("Other", "");
 
         private final String name;

@@ -292,7 +292,7 @@ public class ListSelectBox {
         return directory[0];
     }
 
-    public int[] pickSeasonEpisode(final String aShow, final ShowInfoController showInfoController, final Stage oldStage) {
+    public int[] pickSeasonEpisode(final int showID, final ShowInfoController showInfoController, final Stage oldStage) {
         log.fine("pickSeasonEpisode has been opened.");
 
         Stage pickSeasonEpisodeStage = new Stage();
@@ -307,7 +307,7 @@ public class ListSelectBox {
 
         // TODO Make this support option to display all known episodes or only currently found episodes.
         ArrayList<Integer> seasonsString = new ArrayList<>();
-        seasonsString.addAll(new ArrayList<>(showInfoController.getSeasonsList(aShow)));
+        seasonsString.addAll(new ArrayList<>(showInfoController.getSeasonsList(showID)));
         Collections.sort(seasonsString);
         ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsString);
         ComboBox<Integer> seasonsComboBox = new ComboBox<>(seasonsList);
@@ -315,9 +315,9 @@ public class ListSelectBox {
         ObservableList<Integer> episodesList = FXCollections.observableArrayList(episodesArrayList);
         ComboBox<Integer> episodesComboBox = new ComboBox<>(episodesList);
 
-        int season = ClassHandler.userInfoController().getCurrentSeason(aShow);
-        int episode = ClassHandler.userInfoController().getCurrentEpisode(aShow);
-        if (ClassHandler.showInfoController().getEpisode(aShow, season, episode) == null || ClassHandler.showInfoController().getEpisode(aShow, season, episode).getEpisodeFilename().isEmpty()) {
+        int season = ClassHandler.userInfoController().getCurrentSeason(showID);
+        int episode = ClassHandler.userInfoController().getCurrentEpisode(showID);
+        if (ClassHandler.showInfoController().getEpisode(showID, season, episode) == null || ClassHandler.showInfoController().getEpisode(aShow, season, episode).getEpisodeFilename().isEmpty()) {
             episodesComboBox.setDisable(true);
         } else {
             seasonsComboBox.getSelectionModel().select((Integer) season);
