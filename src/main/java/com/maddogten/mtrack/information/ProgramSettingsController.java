@@ -1,13 +1,9 @@
 package com.maddogten.mtrack.information;
 
-import com.maddogten.mtrack.information.settings.ProgramSettings;
-import com.maddogten.mtrack.io.FileManager;
-import com.maddogten.mtrack.util.ClassHandler;
-import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.Database.DBProgramSettingsManager;
 
-import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 /*
@@ -16,41 +12,28 @@ import java.util.logging.Logger;
 
 public class ProgramSettingsController {
     private final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
-    private ProgramSettings settingsFile;
-    private boolean mainDirectoryVersionAlreadyChanged = false;
+    private DBProgramSettingsManager dbProgramSettingsManager;
 
-    public void loadProgramSettingsFile() {
-        this.settingsFile = (ProgramSettings) new FileManager().loadFile(Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension);
+    public void initDatabase(Connection connection) throws SQLException {
+        dbProgramSettingsManager = new DBProgramSettingsManager(connection);
     }
 
-    public void setDefaultLanguage(final String language) {
-        settingsFile.setLanguage(language);
-        log.info("Default language was set to " + language + '.');
+
+    public int getDefaultUser() {
+        return dbProgramSettingsManager.getDefaultUser();
     }
 
-    public void setUpdateSpeed(final int updateSpeed) {
-        settingsFile.setUpdateSpeed(updateSpeed);
-        log.info("Update speed is now set to: " + updateSpeed);
+    public void setDefaultUser(int userID) {
+        dbProgramSettingsManager.setDefaultUser(userID);
+        log.info("DefaultUsername is set.");
     }
 
-    public void setSavingSpeed(final int savingSpeed) {
-        settingsFile.setSaveSpeed(savingSpeed);
-        log.info("Save speed is now set to: " + savingSpeed);
+    public void removeDefaultUser() {
+        dbProgramSettingsManager.clearDefaultUser();
+        log.info("DefaultUsername is cleared.");
     }
 
-    public void setTimeToWaitForDirectory(final int timeToWaitForDirectory) {
-        settingsFile.setTimeToWaitForDirectory(timeToWaitForDirectory);
-        log.info("Time to wait for directory is now set to: " + timeToWaitForDirectory);
-    }
-
-    public void setDefaultUsername(final String userName, final boolean useDefaultUser) {
-        log.info("DefaultUsername is being set...");
-        settingsFile.setUseDefaultUser(useDefaultUser);
-        settingsFile.setDefaultUser(userName);
-        log.info("DefaultUsername is set as " + userName + '.');
-    }
-
-    public void setMainDirectoryVersion(final int version) {
+    /*public void setMainDirectoryVersion(final int version) { // TODO All the versioning needs to be done
         if (mainDirectoryVersionAlreadyChanged)
             log.info("Already changed main directory version this run, no further change needed.");
         else {
@@ -62,30 +45,5 @@ public class ProgramSettingsController {
             log.info("Main + User directory version updated to: " + version);
             mainDirectoryVersionAlreadyChanged = true;
         }
-    }
-
-    public void setFileLogging(final boolean enableFileLogging) {
-        settingsFile.setFileLogging(enableFileLogging);
-        if (enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
-            try {
-                GenericMethods.initFileLogging(log);
-            } catch (IOException e) {
-                GenericMethods.printStackTrace(log, e, this.getClass());
-            }
-        } else if (GenericMethods.isFileLoggingStarted()) GenericMethods.stopFileLogging(log);
-    }
-
-    public ProgramSettings getSettingsFile() {
-        return settingsFile;
-    }
-
-    public void setSettingsFile(final ProgramSettings settingsFile) {
-        this.settingsFile = settingsFile;
-    }
-
-    // Save the file
-    public void saveSettingsFile() {
-        new FileManager().save(settingsFile, Strings.EmptyString, Strings.SettingsFileName, Variables.SettingFileExtension, true);
-        log.info("Settings were saved!");
-    }
+    }*/
 }

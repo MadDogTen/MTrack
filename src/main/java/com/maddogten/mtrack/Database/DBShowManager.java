@@ -115,6 +115,18 @@ public class DBShowManager {
         return allShows;
     }
 
+    public ArrayList<String> getAllShowStrings() { // TODO Remove, Temp Value
+        ArrayList<String> allShows = new ArrayList<>();
+        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
+            try (ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.showName + " FROM " + StringDB.shows)) {
+                while (resultSet.next()) allShows.add(resultSet.getString(StringDB.showName));
+            }
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return allShows;
+    }
+
     public String getShowName(int showID) {
         String showName = Strings.EmptyString;
         try {

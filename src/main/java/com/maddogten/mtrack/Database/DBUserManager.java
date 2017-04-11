@@ -113,6 +113,18 @@ public class DBUserManager {
         return users;
     }
 
+    public ArrayList<String> getAllUserStrings() { // TODO Remove, Temp Value
+        ArrayList<String> allUsers = new ArrayList<>();
+        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
+            try (ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.username + " FROM " + StringDB.users)) {
+                while (resultSet.next()) allUsers.add(resultSet.getString(StringDB.username));
+            }
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return allUsers;
+    }
+
     private int generateUserID() throws SQLException {
         Random random = new Random();
         int userID;

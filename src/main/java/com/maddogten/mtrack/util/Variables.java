@@ -80,6 +80,7 @@ public class Variables {
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static String language;
+    public static int currentUser;
     public static boolean makeLanguageDefault;
     public static int timeToWaitForDirectory;
     public static boolean recordChangesForNonActiveShows;

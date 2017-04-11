@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.Database;
 
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.StringDB;
 
@@ -66,6 +67,25 @@ public class DBDirectoryHandler {
 
     private void createDirectoryTable(Statement statement) throws SQLException {
         statement.execute("CREATE TABLE " + StringDB.directories + "(" + StringDB.directoryID + " INTEGER NOT NULL UNIQUE, " + StringDB.directory + " VARCHAR(" + StringDB.directoryLength + ") NOT NULL UNIQUE, " + StringDB.directoryPriority + " INTEGER NOT NULL)");
+    }
+
+    public boolean doesShowExistsInOtherDirectories(int showID, int... directoryIDs) {
+        boolean result = false;
+        if (directoryIDs.length > 0) {
+            try (Statement statement = ClassHandler.getDBManager().getStatement()) {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("SELECT * FROM ").append(StringDB.showsInDirectory).append(" WHERE ").append(StringDB.showID).append("=").append(showID);
+                for (int directoryID : directoryIDs) {
+                    stringBuilder.append(" AND ").append(StringDB.directoryID).append("!=").append(directoryID);
+                }
+                try (ResultSet resultSet = statement.executeQuery(stringBuilder.toString())) {
+                    if (resultSet.next()) result = true;
+                }
+            } catch (SQLException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
+        }
+        return result;
     }
 
     public int getDirectoryPriority(int directoryID) {

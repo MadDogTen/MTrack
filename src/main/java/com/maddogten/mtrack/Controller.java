@@ -474,7 +474,6 @@ public class Controller implements Initializable {
                     setSeasonEpisode.textProperty().bind(Strings.SetSeasonEpisode);
                     setSeasonEpisode.setOnAction(e -> {
                         log.info("\"Set Season + Episode\" is now running...");
-                        String show = row.getItem().getShow();
                         int[] seasonEpisode = new int[0];
                         try {
                             seasonEpisode = new ShowEpisodeSelectBox().seasonEpisodeSelect(row.getItem(), (Stage) pane.getScene().getWindow());
@@ -484,7 +483,7 @@ public class Controller implements Initializable {
                         log.info(Arrays.toString(seasonEpisode));
                         if (seasonEpisode.length == 2) {
                             log.info("Season & Episode were valid.");
-                            ClassHandler.userInfoController().setSeasonEpisode(show, seasonEpisode[0], seasonEpisode[1]);
+                            ClassHandler.userInfoController().setSeasonEpisode(Variables.currentUser, row.getItem().getshowID(), seasonEpisode[0], seasonEpisode[1]);
                             updateShowField(row.getItem().getshowID(), true);
                             tableView.getSelectionModel().clearSelection();
                         } else log.info("Season & Episode weren't valid.");
@@ -506,11 +505,11 @@ public class Controller implements Initializable {
                     toggleActive.textProperty().bind(Bindings.when(currentList.isInactiveProperty()).then(Strings.SetActive).otherwise(Strings.SetInactive));
                     toggleActive.setOnAction(e -> {
                         if (currentList.isInactive()) {
-                            if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(row.getItem().getshowID())) {
-                                ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), false);
+                            if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, row.getItem().getshowID())) {
+                                ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), false);
                                 row.setStyle("");
                             } else {
-                                ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), true);
+                                ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), true);
                                 if (!wereShowsChanged) wereShowsChanged = true;
                                 if (Variables.showActiveShows)
                                     row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
@@ -518,7 +517,7 @@ public class Controller implements Initializable {
                                     removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             }
                         } else if (currentList.isActive()) {
-                            ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), false);
+                            ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), false);
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                         }
                         tableView.getSelectionModel().clearSelection();
@@ -526,7 +525,6 @@ public class Controller implements Initializable {
                     MenuItem setActiveAndSetEpisode = new MenuItem();
                     setActiveAndSetEpisode.textProperty().bind(Strings.SetActiveAndPickCurrentEpisode);
                     setActiveAndSetEpisode.setOnAction(e -> {
-                        String show = row.getItem().getShow();
                         int[] seasonEpisode = new int[0];
                         try {
                             seasonEpisode = new ShowEpisodeSelectBox().seasonEpisodeSelect(row.getItem(), (Stage) pane.getScene().getWindow());
@@ -536,9 +534,9 @@ public class Controller implements Initializable {
                         log.info(Arrays.toString(seasonEpisode));
                         if (seasonEpisode.length == 2) {
                             log.info("Season & Episode were valid.");
-                            ClassHandler.userInfoController().setSeasonEpisode(show, seasonEpisode[0], seasonEpisode[1]);
+                            ClassHandler.userInfoController().setSeasonEpisode(Variables.currentUser, row.getItem().getshowID(), seasonEpisode[0], seasonEpisode[1]);
                             updateShowField(row.getItem().getshowID(), true);
-                            ClassHandler.userInfoController().setActiveStatus(row.getItem().getShow(), true);
+                            ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), true);
                             if (!wereShowsChanged) wereShowsChanged = true;
                             if (Variables.showActiveShows)
                                 row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
@@ -577,7 +575,7 @@ public class Controller implements Initializable {
                     playPreviousEpisode.textProperty().bind(Strings.PlayPreviousEpisode);
                     playPreviousEpisode.setOnAction(e -> {
                         log.info("Attempting to play previous episode...");
-                        int[] seasonEpisode = ClassHandler.userInfoController().getPreviousEpisodeIfExists(row.getItem().getShow());
+                        int[] seasonEpisode = ClassHandler.userInfoController().getPreviousEpisodeIfExists(Variables.currentUser, row.getItem().getshowID());
                         if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3)
                             new MessageBox(new StringProperty[]{Strings.NoDirectlyPrecedingEpisodesFound}, (Stage) pane.getScene().getWindow());
                         else
@@ -586,12 +584,12 @@ public class Controller implements Initializable {
                     });
                     MenuItem printCurrentSeasonEpisode = new MenuItem();
                     printCurrentSeasonEpisode.textProperty().bind(Strings.PrintCurrentSeasonEpisode);
-                    printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + ClassHandler.userInfoController().getCurrentSeason(row.getItem().getshowID()) + " - Episode: " + ClassHandler.userInfoController().getCurrentEpisode(row.getItem().getshowID())));
+                    printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + ClassHandler.userInfoController().getCurrentUserSeason(Variables.currentUser, row.getItem().getshowID()) + " - Episode: " + ClassHandler.userInfoController().getCurrentUserEpisode(Variables.currentUser, row.getItem().getshowID())));
                     MenuItem printShowInformation = new MenuItem();
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
                     printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShow()));
                     MenuItem getMissingEpisodes = new MenuItem();
-                    getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes);
+                    /*getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes); // TODO Fix and Enable
                     getMissingEpisodes.setOnAction(e -> {
                         Map<Integer, Set<Integer>> missingInfo = ClassHandler.showInfoController().getMissingEpisodes(row.getItem().getshowID());
                         if (missingInfo.isEmpty())
@@ -605,7 +603,7 @@ public class Controller implements Initializable {
                             });
                             new MessageBox(info, (Stage) pane.getScene().getWindow());
                         }
-                    });
+                    });*/
                     MenuItem showCurrentlyPlayingMenuItem = new MenuItem();
                     showCurrentlyPlayingMenuItem.textProperty().bind(Strings.ShowIsCurrentlyPlayingAndCannotBeEdited);
                     row.setOnMouseClicked(e -> {
@@ -623,7 +621,7 @@ public class Controller implements Initializable {
                                     rowMenu.getItems().addAll(getRemaining, printCurrentSeasonEpisode, printShowInformation, getMissingEpisodes);
                             } else if (currentList.isInactive()) {
                                 rowMenu.getItems().clear();
-                                if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(row.getItem().getshowID())) {
+                                if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, row.getItem().getshowID())) {
                                     if (!isShowCurrentlyPlaying() || !showCurrentlyPlaying.getShow().matches(row.getItem().getShow()))
                                         rowMenu.getItems().add(toggleActive);
                                     else rowMenu.getItems().add(showCurrentlyPlayingMenuItem);
@@ -770,7 +768,7 @@ public class Controller implements Initializable {
         setUpdateTime.setDisable(Variables.disableAutomaticRechecking);
         setUpdateTime.setOnAction(e -> {
             if (isNumberValid(updateTimeTextField.getText(), 10))
-                ClassHandler.programSettingsController().setUpdateSpeed(Integer.valueOf(updateTimeTextField.getText()));
+                ClassHandler.userInfoController().setUpdateSpeed(Variables.currentUser, Integer.valueOf(updateTimeTextField.getText()));
             else updateTimeTextField.setText(String.valueOf(Variables.updateSpeed));
         });
         disableAutomaticShowUpdating.textProperty().bind(Strings.DisableAutomaticShowSearching);
@@ -831,14 +829,14 @@ public class Controller implements Initializable {
         setDefaultUsername.setOnAction(e -> {
             setButtonDisable(true, setDefaultUsername, clearDefaultUsername, addUser, deleteUser);
             ListSelectBox listSelectBox = new ListSelectBox();
-            ArrayList<String> Users = ClassHandler.userInfoController().getAllUsers();
-            String defaultUsername = listSelectBox.pickDefaultUser(Strings.PleaseChooseADefaultUser, Users, ClassHandler.programSettingsController().getSettingsFile().getDefaultUser(), (Stage) tabPane.getScene().getWindow());
-            if (defaultUsername != null && !defaultUsername.isEmpty())
-                ClassHandler.programSettingsController().setDefaultUsername(defaultUsername, true);
+            ArrayList<Integer> Users = ClassHandler.userInfoController().getAllUsers();
+            int defaultUsername = listSelectBox.pickDefaultUser(Strings.PleaseChooseADefaultUser, Users, ClassHandler.programSettingsController().getDefaultUser(), (Stage) tabPane.getScene().getWindow());
+            if (defaultUsername != -2)
+                ClassHandler.programSettingsController().setDefaultUser(defaultUsername);
             setButtonDisable(false, setDefaultUsername, clearDefaultUsername, addUser, deleteUser);
         });
         clearDefaultUsername.textProperty().bind(Strings.Reset);
-        clearDefaultUsername.setOnAction(e -> ClassHandler.programSettingsController().setDefaultUsername(Strings.EmptyString, false));
+        clearDefaultUsername.setOnAction(e -> ClassHandler.programSettingsController().removeDefaultUser());
         addUser.textProperty().bind(Strings.AddUser);
         addUser.setOnAction(e -> {
             setButtonDisable(true, addUser, deleteUser, currentUserComboBox, setDefaultUsername);
@@ -846,15 +844,6 @@ public class Controller implements Initializable {
             if (userName.isEmpty()) log.info("New user wasn't added.");
             else {
                 ClassHandler.userInfoController().addUser(userName);
-               /* Map<String, UserShowSettings> showSettings = new HashMap<>();
-                ArrayList<String> showsList = ClassHandler.showInfoController().getShows();
-                for (String aShow : showsList) {
-                    if (Variables.genUserShowInfoAtFirstFound)
-                        showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow)), ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(aShow, ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(aShow))))));
-                    else
-                        showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().getEpisode(aShow, 1, 0) != null ? 0 : 1, 1));
-                }
-                new FileManager().save(new UserSettings(userName, showSettings, ClassHandler.userInfoController().getUserSettings().getVideoPlayer()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);*/
                 log.info(userName + " was added.");
             }
             currentUserComboBox.getItems().clear();
@@ -865,7 +854,7 @@ public class Controller implements Initializable {
         deleteUser.textProperty().bind(Strings.DeleteUser);
         deleteUser.setOnAction(e -> {
             setButtonDisable(true, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
-            ArrayList<String> users = ClassHandler.userInfoController().getAllUsers();
+            ArrayList<Integer> users = ClassHandler.userInfoController().getAllUsers();
             users.remove(Strings.UserName.getValue());
             if (users.isEmpty())
                 new MessageBox(new StringProperty[]{Strings.ThereAreNoOtherUsersToDelete}, (Stage) tabPane.getScene().getWindow());
@@ -905,9 +894,9 @@ public class Controller implements Initializable {
             if (hiddenShows.isEmpty())
                 new MessageBox(new StringProperty[]{Strings.ThereAreNoHiddenShows}, (Stage) tabPane.getScene().getWindow());
             else {
-                String showToUnHide = new ListSelectBox().pickShow(ClassHandler.userInfoController().getHiddenShows(), (Stage) tabPane.getScene().getWindow());
+                String showToUnHide = new ListSelectBox().pickShow(ClassHandler.userInfoController().getHiddenShows(Variables.currentUser), (Stage) tabPane.getScene().getWindow());
                 if (showToUnHide != null && !showToUnHide.isEmpty()) {
-                    ClassHandler.userInfoController().setHiddenStatus(showToUnHide, false);
+                    ClassHandler.userInfoController().setHiddenStatus(Variables.currentUser, showToUnHide, false);
                     Controller.updateShowField(showToUnHide, true);
                     log.info(showToUnHide + " was unhidden.");
                 } else log.info("No show was unhidden.");

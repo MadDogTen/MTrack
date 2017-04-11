@@ -1,12 +1,14 @@
 package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.Controller;
-import com.maddogten.mtrack.util.ClassHandler;
-import com.maddogten.mtrack.util.OperatingSystem;
-import com.maddogten.mtrack.util.StringDB;
-import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.Database.DBUserManager;
+import com.maddogten.mtrack.Database.DBUserSettingsManager;
+import com.maddogten.mtrack.util.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -16,57 +18,68 @@ import java.util.logging.Logger;
 
 public class UserInfoController {
     private final Logger log = Logger.getLogger(UserInfoController.class.getName());
+    private DBUserManager dbUserManager;
+    private DBUserSettingsManager dbUserSettingsManager;
+
+    public void initDatabase(Connection connection) throws SQLException {
+        dbUserManager = new DBUserManager(connection);
+        dbUserSettingsManager = new DBUserSettingsManager(connection);
+    }
+
+    public String getUserNameFromID(int userID) {
+        return dbUserManager.getUsername(userID);
+    }
 
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
     public ArrayList<Integer> getAllUsers() {
-        return ClassHandler.getDBManager().getDbUserManager().getAllUsers();
+        return dbUserManager.getAllUsers();
     }
 
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
     public void setIgnoredStatus(int userID, final int showID, final boolean ignored) {
         log.fine(showID + " ignore status is: " + ignored);
-        ClassHandler.getDBManager().getDbUserSettingsManager().changeBooleanSetting(userID, showID, ignored, StringDB.ignored, StringDB.userShowSettings);
+        dbUserSettingsManager.changeBooleanSetting(userID, showID, ignored, StringDB.ignored, StringDB.userShowSettings);
     }
 
     public boolean doesUserExist(String userName) {
-        return ClassHandler.getDBManager().getDbUserManager().doesUserExist(userName);
+        return dbUserManager.doesUserExist(userName);
     }
 
     public boolean addUser(String userName) {
-        return ClassHandler.getDBManager().getDbUserManager().addUser(userName);
+        return dbUserManager.addUser(userName);
     }
 
     public Set<Integer> getIgnoredShows(int userID) {
-        return ClassHandler.getDBManager().getDbUserSettingsManager().getShows(userID, StringDB.ignored, true);
+        return dbUserSettingsManager.getShows(userID, StringDB.ignored, true);
     }
 
     // Saves whether or not a show is currently active. If a show is Active, it means the user is actively watching it, and it is being searched for in rechecks.
     public void setActiveStatus(int userID, final int showID, final boolean active) {
-        ClassHandler.getDBManager().getDbUserSettingsManager().changeBooleanSetting(userID, showID, active, StringDB.active, StringDB.userShowSettings);
+        dbUserSettingsManager.changeBooleanSetting(userID, showID, active, StringDB.active, StringDB.userShowSettings);
     }
 
     public boolean isShowActive(int userID, final int showID) {
-        return ClassHandler.getDBManager().getDbUserSettingsManager().getBooleanSetting(userID, showID, StringDB.active, StringDB.userShowSettings);
+        return dbUserSettingsManager.getBooleanSetting(userID, showID, StringDB.active, StringDB.userShowSettings);
     }
 
     // Returns all the shows applicable to the type requested
     public Set<Integer> getUsersShows(int userID) {
-        return ClassHandler.getDBManager().getDbUserSettingsManager().getShows(userID);
+        return dbUserSettingsManager.getShows(userID);
     }
 
     // Returns all the shows the program currently has being tracked.
     public Set<Integer> getAllNonIgnoredShows(int userID) {
-        return ClassHandler.getDBManager().getDbUserSettingsManager().getShows(userID, StringDB.ignored, false);
+        return dbUserSettingsManager.getShows(userID, StringDB.ignored, false);
     }
 
     // If a user doesn't want a show clogging up any lists, then it can be set hidden. It shouldn't be able to be found anywhere at that point.
     public void setHiddenStatus(int userID, final int showID, final boolean isHidden) {
         log.fine(showID + " hidden status is: " + isHidden);
-        ClassHandler.getDBManager().getDbUserSettingsManager().changeBooleanSetting(userID, showID, isHidden, StringDB.hidden, StringDB.userShowSettings);
+        dbUserSettingsManager.changeBooleanSetting(userID, showID, isHidden, StringDB.hidden, StringDB.userShowSettings);
     }
 
     public Set<Integer> getHiddenShows(int userID) {
-        return ClassHandler.getDBManager().getDbUserSettingsManager().getShows(userID, StringDB.hidden, true);
+        return dbUserSettingsManager.getShows(userID, StringDB.hidden, true);
     }
 
     // Attempts to play the file using the default program for the extension.
@@ -77,7 +90,7 @@ public class UserInfoController {
         else {
             log.finer("Known show location: " + episode);
             if (episode.exists())
-                return OperatingSystem.openVideo(episode, ClassHandler.getDBManager().getDbUserSettingsManager().getEpisodePosition(userID, episodeID));
+                return OperatingSystem.openVideo(episode, dbUserSettingsManager.getEpisodePosition(userID, episodeID));
             else log.warning("File \"" + episode + "\" doesn't exists!");
         }
         return false;
@@ -87,8 +100,8 @@ public class UserInfoController {
     // If no episode is found, then it checks if there is another season, and if there is, checks if it contains the first episode in the season.
     public void changeEpisode(int userID, int showID, final int episode) {
         if (episode == -2) {
-            int currentSeason = ClassHandler.getDBManager().getDbUserSettingsManager().getIntegerSetting(userID, showID, StringDB.season, StringDB.userShowSettings);
-            int currentEpisode = ClassHandler.getDBManager().getDbUserSettingsManager().getIntegerSetting(userID, showID, StringDB.episode, StringDB.userShowSettings);
+            int currentSeason = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.season, StringDB.userShowSettings);
+            int currentEpisode = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.episode, StringDB.userShowSettings);
             if (ClassHandler.showInfoController().isDoubleEpisode(showID, currentSeason, currentEpisode))
                 ++currentEpisode;
             boolean[] isAnotherEpisodeResult = isAnotherEpisode(userID, showID, currentSeason, currentEpisode);
@@ -100,7 +113,7 @@ public class UserInfoController {
                 this.setSeasonEpisode(userID, showID, ++currentSeason, 1);
                 log.info(showName + " is now on season " + currentSeason + " episode " + 1);
             } else {
-                ClassHandler.getDBManager().getDbUserSettingsManager().changeIntegerSetting(userID, showID, ++currentEpisode, StringDB.episode, StringDB.userShowSettings);
+                dbUserSettingsManager.changeIntegerSetting(userID, showID, ++currentEpisode, StringDB.episode, StringDB.userShowSettings);
                 log.info(showName + " is now on episode " + currentEpisode);
             }
         } else {
@@ -110,17 +123,17 @@ public class UserInfoController {
     }
 
     public int getCurrentUserSeason(int userID, int showID) {
-        return ClassHandler.getDBManager().getDbUserSettingsManager().getIntegerSetting(userID, showID, StringDB.season, StringDB.userShowSettings);
+        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.season, StringDB.userShowSettings);
     }
 
     public int getCurrentUserEpisode(int userID, int showID) {
-        return ClassHandler.getDBManager().getDbUserSettingsManager().getIntegerSetting(userID, showID, StringDB.episode, StringDB.userShowSettings);
+        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.episode, StringDB.userShowSettings);
     }
 
     // Directly sets the Season & Episode for a show.
     public void setSeasonEpisode(int userID, int showID, final int season, final int episode) {
-        ClassHandler.getDBManager().getDbUserSettingsManager().changeIntegerSetting(userID, showID, season, StringDB.season, StringDB.userShowSettings);
-        ClassHandler.getDBManager().getDbUserSettingsManager().changeIntegerSetting(userID, showID, episode, StringDB.episode, StringDB.userShowSettings);
+        dbUserSettingsManager.changeIntegerSetting(userID, showID, season, StringDB.season, StringDB.userShowSettings);
+        dbUserSettingsManager.changeIntegerSetting(userID, showID, episode, StringDB.episode, StringDB.userShowSettings);
         log.info(ClassHandler.showInfoController().getShowNameFromShowID(showID) + " is now set to Season: " + season + " - Episode: " + episode);
     }
 
@@ -249,6 +262,57 @@ public class UserInfoController {
         log.fine("Adding " + ClassHandler.showInfoController().getShowNameFromShowID(showID) + " to user settings file.");
         int season = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(showID)) : 1;
         int episode = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(showID, season)) : (ClassHandler.showInfoController().doesEpisodeExist(showID, season, 0)) ? 0 : 1;
-        ClassHandler.getDBManager().getDbUserSettingsManager().addShowSettings(userID, showID, season, episode);
+        dbUserSettingsManager.addShowSettings(userID, showID, season, episode);
+    }
+
+    public ArrayList<String> getAllUsersString() {
+        return dbUserManager.getAllUserStrings();
+    }
+
+    public void setLanguage(int userID, String language) {
+        dbUserSettingsManager.changeStringSetting(userID, -2, language, StringDB.language, StringDB.settings);
+        log.info("Default language was set to " + language + '.');
+    }
+
+    public String getLanguage(int userID) {
+        return dbUserSettingsManager.getStringSetting(userID, -2, StringDB.language, StringDB.settings);
+    }
+
+    public void setUpdateSpeed(int userID, final int updateSpeed) {
+        dbUserSettingsManager.changeIntegerSetting(userID, -2, updateSpeed, StringDB.updateSpeed, StringDB.settings);
+        log.info("Update speed is now set to: " + updateSpeed);
+    }
+
+    public int getUpdateSpeed(int userID) {
+        return dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.updateSpeed, StringDB.settings);
+    }
+
+    public void setSavingSpeed(int userID, final int savingSpeed) {
+        dbUserSettingsManager.changeIntegerSetting(userID, -2, savingSpeed, StringDB.saveSpeed, StringDB.settings);
+        log.info("Save speed is now set to: " + savingSpeed);
+    }
+
+    public int getSavingSpeed(int userID) {
+        return dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.saveSpeed, StringDB.settings);
+    }
+
+    public void setTimeToWaitForDirectory(int userID, final int timeToWaitForDirectory) {
+        dbUserSettingsManager.changeIntegerSetting(userID, -2, timeToWaitForDirectory, StringDB.timeToWaitForDirectory, StringDB.settings);
+        log.info("Time to wait for directory is now set to: " + timeToWaitForDirectory);
+    }
+
+    public int getTimeToWaitForDirectory(int userID) {
+        return dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.timeToWaitForDirectory, StringDB.settings);
+    }
+
+    public void setFileLogging(int userID, final boolean enableFileLogging) {
+        dbUserSettingsManager.changeBooleanSetting(userID, -2, enableFileLogging, StringDB.enableFileLogging, StringDB.settings);
+        if (enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
+            try {
+                GenericMethods.initFileLogging(log);
+            } catch (IOException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
+        } else if (GenericMethods.isFileLoggingStarted()) GenericMethods.stopFileLogging(log);
     }
 }

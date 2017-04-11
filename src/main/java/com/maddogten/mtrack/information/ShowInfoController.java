@@ -1,10 +1,12 @@
 package com.maddogten.mtrack.information;
 
-import com.maddogten.mtrack.information.show.Directory;
+import com.maddogten.mtrack.Database.DBShowManager;
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -18,46 +20,51 @@ import java.util.regex.Matcher;
 
 public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
+    private DBShowManager dbShowManager;
+
+    public void initDBManager(Connection connection) throws SQLException {
+        dbShowManager = new DBShowManager(connection);
+    }
 
     // Returns an arrayList of all shows.
     public ArrayList<Integer> getShows() {
-        return ClassHandler.getDBManager().getDbShowManager().getAllShows();
+        return dbShowManager.getAllShows();
     }
 
     // Returns a Set of all season in a given show.
     public Set<Integer> getSeasonsList(int showID) {
-        return ClassHandler.getDBManager().getDbShowManager().getSeasons(showID);
+        return dbShowManager.getSeasons(showID);
     }
 
     public String getShowNameFromShowID(int showID) {
-        return ClassHandler.getDBManager().getDbShowManager().getShowName(showID);
+        return dbShowManager.getShowName(showID);
     }
 
     public String getShowNameFromEpisodeID(int episodeID) {
-        return ClassHandler.getDBManager().getDbShowManager().getShowNameFromEpisodeID(episodeID);
+        return dbShowManager.getShowNameFromEpisodeID(episodeID);
     }
 
     // Returns a Set of all episodes in a given shows season.
-    public Set<Integer> getEpisodesList(final int showID, final int season) {
-        return ClassHandler.getDBManager().getDbShowManager().getSeasonEpisodes(showID, season);
+    public Set<Integer> getEpisodesList(int showID, final int season) {
+        return dbShowManager.getSeasonEpisodes(showID, season);
     }
 
     // Returns a given episode from a given season in a given show.
     public File getEpisode(int episodeID) {
-        return ClassHandler.getDBManager().getDbShowManager().getEpisodeFile(episodeID);
+        return dbShowManager.getEpisodeFile(episodeID);
     }
 
     // Returns whether or not an episode is part of a double episode.
     boolean isDoubleEpisode(int episodeID) {
-        return ClassHandler.getDBManager().getDbShowManager().isEpisodePartOfDoubleEpisode(episodeID);
+        return dbShowManager.isEpisodePartOfDoubleEpisode(episodeID);
     }
 
     boolean isDoubleEpisode(int showID, int season, int episode) {
-        return ClassHandler.getDBManager().getDbShowManager().isEpisodePartOfDoubleEpisode(showID, season, episode);
+        return dbShowManager.isEpisodePartOfDoubleEpisode(showID, season, episode);
     }
 
     public boolean doesEpisodeExist(int showID, int season, int episode) {
-        return ClassHandler.getDBManager().getDbShowManager().doesEpisodeExist(showID, season, episode);
+        return dbShowManager.doesEpisodeExist(showID, season, episode);
     }
 
     // Returns the lowest found integer in a set.
@@ -116,16 +123,8 @@ public class ShowInfoController {
     }*/
 
     // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
-    public boolean doesShowExistElsewhere(final String aShow, final ArrayList<Directory> showsFileArray) {
-        final boolean[] showExistsElsewhere = {false};
-        if (!showsFileArray.isEmpty()) {
-            showsFileArray.forEach(aDirectory -> {
-                if (aDirectory.containsShow(aShow)) showExistsElsewhere[0] = true;
-            });
-        }
-        if (showExistsElsewhere[0]) log.info(aShow + " exists elsewhere.");
-        else log.info(aShow + " doesn't exists elsewhere.");
-        return showExistsElsewhere[0];
+    public boolean doesShowExistInOtherDirectory(int showID, int... directoriesIgnored) {
+        return ClassHandler.getDBManager().getDbDirectoryHandler().doesShowExistsInOtherDirectories(showID, directoriesIgnored);
     }
 
     // Uses the given string (The full filename of an episode of a show) and returns the episode or episodes if its a double episode.

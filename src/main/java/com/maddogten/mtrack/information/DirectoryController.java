@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.Database.DBDirectoryHandler;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.information.show.Directory;
@@ -15,6 +16,8 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +28,12 @@ import java.util.regex.Pattern;
 public class DirectoryController {
     private final Logger log = Logger.getLogger(DirectoryController.class.getName());
     private final ArrayList<File> inactiveDirectories = new ArrayList<>();
+    private DBDirectoryHandler dbDirectoryHandler;
     private int lastActiveCheck = -2;
+
+    public void initDBHandler(Connection connection) throws SQLException {
+        dbDirectoryHandler = new DBDirectoryHandler(connection);
+    }
 
     // Saves all the directory paths that the program is currently set to check.
     public ArrayList<Directory> findDirectories(final boolean includeInactive, final boolean skipFoundInactiveDirectories, final boolean skipRechecking) {

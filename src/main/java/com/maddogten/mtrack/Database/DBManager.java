@@ -14,14 +14,9 @@ public class DBManager {
     private final Logger log = Logger.getLogger(DBManager.class.getName());
 
     private final Connection connection;
-    private DBShowManager dbShowManager;
-    private DBUserManager dbUserManager;
-    private DBUserSettingsManager dbUserSettingsManager;
-    private DBDirectoryHandler dbDirectoryHandler;
 
     public DBManager(String databaseLocation, boolean shouldCreateDDB) throws SQLException {
         connection = this.getConnection(databaseLocation, shouldCreateDDB);
-        initTables();
     }
 
     public Connection getConnection() { // TODO Make package private
@@ -67,28 +62,5 @@ public class DBManager {
 
     public void closeConnection() throws SQLException {
         connection.close();
-    }
-
-    private void initTables() throws SQLException {
-        dbDirectoryHandler = new DBDirectoryHandler(connection);
-        dbUserManager = new DBUserManager(connection);
-        dbUserSettingsManager = new DBUserSettingsManager(connection);
-        dbShowManager = new DBShowManager(connection);
-    }
-
-    public DBShowManager getDbShowManager() {
-        return dbShowManager;
-    }
-
-    public DBUserManager getDbUserManager() {
-        return dbUserManager;
-    }
-
-    public DBUserSettingsManager getDbUserSettingsManager() {
-        return dbUserSettingsManager;
-    }
-
-    public DBDirectoryHandler getDbDirectoryHandler() {
-        return dbDirectoryHandler;
     }
 }

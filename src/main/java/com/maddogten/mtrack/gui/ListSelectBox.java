@@ -1,7 +1,6 @@
 package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ClassHandler;
@@ -24,9 +23,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.io.File;
+import java.util.*;
 import java.util.logging.Logger;
 
 /*
@@ -112,7 +110,7 @@ public class ListSelectBox {
         return result;
     }
 
-    public String pickDefaultUser(final StringProperty message, final ArrayList<String> users, final String currentDefaultUser, final Stage oldStage) {
+    public Integer pickDefaultUser(final StringProperty message, final ArrayList<Integer> users, int currentDefaultUser, final Stage oldStage) {
         log.fine("pickDefaultUser has been opened.");
 
         Stage pickDefaultUserStage = new Stage();
@@ -125,27 +123,32 @@ public class ListSelectBox {
         Label label = new Label();
         label.textProperty().bind(message);
 
-        ObservableList<String> usersList = FXCollections.observableArrayList(users);
+        Map<String, Integer> usersString = new HashMap<>();
+        users.forEach(userID -> {
+            usersString.put(ClassHandler.userInfoController().getUserNameFromID(userID), userID);
+        });
+        ObservableList<String> usersList = FXCollections.observableArrayList(usersString.keySet());
         usersList.sorted();
         ComboBox<String> comboBox = new ComboBox<>(usersList);
-        if (currentDefaultUser != null && !currentDefaultUser.isEmpty()) comboBox.setValue(currentDefaultUser);
+        if (currentDefaultUser != -2)
+            comboBox.setValue(ClassHandler.userInfoController().getUserNameFromID(currentDefaultUser));
 
         Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
-        final String[] userName = new String[]{Strings.EmptyString};
+        final int[] user = new int[]{-2};
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().isEmpty()) {
                     new MessageBox(new StringProperty[]{Strings.DefaultUserNotSet}, pickDefaultUserStage);
                     pickDefaultUserStage.close();
                 } else {
-                    userName[0] = comboBox.getValue();
+                    user[0] = usersString.get(comboBox.getValue());
                     pickDefaultUserStage.close();
                 }
             }
         });
         exit.setOnAction(e -> {
-            userName[0] = null;
+            user[0] = -2;
             pickDefaultUserStage.close();
         });
 
@@ -173,10 +176,10 @@ public class ListSelectBox {
         pickDefaultUserStage.showAndWait();
 
         log.fine("pickDefaultUser has been closed.");
-        return userName[0];
+        return user[0];
     }
 
-    public void openDirectory(final ArrayList<Directory> directories, final Stage oldStage) {
+    public void openDirectory(final ArrayList<File> directories, final Stage oldStage) {
         log.fine("openDirectory has been opened.");
 
         Stage openDirectoryStage = new Stage();
@@ -189,20 +192,20 @@ public class ListSelectBox {
         label.textProperty().bind(Strings.PickTheFolderYouWantToOpen);
         label.setPadding(new Insets(0, 0, 5, 0));
 
-        ObservableList<Directory> directoriesObservable = FXCollections.observableArrayList(directories);
+        ObservableList<File> directoriesObservable = FXCollections.observableArrayList(directories);
         directoriesObservable.sorted();
-        ComboBox<Directory> directoryComboBox = new ComboBox<>(directoriesObservable);
+        ComboBox<File> directoryComboBox = new ComboBox<>(directoriesObservable);
 
         Button openAllButton = new Button(), openSelectedButton = new Button(), exitButton = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         openAllButton.textProperty().bind(Strings.OpenAll);
         openSelectedButton.textProperty().bind(Strings.OpenSelected);
         openAllButton.setOnAction(e -> {
             FileManager fileManager = new FileManager();
-            directories.forEach(directory -> fileManager.openFolder(directory.getDirectory()));
+            directories.forEach(fileManager::openFolder);
             openDirectoryStage.close();
         });
         openSelectedButton.setOnAction(event -> {
-            new FileManager().openFolder(directoryComboBox.getValue().getDirectory());
+            new FileManager().openFolder(directoryComboBox.getValue());
             openDirectoryStage.close();
         });
         exitButton.setOnAction(e -> openDirectoryStage.close());
@@ -233,7 +236,7 @@ public class ListSelectBox {
         log.fine("openDirectory has been closed.");
     }
 
-    public Directory pickDirectory(final StringProperty message, final ArrayList<Directory> files, final Stage oldStage) {
+    public File pickDirectory(final StringProperty message, final ArrayList<File> files, final Stage oldStage) {
         log.fine("pickDirectory has been opened.");
 
         Stage pickDirectoryStage = new Stage();
@@ -246,13 +249,13 @@ public class ListSelectBox {
         Label label = new Label();
         label.textProperty().bind(message);
 
-        ObservableList<Directory> fileList = FXCollections.observableArrayList(files);
+        ObservableList<File> fileList = FXCollections.observableArrayList(files);
         fileList.sorted();
-        ComboBox<Directory> comboBox = new ComboBox<>(fileList);
+        ComboBox<File> comboBox = new ComboBox<>(fileList);
 
         Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
-        final Directory[] directory = new Directory[1];
+        final File[] directory = new File[1];
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty())
@@ -292,7 +295,7 @@ public class ListSelectBox {
         return directory[0];
     }
 
-    public int[] pickSeasonEpisode(final int showID, final ShowInfoController showInfoController, final Stage oldStage) {
+    public int[] pickSeasonEpisode(int userID, final int showID, final ShowInfoController showInfoController, final Stage oldStage) {
         log.fine("pickSeasonEpisode has been opened.");
 
         Stage pickSeasonEpisodeStage = new Stage();
@@ -315,9 +318,9 @@ public class ListSelectBox {
         ObservableList<Integer> episodesList = FXCollections.observableArrayList(episodesArrayList);
         ComboBox<Integer> episodesComboBox = new ComboBox<>(episodesList);
 
-        int season = ClassHandler.userInfoController().getCurrentSeason(showID);
-        int episode = ClassHandler.userInfoController().getCurrentEpisode(showID);
-        if (ClassHandler.showInfoController().getEpisode(showID, season, episode) == null || ClassHandler.showInfoController().getEpisode(aShow, season, episode).getEpisodeFilename().isEmpty()) {
+        int season = ClassHandler.userInfoController().getCurrentUserSeason(userID, showID);
+        int episode = ClassHandler.userInfoController().getCurrentUserEpisode(userID, showID);
+        if (ClassHandler.showInfoController().getEpisode(userID, showID, season, episode) == null || ClassHandler.showInfoController().getEpisode(userID, showID, season, episode).getEpisodeFilename().isEmpty()) {
             episodesComboBox.setDisable(true);
         } else {
             seasonsComboBox.getSelectionModel().select((Integer) season);
