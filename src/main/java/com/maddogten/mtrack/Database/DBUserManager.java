@@ -19,6 +19,7 @@ public class DBUserManager {
     private final PreparedStatement checkUserID;
     private final PreparedStatement getUserID;
     private final PreparedStatement getUsername;
+    private final PreparedStatement checkForUser;
 
     public DBUserManager(Connection connection) throws SQLException {
         ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.users, null);
@@ -36,22 +37,40 @@ public class DBUserManager {
         checkUserID = connection.prepareStatement("SELECT " + StringDB.username + " FROM " + StringDB.users + " WHERE " + StringDB.userID + "=?");
         getUserID = connection.prepareStatement("SELECT " + StringDB.userID + " FROM " + StringDB.users + " WHERE " + StringDB.username + " =?");
         getUsername = connection.prepareStatement("SELECT " + StringDB.username + " FROM " + StringDB.users + " WHERE " + StringDB.userID + "=?");
+        checkForUser = connection.prepareStatement("SELECT * FROM " + StringDB.users + " WHERE " + StringDB.username + "=?");
     }
 
-    public void addUser(String username) {
-        this.addUser(username, true);
+    public boolean addUser(String username) {
+        return this.addUser(username, true);
     }
 
-    public void addUser(String userName, boolean showUsername) {
+    public boolean addUser(String userName, boolean showUsername) {
+        boolean result = false;
         try {
             insertUser.setInt(1, generateUserID());
             insertUser.setString(2, userName);
             insertUser.setBoolean(3, showUsername);
             insertUser.executeUpdate();
+            result = true; // TODO Generate other tables information
             log.info("User \"" + userName + "\" was successfully added with ID \"" + getUserID(userName) + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        return result;
+    }
+
+    public boolean doesUserExist(String userName) {
+        boolean result = false;
+        try {
+            checkForUser.setString(1, userName);
+            try (ResultSet resultSet = checkForUser.executeQuery()) {
+                result = resultSet.next();
+            }
+            checkForUser.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
     }
 
     public void deleteUser(String userName) {

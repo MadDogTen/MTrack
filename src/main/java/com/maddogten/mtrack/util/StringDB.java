@@ -59,7 +59,9 @@ public class StringDB {
     // -- User Show Settings -- \\
     public static final String currentSeason = "currentSeason";
     public static final String currentEpisode = "currentEpisode";
-    public static final String showStatus = "showStatus";
+    public static final String active = "active";
+    public static final String ignored = "ignored";
+    public static final String hidden = "hidden";
 
     // -- User Episode Settings -- \\
     public static final String episodeTimePosition = "episodeTimePosition";

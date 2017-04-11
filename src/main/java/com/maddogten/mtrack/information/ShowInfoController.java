@@ -1,13 +1,13 @@
 package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.information.show.Directory;
-import com.maddogten.mtrack.information.show.Episode;
-import com.maddogten.mtrack.information.show.Season;
-import com.maddogten.mtrack.information.show.Show;
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Variables;
 
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -18,47 +18,6 @@ import java.util.regex.Matcher;
 
 public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
-    //private Map<String, Show> showsFile;
-    private int previousDirectoriesHash;
-
-    // This first checks if there are more than 1 saved directory, and if there is, then combines them into a single Map that contains all the shows. If only 1 is found, then just directly uses it.
-    /*public void loadShowsFile(final ArrayList<Directory> directories) {
-        if (directories.hashCode() == previousDirectoriesHash)
-            log.fine("Directory Hashes Match, Skipping loading showsFile.");
-        else {
-            previousDirectoriesHash = directories.hashCode();
-            if (directories.size() == 1) {
-                showsFile = directories.get(0).getShows();
-                log.info("showsFile was loaded, Only one Directory.");
-            } else if (directories.size() > 1) {
-                long timer = GenericMethods.getTimeMilliSeconds();
-                showsFile = new HashMap<>();
-                HashSet<String> allShows = new HashSet<>();
-                directories.stream().filter(Objects::nonNull).forEach(showsHashSet -> showsHashSet.getShows().forEach((aShow, Show) -> allShows.add(aShow)));
-                allShows.forEach(aShow -> {
-                    Map<Integer, Season> fullSeasons = new HashMap<>();
-                    HashSet<Integer> seasons = new HashSet<>();
-                    directories.stream().filter(aDirectory -> aDirectory.containsShow(aShow)).forEach(aHashMap -> aHashMap.getShows().get(aShow).getSeasons().forEach((aSeason, seasonMap) -> seasons.add(aSeason)));
-                    seasons.forEach(aSeason -> {
-                        Map<Integer, Episode> episodes = new HashMap<>();
-                        directories.stream().filter(aDirectory -> (aDirectory.containsShowAndSeason(aShow, aSeason))).forEach(aDirectory -> aDirectory.getShows().get(aShow).getSeasons().get(aSeason).getEpisodes().forEach(episodes::put));
-                        fullSeasons.put(aSeason, new Season(aSeason, episodes));
-                    });
-                    showsFile.put(aShow, new Show(aShow, fullSeasons));
-                });
-                log.info("showsFile was loaded, It took " + GenericMethods.timeTakenMilli(timer) + " nanoseconds to combine all files");
-            } else {
-                if (directories.isEmpty())
-                    log.info("showsFile was loaded empty, No directories found.");
-                else log.info("showsFile loaded empty, Unknown reason.");
-                showsFile = new HashMap<>();
-            }
-        }
-    }*/
-
-   /* public Map<String, Show> getShowsFile() {
-        return showsFile;
-    }*/
 
     // Returns an arrayList of all shows.
     public ArrayList<Integer> getShows() {
@@ -66,8 +25,16 @@ public class ShowInfoController {
     }
 
     // Returns a Set of all season in a given show.
-    public Set<Integer> getSeasonsList(final int showID) {
+    public Set<Integer> getSeasonsList(int showID) {
         return ClassHandler.getDBManager().getDbShowManager().getSeasons(showID);
+    }
+
+    public String getShowNameFromShowID(int showID) {
+        return ClassHandler.getDBManager().getDbShowManager().getShowName(showID);
+    }
+
+    public String getShowNameFromEpisodeID(int episodeID) {
+        return ClassHandler.getDBManager().getDbShowManager().getShowNameFromEpisodeID(episodeID);
     }
 
     // Returns a Set of all episodes in a given shows season.
@@ -76,13 +43,21 @@ public class ShowInfoController {
     }
 
     // Returns a given episode from a given season in a given show.
-    public Episode getEpisode(final String show, final int season, final int episode) {
-        return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) ? showsFile.get(show).getSeason(season).getEpisode(episode) : null;
+    public File getEpisode(int episodeID) {
+        return ClassHandler.getDBManager().getDbShowManager().getEpisodeFile(episodeID);
     }
 
     // Returns whether or not an episode is part of a double episode.
-    public boolean isDoubleEpisode(final String show, final int season, final int episode) { // TODO Remove public
-        return showsFile.get(show).containsSeason(season) && showsFile.get(show).getSeason(season).containsEpisode(episode) && showsFile.get(show).getSeason(season).getEpisode(episode).isPartOfDoubleEpisode();
+    boolean isDoubleEpisode(int episodeID) {
+        return ClassHandler.getDBManager().getDbShowManager().isEpisodePartOfDoubleEpisode(episodeID);
+    }
+
+    boolean isDoubleEpisode(int showID, int season, int episode) {
+        return ClassHandler.getDBManager().getDbShowManager().isEpisodePartOfDoubleEpisode(showID, season, episode);
+    }
+
+    public boolean doesEpisodeExist(int showID, int season, int episode) {
+        return ClassHandler.getDBManager().getDbShowManager().doesEpisodeExist(showID, season, episode);
     }
 
     // Returns the lowest found integer in a set.
@@ -103,7 +78,7 @@ public class ShowInfoController {
         return highestInteger[0];
     }
 
-    public Map<Integer, Set<Integer>> getMissingEpisodes(final int aShow) {
+    /*public Map<Integer, Set<Integer>> getMissingEpisodes(final int aShow) { // TODO Work on later
         if (showsFile.containsKey(aShow) && showsFile.get(aShow).isShowData()) {
             Show show = ClassHandler.showInfoController().getShowsFile().get(aShow);
             int currentSeason = ClassHandler.userInfoController().getCurrentSeason(aShow);
@@ -138,7 +113,7 @@ public class ShowInfoController {
             return missingEpisodes;
         }
         return new HashMap<>();
-    }
+    }*/
 
     // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
     public boolean doesShowExistElsewhere(final String aShow, final ArrayList<Directory> showsFileArray) {

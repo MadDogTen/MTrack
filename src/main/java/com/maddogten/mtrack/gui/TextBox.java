@@ -3,6 +3,7 @@ package com.maddogten.mtrack.gui;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -37,7 +38,7 @@ public class TextBox {
     private static final Logger log = Logger.getLogger(TextBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public String addUser(final StringProperty message, final StringProperty messageIfNameFieldIsBlank, final String defaultValue, final ArrayList<String> allUsers, final Stage oldStage) {
+    public String addUser(final StringProperty message, final StringProperty messageIfNameFieldIsBlank, final String defaultValue, final Stage oldStage) {
         log.fine("addUser display has been opened.");
 
         Stage addUserStage = new Stage();
@@ -58,7 +59,7 @@ public class TextBox {
             if (textField.getText().isEmpty() && new ConfirmBox().confirm(messageIfNameFieldIsBlank, oldStage)) {
                 userName[0] = defaultValue;
                 addUserStage.close();
-            } else if (isUserValid(textField.getText(), allUsers, addUserStage)) {
+            } else if (isUserValid(textField.getText(), addUserStage)) {
                 userName[0] = textField.getText();
                 addUserStage.close();
             }
@@ -97,11 +98,11 @@ public class TextBox {
         return userName[0];
     }
 
-    private boolean isUserValid(final String user, final ArrayList<String> allUsers, final Stage oldStage) {
+    private boolean isUserValid(final String user, final Stage oldStage) {
         log.fine("isUserValid has been called.");
         if (user.contentEquals(Strings.AddNewUsername.getValue()) || !user.matches("^[a-zA-Z0-9]+$"))
             new MessageBox(new StringProperty[]{Strings.UsernameIsntValid}, oldStage);
-        else if (allUsers.contains(user))
+        else if (ClassHandler.userInfoController().doesUserExist(user))
             new MessageBox(new StringProperty[]{Strings.UsernameAlreadyTaken}, oldStage);
         else if (user.length() > 20)
             new MessageBox(new StringProperty[]{Strings.UsernameIsTooLong}, oldStage);

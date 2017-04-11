@@ -32,6 +32,7 @@ public class DBShowManager {
     private final PreparedStatement doesContainEpisode;
     private final PreparedStatement removeEpisodeFile;
     private final PreparedStatement getShowName;
+    private final PreparedStatement getShowIDFromEpisodeID;
 
     public DBShowManager(Connection connection) throws SQLException {
         initTables(connection);
@@ -46,12 +47,13 @@ public class DBShowManager {
         getSeasons = connection.prepareStatement("SELECT * FROM " + StringDB.seasons + " WHERE " + StringDB.showID + "=?");
         getSeasonEpisodes = connection.prepareStatement("SELECT * FROM " + StringDB.episodes + " WHERE " + StringDB.showID + "=? AND " + StringDB.season + "=?");
         getEpisode = connection.prepareStatement("SELECT * FROM " + StringDB.episodeFiles + " WHERE " + StringDB.episodeID + "=?");
-        isEpisodePartOfDoubleEpisode = connection.prepareStatement("SELECT " + StringDB.partOfDoubleEpisode + " FROM " + StringDB.episodes + " WHERE " + StringDB.showID + "=? AND " + StringDB.season + "=? AND " + StringDB.episode + "=?");
+        isEpisodePartOfDoubleEpisode = connection.prepareStatement("SELECT " + StringDB.partOfDoubleEpisode + " FROM " + StringDB.episodes + " WHERE " + StringDB.episodeID + "=?");
 //        updateEpisodeFile = connection.prepareStatement("UPDATE " + StringDB.episodes + " SET " + StringDB.file + "=? WHERE " + StringDB.showID + "=? AND " + StringDB.season + "=? AND " + StringDB.episode + "=?");
         addEpisodeFile = connection.prepareStatement("INSERT INTO " + StringDB.episodeFiles + " VALUES (?, ?, ?)");
         doesContainEpisode = connection.prepareStatement("SELECT " + StringDB.episodeID + " FROM " + StringDB.episodes + " WHERE " + StringDB.episodeID + "=?");
         removeEpisodeFile = connection.prepareStatement("DELETE FROM " + StringDB.episodeFiles + " WHERE " + StringDB.episodeID + "=? AND " + StringDB.directoryID + "=?" + " AND " + StringDB.file + "=?");
         getShowName = connection.prepareStatement("SELECT " + StringDB.showName + " FROM " + StringDB.shows + " WHERE " + StringDB.showID + "=?");
+        getShowIDFromEpisodeID = connection.prepareStatement("SELECT " + StringDB.showID + " FROM " + StringDB.episodes + " WHERE " + StringDB.episodeID + "=?");
     }
 
     private void initTables(Connection connection) {
@@ -118,7 +120,21 @@ public class DBShowManager {
         try {
             getShowName.setInt(1, showID);
             try (ResultSet resultSet = getShowName.executeQuery()) {
-                while (resultSet.next()) showName = resultSet.getString(StringDB.showName);
+                if (resultSet.next()) showName = resultSet.getString(StringDB.showName);
+            }
+            getShowName.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return showName;
+    }
+
+    public String getShowNameFromEpisodeID(int episodeID) {
+        String showName = Strings.EmptyString;
+        try {
+            getShowIDFromEpisodeID.setInt(1, episodeID);
+            try (ResultSet resultSet = getShowName.executeQuery()) {
+                if (resultSet.next()) showName = getShowName(resultSet.getInt(StringDB.episodeID));
             }
             getShowName.clearParameters();
         } catch (SQLException e) {
@@ -145,6 +161,20 @@ public class DBShowManager {
             checkForShow.clearParameters();
             return result;
         }
+    }
+
+    public boolean isEpisodePartOfDoubleEpisode(int episodeID) {
+        boolean result = false;
+        try {
+            isEpisodePartOfDoubleEpisode.setInt(1, episodeID);
+            try (ResultSet resultSet = isEpisodePartOfDoubleEpisode.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.partOfDoubleEpisode);
+            }
+            isEpisodePartOfDoubleEpisode.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
     }
 
     private int generateShowID() throws SQLException {
@@ -212,10 +242,10 @@ public class DBShowManager {
         }
     }
 
-    public File getEpisodeFile(int showID, int season, int episode) {
+    public File getEpisodeFile(int episodeID) {
         File episodeFile = null;
         try {
-            getEpisode.setInt(1, getEpisodeID(showID, season, episode));
+            getEpisode.setInt(1, episodeID);
             ResultSet resultSet = getEpisode.executeQuery();
             int i = 0;
             while (resultSet.next()) i++;
@@ -324,7 +354,15 @@ public class DBShowManager {
         }
     }*/
 
+    public boolean doesEpisodeExist(int showID, int season, int episode) {
+        return getEpisodeFile(getEpisodeID(showID, season, episode)) != null;
+    }
+
     private int getEpisodeID(int showID, int season, int episode) {
         return GenericMethods.concatenateDigits(showID, season, episode);
+    }
+
+    public boolean isEpisodePartOfDoubleEpisode(int showID, int season, int episode) {
+        return isEpisodePartOfDoubleEpisode(getEpisodeID(showID, season, episode));
     }
 }

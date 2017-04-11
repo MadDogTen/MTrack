@@ -137,8 +137,7 @@ public class Variables {
         public static ShowColorStatus findColorFromRemaining(final int previouslyRemaining, final int currentlyRemaining) {
             if (previouslyRemaining < currentlyRemaining) {
                 return previouslyRemaining == -2 && currentlyRemaining == 0 ? DEFAULT : ADDED;
-            }
-            else if (previouslyRemaining > currentlyRemaining) return REMOVED;
+            } else if (previouslyRemaining > currentlyRemaining) return REMOVED;
             else return DEFAULT;
         }
 
@@ -146,5 +145,4 @@ public class Variables {
             return color;
         }
     }
-
 }

@@ -2,8 +2,6 @@ package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.*;
 import com.maddogten.mtrack.information.ChangeReporter;
-import com.maddogten.mtrack.information.settings.UserSettings;
-import com.maddogten.mtrack.information.settings.UserShowSettings;
 import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.FileManager;
@@ -844,10 +842,11 @@ public class Controller implements Initializable {
         addUser.textProperty().bind(Strings.AddUser);
         addUser.setOnAction(e -> {
             setButtonDisable(true, addUser, deleteUser, currentUserComboBox, setDefaultUsername);
-            String userName = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, ClassHandler.userInfoController().getAllUsers(), (Stage) tabPane.getScene().getWindow());
+            String userName = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, (Stage) tabPane.getScene().getWindow());
             if (userName.isEmpty()) log.info("New user wasn't added.");
             else {
-                Map<String, UserShowSettings> showSettings = new HashMap<>();
+                ClassHandler.userInfoController().addUser(userName);
+               /* Map<String, UserShowSettings> showSettings = new HashMap<>();
                 ArrayList<String> showsList = ClassHandler.showInfoController().getShows();
                 for (String aShow : showsList) {
                     if (Variables.genUserShowInfoAtFirstFound)
@@ -855,7 +854,7 @@ public class Controller implements Initializable {
                     else
                         showSettings.put(aShow, new UserShowSettings(aShow, ClassHandler.showInfoController().getEpisode(aShow, 1, 0) != null ? 0 : 1, 1));
                 }
-                new FileManager().save(new UserSettings(userName, showSettings, ClassHandler.userInfoController().getUserSettings().getVideoPlayer()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);
+                new FileManager().save(new UserSettings(userName, showSettings, ClassHandler.userInfoController().getUserSettings().getVideoPlayer()), Variables.UsersFolder, userName, Variables.UserFileExtension, false);*/
                 log.info(userName + " was added.");
             }
             currentUserComboBox.getItems().clear();
