@@ -95,12 +95,12 @@ public class DeveloperStuff {
                     DBUserManager.changeUsername(user1, "FunNewUsername!");
                     user1 = "FunNewUsername!";
                     int id = DBUserManager.getUserID(user4);
-                    DBUserSettingsManager.changeIntegerSetting(id, 40, StringDB.updateSpeed);
-                    DBUserSettingsManager.changeFloatSetting(id, 25.6f, StringDB.episodeColumnWidth);
-                    DBUserSettingsManager.changeBooleanSetting(id, false, StringDB.automaticShowUpdating);
-                    log.info(String.valueOf(DBUserSettingsManager.getIntegerSetting(id, StringDB.updateSpeed)));
-                    log.info(String.valueOf(DBUserSettingsManager.getFloatSetting(id, StringDB.episodeColumnWidth)));
-                    log.info(String.valueOf(DBUserSettingsManager.getBooleanSetting(id, StringDB.automaticShowUpdating)));
+                    DBUserSettingsManager.changeIntegerSetting(id, 40, StringDB.COLUMN_UPDATESPEED);
+                    DBUserSettingsManager.changeFloatSetting(id, 25.6f, StringDB.COLUMN_EPISODECOLUMNWIDTH);
+                    DBUserSettingsManager.changeBooleanSetting(id, false, StringDB.COLUMN_AUTOMATICSHOWUPDATING);
+                    log.info(String.valueOf(DBUserSettingsManager.getIntegerSetting(id, StringDB.COLUMN_UPDATESPEED)));
+                    log.info(String.valueOf(DBUserSettingsManager.getFloatSetting(id, StringDB.COLUMN_EPISODECOLUMNWIDTH)));
+                    log.info(String.valueOf(DBUserSettingsManager.getBooleanSetting(id, StringDB.COLUMN_AUTOMATICSHOWUPDATING)));
                 }
                 i++;
             } while (i < 2);
@@ -119,55 +119,19 @@ public class DeveloperStuff {
                     int showID = dbShowManager.getShowID(show);
                     ClassHandler.showInfoController().getSeasonsList(show).forEach(season -> {
                         dbShowManager.addSeason(showID, season);
-                        ClassHandler.showInfoController().getEpisodesList(show, season).forEach(episode -> {
-                            dbShowManager.addEpisode(showID, season, episode, ClassHandler.showInfoController().isDoubleEpisode(show, season, episode), ClassHandler.showInfoController().getEpisode(show, season, episode).getEpisodeFilename());
-                        });
+                        ClassHandler.showInfoController().getEpisodesList(show, season).forEach(episode -> dbShowManager.addEpisode(showID, season, episode, ClassHandler.showInfoController().isDoubleEpisode(show, season, episode), ClassHandler.showInfoController().getEpisode(show, season, episode).getEpisodeFilename()));
                     });
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             });
 
-            ClassHandler.directoryController().findDirectories(true, false, false).forEach(directory1 -> {
-                dbDirectoryHandler.addDirectory(directory1.getDirectory().toString());
-            });
+            ClassHandler.directoryController().findDirectories(true, false, false).forEach(directory1 -> dbDirectoryHandler.addDirectory(directory1.getDirectory().toString()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         connection.close();
-
-
-
-              /* Statement statement = null;
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                statement.execute("create table person ("
-                                + "id integer not null generated always as"
-                                + " identity (start with 1, increment by 1),   "
-                                + "name varchar(30) not null, email varchar(30), phone varchar(10),"
-                                + "constraint primary_key primary key (id))");
-
-                PreparedStatement preparedStatement = connection.prepareStatement("insert into person (name,email,phone) values(?,?,?)");
-                preparedStatement.setString(1, "Hagar the Horrible");
-                preparedStatement.setString(2, "hagar@somewhere.com");
-                preparedStatement.setString(3, "1234567890");
-                preparedStatement.executeUpdate();
-
-                ResultSet resultSet = statement.executeQuery("select * from person");
-                while (resultSet.next()) {
-                    System.out.printf("%d %s %s %s\n",
-                            resultSet.getInt(1), resultSet.getString(2),
-                            resultSet.getString(3), resultSet.getString(4));
-                }
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-        }*/
-
 
         System.exit(0);
     }
@@ -216,7 +180,7 @@ public class DeveloperStuff {
     }
 
     //---- ShowInfoController ----\\
-    public void printShowInformation(final String aShow) {
+    public void printShowInformation(String aShow) {
         log.info("Printing out information for: " + aShow);
         Show show = ClassHandler.showInfoController().getShowsFile().get(aShow);
         String[] print = new String[1 + (show.getSeasons().keySet().size() * 2)];

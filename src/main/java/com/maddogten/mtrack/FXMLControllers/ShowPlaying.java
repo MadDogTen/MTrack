@@ -34,6 +34,7 @@ public class ShowPlaying implements Initializable {
     private static final Logger log = Logger.getLogger(ShowPlaying.class.getName());
 
     private final DisplayShow show;
+    private final int userID;
     private boolean runTask = true;
 
     @FXML
@@ -72,7 +73,8 @@ public class ShowPlaying implements Initializable {
     @FXML
     private MenuItem setShowPositionMenuItem;
 
-    public ShowPlaying(final DisplayShow show) {
+    public ShowPlaying(int userID, final DisplayShow show) {
+        this.userID = userID;
         this.show = show;
     }
 
@@ -97,10 +99,9 @@ public class ShowPlaying implements Initializable {
         setSeasonEpisodeText();
 
         yesButton.setOnAction(e -> {
-            if (ClassHandler.userInfoController().getUserSettings().getShowSettings().get(show.getShow()).getEpisodePosition(show.getSeason(), show.getEpisode()) != 0)
-                ClassHandler.userInfoController().getUserSettings().getShowSettings().get(show.getShow()).removeEpisodeTimePosition(show.getSeason(), show.getEpisode());
-            ClassHandler.userInfoController().changeEpisode(show.getShow(), -2);
-            Controller.updateShowField(show.getShow(), true);
+            ClassHandler.userInfoController().clearEpisodeSettings(userID, ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()));
+            ClassHandler.userInfoController().changeEpisode(userID, show.getShowID(), -2);
+            Controller.updateShowField(show.getShowID(), true);
             ClassHandler.controller().setTableSelection(-2);
             Stage stage = (Stage) mainPane.getScene().getWindow();
             runTask = false;
@@ -114,13 +115,13 @@ public class ShowPlaying implements Initializable {
         });
         nextEpisodeButton.setDisable(!(show.getRemaining() > 1));
         nextEpisodeButton.setOnAction(e -> {
-            ClassHandler.userInfoController().changeEpisode(show.getShow(), -2);
-            Controller.updateShowField(show.getShow(), true);
+            ClassHandler.userInfoController().changeEpisode(userID, show.getShowID(), -2);
+            Controller.updateShowField(show.getShowID(), true);
             setSeasonEpisodeText();
             if (show.getRemaining() <= 1)
                 nextEpisodeButton.setDisable(true);
             if (ClassHandler.userInfoController().doesEpisodeExistInShowFile(show.getShow()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(show.getShow())) {
-                if (!ClassHandler.userInfoController().playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+                if (!ClassHandler.userInfoController().playAnyEpisode(show.getShowID(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
                     log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                     new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                     Stage stage = (Stage) mainPane.getScene().getWindow();
@@ -136,7 +137,7 @@ public class ShowPlaying implements Initializable {
             }
         });
         restartButton.setOnAction(e -> {
-            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShowID(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
@@ -149,7 +150,7 @@ public class ShowPlaying implements Initializable {
             int position[] = new TextBox().enterNumber(new SimpleStringProperty("Enter the shows current position in seconds:"), new StringProperty[]{new SimpleStringProperty("Hour"), new SimpleStringProperty("Minute"), new SimpleStringProperty("Second")}, 3, (Stage) mainPane.getScene().getWindow());
             int timeInSeconds = ((position[0] * 60) * 60) + (position[1] * 60) + position[2];
             if (timeInSeconds > 0) {
-                ClassHandler.userInfoController().getUserSettings().getShowSettings().get(show.getShow()).addEpisodeTimePosition(show.getSeason(), show.getEpisode(), timeInSeconds);
+                ClassHandler.userInfoController().setEpisodePostion(userID, ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()), timeInSeconds);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 runTask = false;
                 stage.close();

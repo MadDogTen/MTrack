@@ -74,11 +74,11 @@ public class DisplayShow {
         return this.showID;
     }
 
-    public Integer getshowID() {
+    public Integer getShowID() {
         return showID.get();
     }
 
-    public void setshowID(final Integer showID) {
+    public void setShowID(final Integer showID) {
         this.showID.setValue(showID);
     }
 }

@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 public class VideoPlayerSelector implements Initializable {
     @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(VideoPlayerSelector.class.getName());
+    private final int userID;
 
     @FXML
     private Pane mainPane;
@@ -47,12 +48,14 @@ public class VideoPlayerSelector implements Initializable {
 
     private VideoPlayer result;
 
+    public VideoPlayerSelector(int userID) {
+        this.userID = userID;
+    }
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) { // TODO Add localization whole file
         videoPlayerTypeComboBox.getItems().addAll(VideoPlayer.VideoPlayerEnum.values());
-        if (ClassHandler.userInfoController().getUserSettings() == null || ClassHandler.userInfoController().getUserSettings().getVideoPlayer() == null)
-            result = new VideoPlayer();
-        else result = ClassHandler.userInfoController().getUserSettings().getVideoPlayer();
+        result = ClassHandler.userInfoController().getVideoPlayer(userID);
 
         videoPlayerTypeComboBox.setValue(result.getVideoPlayerEnum());
         if (result.getVideoPlayerEnum() != VideoPlayer.VideoPlayerEnum.OTHER)
@@ -125,8 +128,8 @@ public class VideoPlayerSelector implements Initializable {
         });
 
         closeButton.setOnAction(event -> {
-            if (ClassHandler.userInfoController() != null && ClassHandler.userInfoController().getUserSettings() != null && ClassHandler.userInfoController().getUserSettings().getVideoPlayer() != null && ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerEnum() != VideoPlayer.VideoPlayerEnum.OTHER && ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerLocation().exists())
-                result = ClassHandler.userInfoController().getUserSettings().getVideoPlayer();
+
+            result = ClassHandler.userInfoController().getVideoPlayer(userID);
            /* if (userSettings.getVideoPlayer().getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) { // TODO Finish
                 // Open Window warning some features won't be supported.
             }*/

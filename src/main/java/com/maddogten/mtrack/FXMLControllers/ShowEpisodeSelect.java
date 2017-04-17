@@ -70,10 +70,10 @@ public class ShowEpisodeSelect implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         ArrayList<Integer> seasonsInt = new ArrayList<>();
-        seasonsInt.addAll(ClassHandler.showInfoController().getSeasonsList(show.getShow()).stream().collect(Collectors.toList()));
+        seasonsInt.addAll(ClassHandler.showInfoController().getSeasonsList(show.getShowID()).stream().collect(Collectors.toList()));
         ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsInt);
         seasonComboBox.setItems(seasonsList);
-        ArrayList<Integer> episodesArrayList = new ArrayList<>(ClassHandler.showInfoController().getEpisodesList(show.getShow(), this.selectedSeason.getValue()));
+        ArrayList<Integer> episodesArrayList = new ArrayList<>(ClassHandler.showInfoController().getEpisodesList(show.getShowID(), this.selectedSeason.getValue()));
         ObservableList<Integer> episodesList = FXCollections.observableArrayList(episodesArrayList);
         episodeComboBox.setItems(episodesList);
 
@@ -92,8 +92,8 @@ public class ShowEpisodeSelect implements Initializable {
                 selectedSeason.setValue(seasonComboBox.getValue());
 
                 episodesArrayList.clear();
-                if (ClassHandler.showInfoController().getShowsFile().get(show.getShow()).containsSeason(seasonComboBox.getValue())) {
-                    episodesArrayList.addAll(ClassHandler.showInfoController().getEpisodesList(show.getShow(), seasonComboBox.getValue()).stream().collect(Collectors.toList()));
+                if (ClassHandler.showInfoController().doesSeasonExist(show.getShowID(), seasonComboBox.getValue())) {
+                    episodesArrayList.addAll(ClassHandler.showInfoController().getEpisodesList(show.getShowID(), seasonComboBox.getValue()).stream().collect(Collectors.toList()));
                     Collections.sort(episodesArrayList);
                 }
                 episodesList.clear();

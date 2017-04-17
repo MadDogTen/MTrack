@@ -15,30 +15,27 @@ public enum OperatingSystem {
     public static final File programFolder = findProgramFolder();
 
 
-    public static boolean openVideo(final File file, final int startTime) {
+    public static boolean openVideo(final File file, final int startTime, VideoPlayer videoPlayer) {
         try {
             if (startTime != 0) log.info("Show is continuing at: \"" + startTime + "\"");
             ProcessBuilder processBuilder = null;
             switch (operatingSystem) {
                 case WINDOWS:
-                    VideoPlayer videoPlayer = ClassHandler.userInfoController().getUserSettings().getVideoPlayer();
-                    if (videoPlayer.getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) {
-                        Desktop.getDesktop().open(file);
-                        return true;
-                    } else {
-                        switch (videoPlayer.getVideoPlayerEnum()) {
-                            case VLC:
-                                processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), Variables.playFullScreen ? "--fullscreen" : "", "--start-time=" + startTime, file.getPath());
-                                break;
-                            case BS_PLAYER:
-                                processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), file.getPath(), Variables.playFullScreen ? " -fs" : "", "-stime= " + startTime);
-                                break;
-                            case MEDIA_PLAYER_CLASSIC:
-                                processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), file.getPath(), Variables.playFullScreen ? " /fullscreen" : "", " /start ", String.valueOf(startTime * 1000));
-                                break;
-                        }
-                        return processBuilder != null && processBuilder.start().isAlive();
+                    switch (videoPlayer.getVideoPlayerEnum()) {
+                        case OTHER:
+                            Desktop.getDesktop().open(file);
+                            return true;
+                        case VLC:
+                            processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), Variables.playFullScreen ? "--fullscreen" : "", "--start-time=" + startTime, file.getPath());
+                            break;
+                        case BS_PLAYER:
+                            processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), file.getPath(), Variables.playFullScreen ? " -fs" : "", "-stime= " + startTime);
+                            break;
+                        case MEDIA_PLAYER_CLASSIC:
+                            processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), file.getPath(), Variables.playFullScreen ? " /fullscreen" : "", " /start ", String.valueOf(startTime * 1000));
+                            break;
                     }
+                    return processBuilder != null && processBuilder.start().isAlive();
                 case MAC:
                 case NIX:
                 case NUX:

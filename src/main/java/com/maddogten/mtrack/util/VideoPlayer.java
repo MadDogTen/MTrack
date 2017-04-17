@@ -1,10 +1,8 @@
 package com.maddogten.mtrack.util;
 
 import java.io.File;
-import java.io.Serializable;
 
-public class VideoPlayer implements Serializable {
-    private static final long serialVersionUID = 6280100968782656038L;
+public class VideoPlayer {
     private VideoPlayerEnum videoPlayerEnum = VideoPlayerEnum.OTHER;
     private File videoPlayerLocation;
 
@@ -25,14 +23,30 @@ public class VideoPlayer implements Serializable {
     }
 
     public enum VideoPlayerEnum { // TODO Add setting for this
-        VLC("VLC", "vlc"), MEDIA_PLAYER_CLASSIC("MPC", "mpc-hc"), BS_PLAYER("BSPlayer", "bsplayer"), OTHER("Other", "");
+        VLC(1000, "VLC", "vlc"), MEDIA_PLAYER_CLASSIC(1001, "MPC", "mpc-hc"), BS_PLAYER(1002, "BSPlayer", "bsplayer"), OTHER(0, "Other", "");
 
         private final String name;
         private final String partFileName;
+        private final int ID;
 
-        VideoPlayerEnum(String name, String partFileName) {
+        VideoPlayerEnum(int ID, String name, String partFileName) {
+            this.ID = ID;
             this.name = name;
             this.partFileName = partFileName;
+        }
+
+        public static VideoPlayerEnum getVideoPlayerFromID(int ID) {
+            switch (ID) {
+                case 1000:
+                    return VLC;
+                case 1001:
+                    return MEDIA_PLAYER_CLASSIC;
+                case 1002:
+                    return BS_PLAYER;
+                case 0:
+                default:
+                    return OTHER;
+            }
         }
 
         public String toString() {
@@ -41,6 +55,10 @@ public class VideoPlayer implements Serializable {
 
         public String getPartFileName() {
             return partFileName;
+        }
+
+        public int getID() {
+            return ID;
         }
     }
 }

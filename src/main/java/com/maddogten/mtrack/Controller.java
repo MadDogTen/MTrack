@@ -263,17 +263,17 @@ public class Controller implements Initializable {
     private Button changeVideoPlayerButton;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
-    private static ObservableList<DisplayShow> MakeTableViewFields(final ArrayList<Integer> showList) {
+    private static ObservableList<DisplayShow> MakeTableViewFields(final Set<Integer> showList) {
         ObservableList<DisplayShow> list = FXCollections.observableArrayList();
         if (!showList.isEmpty()) {
             if (currentList.isActive() && !Variables.show0Remaining) {
                 showList.forEach(showID -> {
-                    int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showID);
+                    int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(Variables.currentUser, showID);
                     if (remaining != 0)
-                        list.add(new DisplayShow(ClassHandler.getDBManager().getDbShowManager().getShowName(showID), remaining, ClassHandler.userInfoController().getCurrentSeason(showID), ClassHandler.userInfoController().getCurrentEpisode(showID), showID));
+                        list.add(new DisplayShow(ClassHandler.showInfoController().getShowNameFromShowID(showID), remaining, ClassHandler.userInfoController().getCurrentUserSeason(Variables.currentUser, showID), ClassHandler.userInfoController().getCurrentUserEpisode(Variables.currentUser, showID), showID));
                 });
             } else
-                list.addAll(showList.stream().map(showID -> new DisplayShow(ClassHandler.getDBManager().getDbShowManager().getShowName(showID), ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showID), ClassHandler.userInfoController().getCurrentSeason(showID), ClassHandler.userInfoController().getCurrentEpisode(showID), showID)).collect(Collectors.toList()));
+                list.addAll(showList.stream().map(showID -> new DisplayShow(ClassHandler.showInfoController().getShowNameFromShowID(showID), ClassHandler.userInfoController().getRemainingNumberOfEpisodes(Variables.currentUser, showID), ClassHandler.userInfoController().getCurrentUserSeason(Variables.currentUser, showID), ClassHandler.userInfoController().getCurrentUserEpisode(Variables.currentUser, showID), showID)).collect(Collectors.toList()));
         }
         return list;
     }
@@ -288,19 +288,19 @@ public class Controller implements Initializable {
             case INACTIVE:
                 if (currentList.getStatus() != currentList.INACTIVE) currentList.setStatus(currentList.INACTIVE);
                 tableViewFields.clear();
-                tableViewFields.addAll(MakeTableViewFields(Variables.showActiveShows ? ClassHandler.userInfoController().getUsersShows() : ClassHandler.userInfoController().getInactiveShows()));
+                tableViewFields.addAll(MakeTableViewFields(Variables.showActiveShows ? ClassHandler.userInfoController().getUsersShows(Variables.currentUser) : ClassHandler.userInfoController().getShowsWithActiveStatus(Variables.currentUser, false)));
                 break;
             case ACTIVE:
                 if (currentList.getStatus() != currentList.ACTIVE) currentList.setStatus(currentList.ACTIVE);
                 tableViewFields.clear();
-                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().getActiveShows()));
+                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().getShowsWithActiveStatus(Variables.currentUser, true)));
                 break;
         }
     }
 
     private static DisplayShow getDisplayShowFromShowID(final int showID) {
         for (DisplayShow show : tableViewFields) {
-            if (show.getshowID() == showID) {
+            if (show.getShowID() == showID) {
                 return show;
             }
         }
@@ -310,11 +310,11 @@ public class Controller implements Initializable {
     // Public method to update a particular show with new information. If the show happens to have been removed, then showExists will be false, which isShowActive will be false, which makes remove true, which meaning it won't add the show back to the list.
     public static void updateShowField(final int showID, final boolean showExists) {
         DisplayShow currentShow = getDisplayShowFromShowID(showID);
-        final boolean isShowActive = showExists && ClassHandler.showInfoController().getShows().contains(showID) && ClassHandler.userInfoController().isShowActive(showID);
+        final boolean isShowActive = showExists && ClassHandler.showInfoController().getShows().contains(showID) && ClassHandler.userInfoController().isShowActive(Variables.currentUser, showID);
         if ((!currentList.isActive() || isShowActive) && (!currentList.isInactive() || (Variables.showActiveShows || !isShowActive))) {
-            int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showID),
-                    season = ClassHandler.userInfoController().getCurrentSeason(showID),
-                    episode = ClassHandler.userInfoController().getCurrentEpisode(showID);
+            int remaining = ClassHandler.userInfoController().getRemainingNumberOfEpisodes(Variables.currentUser, showID),
+                    season = ClassHandler.userInfoController().getCurrentUserSeason(Variables.currentUser, showID),
+                    episode = ClassHandler.userInfoController().getCurrentUserEpisode(Variables.currentUser, showID);
             if (currentShow != null) {
                 if (remaining != 0 || Variables.show0Remaining || (currentList.isInactive())) {
                     if (currentShow.getSeason() != season) currentShow.setSeason(season);
@@ -322,7 +322,7 @@ public class Controller implements Initializable {
                     if (currentShow.getRemaining() != remaining) currentShow.setRemaining(remaining);
                 } else tableViewFields.remove(currentShow);
             } else if (remaining != 0 || Variables.show0Remaining || currentList.isInactive())
-                tableViewFields.add(new DisplayShow(ClassHandler.getDBManager().getDbShowManager().getShowName(showID), remaining, season, episode, showID));
+                tableViewFields.add(new DisplayShow(ClassHandler.showInfoController().getShowNameFromShowID(showID), remaining, season, episode, showID));
         } else if (currentShow != null) tableViewFields.remove(currentShow);
     }
 
@@ -416,20 +416,20 @@ public class Controller implements Initializable {
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         shows.setSortType(TableColumn.SortType.ASCENDING);
         shows.textProperty().bind(Strings.Shows);
-        shows.setPrefWidth(ClassHandler.programSettingsController().getSettingsFile().getShowColumnWidth());
-        shows.setVisible(ClassHandler.programSettingsController().getSettingsFile().isShowColumnVisibility());
+        shows.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.currentUser, StringDB.COLUMN_SHOWCOLUMNWIDTH)); // TODO Make visibility and width change on user change
+        shows.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.currentUser, StringDB.COLUMN_SHOWCOLUMNVISIBILITY));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
         remaining.textProperty().bind(Strings.Left);
-        remaining.setPrefWidth(ClassHandler.programSettingsController().getSettingsFile().getRemainingColumnWidth());
-        remaining.setVisible(ClassHandler.programSettingsController().getSettingsFile().isRemainingColumnVisibility());
+        remaining.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.currentUser, StringDB.COLUMN_REMAININGCOLUMNWIDTH));
+        remaining.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.currentUser, StringDB.COLUMN_REMAININGCOLUMNVISIBILITY));
         season.setCellValueFactory(new PropertyValueFactory<>("season"));
         season.textProperty().bind(Strings.Season);
-        season.setPrefWidth(ClassHandler.programSettingsController().getSettingsFile().getSeasonColumnWidth());
-        season.setVisible(ClassHandler.programSettingsController().getSettingsFile().isSeasonColumnVisibility());
+        season.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.currentUser, StringDB.COLUMN_SEASONCOLUMNWIDTH));
+        season.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.currentUser, StringDB.COLUMN_SEASONCOLUMNVISIBILITY));
         episode.setCellValueFactory(new PropertyValueFactory<>("episode"));
         episode.textProperty().bind(Strings.Episode);
-        episode.setPrefWidth(ClassHandler.programSettingsController().getSettingsFile().getEpisodeColumnWidth());
-        episode.setVisible(ClassHandler.programSettingsController().getSettingsFile().isEpisodeColumnVisibility());
+        episode.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.currentUser, StringDB.COLUMN_EPISODECOLUMNWIDTH));
+        episode.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.currentUser, StringDB.COLUMN_EPISODECOLUMNVISIBILITY));
         setTableViewFields(currentList.ACTIVE);
         setTableView();
         tableView.getItems();
@@ -445,7 +445,7 @@ public class Controller implements Initializable {
                             if (item != null) {
                                 if (getTooltip() == null) setTooltip(rowToolTip);
                                 rowToolTip.textProperty().bind(Bindings.concat(getItem().showProperty(), " - ", Strings.Season, " ", getItem().seasonProperty(), " - ", Strings.Episode, " ", getItem().episodeProperty(), " - ", getItem().remainingProperty(), " ", Strings.Left));
-                                if (currentList.isInactive() && ((Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(item.getshowID())) || (changedShows.containsKey(item.getShow()) && changedShows.get(item.getShow()) == -2)))
+                                if (currentList.isInactive() && ((Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, item.getShowID())) || (changedShows.containsKey(item.getShow()) && changedShows.get(item.getShow()) == -2)))
                                     setStyle("-fx-background-color: " + ((changedShows.containsKey(item.getShow()) && changedShows.get(item.getShow()) == -2) ? Variables.ShowColorStatus.ADDED.getColor() : Variables.ShowColorStatus.ACTIVE.getColor()));
                                 else if (currentList.isActive() && Variables.specialEffects && changedShows.containsKey(item.getShow()) && !isSelected())
                                     setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(changedShows.get(item.getShow()), item.getRemaining()).getColor());
@@ -459,7 +459,7 @@ public class Controller implements Initializable {
                     final ContextMenu rowMenu = new ContextMenu();
                     row.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         if (row.getItem() != null) {
-                            if (!row.isSelected() && currentList.isInactive() && Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(row.getItem().getshowID())) {
+                            if (!row.isSelected() && currentList.isInactive() && Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, row.getItem().getShowID())) {
                                 row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
                                 return;
                             } else if (!row.isSelected() && currentList.isActive() && Variables.specialEffects && this.changedShows.containsKey(row.getItem().getShow())) {
@@ -483,8 +483,8 @@ public class Controller implements Initializable {
                         log.info(Arrays.toString(seasonEpisode));
                         if (seasonEpisode.length == 2) {
                             log.info("Season & Episode were valid.");
-                            ClassHandler.userInfoController().setSeasonEpisode(Variables.currentUser, row.getItem().getshowID(), seasonEpisode[0], seasonEpisode[1]);
-                            updateShowField(row.getItem().getshowID(), true);
+                            ClassHandler.userInfoController().setSeasonEpisode(Variables.currentUser, row.getItem().getShowID(), seasonEpisode[0], seasonEpisode[1]);
+                            updateShowField(row.getItem().getShowID(), true);
                             tableView.getSelectionModel().clearSelection();
                         } else log.info("Season & Episode weren't valid.");
                         log.info("\"Set Season + Episode\" is finished running.");
@@ -493,11 +493,11 @@ public class Controller implements Initializable {
                     playSeasonEpisode.textProperty().bind(Strings.PlaySeasonEpisode);
                     playSeasonEpisode.setOnAction(e -> {
                         log.info("\"Play Season + Episode\" is now running...");
-                        int showID = row.getItem().getshowID();
-                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(showID, ClassHandler.showInfoController(), (Stage) pane.getScene().getWindow());
+                        int showID = row.getItem().getShowID();
+                        int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(Variables.currentUser, showID, ClassHandler.showInfoController(), (Stage) pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
-                            ClassHandler.userInfoController().playAnyEpisode(showID, seasonEpisode[0], seasonEpisode[1]);
+                            ClassHandler.userInfoController().playAnyEpisode(Variables.currentUser, ClassHandler.showInfoController().getEpisodeID(showID, seasonEpisode[0], seasonEpisode[1]));
                         } else log.info("Season & Episode weren't valid.");
                         log.info("\"Play Season + Episode\" is finished running.");
                     });
@@ -505,11 +505,11 @@ public class Controller implements Initializable {
                     toggleActive.textProperty().bind(Bindings.when(currentList.isInactiveProperty()).then(Strings.SetActive).otherwise(Strings.SetInactive));
                     toggleActive.setOnAction(e -> {
                         if (currentList.isInactive()) {
-                            if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, row.getItem().getshowID())) {
-                                ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), false);
+                            if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, row.getItem().getShowID())) {
+                                ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getShowID(), false);
                                 row.setStyle("");
                             } else {
-                                ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), true);
+                                ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getShowID(), true);
                                 if (!wereShowsChanged) wereShowsChanged = true;
                                 if (Variables.showActiveShows)
                                     row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
@@ -517,7 +517,7 @@ public class Controller implements Initializable {
                                     removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                             }
                         } else if (currentList.isActive()) {
-                            ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), false);
+                            ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getShowID(), false);
                             removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                         }
                         tableView.getSelectionModel().clearSelection();
@@ -534,9 +534,9 @@ public class Controller implements Initializable {
                         log.info(Arrays.toString(seasonEpisode));
                         if (seasonEpisode.length == 2) {
                             log.info("Season & Episode were valid.");
-                            ClassHandler.userInfoController().setSeasonEpisode(Variables.currentUser, row.getItem().getshowID(), seasonEpisode[0], seasonEpisode[1]);
-                            updateShowField(row.getItem().getshowID(), true);
-                            ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getshowID(), true);
+                            ClassHandler.userInfoController().setSeasonEpisode(Variables.currentUser, row.getItem().getShowID(), seasonEpisode[0], seasonEpisode[1]);
+                            updateShowField(row.getItem().getShowID(), true);
+                            ClassHandler.userInfoController().setActiveStatus(Variables.currentUser, row.getItem().getShowID(), true);
                             if (!wereShowsChanged) wereShowsChanged = true;
                             if (Variables.showActiveShows)
                                 row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
@@ -548,7 +548,7 @@ public class Controller implements Initializable {
                     MenuItem setHidden = new MenuItem();
                     setHidden.textProperty().bind(Strings.HideShow);
                     setHidden.setOnAction(e -> {
-                        ClassHandler.userInfoController().setHiddenStatus(row.getItem().getShow(), true);
+                        ClassHandler.userInfoController().setHiddenStatus(Variables.currentUser, row.getItem().getShowID(), true);
                         removeShowField(tableViewFields.indexOf(tableView.getSelectionModel().getSelectedItem()));
                         tableView.getSelectionModel().clearSelection();
                     });
@@ -570,28 +570,28 @@ public class Controller implements Initializable {
                     });
                     MenuItem getRemaining = new MenuItem();
                     getRemaining.textProperty().bind(Strings.GetRemaining);
-                    getRemaining.setOnAction(e -> log.info("There are " + ClassHandler.userInfoController().getRemainingNumberOfEpisodes(row.getItem().getshowID()) + " episode(s) remaining."));
+                    getRemaining.setOnAction(e -> log.info("There are " + ClassHandler.userInfoController().getRemainingNumberOfEpisodes(Variables.currentUser, row.getItem().getShowID()) + " episode(s) remaining."));
                     MenuItem playPreviousEpisode = new MenuItem();
                     playPreviousEpisode.textProperty().bind(Strings.PlayPreviousEpisode);
                     playPreviousEpisode.setOnAction(e -> {
                         log.info("Attempting to play previous episode...");
-                        int[] seasonEpisode = ClassHandler.userInfoController().getPreviousEpisodeIfExists(Variables.currentUser, row.getItem().getshowID());
+                        int[] seasonEpisode = ClassHandler.userInfoController().getPreviousEpisodeIfExists(Variables.currentUser, row.getItem().getShowID());
                         if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3)
                             new MessageBox(new StringProperty[]{Strings.NoDirectlyPrecedingEpisodesFound}, (Stage) pane.getScene().getWindow());
                         else
-                            ClassHandler.userInfoController().playAnyEpisode(row.getItem().getshowID(), seasonEpisode[0], seasonEpisode[1]);
+                            ClassHandler.userInfoController().playAnyEpisode(Variables.currentUser, ClassHandler.showInfoController().getEpisodeID(row.getItem().getShowID(), seasonEpisode[0], seasonEpisode[1]));
                         log.info("Finished attempting to play previous episode.");
                     });
                     MenuItem printCurrentSeasonEpisode = new MenuItem();
                     printCurrentSeasonEpisode.textProperty().bind(Strings.PrintCurrentSeasonEpisode);
-                    printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + ClassHandler.userInfoController().getCurrentUserSeason(Variables.currentUser, row.getItem().getshowID()) + " - Episode: " + ClassHandler.userInfoController().getCurrentUserEpisode(Variables.currentUser, row.getItem().getshowID())));
+                    printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + ClassHandler.userInfoController().getCurrentUserSeason(Variables.currentUser, row.getItem().getShowID()) + " - Episode: " + ClassHandler.userInfoController().getCurrentUserEpisode(Variables.currentUser, row.getItem().getShowID())));
                     MenuItem printShowInformation = new MenuItem();
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
                     printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShow()));
                     MenuItem getMissingEpisodes = new MenuItem();
                     /*getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes); // TODO Fix and Enable
                     getMissingEpisodes.setOnAction(e -> {
-                        Map<Integer, Set<Integer>> missingInfo = ClassHandler.showInfoController().getMissingEpisodes(row.getItem().getshowID());
+                        Map<Integer, Set<Integer>> missingInfo = ClassHandler.showInfoController().getMissingEpisodes(row.getItem().getShowID());
                         if (missingInfo.isEmpty())
                             new MessageBox(new StringProperty[]{new SimpleStringProperty("Show is missing database info / Has no missing episodes.")}, (Stage) pane.getScene().getWindow());
                         else {
@@ -621,7 +621,7 @@ public class Controller implements Initializable {
                                     rowMenu.getItems().addAll(getRemaining, printCurrentSeasonEpisode, printShowInformation, getMissingEpisodes);
                             } else if (currentList.isInactive()) {
                                 rowMenu.getItems().clear();
-                                if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, row.getItem().getshowID())) {
+                                if (Variables.showActiveShows && ClassHandler.userInfoController().isShowActive(Variables.currentUser, row.getItem().getShowID())) {
                                     if (!isShowCurrentlyPlaying() || !showCurrentlyPlaying.getShow().matches(row.getItem().getShow()))
                                         rowMenu.getItems().add(toggleActive);
                                     else rowMenu.getItems().add(showCurrentlyPlayingMenuItem);
@@ -645,7 +645,7 @@ public class Controller implements Initializable {
                 this.playShow(tableView.getFocusModel().getFocusedItem());
         });
 
-        userName.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());
+        userName.setVisible(ClassHandler.userInfoController().isShowUsername());
         userName.textProperty().bind(Strings.UserName);
         userNameComboBox.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());
         userNameComboBox.setDisable(!ClassHandler.userInfoController().getUserSettings().isShowUsername());
@@ -726,9 +726,10 @@ public class Controller implements Initializable {
         if (Variables.specialEffects) changesAlert.setOpacity(0.0);
         else changesAlert.setOpacity(1.0);
         show0RemainingRadioMenuItem.textProperty().bind(Strings.Show0Remaining);
-        show0RemainingRadioMenuItem.setSelected(ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining());
+        show0RemainingRadioMenuItem.setSelected(ClassHandler.userInfoController().getUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_SHOW0REMAINING));
         show0RemainingRadioMenuItem.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setShow0Remaining(!ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining());
+            Variables.show0Remaining = !Variables.show0Remaining;
+            ClassHandler.userInfoController().setUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_SHOW0REMAINING, Variables.show0Remaining);
             if (Variables.show0Remaining)
                 log.info("Now showing shows with 0 episodes remaining.");
             else log.info("No longer showing shows with 0 episodes remaining.");
@@ -737,7 +738,8 @@ public class Controller implements Initializable {
         });
         showActiveShowsCheckbox.setSelected(Variables.showActiveShows);
         showActiveShowsCheckbox.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setShowActiveShows(showActiveShowsCheckbox.isSelected());
+            ClassHandler.userInfoController().setUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_SHOWACTIVESHOWS, showActiveShowsCheckbox.isSelected());
+            Variables.showActiveShows = showActiveShowsCheckbox.isSelected();
             if (Variables.showActiveShows)
                 log.info("Now showing active shows.");
             else log.info("No longer showing active shows.");
@@ -788,13 +790,15 @@ public class Controller implements Initializable {
         inactiveShowsCheckBox.textProperty().bind(Strings.InactiveShows);
         inactiveShowsCheckBox.setSelected(Variables.recordChangesForNonActiveShows);
         inactiveShowsCheckBox.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setRecordChangesForNonActiveShows(!ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows());
+            Variables.recordChangesForNonActiveShows = !Variables.recordChangesForNonActiveShows;
+            ClassHandler.userInfoController().setUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS, Variables.recordChangesForNonActiveShows);
             log.info("Record inactive shows has been set to: " + Variables.recordChangesForNonActiveShows);
         });
         olderSeasonsCheckBox.textProperty().bind(Strings.OlderSeasons);
         olderSeasonsCheckBox.setSelected(Variables.recordChangedSeasonsLowerThanCurrent);
         olderSeasonsCheckBox.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setRecordChangedSeasonsLowerThanCurrent(!ClassHandler.programSettingsController().getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
+            Variables.recordChangedSeasonsLowerThanCurrent = !Variables.recordChangedSeasonsLowerThanCurrent;
+            ClassHandler.userInfoController().setUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT, Variables.recordChangedSeasonsLowerThanCurrent);
             log.info("Record older seasons has been set to: " + Variables.recordChangedSeasonsLowerThanCurrent);
         });
         about.textProperty().bind(Strings.About);
@@ -859,11 +863,12 @@ public class Controller implements Initializable {
             if (users.isEmpty())
                 new MessageBox(new StringProperty[]{Strings.ThereAreNoOtherUsersToDelete}, (Stage) tabPane.getScene().getWindow());
             else {
-                String userToDelete = new ListSelectBox().pickDefaultUser(Strings.UserToDelete, users, Strings.EmptyString, (Stage) tabPane.getScene().getWindow());
-                if (userToDelete != null && !userToDelete.isEmpty()) {
-                    boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + userToDelete + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
-                    if (confirm && !new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UserFileExtension))
-                        log.info("Wasn't able to delete user file.");
+                int userToDelete = new ListSelectBox().pickDefaultUser(Strings.UserToDelete, users, -2, (Stage) tabPane.getScene().getWindow());
+                if (userToDelete != -2) {
+                    boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + ClassHandler.userInfoController().getUserNameFromID(userToDelete) + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
+                    // TODO Finish user deletion
+                   /* if (confirm && !new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UserFileExtension))
+                        log.info("Wasn't able to delete user file.");*/
                 }
             }
             currentUserComboBox.getItems().clear();
@@ -906,7 +911,8 @@ public class Controller implements Initializable {
         useOnlineDatabaseCheckbox.textProperty().bind(Strings.UseOnlineDatabase); // TODO Enable once working
         useOnlineDatabaseCheckbox.setSelected(Variables.useOnlineDatabase);
         useOnlineDatabaseCheckbox.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setUseRemoteDatabase(!ClassHandler.programSettingsController().getSettingsFile().isUseRemoteDatabase());
+            Variables.useOnlineDatabase = !Variables.useOnlineDatabase;
+            ClassHandler.userInfoController().setUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_USEREMOTEDATABASE, Variables.useOnlineDatabase);
             log.info("Use online database has been set too: " + Variables.useOnlineDatabase);
         });
         onlineWarningText.textProperty().bind(Strings.WarningConnectsToRemoteWebsite);
@@ -1128,12 +1134,10 @@ public class Controller implements Initializable {
         setAllInactive.textProperty().bind(Strings.SetAllInactive);
         setAllInactive.setOnAction(e -> ClassHandler.developerStuff().setAllShowsInactive());
         // Dev 2
-        printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv);
-        printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion())));
+        printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO Reenable button
+        //printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion())));
         printAllUserInfo.textProperty().bind(Strings.PrintAllUserInfo);
         printAllUserInfo.setOnAction(e -> ClassHandler.developerStuff().printAllUserInfo());
-        add1ToDirectoryVersion.textProperty().bind(Strings.DirectoryVersionPlus1);
-        add1ToDirectoryVersion.setOnAction(e -> ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1));
         nonForceRecheckShows.textProperty().bind(Strings.NonForceRecheckShows);
         nonForceRecheckShows.setOnAction(e -> {
             setButtonDisable(true, nonForceRecheckShows);
@@ -1178,14 +1182,14 @@ public class Controller implements Initializable {
         settingsButton.setOnAction(e -> {
             mainPane.setVisible(false);
             settingsAnchorPane.setVisible(true);
-            if (ClassHandler.userInfoController().getUserSettings().isShowUsername()) {
+            if (ClassHandler.userInfoController().getUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_SHOWUSERNAME)) {
                 userNameComboBox.setVisible(false);
             }
         });
         homeButton.setOnAction(e -> {
             settingsAnchorPane.setVisible(false);
             mainPane.setVisible(true);
-            if (ClassHandler.userInfoController().getUserSettings().isShowUsername()) {
+            if (ClassHandler.userInfoController().getUserBooleanSetting(Variables.currentUser, StringDB.COLUMN_SHOWUSERNAME)) {
                 userNameComboBox.setVisible(true);
             }
         });

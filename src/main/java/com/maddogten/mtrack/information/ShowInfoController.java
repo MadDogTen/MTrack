@@ -67,6 +67,10 @@ public class ShowInfoController {
         return dbShowManager.doesEpisodeExist(showID, season, episode);
     }
 
+    public boolean doesSeasonExist(int showID, int season) {
+        return dbShowManager.doesSeasonExist(showID, season);
+    }
+
     // Returns the lowest found integer in a set.
     public int findLowestInt(final Set<Integer> integers) {
         final int[] lowestSeason = {-1};
@@ -83,6 +87,29 @@ public class ShowInfoController {
             if (highestInteger[0] == -1 || integer > highestInteger[0]) highestInteger[0] = integer;
         });
         return highestInteger[0];
+    }
+
+    // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
+    public boolean doesShowExistInOtherDirectory(int showID, int... directoriesIgnored) {
+        return ClassHandler.getDBManager().getDbDirectoryHandler().doesShowExistsInOtherDirectories(showID, directoriesIgnored);
+    }
+
+    // Uses the given string (The full filename of an episode of a show) and returns the episode or episodes if its a double episode.
+    public int[] getEpisodeInfo(final String aEpisode) {
+        final int[] bothInt = new int[]{-2, -2};
+        Arrays.asList(Variables.doubleEpisodePatterns, Variables.singleEpisodePatterns).forEach(aPatternArray -> aPatternArray.forEach(aPattern -> {
+            if (bothInt[0] == -2) {
+                Matcher matcher = aPattern.matcher(aEpisode.toLowerCase());
+                if (matcher.find())
+                    for (int i = 1; i <= matcher.groupCount(); i++) bothInt[i - 1] = Integer.parseInt(matcher.group(i));
+            }
+        }));
+        if (bothInt[0] == -2) log.info("Couldn't find episode information in: \"" + aEpisode + '\"');
+        return bothInt;
+    }
+
+    public int getEpisodeID(int showID, int season, int episode) {
+        return dbShowManager.getEpisodeID(showID, season, episode);
     }
 
     /*public Map<Integer, Set<Integer>> getMissingEpisodes(final int aShow) { // TODO Work on later
@@ -121,23 +148,4 @@ public class ShowInfoController {
         }
         return new HashMap<>();
     }*/
-
-    // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
-    public boolean doesShowExistInOtherDirectory(int showID, int... directoriesIgnored) {
-        return ClassHandler.getDBManager().getDbDirectoryHandler().doesShowExistsInOtherDirectories(showID, directoriesIgnored);
-    }
-
-    // Uses the given string (The full filename of an episode of a show) and returns the episode or episodes if its a double episode.
-    public int[] getEpisodeInfo(final String aEpisode) {
-        final int[] bothInt = new int[]{-2, -2};
-        Arrays.asList(Variables.doubleEpisodePatterns, Variables.singleEpisodePatterns).forEach(aPatternArray -> aPatternArray.forEach(aPattern -> {
-            if (bothInt[0] == -2) {
-                Matcher matcher = aPattern.matcher(aEpisode.toLowerCase());
-                if (matcher.find())
-                    for (int i = 1; i <= matcher.groupCount(); i++) bothInt[i - 1] = Integer.parseInt(matcher.group(i));
-            }
-        }));
-        if (bothInt[0] == -2) log.info("Couldn't find episode information in: \"" + aEpisode + '\"');
-        return bothInt;
-    }
 }

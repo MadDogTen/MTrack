@@ -14,7 +14,7 @@ public class DBProgramSettingsManager {
     private final PreparedStatement changeDefaultUser;
 
     public DBProgramSettingsManager(Connection connection) throws SQLException {
-        ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.programSettings, null);
+        ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_PROGRAMSETTINGS, null);
         if (!resultSet.next()) {
             log.fine("Program Settings table doesn't exist, creating...");
             try (Statement statement = connection.createStatement()) {
@@ -24,22 +24,22 @@ public class DBProgramSettingsManager {
         }
         resultSet.close();
 
-        getDefaultUser = connection.prepareStatement("SELECT " + StringDB.userID + " FROM " + StringDB.programSettings);
-        changeDefaultUser = connection.prepareStatement("CREATE " + StringDB.programSettings + " SET " + StringDB.userID + "=?");
+        getDefaultUser = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_PROGRAMSETTINGS);
+        changeDefaultUser = connection.prepareStatement("UPDATE " + StringDB.TABLE_PROGRAMSETTINGS + " SET " + StringDB.COLUMN_USER_ID + "=?");
     }
 
     private void createProgramSettingsTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.programSettings + "(" + StringDB.programSettingsTableVersion + " INTEGER NOT NULL, " + StringDB.settingsTableVersion + " INTEGER NOT NULL, " + StringDB.showsTableVersion + " INTEGER NOT NULL, " + StringDB.seasonsTableVersion + " INTEGER NOT NULL, " + StringDB.episodesTableVersion + " INTEGER NOT NULL, " + StringDB.episodeFilesTableVersion + " INTEGER NOT NULL, " + StringDB.directoriesTableVersion + " INTEGER NOT NULL, " + StringDB.usersTableVersion + " INTEGER NOT NULL, " + StringDB.defaultUser + " INTEGER NOT NULL " + ")");
+        statement.execute("CREATE TABLE " + StringDB.TABLE_PROGRAMSETTINGS + "(" + StringDB.COLUMN_PROGRAMSETTINGSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_SETTINGSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_SHOWSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_SEASONSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODESTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODEFILESTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_DIRECTORIESTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_USERSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_DEFAULTUSER + " INTEGER NOT NULL " + ")");
     }
 
     private void addSettingsRow(Statement statement) throws SQLException {
-        statement.execute("INSERT INTO " + StringDB.programSettings + " VALUES (" + Variables.programSettingsTableVersion + Variables.seasonsTableVersion + Variables.showsTableVersion + Variables.seasonsTableVersion + Variables.episodesTableVersion + Variables.episodeFilesTableVersion + Variables.directoriesTableVersion + Variables.usersTableVersion + ")");
+        statement.execute("INSERT INTO " + StringDB.TABLE_PROGRAMSETTINGS + " VALUES (" + Variables.programSettingsTableVersion + Variables.seasonsTableVersion + Variables.showsTableVersion + Variables.seasonsTableVersion + Variables.episodesTableVersion + Variables.episodeFilesTableVersion + Variables.directoriesTableVersion + Variables.usersTableVersion + ")");
     }
 
     public boolean useDefaultUser() {
         boolean result = false;
         try (ResultSet resultSet = getDefaultUser.executeQuery()) {
-            result = resultSet.next() && resultSet.getInt(StringDB.userID) != -2;
+            result = resultSet.next() && resultSet.getInt(StringDB.COLUMN_USER_ID) != -2;
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -49,7 +49,7 @@ public class DBProgramSettingsManager {
     public int getDefaultUser() {
         int result = -2;
         try (ResultSet resultSet = getDefaultUser.executeQuery()) {
-            if (resultSet.next()) result = resultSet.getInt(StringDB.userID);
+            if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_USER_ID);
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

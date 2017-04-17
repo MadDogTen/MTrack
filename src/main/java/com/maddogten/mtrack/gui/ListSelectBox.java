@@ -124,9 +124,7 @@ public class ListSelectBox {
         label.textProperty().bind(message);
 
         Map<String, Integer> usersString = new HashMap<>();
-        users.forEach(userID -> {
-            usersString.put(ClassHandler.userInfoController().getUserNameFromID(userID), userID);
-        });
+        users.forEach(userID -> usersString.put(ClassHandler.userInfoController().getUserNameFromID(userID), userID));
         ObservableList<String> usersList = FXCollections.observableArrayList(usersString.keySet());
         usersList.sorted();
         ComboBox<String> comboBox = new ComboBox<>(usersList);
