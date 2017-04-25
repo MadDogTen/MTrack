@@ -76,29 +76,11 @@ public class Variables {
     static final int logMaxFileSize = 10000000;
     static final int logMaxNumberOfFiles = 10;
     public static boolean disableAutomaticRechecking;
-    public static int updateSpeed;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
-    public static String language;
     public static int currentUser;
     public static boolean makeLanguageDefault;
-    public static int timeToWaitForDirectory;
-    public static boolean recordChangesForNonActiveShows;
-    public static boolean recordChangedSeasonsLowerThanCurrent;
-    public static boolean moveStageWithParent;
-    public static boolean haveStageBlockParentStage;
-    public static boolean specialEffects;
-    public static int savingSpeed;
-    public static boolean enableAutoSavingOnTimer;
     public static int checkInterval = 5;
-    @SuppressWarnings("CanBeFinal")
-    public static boolean enableFileLogging;
-    @SuppressWarnings("CanBeFinal")
-    public static boolean showActiveShows;
-    public static boolean show0Remaining; // TODO Re-add user toggle for this.
-    //---------- TV Maze ----------\\
-    @SuppressWarnings("CanBeFinal")
-    public static boolean useOnlineDatabase; // TODO Still highly unfinished.
 
     static {
         supportedVideoPlayers_Windows = new HashMap<>();
@@ -122,9 +104,10 @@ public class Variables {
         dataFolder = file;
     }
 
+    @Deprecated
     public static void setStageMoveWithParentAndBlockParent(boolean stageMoveWithParentAndBlockParent) {
-        moveStageWithParent = stageMoveWithParentAndBlockParent;
-        haveStageBlockParentStage = stageMoveWithParentAndBlockParent;
+       /* moveStageWithParent = stageMoveWithParentAndBlockParent;
+        haveStageBlockParentStage = stageMoveWithParentAndBlockParent;*/
     }
 
     public enum ShowColorStatus {

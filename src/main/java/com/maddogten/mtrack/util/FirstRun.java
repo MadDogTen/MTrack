@@ -43,13 +43,6 @@ public class FirstRun {
                 //this.createFolders(false, fileManager);
             } else return false;
             ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), true));
-            if (Variables.enableFileLogging) {
-                try {
-                    GenericMethods.initFileLogging(log);
-                } catch (IOException e) {
-                    GenericMethods.printStackTrace(log, e, this.getClass());
-                }
-            }
            /* boolean hasImportedFiles = false;
             if (new ConfirmBox().confirm(Strings.DoYouWantToImportFiles, null)) {
                 if (fileManager.importSettings(true, null)) {
@@ -94,6 +87,13 @@ public class FirstRun {
                     if (generateShowFilesThread.isAlive()) loadingBox.loadingBox(generateShowFilesThread);
                 }
                 log.info(Strings.UserName.getValue());
+                if (ClassHandler.userInfoController().getEnableFileLogging(Variables.currentUser)) {
+                    try {
+                        GenericMethods.initFileLogging(log);
+                    } catch (IOException e) {
+                        GenericMethods.printStackTrace(log, e, this.getClass());
+                    }
+                }
                 //ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
                 //if (!usersAlreadyAdd) generateUserSettingsFile(Strings.UserName.getValue());
                 //ClassHandler.userInfoController().loadUserInfo();
@@ -145,13 +145,11 @@ public class FirstRun {
     private void addDirectories() {
         TextBox textBox = new TextBox();
         HashMap<String, Integer> directoriesID = new HashMap<>();
-        ClassHandler.directoryController().getAllDirectories(false, false).forEach(directoryID -> {
-            directoriesID.put(ClassHandler.directoryController().getDirectoryFromID(directoryID).toString(), directoryID);
-        });
+        ClassHandler.directoryController().getAllDirectories(false, false).forEach(directoryID -> directoriesID.put(ClassHandler.directoryController().getDirectoryFromID(directoryID).toString(), directoryID));
         ArrayList<File> directories = textBox.addDirectory(Strings.PleaseEnterShowsDirectory, directoriesID.keySet(), null);
         directories.forEach(file -> {
             int matched = ClassHandler.directoryController().addDirectory(file);
-            if (matched != -2)
+            if (matched == -2)
                 new MessageBox(new StringProperty[]{Strings.DirectoryWasADuplicate, new SimpleStringProperty(file.toString())}, null);
         });
     }

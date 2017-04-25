@@ -59,7 +59,8 @@ public class ShowPlayingBox {
         }
 
         stage = new Stage();
-        if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+            stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(oldStage);
         stage.initStyle(StageStyle.UNDECORATED);
         GenericMethods.setIcon(stage);

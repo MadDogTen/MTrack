@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.io.MoveStage;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -23,7 +24,8 @@ public class AboutBox {
         GenericMethods.setIcon(aboutStage);
         aboutStage.initOwner(oldStage);
         aboutStage.initStyle(StageStyle.UNDECORATED);
-        if (Variables.haveStageBlockParentStage) aboutStage.initModality(Modality.APPLICATION_MODAL);
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+            aboutStage.initModality(Modality.APPLICATION_MODAL);
         Pane root = FXMLLoader.load(getClass().getResource("/gui/About.fxml"));
         Scene scene = new Scene(root);
         scene.setFill(Color.WHITESMOKE);
@@ -34,7 +36,8 @@ public class AboutBox {
         aboutStage.hide();
         aboutStage.setX(aboutStage.getOwner().getX() + (aboutStage.getOwner().getWidth() / 2) - (aboutStage.getWidth() / 2));
         aboutStage.setY(aboutStage.getOwner().getY() + (aboutStage.getOwner().getHeight() / 2) - (aboutStage.getHeight() / 2));
-        if (Variables.specialEffects) GenericMethods.fadeStageIn(aboutStage, 2, log, this.getClass());
+        if (ClassHandler.userInfoController().doSpecialEffects(Variables.currentUser))
+            GenericMethods.fadeStageIn(aboutStage, 2, log, this.getClass());
         aboutStage.showAndWait();
         log.fine("AboutBox has been closed.");
     }

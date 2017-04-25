@@ -34,7 +34,10 @@ public class DBManager {
         Connection connection = null;
         String URL = "jdbc:derby:" + StringDB.DBFolderName;
         Properties properties = new Properties();
-        if (createDB) properties.put("create", "true");
+        if (createDB) {
+            properties.put("create", "true");
+            log.info("Creating Database at \"" + databaseLocation + "\".");
+        }
         properties.put("user", "MTrack");
         properties.put("password", "MTrackSimplePassword");
         try {

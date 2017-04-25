@@ -26,7 +26,7 @@ public class DBUserSettingsManager {
             createEpisodeSettingsTable(statement);
         }
 
-        insertSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        insertSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         getShowsMultiConditional = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_ACTIVE + "=? AND " + StringDB.COLUMN_IGNORED + "=? AND " + StringDB.COLUMN_HIDDEN + "=?");
         getEpisodePosition = connection.prepareStatement("SELECT " + StringDB.COLUMN_EPISODETIMEPOSITION + " FROM " + StringDB.TABLE_USEREPISODESETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
         setEpisodePosition = connection.prepareStatement("UPDATE " + StringDB.TABLE_USEREPISODESETTINGS + " SET " + StringDB.COLUMN_EPISODETIMEPOSITION + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
@@ -57,7 +57,7 @@ public class DBUserSettingsManager {
     private boolean createSettingsTable(Statement statement) {
         boolean alreadyExists = false;
         try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_USERSETTINGS + "(" + StringDB.COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_UPDATESPEED + " INTEGER NOT NULL," +
+            statement.execute("CREATE TABLE " + StringDB.TABLE_USERSETTINGS + "(" + StringDB.COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_SHOWUSERNAME + " BOOLEAN NOT NULL, " + StringDB.COLUMN_UPDATESPEED + " INTEGER NOT NULL," +
                     StringDB.COLUMN_AUTOMATICSHOWUPDATING + " BOOLEAN NOT NULL, " + StringDB.COLUMN_TIMETOWAITFORDIRECTORY + " INTEGER NOT NULL, " +
                     StringDB.COLUMN_SHOW0REMAINING + " BOOLEAN NOT NULL, " + StringDB.COLUMN_SHOWACTIVESHOWS + " BOOLEAN NOT NULL, " + StringDB.COLUMN_LANGUAGE + " VARCHAR(20) NOT NULL, " +
                     StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS + " BOOLEAN NOT NULL, " + StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT + " BOOLEAN NOT NULL, " +
@@ -110,35 +110,36 @@ public class DBUserSettingsManager {
         this.addEpisodeSettings(userID, episodeID, 0);
     }
 
-    public void addUserSettings(int userID, int updateSpeed, boolean automaticShowUpdating, int timeToWaitForDirectory, boolean show0Remaining, boolean showActiveShows, String language,
+    public void addUserSettings(int userID, boolean showUsername, int updateSpeed, boolean automaticShowUpdating, int timeToWaitForDirectory, boolean show0Remaining, boolean showActiveShows, String language,
                                 boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, boolean moveStageWithParent, boolean haveStageBlockParentStage,
                                 boolean enableSpecialEffects, boolean enableFileLogging, float showColumnWidth,
                                 float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility,
                                 boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType, String videoPlayerLocation) {
         try {
             insertSettings.setInt(1, userID);
-            insertSettings.setInt(2, updateSpeed);
-            insertSettings.setBoolean(3, automaticShowUpdating);
-            insertSettings.setInt(4, timeToWaitForDirectory);
-            insertSettings.setBoolean(5, show0Remaining); //
-            insertSettings.setBoolean(6, showActiveShows); //
-            insertSettings.setString(7, language); //
-            insertSettings.setBoolean(8, recordChangesForNonActiveShows);
-            insertSettings.setBoolean(9, recordChangedSeasonsLowerThanCurrent);
-            insertSettings.setBoolean(10, moveStageWithParent);
-            insertSettings.setBoolean(11, haveStageBlockParentStage);
-            insertSettings.setBoolean(12, enableSpecialEffects);
-            insertSettings.setBoolean(13, enableFileLogging);
-            insertSettings.setFloat(14, showColumnWidth);
-            insertSettings.setFloat(15, remainingColumnWidth);
-            insertSettings.setFloat(16, seasonColumnWidth);
-            insertSettings.setFloat(17, episodeColumnWidth);
-            insertSettings.setBoolean(18, showColumnVisibility);
-            insertSettings.setBoolean(19, remainingColumnVisibility);
-            insertSettings.setBoolean(20, seasonColumnVisibility);
-            insertSettings.setBoolean(21, episodeColumnVisibility);
-            insertSettings.setInt(22, videoPlayerType);
-            insertSettings.setString(23, videoPlayerLocation);
+            insertSettings.setBoolean(2, showUsername);
+            insertSettings.setInt(3, updateSpeed);
+            insertSettings.setBoolean(4, automaticShowUpdating);
+            insertSettings.setInt(5, timeToWaitForDirectory);
+            insertSettings.setBoolean(6, show0Remaining); //
+            insertSettings.setBoolean(7, showActiveShows); //
+            insertSettings.setString(8, language); //
+            insertSettings.setBoolean(9, recordChangesForNonActiveShows);
+            insertSettings.setBoolean(10, recordChangedSeasonsLowerThanCurrent);
+            insertSettings.setBoolean(11, moveStageWithParent);
+            insertSettings.setBoolean(12, haveStageBlockParentStage);
+            insertSettings.setBoolean(13, enableSpecialEffects);
+            insertSettings.setBoolean(14, enableFileLogging);
+            insertSettings.setFloat(15, showColumnWidth);
+            insertSettings.setFloat(16, remainingColumnWidth);
+            insertSettings.setFloat(17, seasonColumnWidth);
+            insertSettings.setFloat(18, episodeColumnWidth);
+            insertSettings.setBoolean(19, showColumnVisibility);
+            insertSettings.setBoolean(20, remainingColumnVisibility);
+            insertSettings.setBoolean(21, seasonColumnVisibility);
+            insertSettings.setBoolean(22, episodeColumnVisibility);
+            insertSettings.setInt(23, videoPlayerType);
+            insertSettings.setString(24, videoPlayerLocation);
             insertSettings.execute();
             insertSettings.clearParameters();
             log.info("Settings were successfully added with ID \"" + userID + "\".");
@@ -148,7 +149,7 @@ public class DBUserSettingsManager {
     }
 
     public void addUserSettings(int userID) {
-        this.addUserSettings(userID, Variables.defaultUpdateSpeed, true, Variables.defaultTimeToWaitForDirectory, false, false, "None", false, false, true, true, true, true,
+        this.addUserSettings(userID, true, Variables.defaultUpdateSpeed, true, Variables.defaultTimeToWaitForDirectory, false, false, "None", false, false, true, true, true, true,
                 Variables.SHOWS_COLUMN_WIDTH, Variables.REMAINING_COLUMN_WIDTH, Variables.SEASONS_COLUMN_WIDTH, Variables.EPISODE_COLUMN_WIDTH, true, true, false, false, 0, "");
     }
 

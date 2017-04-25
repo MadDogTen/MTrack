@@ -51,7 +51,8 @@ public class Main extends Application implements Runnable {
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, Main.class);
             }
-            if (Variables.specialEffects) GenericMethods.fadeStageOut(stage, 10, log, Main.class);
+            if (ClassHandler.userInfoController().doSpecialEffects(Variables.currentUser))
+                GenericMethods.fadeStageOut(stage, 10, log, Main.class);
             if (stage != null) stage.close();
             Platform.exit();
             if (thread != null) {
@@ -88,7 +89,8 @@ public class Main extends Application implements Runnable {
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
-            if (Variables.specialEffects) GenericMethods.fadeStageIn(stage, 10, log, Main.class);
+            if (ClassHandler.userInfoController().doSpecialEffects(Variables.currentUser))
+                GenericMethods.fadeStageIn(stage, 10, log, Main.class);
             start();
         } else stop(null, true);
     }

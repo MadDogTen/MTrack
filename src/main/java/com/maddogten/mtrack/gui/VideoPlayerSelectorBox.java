@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.gui;
 
 import com.maddogten.mtrack.FXMLControllers.VideoPlayerSelector;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Variables;
 import com.maddogten.mtrack.util.VideoPlayer;
@@ -21,7 +22,8 @@ public class VideoPlayerSelectorBox {
         log.fine("videoPlayerSelector has been opened.");
 
         Stage stage = new Stage();
-        if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+            stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(oldStage);
         stage.initStyle(StageStyle.UNDECORATED);
         GenericMethods.setIcon(stage);

@@ -3,6 +3,7 @@ package com.maddogten.mtrack.information;
 import com.maddogten.mtrack.Database.DBDirectoryHandler;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -79,8 +80,8 @@ public class DirectoryController {
                         GenericMethods.printStackTrace(log, e, this.getClass());
                     }
                     while (thread.isAlive()) {
-                        log.finer("Time remaining until directory is skipped = " + (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer)));
-                        if (Variables.timeToWaitForDirectory - GenericMethods.timeTakenSeconds(timer) < 1) {
+                        log.finer("Time remaining until directory is skipped = " + (ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.currentUser) - GenericMethods.timeTakenSeconds(timer)));
+                        if (ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.currentUser) - GenericMethods.timeTakenSeconds(timer) < 1) {
                             log.finer(directory + " took to long to respond to alive check, Check that the drive is plugged in & working.");
                             thread.interrupt();
                             break;

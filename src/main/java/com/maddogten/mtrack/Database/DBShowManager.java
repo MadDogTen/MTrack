@@ -154,7 +154,7 @@ public class DBShowManager {
     public String getShowNameFromEpisodeID(int episodeID) {
         String showName = Strings.EmptyString;
         try {
-            getShowIDFromEpisodeID.setInt(1, episodeID);
+            getShowName.setInt(1, episodeID);
             try (ResultSet resultSet = getShowName.executeQuery()) {
                 if (resultSet.next()) showName = getShowName(resultSet.getInt(StringDB.COLUMN_EPISODE_ID));
             }

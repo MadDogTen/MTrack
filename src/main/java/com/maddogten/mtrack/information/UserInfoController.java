@@ -52,9 +52,7 @@ public class UserInfoController {
     public int addUser(String userName) {
         int userID = dbUserManager.addUser(userName);
         if (userID != -2) {
-            ClassHandler.showInfoController().getShows().forEach(showID -> {
-                addNewShow(userID, showID);
-            });
+            ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
         }
         log.fine("Generated all show data for " + userName + ".");
         return dbUserManager.addUser(userName);
@@ -298,7 +296,6 @@ public class UserInfoController {
 
     public void setLanguage(int userID, String language) {
         dbUserSettingsManager.changeStringSetting(userID, -2, language, StringDB.COLUMN_LANGUAGE, StringDB.TABLE_USERSETTINGS);
-        Variables.language = language;
         log.info("Default language was set to " + language + '.');
     }
 
@@ -333,6 +330,10 @@ public class UserInfoController {
         return dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.COLUMN_TIMETOWAITFORDIRECTORY, StringDB.TABLE_USERSETTINGS);
     }
 
+    public boolean doFileLogging(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_ENABLEFILELOGGING, StringDB.TABLE_USERSETTINGS);
+    }
+
     public void setFileLogging(int userID, final boolean enableFileLogging) {
         dbUserSettingsManager.changeBooleanSetting(userID, -2, enableFileLogging, StringDB.COLUMN_ENABLEFILELOGGING, StringDB.TABLE_USERSETTINGS);
         if (enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
@@ -342,6 +343,38 @@ public class UserInfoController {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
         } else if (GenericMethods.isFileLoggingStarted()) GenericMethods.stopFileLogging(log);
+    }
+
+    public boolean doSpecialEffects(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_ENABLESPECIALEFFECTS, StringDB.TABLE_USERSETTINGS);
+    }
+
+    public boolean show0Remaining(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_SHOW0REMAINING, StringDB.TABLE_USERSETTINGS);
+    }
+
+    public boolean showActiveShows(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_SHOWACTIVESHOWS, StringDB.TABLE_USERSETTINGS);
+    }
+
+    public boolean getRecordChangesForNonActiveShows(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS, StringDB.TABLE_USERSETTINGS);
+    }
+
+    public boolean getRecordChangedSeasonsLowerThanCurrent(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT, StringDB.TABLE_USERSETTINGS);
+    }
+
+    public boolean getMoveStageWithParent(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_MOVESTAGEWITHPARENT, StringDB.TABLE_USERSETTINGS);
+    }
+
+    public boolean getHaveStageBlockParentStage(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE, StringDB.TABLE_USERSETTINGS);
+    }
+
+    public boolean getEnableFileLogging(int userID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_ENABLEFILELOGGING, StringDB.TABLE_USERSETTINGS);
     }
 
     public boolean getColumnVisibilityStatus(int userID, String column) {
@@ -368,11 +401,30 @@ public class UserInfoController {
         return videoPlayer;
     }
 
-    public void setEpisodePostion(int userID, int episodeID, int position) {
+    public void setEpisodePosition(int userID, int episodeID, int position) {
         dbUserSettingsManager.setEpisodePosition(userID, episodeID, position);
     }
 
     public void clearEpisodeSettings(int userID, int episodeID) {
         dbUserSettingsManager.removeEpisode(userID, episodeID);
+    }
+
+    public String getMostUsedLanguage() {
+        Map<String, Integer> languages = new HashMap<>();
+        getAllUsers().forEach(userID -> {
+            String language = getLanguage(userID);
+            if (!languages.containsKey(language)) languages.put(language, 1);
+            else languages.replace(language, languages.get(language) + 1);
+        });
+        final String[] mostUsedLanguage = {Strings.EmptyString};
+        final int[] mostUsedAmount = {0};
+        languages.forEach((language, timesUsed) -> {
+            if (timesUsed > mostUsedAmount[0]) {
+                mostUsedLanguage[0] = language;
+                mostUsedAmount[0] = timesUsed;
+            }
+        });
+        if (mostUsedLanguage[0].matches(Strings.EmptyString)) mostUsedLanguage[0] = Variables.DefaultLanguage[0];
+        return mostUsedLanguage[0];
     }
 }

@@ -36,14 +36,12 @@ public class CheckShowFiles {
         ClassHandler.directoryController().checkDirectories(true);
         FindShows findShows = new FindShows();
         Map<Integer, Set<FindShows.Show>> directoryShows = new HashMap<>();
-        final int[] numberOfShows = {0};
-        directoryShows.forEach((integer, shows) -> numberOfShows[0] += shows.size());
         checkInterval++;
         currentlyCheckingDirectories = true;
-        ClassHandler.directoryController().getActiveDirectories(true, checkInterval >= Variables.checkInterval).forEach(directoryID -> {
-            directoryShows.put(directoryID, findShows.findShows(ClassHandler.directoryController().getDirectoryFromID(directoryID)));
-        });
+        ClassHandler.directoryController().getActiveDirectories(true, checkInterval >= Variables.checkInterval).forEach(directoryID -> directoryShows.put(directoryID, findShows.findShows(ClassHandler.directoryController().getDirectoryFromID(directoryID))));
         currentlyCheckingDirectories = false;
+        final int[] numberOfShows = {0};
+        directoryShows.forEach((integer, shows) -> numberOfShows[0] += shows.size());
         double percentageInterval = 100 / numberOfShows[0];
         Set<Integer> allShows = new HashSet<>();
         directoryShows.forEach((directoryID, shows) -> shows.forEach(show -> {
@@ -75,6 +73,7 @@ public class CheckShowFiles {
 
         if (checkInterval == Variables.checkInterval) checkInterval = 0;
         isRecheckingShowFile = false;
+        recheckShowFilePercentage = 0;
     }
 
     public boolean isRecheckingShowFile() {

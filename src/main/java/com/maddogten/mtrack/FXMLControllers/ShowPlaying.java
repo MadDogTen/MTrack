@@ -150,7 +150,7 @@ public class ShowPlaying implements Initializable {
             int position[] = new TextBox().enterNumber(new SimpleStringProperty("Enter the shows current position in seconds:"), new StringProperty[]{new SimpleStringProperty("Hour"), new SimpleStringProperty("Minute"), new SimpleStringProperty("Second")}, 3, (Stage) mainPane.getScene().getWindow());
             int timeInSeconds = ((position[0] * 60) * 60) + (position[1] * 60) + position[2];
             if (timeInSeconds > 0) {
-                ClassHandler.userInfoController().setEpisodePostion(userID, ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()), timeInSeconds);
+                ClassHandler.userInfoController().setEpisodePosition(userID, ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()), timeInSeconds);
                 Stage stage = (Stage) mainPane.getScene().getWindow();
                 runTask = false;
                 stage.close();

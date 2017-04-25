@@ -3,6 +3,7 @@ package com.maddogten.mtrack.gui;
 import com.maddogten.mtrack.FXMLControllers.ShowEpisodeSelect;
 import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.MoveStage;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Variables;
 import javafx.application.Platform;
@@ -32,7 +33,8 @@ public class ShowEpisodeSelectBox {
     public int[] seasonEpisodeSelect(final DisplayShow show, final Stage oldStage) throws IOException {
         log.fine("seasonEpisodeSelect has been opened.");
         stage = new Stage();
-        if (Variables.haveStageBlockParentStage) stage.initModality(Modality.APPLICATION_MODAL);
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+            stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(oldStage);
         stage.initStyle(StageStyle.UNDECORATED);
         GenericMethods.setIcon(stage);

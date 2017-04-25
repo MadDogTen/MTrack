@@ -93,7 +93,7 @@ public class GenericMethods {
     }
 
     public static void initFileLogging(final Logger log) throws IOException, SecurityException {
-        if (Variables.enableFileLogging && !isFileLoggingStarted()) {
+        if (ClassHandler.userInfoController().doFileLogging(Variables.currentUser) && !isFileLoggingStarted()) {
             File logFolder = new File(Variables.dataFolder + Variables.LogsFolder);
             if (!logFolder.exists())
                 new FileManager().createFolder(Variables.LogsFolder);

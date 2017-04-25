@@ -67,6 +67,7 @@ public class MainRun {
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
+            new LanguageHandler().setLanguage(ClassHandler.userInfoController().getMostUsedLanguage());
             /*if (fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingFileExtension))
                 updateManager.updateProgramSettingsFile();
             else new FirstRun().generateProgramSettingsFile();*/
@@ -77,11 +78,11 @@ public class MainRun {
             if (!continueStarting) return false;
             getLanguage();
             if (Variables.makeLanguageDefault)
-                ClassHandler.userInfoController().setLanguage(Variables.currentUser, Variables.language);
+                ClassHandler.userInfoController().setLanguage(Variables.currentUser, ClassHandler.userInfoController().getLanguage(Variables.currentUser));
             if (!continueStarting) return false;
             //loadUser(updateManager, true);
         }
-        if (Variables.enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
+        if (ClassHandler.userInfoController().doFileLogging(Variables.currentUser) && !GenericMethods.isFileLoggingStarted()) {
             try {
                 GenericMethods.initFileLogging(log);
             } catch (IOException e) {
@@ -134,7 +135,7 @@ public class MainRun {
 
     private void recheck() {
         // noinspection PointlessBooleanExpression
-        if (!(disableChecking || Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > Variables.updateSpeed) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (Variables.updateSpeed * 10))) {
+        if (!(disableChecking || Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > ClassHandler.userInfoController().getUpdateSpeed(Variables.currentUser)) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (ClassHandler.userInfoController().getUpdateSpeed(Variables.currentUser) * 10))) {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
@@ -163,9 +164,7 @@ public class MainRun {
             return defaultUser;
         } else {
             HashMap<String, Integer> users = new HashMap<>();
-            ClassHandler.userInfoController().getAllUsers().forEach(userID -> {
-                users.put(ClassHandler.userInfoController().getUserNameFromID(userID), userID);
-            });
+            ClassHandler.userInfoController().getAllUsers().forEach(userID -> users.put(ClassHandler.userInfoController().getUserNameFromID(userID), userID));
             Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, users.keySet());
             int user = -2;
             if (((String) pickUserResult[0]).matches(Strings.AddNewUsername.getValue())) continueStarting = false;
@@ -187,10 +186,8 @@ public class MainRun {
         else if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove
             Boolean wasSet = languageHandler.setLanguage(language);
             Variables.makeLanguageDefault = true;
-            if (wasSet) {
-                Variables.language = language;
-                log.finer("Language is set: " + language);
-            } else log.severe("Language was not set for some reason, Please report.");
+            if (wasSet) log.finer("Language is set: " + language);
+            else log.severe("Language was not set for some reason, Please report.");
         } else {
             languageHandler.setLanguage(Variables.DefaultLanguage[0]);
             Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), true, null);
@@ -205,10 +202,8 @@ public class MainRun {
                     }
                 }
                 Variables.makeLanguageDefault = (boolean) pickLanguageResult[1];
-                if (languageHandler.setLanguage(internalName)) {
-                    Variables.language = internalName;
-                    log.finer("Language is set: " + languageReadable);
-                } else log.severe("Language was not set for some reason, Please report.");
+                if (languageHandler.setLanguage(internalName)) log.finer("Language is set: " + languageReadable);
+                else log.severe("Language was not set for some reason, Please report.");
             }
         }
     }

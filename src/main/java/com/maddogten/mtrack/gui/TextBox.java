@@ -127,7 +127,6 @@ public class TextBox {
         textArea.setPromptText(Strings.FileSeparator + Strings.PathToDirectory.getValue() + Strings.FileSeparator + Strings.Shows.getValue());
         textArea.setPrefSize(240, 60);
 
-        ArrayList<String> directoryPaths = new ArrayList<>(currentDirectories);
         DirectoryChooser DirectoryChooser = new DirectoryChooser();
 
         Button filePicker = new Button(), submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
@@ -149,14 +148,14 @@ public class TextBox {
                     String[] files = string.split("\n");
                     for (String file : files) {
                         if (!file.isEmpty()) {
-                            if (isDirectoryValid(directoryPaths, file, addDirectoryStage))
+                            if (isDirectoryValid(currentDirectories, file, addDirectoryStage))
                                 directories.add(new File(file));
                             else
                                 log.info("File: \"" + file + "\" was invalid, and not added."); // TODO Add user popup notification that groups all issues
                         }
                     }
                 } else {
-                    if (isDirectoryValid(directoryPaths, textArea.getText(), addDirectoryStage))
+                    if (isDirectoryValid(currentDirectories, textArea.getText(), addDirectoryStage))
                         directories.add(new File(textArea.getText()));
                     else log.info("File: \"" + textArea.getText() + "\" was invalid, and not added.");
                 }
@@ -206,7 +205,7 @@ public class TextBox {
         return directories;
     }
 
-    private boolean isDirectoryValid(final ArrayList<String> currentDirectories, final String directory, final Stage oldStage) {
+    private boolean isDirectoryValid(final Set<String> currentDirectories, final String directory, final Stage oldStage) {
         log.fine("isDirectoryValid has been called.");
         if (currentDirectories.contains(directory))
             new MessageBox(new StringProperty[]{Strings.DirectoryIsAlreadyAdded, new SimpleStringProperty(directory)}, oldStage);
