@@ -120,7 +120,7 @@ public class ShowPlaying implements Initializable {
             setSeasonEpisodeText();
             if (show.getRemaining() <= 1)
                 nextEpisodeButton.setDisable(true);
-            if (ClassHandler.userInfoController().doesEpisodeExistInShowFile(show.getShow()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(show.getShow())) {
+            if (ClassHandler.showInfoController().doesEpisodeExist(show.getShowID(), show.getSeason(), show.getEpisode()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(userID, show.getShowID())) {
                 if (!ClassHandler.userInfoController().playAnyEpisode(show.getShowID(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
                     log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                     new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);

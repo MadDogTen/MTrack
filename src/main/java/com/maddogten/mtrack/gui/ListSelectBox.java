@@ -40,7 +40,7 @@ public class ListSelectBox {
     private static final Logger log = Logger.getLogger(ListSelectBox.class.getName());
 
     @SuppressWarnings("SameParameterValue")
-    public Object[] pickUser(final StringProperty message, final ArrayList<String> users) {
+    public Object[] pickUser(final StringProperty message, final Set<String> users) {
         log.fine("pickUser has been opened.");
 
         Stage pickUserStage = new Stage();
@@ -64,7 +64,7 @@ public class ListSelectBox {
         Object[] result = new Object[]{Strings.DefaultUsername, false};
         submit.setOnAction(e -> {
             if (comboBox.getValue().equalsIgnoreCase(Strings.AddNewUsername.getValue())) {
-                result[0] = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, users, pickUserStage);
+                result[0] = new TextBox().addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, pickUserStage);
                 if (!result[0].toString().isEmpty()) {
                     pickUserStage.close();
                 }
@@ -318,7 +318,7 @@ public class ListSelectBox {
 
         int season = ClassHandler.userInfoController().getCurrentUserSeason(userID, showID);
         int episode = ClassHandler.userInfoController().getCurrentUserEpisode(userID, showID);
-        if (ClassHandler.showInfoController().getEpisode(userID, showID, season, episode) == null || ClassHandler.showInfoController().getEpisode(userID, showID, season, episode).getEpisodeFilename().isEmpty()) {
+        if (ClassHandler.showInfoController().getEpisode(ClassHandler.showInfoController().getEpisodeID(showID, season, episode)) == null || ClassHandler.showInfoController().getEpisode(ClassHandler.showInfoController().getEpisodeID(showID, season, episode)).toString().isEmpty()) {
             episodesComboBox.setDisable(true);
         } else {
             seasonsComboBox.getSelectionModel().select((Integer) season);
@@ -369,7 +369,7 @@ public class ListSelectBox {
                     if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty() && seasonsComboBox.getValue() != oldValue) {
                         oldValue = seasonsComboBox.getValue();
                         episodesArrayList.clear();
-                        episodesArrayList.addAll(new ArrayList<>(showInfoController.getEpisodesList(aShow, seasonsComboBox.getValue())));
+                        episodesArrayList.addAll(new ArrayList<>(showInfoController.getEpisodesList(showID, seasonsComboBox.getValue())));
                         Collections.sort(episodesArrayList);
                         Platform.runLater(() -> {
                             episodesList.clear();

@@ -18,8 +18,12 @@ public class DBShowManager {
 
     private final PreparedStatement getAllShows;
     private final PreparedStatement addShow;
+    private final PreparedStatement removeShow;
     private final PreparedStatement addSeason;
+    private final PreparedStatement removeSeasons;
     private final PreparedStatement addEpisode;
+    private final PreparedStatement removeEpisodes;
+    private final PreparedStatement removeEpisodeFiles;
     private final PreparedStatement checkShowID;
     private final PreparedStatement getShowID;
     private final PreparedStatement checkForShow;
@@ -35,17 +39,22 @@ public class DBShowManager {
     private final PreparedStatement getShowIDFromEpisodeID;
     private final PreparedStatement getEpisodeDirectories;
     private final PreparedStatement checkForSeason;
+    private final PreparedStatement getEpisodeSeason;
 
     public DBShowManager(Connection connection) throws SQLException {
         initTables(connection);
 
         getAllShows = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_SHOWS);
         addShow = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_SHOWS + " VALUES (?, ?)");
+        removeShow = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_SHOWS + " WHERE " + StringDB.COLUMN_SHOW_ID + "=?");
         addSeason = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_SEASONS + " VALUES (?, ?)");
+        removeSeasons = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_SEASONS + " WHERE " + StringDB.COLUMN_SHOW_ID + "=?");
         addEpisode = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_EPISODES + " VALUES (?, ?, ?, ?, ?)");
+        removeEpisodes = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_EPISODES + " WHERE " + StringDB.COLUMN_SHOW_ID + "=?");
+        removeEpisodeFiles = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_EPISODEFILES + " WHERE " + StringDB.COLUMN_EPISODE_ID + "=?");
         checkShowID = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWNAME + " FROM " + StringDB.TABLE_SHOWS + " WHERE " + StringDB.COLUMN_SHOW_ID + "=?");
         getShowID = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_SHOWS + " WHERE " + StringDB.COLUMN_SHOWNAME + " =?");
-        checkForShow = connection.prepareStatement("SELECT * FROM " + StringDB.TABLE_SHOWS + " WHERE " + StringDB.COLUMN_SHOWNAME + "=?");
+        checkForShow = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_SHOWS + " WHERE " + StringDB.COLUMN_SHOWNAME + "=?");
         getSeasons = connection.prepareStatement("SELECT * FROM " + StringDB.TABLE_SEASONS + " WHERE " + StringDB.COLUMN_SHOW_ID + "=?");
         getSeasonEpisodes = connection.prepareStatement("SELECT * FROM " + StringDB.TABLE_EPISODES + " WHERE " + StringDB.COLUMN_SHOW_ID + "=? AND " + StringDB.COLUMN_SEASON + "=?");
         getEpisode = connection.prepareStatement("SELECT " + StringDB.COLUMN_FILE + " FROM " + StringDB.TABLE_EPISODEFILES + " WHERE " + StringDB.COLUMN_EPISODE_ID + "=? AND " + StringDB.COLUMN_DIRECTORY_ID + "=?");
@@ -58,53 +67,50 @@ public class DBShowManager {
         getShowIDFromEpisodeID = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_EPISODES + " WHERE " + StringDB.COLUMN_EPISODE_ID + "=?");
         getEpisodeDirectories = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORY_ID + " FROM " + StringDB.TABLE_EPISODEFILES + " WHERE " + StringDB.COLUMN_EPISODE_ID + "=?");
         checkForSeason = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_SEASONS + " WHERE " + StringDB.COLUMN_SHOW_ID + "=? AND " + StringDB.COLUMN_SEASON + "=?");
+        getEpisodeSeason = connection.prepareStatement("SELECT " + StringDB.COLUMN_SEASON + " FROM " + StringDB.TABLE_EPISODES + " WHERE " + StringDB.COLUMN_EPISODE_ID + "=?");
     }
 
     private void initTables(Connection connection) {
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_SHOWS, null)) {
-                if (!resultSet.next()) {
-                    log.fine("Shows table doesn't exist, creating...");
-                    createShowsTable(statement);
-                }
-            }
-            try (ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_SEASONS, null)) {
-                if (!resultSet.next()) {
-                    log.fine("Seasons table doesn't exist, creating...");
-                    createSeasonsTable(statement);
-                }
-            }
-            try (ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_EPISODES, null)) {
-                if (!resultSet.next()) {
-                    log.fine("Episodes table doesn't exist, creating...");
-                    createEpisodesTable(statement);
-                }
-            }
-            try (ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_EPISODEFILES, null)) {
-                if (!resultSet.next()) {
-                    log.fine("Episode Files Table doesn't exist, creating...");
-                    createEpisodeFilesTable(statement);
-                }
-            }
+            createShowsTable(statement);
+            createSeasonsTable(statement);
+            createEpisodesTable(statement);
+            createEpisodeFilesTable(statement);
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
     }
 
-    private void createEpisodeFilesTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_EPISODEFILES + "(" + StringDB.COLUMN_EPISODE_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_DIRECTORY_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_FILE + " VARCHAR(200) NOT NULL)");
+    private void createEpisodeFilesTable(Statement statement) {
+        try {
+            statement.execute("CREATE TABLE " + StringDB.TABLE_EPISODEFILES + "(" + StringDB.COLUMN_EPISODE_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_DIRECTORY_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_FILE + " VARCHAR(200) NOT NULL)");
+        } catch (SQLException e) {
+            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
+        }
     }
 
-    private void createShowsTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_SHOWS + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_SHOWNAME + " VARCHAR(50) UNIQUE NOT NULL)");
+    private void createShowsTable(Statement statement) {
+        try {
+            statement.execute("CREATE TABLE " + StringDB.TABLE_SHOWS + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_SHOWNAME + " VARCHAR(50) UNIQUE NOT NULL)");
+        } catch (SQLException e) {
+            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    } // TODO Add option to change the show name displayed
+
+    private void createSeasonsTable(Statement statement) {
+        try {
+            statement.execute("CREATE TABLE " + StringDB.TABLE_SEASONS + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SEASON + " INTEGER NOT NULL)");
+        } catch (SQLException e) {
+            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
+        }
     }
 
-    private void createSeasonsTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_SEASONS + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SEASON + " INTEGER NOT NULL)");
-    }
-
-    private void createEpisodesTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_EPISODES + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SEASON + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODE + " INTEGER NOT NULL, " + StringDB.COLUMN_PARTOFDOUBLEEPISODE + " BOOLEAN NOT NULL, episodeID INTEGER NOT NULL)");
+    private void createEpisodesTable(Statement statement) {
+        try {
+            statement.execute("CREATE TABLE " + StringDB.TABLE_EPISODES + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SEASON + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODE + " INTEGER NOT NULL, " + StringDB.COLUMN_PARTOFDOUBLEEPISODE + " BOOLEAN NOT NULL, " + StringDB.COLUMN_EPISODE_ID + " INTEGER NOT NULL)");
+        } catch (SQLException e) {
+            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
+        }
     }
 
     public ArrayList<Integer> getAllShows() {
@@ -170,15 +176,6 @@ public class DBShowManager {
         return result;
     }
 
-    public boolean doesAlreadyContainsShow(String showName) throws SQLException {
-        checkForShow.setString(1, showName);
-        try (ResultSet resultSet = checkForShow.executeQuery()) {
-            boolean result = resultSet.next();
-            checkForShow.clearParameters();
-            return result;
-        }
-    }
-
     public boolean isEpisodePartOfDoubleEpisode(int episodeID) {
         boolean result = false;
         try {
@@ -207,13 +204,37 @@ public class DBShowManager {
         return showID;
     }
 
-    public boolean addShow(String show) throws SQLException {
-        if (doesAlreadyContainsShow(show)) return false;
-        addShow.setInt(1, generateShowID());
-        addShow.setString(2, show);
-        addShow.execute();
-        addShow.clearParameters();
-        return true;
+    public int addShow(String show) {
+        int showID = doesAlreadyContainShow(show);
+        if (showID != -2) return showID;
+        else try {
+            showID = generateShowID();
+            addShow.setInt(1, showID);
+            addShow.setString(2, show);
+            addShow.execute();
+            addShow.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return showID;
+    }
+
+    public void removeShow(int showID) {
+        try {
+            removeShow.setInt(1, showID);
+            removeShow.execute();
+            removeShow.clearParameters();
+            Set<Integer> seasons = getSeasons(showID);
+            removeSeasons.setInt(1, showID);
+            removeSeasons.execute();
+            removeSeasons.clearParameters();
+            seasons.forEach(season -> getSeasonEpisodes(showID, season).forEach(this::removeEpisodeFiles));
+            removeEpisodes.setInt(1, showID);
+            removeEpisodes.execute();
+            removeEpisodes.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
     }
 
     public Set<Integer> getSeasons(int showID) {
@@ -258,7 +279,7 @@ public class DBShowManager {
         }
     }
 
-    public File getEpisodeFile(int episodeID) {
+    public File getEpisode(int episodeID) {
         File episodeFile = null;
         try {
             getEpisodeDirectories.setInt(1, episodeID);
@@ -268,21 +289,30 @@ public class DBShowManager {
             }
             getEpisodeDirectories.clearParameters();
             if (!directories.isEmpty()) {
+                String showName = getShowNameFromEpisodeID(episodeID);
+                int season = getEpisodeSeason(episodeID);
                 if (directories.size() == 1) {
                     getEpisode.setInt(1, episodeID);
+                    int directoryID = -2;
                     for (int id : directories) {
                         getEpisode.setInt(2, id);
+                        directoryID = id;
                         break;
                     }
+                    File mainFolder = ClassHandler.directoryController().getDirectoryFromID(directoryID);
                     try (ResultSet resultSet = getEpisode.executeQuery()) {
-                        if (resultSet.next()) episodeFile = new File(resultSet.getString(StringDB.COLUMN_FILE));
+                        if (resultSet.next())
+                            episodeFile = new File(mainFolder + Strings.FileSeparator + GenericMethods.getSeasonFolderName(mainFolder, showName, season) + Strings.FileSeparator + resultSet.getString(StringDB.COLUMN_FILE));
                     }
                     getEpisode.clearParameters();
                 } else {
                     getEpisode.setInt(1, episodeID);
-                    getEpisode.setInt(2, ClassHandler.directoryController().getDirectoryWithLowestPriority(directories));
+                    int directoryID = ClassHandler.directoryController().getDirectoryWithLowestPriority(directories);
+                    getEpisode.setInt(2, directoryID);
+                    File mainFolder = ClassHandler.directoryController().getDirectoryFromID(directoryID);
                     try (ResultSet resultSet = getEpisode.executeQuery()) {
-                        if (resultSet.next()) episodeFile = new File(resultSet.getString(StringDB.COLUMN_FILE));
+                        if (resultSet.next())
+                            episodeFile = new File(mainFolder + Strings.FileSeparator + GenericMethods.getSeasonFolderName(mainFolder, showName, season) + Strings.FileSeparator + resultSet.getString(StringDB.COLUMN_FILE));
                     }
                     getEpisode.clearParameters();
                 }
@@ -290,7 +320,7 @@ public class DBShowManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        return episodeFile;
+        return episodeFile.exists() ? episodeFile : null;
     }
 
     private boolean doesContainEpisode(int episodeID) {
@@ -308,35 +338,28 @@ public class DBShowManager {
         return result;
     }
 
-    public void addEpisode(int showID, int season, int episode, Boolean partOfDoubleSeason, String... files) {
+    public int addEpisode(int showID, int season, int episode, Boolean partOfDoubleEpisode) {
+        int episodeID = -2;
         if (!doesContainEpisode(getEpisodeID(showID, season, episode))) {
             try {
                 addEpisode.setInt(1, showID);
                 addEpisode.setInt(2, season);
                 addEpisode.setInt(3, episode);
-                addEpisode.setBoolean(4, partOfDoubleSeason);
-                addEpisode.setInt(5, getEpisodeID(showID, season, episode));
+                addEpisode.setBoolean(4, partOfDoubleEpisode);
+                episodeID = getEpisodeID(showID, season, episode);
+                addEpisode.setInt(5, episodeID);
                 addEpisode.execute();
                 addEpisode.clearParameters();
-
-                for (String file : files) { // TODO Correct, This is Temp, Non Functional
-                    addEpisodeFile.setInt(1, showID);
-                    addEpisodeFile.setInt(2, 0);
-                    addEpisodeFile.setString(3, file);
-                    addEpisodeFile.execute();
-                    addEpisodeFile.clearParameters();
-                }
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
-        } else {
-            // Check if any of the files are new, and if so, add them.
         }
+        return episodeID;
     }
 
-    public void addEpisodeFile(int showID, int season, int episode, int directoryID, String episodeFile) {
+    public void addEpisodeFile(int episodeID, int directoryID, String episodeFile) {
         try {
-            addEpisodeFile.setInt(1, getEpisodeID(showID, season, episode));
+            addEpisodeFile.setInt(1, episodeID);
             addEpisodeFile.setInt(2, directoryID);
             addEpisodeFile.setString(3, episodeFile);
             addEpisodeFile.execute();
@@ -346,9 +369,19 @@ public class DBShowManager {
         }
     }
 
-    public void removeEpisodeFile(int showID, int season, int episode, int directoryID, String episodeFile) {
+    public void removeEpisodeFiles(int episodeID) {
         try {
-            removeEpisodeFile.setInt(1, getEpisodeID(showID, season, episode));
+            removeEpisodeFiles.setInt(1, episodeID);
+            removeEpisodeFile.execute();
+            removeEpisodeFile.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public void removeEpisodeFile(int episodeID, int directoryID, String episodeFile) {
+        try {
+            removeEpisodeFile.setInt(1, episodeID);
             removeEpisodeFile.setInt(2, directoryID);
             removeEpisodeFile.setString(3, episodeFile);
             removeEpisodeFile.execute();
@@ -372,7 +405,7 @@ public class DBShowManager {
     }*/
 
     public boolean doesEpisodeExist(int showID, int season, int episode) {
-        return getEpisodeFile(getEpisodeID(showID, season, episode)) != null;
+        return getEpisode(getEpisodeID(showID, season, episode)) != null;
     }
 
     public boolean doesSeasonExist(int showID, int season) {
@@ -396,5 +429,33 @@ public class DBShowManager {
 
     public boolean isEpisodePartOfDoubleEpisode(int showID, int season, int episode) {
         return isEpisodePartOfDoubleEpisode(getEpisodeID(showID, season, episode));
+    }
+
+    public int getEpisodeSeason(int episodeID) {
+        int season = -2;
+        try {
+            getEpisodeSeason.setInt(1, episodeID);
+            try (ResultSet resultSet = getEpisodeSeason.executeQuery()) {
+                if (resultSet.next()) season = resultSet.getInt(StringDB.COLUMN_SEASON);
+            }
+            getEpisodeSeason.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return season;
+    }
+
+    public int doesAlreadyContainShow(String showName) {
+        int showID = -2;
+        try {
+            checkForShow.setString(1, showName);
+            try (ResultSet resultSet = checkForShow.executeQuery()) {
+                if (resultSet.next()) showID = resultSet.getInt(StringDB.COLUMN_SHOW_ID);
+            }
+            checkForShow.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return showID;
     }
 }

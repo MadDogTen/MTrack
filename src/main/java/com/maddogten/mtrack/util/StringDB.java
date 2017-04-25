@@ -83,7 +83,7 @@ public class StringDB {
     // -- Program Settings -- \\
     public static final String COLUMN_DEFAULTUSER = "defaultUser";
     public static final String COLUMN_PROGRAMSETTINGSTABLEVERSION = TABLE_PROGRAMSETTINGS + TABLEVERSION;
-    public static final String COLUMN_SETTINGSTABLEVERSION = TABLE_USERSETTINGS + TABLEVERSION;
+    public static final String COLUMN_USERSETTINGSTABLEVERSION = TABLE_USERSETTINGS + TABLEVERSION;
     public static final String COLUMN_SHOWSTABLEVERSION = TABLE_SHOWS + TABLEVERSION;
     public static final String COLUMN_SEASONSTABLEVERSION = TABLE_SEASONS + TABLEVERSION;
     public static final String COLUMN_EPISODESTABLEVERSION = TABLE_EPISODES + TABLEVERSION;

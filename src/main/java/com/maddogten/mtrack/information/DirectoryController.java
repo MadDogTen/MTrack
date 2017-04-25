@@ -30,7 +30,7 @@ public class DirectoryController {
 
 
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
-    private void checkDirectories(boolean skipKnownInactiveDirectories) {
+    public void checkDirectories(boolean skipKnownInactiveDirectories) {
         Set<Integer> directories;
         if (lastActiveCheck == -2 || GenericMethods.timeTakenSeconds(lastActiveCheck) > Variables.timeBetweenRecheckingActiveDirectoriesSeconds) {
             if (skipKnownInactiveDirectories) {
@@ -134,7 +134,30 @@ public class DirectoryController {
         log.info("Finished processing removal of the directory.");
     }*/
 
+    public File getDirectoryFromID(int directoryID) {
+        return new File(dbDirectoryHandler.getDirectory(directoryID));
+    }
+
     public int getDirectoryWithLowestPriority(Set<Integer> directories) {
         return dbDirectoryHandler.getDirectoryWithLowestPriorityFromList(directories);
+    }
+
+    public boolean doesShowExistsInOtherDirectories(int showID, int... directoryIDs) {
+        return dbDirectoryHandler.doesShowExistsInOtherDirectories(showID, directoryIDs);
+    }
+
+    public Set<Integer> getAllDirectories(boolean recheck, boolean skipKnownInactiveDirectories) {
+        if (recheck) checkDirectories(skipKnownInactiveDirectories);
+        return dbDirectoryHandler.getAllDirectories();
+    }
+
+    public Set<Integer> getActiveDirectories(boolean recheck, boolean skipKnownInactiveDirectories) {
+        if (recheck) checkDirectories(skipKnownInactiveDirectories);
+        return dbDirectoryHandler.getActiveDirectories();
+    }
+
+    public Set<Integer> getInactiveDirectories(boolean recheck, boolean skipKnownInactiveDirectories) {
+        if (recheck) checkDirectories(skipKnownInactiveDirectories);
+        return dbDirectoryHandler.getInactiveDirectories();
     }
 }

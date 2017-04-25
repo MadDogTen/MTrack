@@ -31,6 +31,14 @@ public class ShowInfoController {
         return dbShowManager.getAllShows();
     }
 
+    public int addShow(String show) {
+        return dbShowManager.addShow(show);
+    } // TODO Have this report a added Show
+
+    public void removeShow(int showID) {
+        dbShowManager.removeShow(showID);
+    }
+
     // Returns a Set of all season in a given show.
     public Set<Integer> getSeasonsList(int showID) {
         return dbShowManager.getSeasons(showID);
@@ -51,7 +59,7 @@ public class ShowInfoController {
 
     // Returns a given episode from a given season in a given show.
     public File getEpisode(int episodeID) {
-        return dbShowManager.getEpisodeFile(episodeID);
+        return dbShowManager.getEpisode(episodeID);
     }
 
     // Returns whether or not an episode is part of a double episode.
@@ -69,6 +77,22 @@ public class ShowInfoController {
 
     public boolean doesSeasonExist(int showID, int season) {
         return dbShowManager.doesSeasonExist(showID, season);
+    }
+
+    public void addSeason(int showID, int season) { // TODO Have this report a added season
+        dbShowManager.addSeason(showID, season);
+    }
+
+    public int addEpisode(int showID, int season, int episode, boolean partOfDoubleEpisode) { // TODO Have this report a added episode
+        return dbShowManager.addEpisode(showID, season, episode, partOfDoubleEpisode);
+    }
+
+    public void addEpisodeFile(int episodeID, int directoryID, String episodeFile) {
+        dbShowManager.addEpisodeFile(episodeID, directoryID, episodeFile);
+    }
+
+    public int containsShow(String showName) {
+        return dbShowManager.doesAlreadyContainShow(showName);
     }
 
     // Returns the lowest found integer in a set.
@@ -91,7 +115,7 @@ public class ShowInfoController {
 
     // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
     public boolean doesShowExistInOtherDirectory(int showID, int... directoriesIgnored) {
-        return ClassHandler.getDBManager().getDbDirectoryHandler().doesShowExistsInOtherDirectories(showID, directoriesIgnored);
+        return ClassHandler.directoryController().doesShowExistsInOtherDirectories(showID, directoriesIgnored);
     }
 
     // Uses the given string (The full filename of an episode of a show) and returns the episode or episodes if its a double episode.

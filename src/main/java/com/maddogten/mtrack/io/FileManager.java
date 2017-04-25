@@ -1,24 +1,16 @@
 package com.maddogten.mtrack.io;
 
-import com.maddogten.mtrack.Controller;
-import com.maddogten.mtrack.Main;
-import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
-import com.maddogten.mtrack.information.settings.UserSettings;
-import com.maddogten.mtrack.information.settings.UserShowSettings;
-import com.maddogten.mtrack.util.*;
+import com.maddogten.mtrack.util.GenericMethods;
+import com.maddogten.mtrack.util.OperatingSystem;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.io.*;
 import java.net.URLDecoder;
@@ -26,12 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /*
@@ -256,7 +245,7 @@ public class FileManager {
     }
 
     public boolean importSettings(final boolean firstRun, final Stage stage) {
-        log.info("importSettings has been started.");
+        /*log.info("importSettings has been started.");
         boolean result = false, showRestartWindow = true;
         File importFile = new TextBox().pickFile(Strings.EnterFileLocation, new SimpleStringProperty(Strings.EmptyString), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, false, stage);
         if (importFile.toString().isEmpty()) log.info("importFile was empty, Nothing imported.");
@@ -332,6 +321,7 @@ public class FileManager {
             else new MessageBox(new StringProperty[]{Strings.MTrackHasNowImportedTheFiles}, stage);
         }
         log.info("importSettings has finished.");
-        return result;
+        return result;*/
+        return false; // TODO FIX
     }
 }

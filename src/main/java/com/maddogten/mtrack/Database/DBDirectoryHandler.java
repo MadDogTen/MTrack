@@ -53,30 +53,17 @@ public class DBDirectoryHandler {
     }
 
     private void initTables(Connection connection) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_DIRECTORIES, null)) {
-            if (!resultSet.next()) {
-                log.fine("Directory table doesn't exist, creating...");
-                try (Statement statement = connection.createStatement()) {
-                    createDirectoryTable(statement);
-                }
-            }
-        }
-        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_SHOWSINDIRECTORY, null)) {
-            if (!resultSet.next()) {
-                log.fine("Shows in directory table doesn't exist, creating...");
-                try (Statement statement = connection.createStatement()) {
-                    createShowsInDirectoryTable(statement);
-                }
-            }
+        try (Statement statement = connection.createStatement()) {
+            createDirectoryTable(statement);
         }
     }
 
-    private void createShowsInDirectoryTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_SHOWSINDIRECTORY + "(" + StringDB.COLUMN_DIRECTORY_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL)");
-    }
-
-    private void createDirectoryTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_DIRECTORIES + "(" + StringDB.COLUMN_DIRECTORY_ID + " INTEGER NOT NULL UNIQUE, " + StringDB.COLUMN_DIRECTORY + " VARCHAR(" + StringDB.directoryLength + ") NOT NULL UNIQUE, " + StringDB.COLUMN_DIRECTORYPRIORITY + " INTEGER NOT NULL, " + StringDB.COLUMN_DIRECTORYACTIVE + " BOOLEAN NOT NULL)");
+    private void createDirectoryTable(Statement statement) {
+        try {
+            statement.execute("CREATE TABLE " + StringDB.TABLE_DIRECTORIES + "(" + StringDB.COLUMN_DIRECTORY_ID + " INTEGER NOT NULL UNIQUE, " + StringDB.COLUMN_DIRECTORY + " VARCHAR(" + StringDB.directoryLength + ") NOT NULL UNIQUE, " + StringDB.COLUMN_DIRECTORYPRIORITY + " INTEGER NOT NULL, " + StringDB.COLUMN_DIRECTORYACTIVE + " BOOLEAN NOT NULL)");
+        } catch (SQLException e) {
+            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
+        }
     }
 
     public Set<Integer> getAllDirectories() {
@@ -246,7 +233,7 @@ public class DBDirectoryHandler {
             getDirectoryID.setString(1, directory);
             try (ResultSet resultSet = getDirectoryID.executeQuery()) {
                 if (resultSet.next()) {
-                    result = resultSet.getInt(StringDB.COLUMN_USER_ID);
+                    result = resultSet.getInt(StringDB.COLUMN_DIRECTORY_ID);
                 } else log.warning("Couldn't find DirectoryID for \"" + directory + "\".");
             }
             getDirectoryID.clearParameters();

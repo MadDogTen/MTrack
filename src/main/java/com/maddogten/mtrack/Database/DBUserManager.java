@@ -22,14 +22,9 @@ public class DBUserManager {
     private final PreparedStatement checkForUser;
 
     public DBUserManager(Connection connection) throws SQLException {
-        ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_USERS, null);
-        if (!resultSet.next()) {
-            log.fine("User table doesn't exist, creating...");
-            try (Statement statement = connection.createStatement()) {
-                createUserTables(statement);
-            }
+        try (Statement statement = connection.createStatement()) {
+            createUserTables(statement);
         }
-        resultSet.close();
 
         insertUser = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERS + " VALUES (?, ?, ?)");
         changeUsername = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERS + " SET " + StringDB.COLUMN_USERNAME + "=? WHERE " + StringDB.COLUMN_USERNAME + " =?");
@@ -40,23 +35,24 @@ public class DBUserManager {
         checkForUser = connection.prepareStatement("SELECT * FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USERNAME + "=?");
     }
 
-    public boolean addUser(String username) {
+    public int addUser(String username) {
         return this.addUser(username, true);
     }
 
-    public boolean addUser(String userName, boolean showUsername) {
-        boolean result = false;
+    public int addUser(String userName, boolean showUsername) {
+        int userID = -2;
         try {
             insertUser.setInt(1, generateUserID());
             insertUser.setString(2, userName);
             insertUser.setBoolean(3, showUsername);
             insertUser.executeUpdate();
-            result = true; // TODO Generate other tables information
-            log.info("User \"" + userName + "\" was successfully added with ID \"" + getUserID(userName) + "\".");
+
+            userID = getUserID(userName); // TODO Generate other tables information
+            log.info("User \"" + userName + "\" was successfully added with ID \"" + userID + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        return result;
+        return userID;
     }
 
     public boolean doesUserExist(String userName) {
@@ -171,9 +167,13 @@ public class DBUserManager {
         return result;
     }
 
-    private void createUserTables(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_USERS + "(" + StringDB.COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_USERNAME + " VARCHAR(20) NOT NULL," + StringDB.COLUMN_SHOWUSERNAME + " BOOLEAN NOT NULL )");
-        log.info("User database tables have been created.");
+    private void createUserTables(Statement statement) {
+        try {
+            statement.execute("CREATE TABLE " + StringDB.TABLE_USERS + "(" + StringDB.COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_USERNAME + " VARCHAR(20) NOT NULL," + StringDB.COLUMN_SHOWUSERNAME + " BOOLEAN NOT NULL )");
+            log.info("User database tables have been created.");
+        } catch (SQLException e) {
+            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
+        }
     }
 
     public String getUsername(int userID) {

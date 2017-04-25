@@ -24,7 +24,12 @@ import java.util.logging.Logger;
 
 public class ShowPlayingBox {
     private static final Logger log = Logger.getLogger(ShowPlayingBox.class.getName());
+    private final int userID;
     private Stage stage;
+
+    public ShowPlayingBox(int userID) {
+        this.userID = userID;
+    }
 
     public void closeStage() {
         if (isStageOpen()) {
@@ -41,8 +46,8 @@ public class ShowPlayingBox {
     public void showConfirm(final DisplayShow show, final Stage oldStage) throws IOException {
         log.fine("showConfirm has been opened.");
 
-        if (ClassHandler.userInfoController().doesEpisodeExistInShowFile(show.getShow()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(show.getShow())) {
-            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShow(), show.getSeason(), show.getEpisode())) {
+        if (ClassHandler.showInfoController().doesEpisodeExist(show.getShowID(), show.getSeason(), show.getEpisode()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(userID, show.getShowID())) {
+            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShowID(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 return;
@@ -60,7 +65,7 @@ public class ShowPlayingBox {
         GenericMethods.setIcon(stage);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/gui/ShowPlaying.fxml"));
-        fxmlLoader.setController(new ShowPlaying(show));
+        fxmlLoader.setController(new ShowPlaying(userID, show));
 
         stage.setResizable(false);
 

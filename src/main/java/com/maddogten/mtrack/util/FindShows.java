@@ -3,8 +3,9 @@ package com.maddogten.mtrack.util;
 import com.maddogten.mtrack.io.FileManager;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,16 +21,22 @@ import java.util.regex.Pattern;
 public class FindShows {
     private final Logger log = Logger.getLogger(FindShows.class.getName());
 
-    public final ArrayList<String> findShows(final File dir) {
-        return new ArrayList<>(Arrays.asList(dir.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
+    public final Set<Show> findShows(final File dir) {
+        Set<Show> result = new HashSet<>();
+        Set<String> uncheckedShows = new HashSet<>(Arrays.asList(dir.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
+        uncheckedShows.forEach(showName -> {
+            Show show = new Show(dir, showName);
+            if (show.hasSeasons()) result.add(show);
+        });
+        return result;
     }
 
-    public final ArrayList<Integer> findSeasons(final File dir, final String show) {
+    public final Set<Integer> findSeasons(final File dir, final String show) {
         log.finest("Searching for seasons for: " + show + '.');
-        ArrayList<String> showFolder = new ArrayList<>();
+        Set<String> showFolder = new HashSet<>();
         if (new File(dir + Strings.FileSeparator + show).list() != null) {
             showFolder.addAll(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
-            ArrayList<Integer> seasonNumber = new ArrayList<>(showFolder.size());
+            Set<Integer> seasonNumber = new HashSet<>(showFolder.size());
             Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + Strings.seasonNumberRegex);
             Pattern pattern1 = Pattern.compile("s" + Strings.seasonNumberRegex);
             showFolder.forEach(aShowFolder -> {
@@ -43,22 +50,72 @@ public class FindShows {
             });
             return seasonNumber;
         } else log.fine("Folder for " + show + " was found to be null.");
-        return new ArrayList<>();
+        return new HashSet<>();
     }
 
-    public final ArrayList<String> findEpisodes(final File dir, final String showName, final int season) {
+    public final Set<String> findEpisodes(final File dir, final String showName, final int season) {
         log.finest("Searching for episodes for: " + showName + " || Season: " + season + '.');
         String seasonFolder = GenericMethods.getSeasonFolderName(dir, showName, season);
         if (!seasonFolder.isEmpty()) {
             File folder = new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator + seasonFolder);
             if (folder.exists() && new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
-                return new ArrayList<>(Arrays.asList(folder.list((dir1, name) -> {
+                return new HashSet<>(Arrays.asList(folder.list((dir1, name) -> {
                     for (String extension : Variables.showExtensions)
                         if (new File(dir1 + Strings.FileSeparator + name).isFile() && name.toLowerCase().endsWith(extension) && ClassHandler.showInfoController().getEpisodeInfo(name)[0] != -2)
                             return true;
                     return false;
                 })));
         }
-        return new ArrayList<>(0);
+        return new HashSet<>(0);
+    }
+
+    public class Show {
+        private final String show;
+        private final Set<Season> seasons;
+
+        public Show(File directory, String show) {
+            this.show = show;
+            this.seasons = new HashSet<>();
+
+            findSeasons(directory, show).forEach(seasonInt -> {
+                Season season = new Season(directory, seasonInt);
+                if (season.hasEpisodes()) seasons.add(season);
+            });
+        }
+
+        public String getShow() {
+            return show;
+        }
+
+        public Set<Season> getSeasons() {
+            return seasons;
+        }
+
+        boolean hasSeasons() {
+            return !seasons.isEmpty();
+        }
+
+        public class Season {
+            private final int season;
+            private final Set<String> episodes;
+
+            public Season(File directory, int season) {
+                this.season = season;
+                this.episodes = findEpisodes(directory, show, season);
+            }
+
+            public int getSeason() {
+                return season;
+            }
+
+            public Set<String> getEpisodes() {
+                return episodes;
+            }
+
+            boolean hasEpisodes() {
+                return !episodes.isEmpty();
+            }
+        }
+
     }
 }

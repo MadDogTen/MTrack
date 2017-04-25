@@ -1,8 +1,7 @@
 package com.maddogten.mtrack;
 
+import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.gui.ListSelectBox;
-import com.maddogten.mtrack.gui.VideoPlayerSelectorBox;
-import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.*;
 import javafx.concurrent.Task;
@@ -10,6 +9,8 @@ import javafx.concurrent.Task;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -23,7 +24,7 @@ public class MainRun {
     private boolean starting = true, forceRun = true, disableChecking = false;
     private int recheckTimer, saveTimer, currentTime, waitTime;
 
-    public boolean startBackend() throws IOException { // TODO Remove public
+    public boolean startBackend() throws IOException, SQLException { // TODO Remove public
         FileManager fileManager = new FileManager();
         // First it checks if the folder that contains the jar has the settings file.
         try {
@@ -54,22 +55,31 @@ public class MainRun {
             firstRun = false;
         }
         if (!continueStarting) return false;
-        UpdateManager updateManager = new UpdateManager();
+        //UpdateManager updateManager = new UpdateManager();
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         if (needsToRun) {
-            if (fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingFileExtension))
+            try {
+                ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), false));
+                ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager().getConnection());
+                ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager().getConnection());
+                ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager().getConnection());
+                ClassHandler.userInfoController().initDatabase(ClassHandler.getDBManager().getConnection());
+            } catch (SQLException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
+            /*if (fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingFileExtension))
                 updateManager.updateProgramSettingsFile();
-            else new FirstRun().generateProgramSettingsFile();
-            ClassHandler.programSettingsController().loadProgramSettingsFile();
-            loadProgramSettings();
-            updateManager.updateShowFile();
+            else new FirstRun().generateProgramSettingsFile();*/
+            //ClassHandler.programSettingsController().loadProgramSettingsFile();
+            //loadProgramSettings();
+            // updateManager.updateShowFile();
+            Strings.UserName.setValue(ClassHandler.userInfoController().getUserNameFromID(getUser()));
+            if (!continueStarting) return false;
             getLanguage();
             if (Variables.makeLanguageDefault)
-                ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);
+                ClassHandler.userInfoController().setLanguage(Variables.currentUser, Variables.language);
             if (!continueStarting) return false;
-            Strings.UserName.setValue(getUser());
-            if (!continueStarting) return false;
-            loadUser(updateManager, true);
+            //loadUser(updateManager, true);
         }
         if (Variables.enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
             try {
@@ -79,50 +89,20 @@ public class MainRun {
             }
         }
         if (!needsToRun) {
-            log.info("Username is set: " + Strings.UserName.getValue());
-            updateManager.updateMainDirectoryVersion();
-            loadUserSettings(true);
-            loadProgramSettings();
+            log.info("Username is set: " + ClassHandler.userInfoController().getUserNameFromID(Variables.currentUser));
+            //updateManager.updateMainDirectoryVersion();
+            //loadUserSettings(true);
+            //loadProgramSettings();
         }
         return continueStarting;
     }
 
     void loadUser(final UpdateManager updateManager, final boolean mainLoad) throws IOException {
-        if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
-            new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());
-        if (ClassHandler.showInfoController().getShowsFile() == null)
-            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
-        else
-            ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, true));
-        updateManager.updateUserSettingsFile();
-        ClassHandler.userInfoController().loadUserInfo();
+        /*if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
+            new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());*/
+        //updateManager.updateUserSettingsFile();
         log.info("Username is set: " + Strings.UserName.getValue());
-        updateManager.updateMainDirectoryVersion();
-        loadUserSettings(mainLoad);
-    }
-
-    private void loadUserSettings(final boolean mainLoad) throws IOException {
-        ChangeReporter.setChanges(ClassHandler.userInfoController().getUserSettings().getChanges());
-        if (!mainLoad)
-            ClassHandler.controller().setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
-        if (ClassHandler.userInfoController().getUserSettings().getVideoPlayer() == null || (ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerEnum() != VideoPlayer.VideoPlayerEnum.OTHER && !ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerLocation().exists()))
-            ClassHandler.userInfoController().getUserSettings().setVideoPlayer(new VideoPlayerSelectorBox().videoPlayerSelector(null));
-    }
-
-    private void loadProgramSettings() {
-        Variables.updateSpeed = ClassHandler.programSettingsController().getSettingsFile().getUpdateSpeed();
-        Variables.timeToWaitForDirectory = ClassHandler.programSettingsController().getSettingsFile().getTimeToWaitForDirectory();
-        Variables.recordChangesForNonActiveShows = ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows();
-        Variables.recordChangedSeasonsLowerThanCurrent = ClassHandler.programSettingsController().getSettingsFile().isRecordChangedSeasonsLowerThanCurrent();
-        Variables.disableAutomaticRechecking = ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating();
-        Variables.setStageMoveWithParentAndBlockParent(ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-        Variables.specialEffects = ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects();
-        Variables.enableAutoSavingOnTimer = ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving();
-        Variables.savingSpeed = ClassHandler.programSettingsController().getSettingsFile().getSaveSpeed();
-        Variables.enableFileLogging = ClassHandler.programSettingsController().getSettingsFile().isFileLogging();
-        Variables.useOnlineDatabase = ClassHandler.programSettingsController().getSettingsFile().isUseRemoteDatabase();
-        Variables.show0Remaining = ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining();
-        Variables.showActiveShows = ClassHandler.programSettingsController().getSettingsFile().isShowActiveShows();
+        //updateManager.updateMainDirectoryVersion();
     }
 
     void tick() {
@@ -135,7 +115,7 @@ public class MainRun {
         }
         timeCheck();
         recheck();
-        saveSettings();
+        //saveSettings();
     }
 
     private void timeCheck() {
@@ -158,7 +138,7 @@ public class MainRun {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    ClassHandler.checkShowFiles().recheckShowFile(forceRun);
+                    ClassHandler.checkShowFiles().checkShowFiles();
                     return null;
                 }
             };
@@ -175,35 +155,33 @@ public class MainRun {
     }
 
     // This first checks if a DefaultUser currently exists, and if not, prompts the user to choose / create one.
-    public String getUser() {
+    public int getUser() {
         log.finer("getUser Running...");
-        if (ClassHandler.programSettingsController().getSettingsFile().isUseDefaultUser()) {
+        int defaultUser = ClassHandler.programSettingsController().getDefaultUser();
+        if (defaultUser != -2) {
             log.finer("Using default user.");
-            return ClassHandler.programSettingsController().getSettingsFile().getDefaultUser();
+            return defaultUser;
         } else {
-            Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, ClassHandler.userInfoController().getAllUsers());
-            String user = (String) pickUserResult[0];
-            if (user.matches(Strings.AddNewUsername.getValue())) continueStarting = false;
-            if ((boolean) pickUserResult[1]) ClassHandler.programSettingsController().setDefaultUsername(user, true);
+            HashMap<String, Integer> users = new HashMap<>();
+            ClassHandler.userInfoController().getAllUsers().forEach(userID -> {
+                users.put(ClassHandler.userInfoController().getUserNameFromID(userID), userID);
+            });
+            Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, users.keySet());
+            int user = -2;
+            if (((String) pickUserResult[0]).matches(Strings.AddNewUsername.getValue())) continueStarting = false;
+            else user = users.get(pickUserResult[0]);
+            Variables.currentUser = user;
+            if ((boolean) pickUserResult[1]) ClassHandler.programSettingsController().setDefaultUser(user);
             return user;
         }
     }
-
-    private void saveSettings() {
-        if (Variables.enableAutoSavingOnTimer && GenericMethods.timeTakenSeconds(saveTimer) > Variables.savingSpeed) {
-            GenericMethods.saveSettings();
-            saveTimer = GenericMethods.getTimeSeconds();
-            log.fine("Settings have automatically been saved.");
-        }
-    }
-
 
     // Prompts the user to choose which language to startup with. If there is only 1 language, then it will skip the prompt and start with it.
     public void getLanguage() {
         LanguageHandler languageHandler = new LanguageHandler();
         Map<String, String> languages = languageHandler.getLanguageNames();
         String language = Strings.EmptyString;
-        if (!firstRun) language = ClassHandler.programSettingsController().getSettingsFile().getLanguage();
+        if (!firstRun) language = ClassHandler.userInfoController().getLanguage(Variables.currentUser);
         if (languages.size() == 1)
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
         else if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove

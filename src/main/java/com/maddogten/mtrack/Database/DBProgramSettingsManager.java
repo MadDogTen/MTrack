@@ -14,26 +14,45 @@ public class DBProgramSettingsManager {
     private final PreparedStatement changeDefaultUser;
 
     public DBProgramSettingsManager(Connection connection) throws SQLException {
-        ResultSet resultSet = connection.getMetaData().getTables(null, null, StringDB.TABLE_PROGRAMSETTINGS, null);
-        if (!resultSet.next()) {
-            log.fine("Program Settings table doesn't exist, creating...");
-            try (Statement statement = connection.createStatement()) {
-                createProgramSettingsTable(statement);
-                addSettingsRow(statement);
-            }
+        try (Statement statement = connection.createStatement()) {
+            createProgramSettingsTable(statement);
         }
-        resultSet.close();
 
-        getDefaultUser = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_PROGRAMSETTINGS);
-        changeDefaultUser = connection.prepareStatement("UPDATE " + StringDB.TABLE_PROGRAMSETTINGS + " SET " + StringDB.COLUMN_USER_ID + "=?");
+        getDefaultUser = connection.prepareStatement("SELECT " + StringDB.COLUMN_DEFAULTUSER + " FROM " + StringDB.TABLE_PROGRAMSETTINGS);
+        changeDefaultUser = connection.prepareStatement("UPDATE " + StringDB.TABLE_PROGRAMSETTINGS + " SET " + StringDB.COLUMN_DEFAULTUSER + "=?");
     }
 
     private void createProgramSettingsTable(Statement statement) throws SQLException {
-        statement.execute("CREATE TABLE " + StringDB.TABLE_PROGRAMSETTINGS + "(" + StringDB.COLUMN_PROGRAMSETTINGSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_SETTINGSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_SHOWSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_SEASONSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODESTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODEFILESTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_DIRECTORIESTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_USERSTABLEVERSION + " INTEGER NOT NULL, " + StringDB.COLUMN_DEFAULTUSER + " INTEGER NOT NULL " + ")");
+        boolean alreadyExists = false;
+        try {
+            statement.execute("CREATE TABLE " + StringDB.TABLE_PROGRAMSETTINGS + "(" +
+                    StringDB.COLUMN_PROGRAMSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_USERSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_SHOWSTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_SEASONSTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_EPISODESTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_EPISODEFILESTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_DIRECTORIESTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_USERSTABLEVERSION + " INTEGER NOT NULL, " +
+                    StringDB.COLUMN_DEFAULTUSER + " INTEGER NOT NULL " + ")");
+        } catch (SQLException e) {
+            if (GenericMethods.doesTableExistsFromError(e)) alreadyExists = true;
+            else GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        if (!alreadyExists) addSettingsRow(statement);
     }
 
     private void addSettingsRow(Statement statement) throws SQLException {
-        statement.execute("INSERT INTO " + StringDB.TABLE_PROGRAMSETTINGS + " VALUES (" + Variables.programSettingsTableVersion + Variables.seasonsTableVersion + Variables.showsTableVersion + Variables.seasonsTableVersion + Variables.episodesTableVersion + Variables.episodeFilesTableVersion + Variables.directoriesTableVersion + Variables.usersTableVersion + ")");
+        statement.execute("INSERT INTO " + StringDB.TABLE_PROGRAMSETTINGS + " VALUES (" +
+                Variables.programSettingsTableVersion + ", " +
+                Variables.seasonsTableVersion + ", " +
+                Variables.showsTableVersion + ", " +
+                Variables.seasonsTableVersion + ", " +
+                Variables.episodesTableVersion + ", " +
+                Variables.episodeFilesTableVersion + ", " +
+                Variables.directoriesTableVersion + ", " +
+                Variables.usersTableVersion + ", " +
+                -2 + ")");
     }
 
     public boolean useDefaultUser() {
@@ -49,7 +68,7 @@ public class DBProgramSettingsManager {
     public int getDefaultUser() {
         int result = -2;
         try (ResultSet resultSet = getDefaultUser.executeQuery()) {
-            if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_USER_ID);
+            if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_DEFAULTUSER);
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

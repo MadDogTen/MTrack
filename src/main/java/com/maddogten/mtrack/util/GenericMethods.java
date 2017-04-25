@@ -1,7 +1,5 @@
 package com.maddogten.mtrack.util;
 
-import com.maddogten.mtrack.Controller;
-import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.io.FileManager;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -9,6 +7,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,23 +77,6 @@ public class GenericMethods {
                 stackTrace[i] = '\n' + exception.getStackTrace()[i].toString();
             log.severe(Arrays.toString(stackTrace));
         }
-    }
-
-    public static void saveSettings() {
-        ClassHandler.programSettingsController().getSettingsFile().setShowColumnWidth(Controller.getShowColumnWidth());
-        ClassHandler.programSettingsController().getSettingsFile().setShowColumnVisibility(Controller.getShowColumnVisibility());
-        ClassHandler.programSettingsController().getSettingsFile().setRemainingColumnWidth(Controller.getRemainingColumnWidth());
-        ClassHandler.programSettingsController().getSettingsFile().setRemainingColumnVisibility(Controller.getRemainingColumnVisibility());
-        ClassHandler.programSettingsController().getSettingsFile().setSeasonColumnWidth(Controller.getSeasonColumnWidth());
-        ClassHandler.programSettingsController().getSettingsFile().setSeasonColumnVisibility(Controller.getSeasonColumnVisibility());
-        ClassHandler.programSettingsController().getSettingsFile().setEpisodeColumnWidth(Controller.getEpisodeColumnWidth());
-        ClassHandler.programSettingsController().getSettingsFile().setEpisodeColumnVisibility(Controller.getEpisodeColumnVisibility());
-        ClassHandler.programSettingsController().getSettingsFile().setNumberOfDirectories(ClassHandler.directoryController().findDirectories(true, false, true).size());
-        ClassHandler.userInfoController().getUserSettings().setChanges(ChangeReporter.getChanges());
-        ClassHandler.userInfoController().getUserSettings().setChangedShowsStatus(ClassHandler.controller().getChangedShows());
-        ClassHandler.userInfoController().getActiveShows().forEach(showName -> ClassHandler.userInfoController().getUserSettings().getAShowSettings(showName).setRemaining(ClassHandler.userInfoController().getRemainingNumberOfEpisodes(showName)));
-        ClassHandler.programSettingsController().saveSettingsFile();
-        ClassHandler.userInfoController().saveUserSettingsFile();
     }
 
     // Initiate logging rules.
@@ -228,5 +210,9 @@ public class GenericMethods {
         StringBuilder stringBuilder = new StringBuilder();
         for (int value : values) stringBuilder.append(value).append("");
         return Integer.valueOf(stringBuilder.toString());
+    }
+
+    public static boolean doesTableExistsFromError(SQLException e) {
+        return e.getSQLState().toLowerCase().matches("X0Y32".toLowerCase());
     }
 }

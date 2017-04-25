@@ -29,9 +29,8 @@ public class Main extends Application implements Runnable {
         launch(args);
     }
 
-    public synchronized static void stop(final Stage stage, final boolean forceStop, final boolean saveSettings) {
+    public synchronized static void stop(final Stage stage, final boolean forceStop) {
         if (forceStop || new ConfirmBox().confirm(Strings.AreYouSure, stage)) {
-            if (saveSettings) GenericMethods.saveSettings();
             programFullyRunning = false;
             programRunning = false;
             int timeRan = GenericMethods.timeTakenSeconds(timer);
@@ -84,14 +83,14 @@ public class Main extends Application implements Runnable {
             scene.setFill(Color.WHITESMOKE);
             stage.setOnCloseRequest(e -> {
                 e.consume();
-                stop(stage, true, true);
+                stop(stage, true);
             });
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
             if (Variables.specialEffects) GenericMethods.fadeStageIn(stage, 10, log, Main.class);
             start();
-        } else stop(null, true, false);
+        } else stop(null, true);
     }
 
     private synchronized void start() {

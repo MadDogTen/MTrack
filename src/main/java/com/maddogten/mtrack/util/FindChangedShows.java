@@ -1,20 +1,12 @@
 package com.maddogten.mtrack.util;
 
-import com.maddogten.mtrack.information.ChangeReporter;
-import com.maddogten.mtrack.information.UserInfoController;
-import com.maddogten.mtrack.information.show.Show;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
 /*
       FindChangedShows compares the old shows file to the new one,
       and reports any found changes to the ChangeReporter.
  */
 
 public class FindChangedShows {
-    private final Logger log = Logger.getLogger(FindChangedShows.class.getName());
+   /* private final Logger log = Logger.getLogger(FindChangedShows.class.getName());
 
     private final Map<String, Show> oldShowsFile;
     private final UserInfoController userInfoController;
@@ -115,5 +107,5 @@ public class FindChangedShows {
             this.log.info("No files have changed.");
         }
         this.log.info("Finished running findShowFileDifferences.");
-    }
+    }*/
 }

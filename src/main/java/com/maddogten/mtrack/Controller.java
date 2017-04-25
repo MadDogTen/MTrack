@@ -2,7 +2,6 @@ package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.*;
 import com.maddogten.mtrack.information.ChangeReporter;
-import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
@@ -43,7 +42,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -66,7 +64,7 @@ public class Controller implements Initializable {
     private static DisplayShow showCurrentlyPlaying = null;
     private final Map<String, Integer> changedShows = new HashMap<>();
     private final ChangesBox changesBox = new ChangesBox();
-    private final ShowPlayingBox showPlayingBox = new ShowPlayingBox();
+    private final ShowPlayingBox showPlayingBox = new ShowPlayingBox(Variables.currentUser); // TODO Not valid
     @SuppressWarnings("unused")
     @FXML
     private Pane pane;
@@ -410,7 +408,7 @@ public class Controller implements Initializable {
     public void initialize(final URL fxmlFileLocation, final ResourceBundle resources) {
         log.finer("Controller Running...");
         ClassHandler.setController(this);
-        this.setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
+        //this.setChangedShows(ClassHandler.userInfoController().getUserSettings().getChangedShowsStatus());
         tableView.placeholderProperty().setValue(new Label(""));
         pane.setPrefSize(Variables.SIZE_WIDTH, Variables.SIZE_HEIGHT);
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
@@ -556,7 +554,7 @@ public class Controller implements Initializable {
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
-                        ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true, true);
+                        /*ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true, true);
                         ArrayList<Directory> folders = new ArrayList<>();
                         FileManager fileManager = new FileManager();
                         directories.forEach(aDirectory -> {
@@ -565,7 +563,7 @@ public class Controller implements Initializable {
                                 folders.add(new Directory(fileName, fileName.toString(), -2, null));
                         });
                         if (folders.size() == 1) fileManager.openFolder(folders.get(0).getDirectory());
-                        else new ListSelectBox().openDirectory(folders, (Stage) pane.getScene().getWindow());
+                        else new ListSelectBox().openDirectory(folders, (Stage) pane.getScene().getWindow());*/
                         log.info("Finished opening show directory...");
                     });
                     MenuItem getRemaining = new MenuItem();
@@ -645,27 +643,27 @@ public class Controller implements Initializable {
                 this.playShow(tableView.getFocusModel().getFocusedItem());
         });
 
-        userName.setVisible(ClassHandler.userInfoController().isShowUsername());
+        /*userName.setVisible(ClassHandler.userInfoController().isShowUsername());
         userName.textProperty().bind(Strings.UserName);
         userNameComboBox.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());
-        userNameComboBox.setDisable(!ClassHandler.userInfoController().getUserSettings().isShowUsername());
+        userNameComboBox.setDisable(!ClassHandler.userInfoController().getUserSettings().isShowUsername());*/
         comboBoxTooltip.textProperty().bind(Strings.UserName);
 
         userNameComboBox.addEventFilter(MouseEvent.MOUSE_RELEASED, mouse -> {
             if (!mouse.isStillSincePress()) mouse.consume();
             userNameComboBox.setCursor(Cursor.DEFAULT);
         });
-        userNameComboBox.setOnShown(e -> {
+        /*userNameComboBox.setOnShown(e -> {
             this.toggleUsernameUsability(true);
             ArrayList<String> users = ClassHandler.userInfoController().getAllUsers();
             users.remove(Strings.UserName.getValue());
             userNameComboBox.getItems().addAll(users);
-        });
+        });*/
         userNameComboBox.setOnHidden(event -> {
             this.toggleUsernameUsability(false);
             userNameComboBox.getItems().clear();
         });
-        userNameComboBox.setOnAction(e -> {
+        /*userNameComboBox.setOnAction(e -> {
             if (userNameComboBox.getValue() != null && !userNameComboBox.getValue().matches(Strings.UserName.getValue())) {
                 GenericMethods.saveSettings();
                 Strings.UserName.setValue(userNameComboBox.getValue());
@@ -677,7 +675,7 @@ public class Controller implements Initializable {
                 }
                 Controller.setTableViewFields();
             }
-        });
+        });*/
         userName.setTextFill(Paint.valueOf(Color.DIMGRAY.toString()));
 
         clearTextField.setText(Strings.EmptyString);
@@ -692,7 +690,7 @@ public class Controller implements Initializable {
         });
 
         // ~~~~ Buttons ~~~~ \\
-        exit.setOnAction(e -> Main.stop(Main.stage, false, true));
+        exit.setOnAction(e -> Main.stop(Main.stage, false));
         minimize.setOnAction(e -> Main.stage.setIconified(true));
         //changeTableViewButton.textProperty().bind(Strings.SwitchBetweenActiveInactiveList);
         changeTableViewButton.setOnAction(event -> {
@@ -707,7 +705,7 @@ public class Controller implements Initializable {
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
-                            ClassHandler.checkShowFiles().recheckShowFile(true);
+                            ClassHandler.checkShowFiles().checkShowFiles();
                             return null;
                         }
                     };
@@ -778,7 +776,7 @@ public class Controller implements Initializable {
         disableAutomaticShowUpdating.setSelected(Variables.forceDisableAutomaticRechecking || Variables.disableAutomaticRechecking);
         disableAutomaticShowUpdating.setDisable(Variables.forceDisableAutomaticRechecking);
         disableAutomaticShowUpdating.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setDisableAutomaticShowUpdating(!ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
+            //ClassHandler.programSettingsController().getSettingsFile().setDisableAutomaticShowUpdating(!ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
             updateTimeTextField.setDisable(Variables.disableAutomaticRechecking);
             setUpdateTime.setDisable(Variables.disableAutomaticRechecking);
             log.info("Disable automatic show checking has been set to: " + Variables.disableAutomaticRechecking);
@@ -814,11 +812,10 @@ public class Controller implements Initializable {
 
         // User
         currentUserText.textProperty().bind(Strings.CurrentUser);
-        currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
+        //currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
         currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
         currentUserComboBox.setOnAction(e -> {
             if (currentUserComboBox.getValue() != null && !currentUserComboBox.getValue().matches(Strings.UserName.getValue())) {
-                GenericMethods.saveSettings();
                 Strings.UserName.setValue(currentUserComboBox.getValue());
                 ChangeReporter.resetChanges();
                 try {
@@ -851,7 +848,7 @@ public class Controller implements Initializable {
                 log.info(userName + " was added.");
             }
             currentUserComboBox.getItems().clear();
-            currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
+            //currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
             currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
             setButtonDisable(false, addUser, deleteUser, currentUserComboBox, setDefaultUsername);
         });
@@ -872,7 +869,7 @@ public class Controller implements Initializable {
                 }
             }
             currentUserComboBox.getItems().clear();
-            currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
+            //currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
             currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
             setButtonDisable(false, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
         });
@@ -885,7 +882,7 @@ public class Controller implements Initializable {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    ClassHandler.checkShowFiles().recheckShowFile(true);
+                    ClassHandler.checkShowFiles().checkShowFiles();
                     setButtonDisable(false, forceRecheck);
                     return null;
                 }
@@ -894,7 +891,7 @@ public class Controller implements Initializable {
         });
         unHideShow.textProperty().bind(Strings.UnHideShow);
         unHideShow.setOnAction(e -> {
-            setButtonDisable(true, unHideShow);
+           /* setButtonDisable(true, unHideShow);
             ArrayList<String> hiddenShows = ClassHandler.userInfoController().getHiddenShows();
             if (hiddenShows.isEmpty())
                 new MessageBox(new StringProperty[]{Strings.ThereAreNoHiddenShows}, (Stage) tabPane.getScene().getWindow());
@@ -906,7 +903,7 @@ public class Controller implements Initializable {
                     log.info(showToUnHide + " was unhidden.");
                 } else log.info("No show was unhidden.");
             }
-            setButtonDisable(false, unHideShow);
+            setButtonDisable(false, unHideShow);*/
         });
         useOnlineDatabaseCheckbox.textProperty().bind(Strings.UseOnlineDatabase); // TODO Enable once working
         useOnlineDatabaseCheckbox.setSelected(Variables.useOnlineDatabase);
@@ -918,46 +915,46 @@ public class Controller implements Initializable {
         onlineWarningText.textProperty().bind(Strings.WarningConnectsToRemoteWebsite);
         useOnlineDatabaseCheckbox.setDisable(true);
         changeVideoPlayerButton.setOnAction(e -> { // TODO Add Localization
-            try {
+            /*try {
                 ClassHandler.userInfoController().getUserSettings().setVideoPlayer(new VideoPlayerSelectorBox().videoPlayerSelector((Stage) tabPane.getScene().getWindow()));
             } catch (IOException e1) {
                 GenericMethods.printStackTrace(log, e1, getClass());
-            }
+            }*/
         });
 
         // UI
         unlockParentScene.textProperty().bind(Strings.AllowFullWindowMovementUse);
-        unlockParentScene.setSelected(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+        // unlockParentScene.setSelected(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
         unlockParentScene.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setStageMoveWithParentAndBlockParent(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+            /*ClassHandler.programSettingsController().getSettingsFile().setStageMoveWithParentAndBlockParent(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
             Variables.setStageMoveWithParentAndBlockParent(ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
             log.info("MoveAndBlock has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
             if (!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent())
-                new MessageBox(new StringProperty[]{new SimpleStringProperty("Warning- Using this can cause things to break if used improperly.")}, (Stage) mainPane.getScene().getWindow()); // TODO Add localization
+                new MessageBox(new StringProperty[]{new SimpleStringProperty("Warning- Using this can cause things to break if used improperly.")}, (Stage) mainPane.getScene().getWindow()); // TODO Add localization*/
         });
         showUsername.textProperty().bind(Strings.ShowUsername);
-        showUsername.setSelected(ClassHandler.userInfoController().getUserSettings().isShowUsername());
+        //showUsername.setSelected(ClassHandler.userInfoController().getUserSettings().isShowUsername());
         showUsername.setOnAction(e -> {
-            ClassHandler.userInfoController().getUserSettings().setShowUsername(showUsername.isSelected());
-            userName.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());
+            /*ClassHandler.userInfoController().getUserSettings().setShowUsername(showUsername.isSelected());
+            userName.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());*/
         });
         specialEffects.textProperty().bind(Strings.SpecialEffects);
         specialEffects.setSelected(Variables.specialEffects);
         specialEffects.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setEnableSpecialEffects(!ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
-            log.info("Special Effects has been set to: " + Variables.specialEffects);
+            /*ClassHandler.programSettingsController().getSettingsFile().setEnableSpecialEffects(!ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
+            log.info("Special Effects has been set to: " + Variables.specialEffects);*/
         });
         automaticSaving.textProperty().bind(Strings.EnableAutomaticSaving);
         automaticSaving.setSelected(Variables.enableAutoSavingOnTimer);
         automaticSaving.setOnAction(e -> {
-            ClassHandler.programSettingsController().getSettingsFile().setEnableAutomaticSaving(!ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
+           /* ClassHandler.programSettingsController().getSettingsFile().setEnableAutomaticSaving(!ClassHandler.programSettingsController().getSettingsFile().isEnableAutomaticSaving());
             if (Variables.enableAutoSavingOnTimer && updateSavingTextField.getText().matches(String.valueOf(0))) {
                 ClassHandler.programSettingsController().setSavingSpeed(Variables.defaultSavingSpeed);
                 updateSavingTextField.setText(String.valueOf(Variables.defaultSavingSpeed));
             }
             setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
             updateSavingTextField.setDisable(!Variables.enableAutoSavingOnTimer);
-            log.info("Automatic saving has been set to: " + Variables.enableAutoSavingOnTimer);
+            log.info("Automatic saving has been set to: " + Variables.enableAutoSavingOnTimer);*/
         });
         savingText.textProperty().bind(Strings.SavingWaitTimeSeconds);
         savingText.setTextAlignment(TextAlignment.CENTER);
@@ -966,13 +963,13 @@ public class Controller implements Initializable {
         setSavingTime.textProperty().bind(Strings.Set);
         setSavingTime.setDisable(!Variables.enableAutoSavingOnTimer);
         setSavingTime.setOnAction(e -> {
-            if (isNumberValid(updateSavingTextField.getText(), 5))
+           /* if (isNumberValid(updateSavingTextField.getText(), 5))
                 ClassHandler.programSettingsController().setSavingSpeed(Integer.valueOf(updateSavingTextField.getText()));
-            else updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));
+            else updateSavingTextField.setText(String.valueOf(Variables.savingSpeed));*/
         });
         changeLanguage.textProperty().bind(Strings.ChangeLanguage);
         changeLanguage.setOnAction(e -> {
-            setButtonDisable(true, changeLanguage);
+           /* setButtonDisable(true, changeLanguage);
             LanguageHandler languageHandler = new LanguageHandler();
             Map<String, String> languages = languageHandler.getLanguageNames();
             if (languages.containsKey(ClassHandler.programSettingsController().getSettingsFile().getLanguage()))
@@ -990,14 +987,14 @@ public class Controller implements Initializable {
                 ClassHandler.programSettingsController().setDefaultLanguage(internalName);
                 languageHandler.setLanguage(Variables.language);
             }
-            setButtonDisable(false, changeLanguage);
+            setButtonDisable(false, changeLanguage);*/
         });
 
         // Other
         directoryText.textProperty().bind(Strings.Directory);
         addDirectory.textProperty().bind(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
-            setButtonDisable(true, addDirectory, removeDirectory);
+            /*setButtonDisable(true, addDirectory, removeDirectory);
             ArrayList<File> directories = new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow());
             directories.forEach(file -> {
                 Long[] wasAdded = ClassHandler.directoryController().addDirectory(file);
@@ -1027,12 +1024,12 @@ public class Controller implements Initializable {
                     ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
                 } else log.info("Directory \"" + file + "\" wasn't added.");
             });
-            setButtonDisable(false, addDirectory, removeDirectory);
+            setButtonDisable(false, addDirectory, removeDirectory);*/
         });
         removeDirectory.textProperty().bind(Strings.RemoveDirectory);
         removeDirectory.setOnAction(e -> {
             log.info("Remove Directory Started:");
-            setButtonDisable(true, removeDirectory, addDirectory);
+            /*setButtonDisable(true, removeDirectory, addDirectory);
             ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
             if (directories.isEmpty()) {
                 log.info("No directories to delete.");
@@ -1061,7 +1058,7 @@ public class Controller implements Initializable {
                         log.info('"' + directoryToDelete.getFileName() + "\" has been deleted!");
                     } else log.info("No directory has been deleted.");
                 }
-            }
+            }*/
             log.info("Remove Directory Finished!");
             setButtonDisable(false, removeDirectory, addDirectory);
         });
@@ -1070,18 +1067,18 @@ public class Controller implements Initializable {
         directoryTimeoutTextField.setText(String.valueOf(Variables.timeToWaitForDirectory));
         setDirectoryTimeout.textProperty().bind(Strings.Set);
         setDirectoryTimeout.setOnAction(e -> {
-            if (isNumberValid(directoryTimeoutTextField.getText(), 2)) {
+            /*if (isNumberValid(directoryTimeoutTextField.getText(), 2)) {
                 if (directoryTimeoutTextField.getText().isEmpty())
                     directoryTimeoutTextField.setText(String.valueOf(Variables.timeToWaitForDirectory));
                 else
                     ClassHandler.programSettingsController().setTimeToWaitForDirectory(Integer.valueOf(directoryTimeoutTextField.getText()));
-            }
+            }*/
         });
         enableLoggingCheckbox.textProperty().bind(Strings.EnableFileLogging);
         enableLoggingCheckbox.setSelected(Variables.enableFileLogging);
         enableLoggingCheckbox.setOnAction(e -> {
-            ClassHandler.programSettingsController().setFileLogging(!ClassHandler.programSettingsController().getSettingsFile().isFileLogging());
-            log.info("Enable file logging is now: " + Variables.enableFileLogging);
+            /*ClassHandler.programSettingsController().setFileLogging(!ClassHandler.programSettingsController().getSettingsFile().isFileLogging());
+            log.info("Enable file logging is now: " + Variables.enableFileLogging);*/
         });
         exportSettings.textProperty().bind(Strings.ExportSettings);
         exportSettings.setOnAction(e -> new FileManager().exportSettings((Stage) tabPane.getScene().getWindow()));
@@ -1144,7 +1141,7 @@ public class Controller implements Initializable {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
-                    ClassHandler.checkShowFiles().recheckShowFile(false);
+                    ClassHandler.checkShowFiles().checkShowFiles();
                     setButtonDisable(false, nonForceRecheckShows);
                     return null;
                 }
@@ -1172,7 +1169,7 @@ public class Controller implements Initializable {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
                 new FileManager().clearProgramFiles();
-                Main.stop(Main.stage, true, false);
+                Main.stop(Main.stage, true);
             } else setButtonDisable(false, deleteEverythingAndClose);
         });
         // TODO End

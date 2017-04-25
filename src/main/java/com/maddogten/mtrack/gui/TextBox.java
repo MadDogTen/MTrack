@@ -1,6 +1,5 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.information.show.Directory;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ClassHandler;
@@ -25,6 +24,7 @@ import javafx.stage.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /*
@@ -110,7 +110,7 @@ public class TextBox {
         return false;
     }
 
-    public ArrayList<File> addDirectory(@SuppressWarnings("SameParameterValue") final StringProperty message, final ArrayList<Directory> currentDirectories, final Stage oldStage) {
+    public ArrayList<File> addDirectory(@SuppressWarnings("SameParameterValue") final StringProperty message, final Set<String> currentDirectories, final Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage addDirectoryStage = new Stage();
@@ -127,8 +127,7 @@ public class TextBox {
         textArea.setPromptText(Strings.FileSeparator + Strings.PathToDirectory.getValue() + Strings.FileSeparator + Strings.Shows.getValue());
         textArea.setPrefSize(240, 60);
 
-        ArrayList<String> directoryPaths = new ArrayList<>(currentDirectories.size());
-        currentDirectories.forEach(aDirectory -> directoryPaths.add(String.valueOf(aDirectory.getDirectory())));
+        ArrayList<String> directoryPaths = new ArrayList<>(currentDirectories);
         DirectoryChooser DirectoryChooser = new DirectoryChooser();
 
         Button filePicker = new Button(), submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));

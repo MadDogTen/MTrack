@@ -90,6 +90,7 @@ public class Variables {
     public static boolean specialEffects;
     public static int savingSpeed;
     public static boolean enableAutoSavingOnTimer;
+    public static int checkInterval = 5;
     @SuppressWarnings("CanBeFinal")
     public static boolean enableFileLogging;
     @SuppressWarnings("CanBeFinal")

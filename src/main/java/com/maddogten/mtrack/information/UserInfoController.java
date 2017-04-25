@@ -41,12 +41,43 @@ public class UserInfoController {
         dbUserSettingsManager.changeBooleanSetting(userID, showID, ignored, StringDB.COLUMN_IGNORED, StringDB.TABLE_USERSHOWSETTINGS);
     }
 
+    public void setIgnoredStatusAllUsers(int showID, boolean ignored) {
+        getAllUsers().forEach(userID -> setIgnoredStatus(userID, showID, ignored));
+    }
+
     public boolean doesUserExist(String userName) {
         return dbUserManager.doesUserExist(userName);
     }
 
-    public boolean addUser(String userName) {
+    public int addUser(String userName) {
+        int userID = dbUserManager.addUser(userName);
+        if (userID != -2) {
+            ClassHandler.showInfoController().getShows().forEach(showID -> {
+                addNewShow(userID, showID);
+            });
+        }
+        log.fine("Generated all show data for " + userName + ".");
         return dbUserManager.addUser(userName);
+    }
+
+    public void addShowForUsers(int showID) {
+        getAllUsers().forEach(userID -> {
+            if (dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_SHOW_ID, StringDB.TABLE_USERSHOWSETTINGS) == -2) {
+                this.addNewShow(userID, showID);
+                log.fine("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" was added for user \"" + getUserNameFromID(userID) + "\".");
+            } else {
+                this.setIgnoredStatus(userID, showID, false);
+                log.fine("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" was un-ignored for user \"" + getUserNameFromID(userID) + "\".");
+            }
+        });
+    }
+
+    // Adds a new show to the shows file.
+    public void addNewShow(int userID, int showID) {
+        log.fine("Adding " + ClassHandler.showInfoController().getShowNameFromShowID(showID) + " to " + dbUserManager.getUsername(userID) + "'s settings file.");
+        int season = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(showID)) : 1;
+        int episode = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(showID, season)) : (ClassHandler.showInfoController().doesEpisodeExist(showID, season, 0)) ? 0 : 1;
+        dbUserSettingsManager.addShowSettings(userID, showID, season, episode);
     }
 
     public Set<Integer> getIgnoredShows(int userID) {
@@ -259,14 +290,6 @@ public class UserInfoController {
             Controller.updateShowField(showID, true);
             return true;
         } else return false;
-    }
-
-    // Adds a new show to the shows file.
-    public void addNewShow(int userID, int showID) {
-        log.fine("Adding " + ClassHandler.showInfoController().getShowNameFromShowID(showID) + " to user settings file.");
-        int season = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(showID)) : 1;
-        int episode = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(showID, season)) : (ClassHandler.showInfoController().doesEpisodeExist(showID, season, 0)) ? 0 : 1;
-        dbUserSettingsManager.addShowSettings(userID, showID, season, episode);
     }
 
     public ArrayList<String> getAllUsersString() {
