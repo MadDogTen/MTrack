@@ -32,7 +32,7 @@ public class FindShows {
     }
 
     public final Set<Integer> findSeasons(final File dir, final String show) {
-        log.finest("Searching for seasons for: " + show + '.');
+        //log.finest("Searching for seasons for: " + show + '.');
         Set<String> showFolder = new HashSet<>();
         if (new File(dir + Strings.FileSeparator + show).list() != null) {
             showFolder.addAll(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
@@ -54,7 +54,7 @@ public class FindShows {
     }
 
     public final Set<String> findEpisodes(final File dir, final String showName, final int season) {
-        log.finest("Searching for episodes for: " + showName + " || Season: " + season + '.');
+        //log.finest("Searching for episodes for: " + showName + " || Season: " + season + '.');
         String seasonFolder = GenericMethods.getSeasonFolderName(dir, showName, season);
         if (!seasonFolder.isEmpty()) {
             File folder = new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator + seasonFolder);
@@ -97,23 +97,69 @@ public class FindShows {
 
         public class Season {
             private final int season;
-            private final Set<String> episodes;
+            private final Set<Episode> episodes;
 
             public Season(File directory, int season) {
                 this.season = season;
-                this.episodes = findEpisodes(directory, show, season);
+                this.episodes = new HashSet<>();
+                findEpisodes(directory, show, season).forEach(episodeFilename -> episodes.add(new Episode(episodeFilename)));
             }
 
             public int getSeason() {
                 return season;
             }
 
-            public Set<String> getEpisodes() {
+            public Set<Episode> getEpisodes() {
                 return episodes;
+            }
+
+            public Episode containsEpisode(int episodeToCheck) {
+                for (Episode episode : episodes) {
+                    if (episode.episode == episodeToCheck || (episode.doubleEpisode && episode.episode2 == episodeToCheck))
+                        return episode;
+                }
+                return null;
             }
 
             boolean hasEpisodes() {
                 return !episodes.isEmpty();
+            }
+
+            public class Episode {
+                private final int episode;
+                private final int episode2;
+                private final boolean doubleEpisode;
+                private final String episodeFilename;
+                private final int episodeHash;
+
+                public Episode(String episodeFilename) {
+                    this.episodeFilename = episodeFilename;
+                    int[] episodeInfo = ClassHandler.showInfoController().getEpisodeInfo(this.episodeFilename);
+                    this.episode = episodeInfo[0];
+                    this.episode2 = episodeInfo[1];
+                    this.doubleEpisode = (this.episode2 != -2);
+                    this.episodeHash = this.episodeFilename.hashCode();
+                }
+
+                public int getEpisode() {
+                    return this.episode;
+                }
+
+                public int getEpisode2() {
+                    return this.episode2;
+                }
+
+                public boolean isDoubleEpisode() {
+                    return this.doubleEpisode;
+                }
+
+                public String getEpisodeFilename() {
+                    return this.episodeFilename;
+                }
+
+                public int getEpisodeHash() {
+                    return episodeHash;
+                }
             }
         }
 

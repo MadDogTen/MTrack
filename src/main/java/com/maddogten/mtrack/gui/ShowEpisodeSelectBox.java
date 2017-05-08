@@ -33,7 +33,7 @@ public class ShowEpisodeSelectBox {
     public int[] seasonEpisodeSelect(final DisplayShow show, final Stage oldStage) throws IOException {
         log.fine("seasonEpisodeSelect has been opened.");
         stage = new Stage();
-        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.getCurrentUser()))
             stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(oldStage);
         stage.initStyle(StageStyle.UNDECORATED);

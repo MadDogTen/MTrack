@@ -46,8 +46,7 @@ public class DBUserManager {
             insertUser.setString(2, userName);
             insertUser.setBoolean(3, showUsername);
             insertUser.executeUpdate();
-
-            userID = getUserID(userName); // TODO Generate other tables information
+            userID = getUserID(userName);
             log.info("User \"" + userName + "\" was successfully added with ID \"" + userID + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
@@ -141,10 +140,6 @@ public class DBUserManager {
         try (ResultSet resultSet = getUserID.executeQuery()) {
             if (resultSet.next()) {
                 result = resultSet.getInt(StringDB.COLUMN_USER_ID);
-                if (resultSet.next()) {
-                    log.warning("Duplicate found for \"" + username + "\", canceling deletion.");
-                    result = -2;
-                }
             } else log.warning("Couldn't find UserID for \"" + username + "\".");
         }
         getUserID.clearParameters();

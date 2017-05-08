@@ -24,7 +24,7 @@ public class AboutBox {
         GenericMethods.setIcon(aboutStage);
         aboutStage.initOwner(oldStage);
         aboutStage.initStyle(StageStyle.UNDECORATED);
-        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.getCurrentUser()))
             aboutStage.initModality(Modality.APPLICATION_MODAL);
         Pane root = FXMLLoader.load(getClass().getResource("/gui/About.fxml"));
         Scene scene = new Scene(root);
@@ -36,7 +36,7 @@ public class AboutBox {
         aboutStage.hide();
         aboutStage.setX(aboutStage.getOwner().getX() + (aboutStage.getOwner().getWidth() / 2) - (aboutStage.getWidth() / 2));
         aboutStage.setY(aboutStage.getOwner().getY() + (aboutStage.getOwner().getHeight() / 2) - (aboutStage.getHeight() / 2));
-        if (ClassHandler.userInfoController().doSpecialEffects(Variables.currentUser))
+        if (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
             GenericMethods.fadeStageIn(aboutStage, 2, log, this.getClass());
         aboutStage.showAndWait();
         log.fine("AboutBox has been closed.");

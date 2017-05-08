@@ -78,9 +78,9 @@ public class Variables {
     public static boolean disableAutomaticRechecking;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
-    public static int currentUser;
     public static boolean makeLanguageDefault;
     public static int checkInterval = 5;
+    private static int currentUser;
 
     static {
         supportedVideoPlayers_Windows = new HashMap<>();
@@ -98,6 +98,14 @@ public class Variables {
         supportedVideoPlayers_Windows.put(VideoPlayer.VideoPlayerEnum.MEDIA_PLAYER_CLASSIC, new HashSet<>());
         supportedVideoPlayers_Windows.get(VideoPlayer.VideoPlayerEnum.MEDIA_PLAYER_CLASSIC).add(new File("C:" + Strings.FileSeparator + "Program Files" + Strings.FileSeparator + "MPC-HC" + Strings.FileSeparator + "mpc-hc64.exe"));
 
+    }
+
+    public static int getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(int userID) {
+        Variables.currentUser = userID;
     }
 
     public static void setDataFolder(File file) {

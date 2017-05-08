@@ -32,7 +32,7 @@ public class MoveStage {
                 region.setCursor(Cursor.CLOSED_HAND);
                 region.getScene().getWindow().setX(e.getScreenX() - offset[0]);
                 region.getScene().getWindow().setY(e.getScreenY() - offset[1]);
-                if (parentStage != null && ClassHandler.userInfoController().getMoveStageWithParent(Variables.currentUser)) {
+                if (parentStage != null && ClassHandler.userInfoController().getMoveStageWithParent(Variables.getCurrentUser())) {
                     parentStage.getScene().getWindow().setX(region.getScene().getWindow().getX() - (parentStage.getWidth() / 2) + (region.getWidth() / 2));
                     parentStage.getScene().getWindow().setY(region.getScene().getWindow().getY() - (parentStage.getHeight() / 2) + (region.getHeight() / 2));
                     if (parentStage.getOwner() != null) {

@@ -60,7 +60,6 @@ public class ClassHandler {
         if (DBManager == null) {
             throw new IllegalStateException("DBManager was null, This shouldn't be called until after it was set.");
         }
-        assert DBManager != null;
         return DBManager;
     }
 

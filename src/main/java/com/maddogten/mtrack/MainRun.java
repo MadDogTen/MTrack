@@ -60,6 +60,7 @@ public class MainRun {
         if (needsToRun) {
             try {
                 ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), false));
+                if (ClassHandler.getDBManager().getConnection() == null) return false;
                 ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager().getConnection());
                 ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager().getConnection());
                 ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager().getConnection());
@@ -76,13 +77,13 @@ public class MainRun {
             // updateManager.updateShowFile();
             Strings.UserName.setValue(ClassHandler.userInfoController().getUserNameFromID(getUser()));
             if (!continueStarting) return false;
-            getLanguage();
+            String language = getLanguage();
             if (Variables.makeLanguageDefault)
-                ClassHandler.userInfoController().setLanguage(Variables.currentUser, ClassHandler.userInfoController().getLanguage(Variables.currentUser));
+                ClassHandler.userInfoController().setLanguage(Variables.getCurrentUser(), language);
             if (!continueStarting) return false;
             //loadUser(updateManager, true);
         }
-        if (ClassHandler.userInfoController().doFileLogging(Variables.currentUser) && !GenericMethods.isFileLoggingStarted()) {
+        if (ClassHandler.userInfoController().doFileLogging(Variables.getCurrentUser()) && !GenericMethods.isFileLoggingStarted()) {
             try {
                 GenericMethods.initFileLogging(log);
             } catch (IOException e) {
@@ -90,7 +91,7 @@ public class MainRun {
             }
         }
         if (!needsToRun) {
-            log.info("Username is set: " + ClassHandler.userInfoController().getUserNameFromID(Variables.currentUser));
+            log.info("Username is set: " + ClassHandler.userInfoController().getUserNameFromID(Variables.getCurrentUser()));
             //updateManager.updateMainDirectoryVersion();
             //loadUserSettings(true);
             //loadProgramSettings();
@@ -135,7 +136,7 @@ public class MainRun {
 
     private void recheck() {
         // noinspection PointlessBooleanExpression
-        if (!(disableChecking || Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > ClassHandler.userInfoController().getUpdateSpeed(Variables.currentUser)) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (ClassHandler.userInfoController().getUpdateSpeed(Variables.currentUser) * 10))) {
+        if (!(disableChecking || Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser())) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser()) * 10))) {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
@@ -161,26 +162,29 @@ public class MainRun {
         int defaultUser = ClassHandler.programSettingsController().getDefaultUser();
         if (defaultUser != -2) {
             log.finer("Using default user.");
+            Variables.setCurrentUser(defaultUser);
             return defaultUser;
         } else {
             HashMap<String, Integer> users = new HashMap<>();
             ClassHandler.userInfoController().getAllUsers().forEach(userID -> users.put(ClassHandler.userInfoController().getUserNameFromID(userID), userID));
             Object[] pickUserResult = new ListSelectBox().pickUser(Strings.ChooseYourUsername, users.keySet());
             int user = -2;
-            if (((String) pickUserResult[0]).matches(Strings.AddNewUsername.getValue())) continueStarting = false;
-            else user = users.get(pickUserResult[0]);
-            Variables.currentUser = user;
+            String userPicked = (String) pickUserResult[0];
+            if ((userPicked).matches(Strings.AddNewUsername.getValue())) continueStarting = false;
+            else user = users.get(userPicked);
+            log.info("User: \"" + userPicked + "\" | ID: \"" + user + "\".");
+            Variables.setCurrentUser(user);
             if ((boolean) pickUserResult[1]) ClassHandler.programSettingsController().setDefaultUser(user);
             return user;
         }
     }
 
     // Prompts the user to choose which language to startup with. If there is only 1 language, then it will skip the prompt and start with it.
-    public void getLanguage() {
+    public String getLanguage() {
         LanguageHandler languageHandler = new LanguageHandler();
         Map<String, String> languages = languageHandler.getLanguageNames();
         String language = Strings.EmptyString;
-        if (!firstRun) language = ClassHandler.userInfoController().getLanguage(Variables.currentUser);
+        if (!firstRun) language = ClassHandler.userInfoController().getLanguage(Variables.getCurrentUser());
         if (languages.size() == 1)
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
         else if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove
@@ -202,9 +206,13 @@ public class MainRun {
                     }
                 }
                 Variables.makeLanguageDefault = (boolean) pickLanguageResult[1];
-                if (languageHandler.setLanguage(internalName)) log.finer("Language is set: " + languageReadable);
+                if (languageHandler.setLanguage(internalName)) {
+                    log.finer("Language is set: " + languageReadable);
+                    language = internalName;
+                }
                 else log.severe("Language was not set for some reason, Please report.");
             }
         }
+        return language;
     }
 }

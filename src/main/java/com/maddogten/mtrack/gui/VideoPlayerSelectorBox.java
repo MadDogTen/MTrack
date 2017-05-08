@@ -22,7 +22,7 @@ public class VideoPlayerSelectorBox {
         log.fine("videoPlayerSelector has been opened.");
 
         Stage stage = new Stage();
-        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.getCurrentUser()))
             stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(oldStage);
         stage.initStyle(StageStyle.UNDECORATED);

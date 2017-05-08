@@ -121,7 +121,7 @@ public class ShowPlaying implements Initializable {
             if (show.getRemaining() <= 1)
                 nextEpisodeButton.setDisable(true);
             if (ClassHandler.showInfoController().doesEpisodeExist(show.getShowID(), show.getSeason(), show.getEpisode()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(userID, show.getShowID())) {
-                if (!ClassHandler.userInfoController().playAnyEpisode(show.getShowID(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
+                if (!ClassHandler.userInfoController().playAnyEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
                     log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                     new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                     Stage stage = (Stage) mainPane.getScene().getWindow();
@@ -137,7 +137,7 @@ public class ShowPlaying implements Initializable {
             }
         });
         restartButton.setOnAction(e -> {
-            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShowID(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
+            if (!ClassHandler.userInfoController().playAnyEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
                 log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 Stage stage = (Stage) mainPane.getScene().getWindow();

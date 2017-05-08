@@ -31,7 +31,7 @@ public class ShowInfoController {
         return dbShowManager.getAllShows();
     }
 
-    public int addShow(String show) {
+    public int[] addShow(String show) {
         return dbShowManager.addShow(show);
     } // TODO Have this report a added Show
 
@@ -60,6 +60,10 @@ public class ShowInfoController {
     // Returns a given episode from a given season in a given show.
     public File getEpisode(int episodeID) {
         return dbShowManager.getEpisode(episodeID);
+    }
+
+    public Set<String> getEpisodeFiles(int episodeID) {
+        return dbShowManager.getShowEpisodeFiles(episodeID);
     }
 
     // Returns whether or not an episode is part of a double episode.

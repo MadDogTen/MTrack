@@ -51,6 +51,7 @@ public class UserInfoController {
 
     public int addUser(String userName) {
         int userID = dbUserManager.addUser(userName);
+        dbUserSettingsManager.addUserSettings(userID);
         if (userID != -2) {
             ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
         }
@@ -63,7 +64,7 @@ public class UserInfoController {
             if (dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_SHOW_ID, StringDB.TABLE_USERSHOWSETTINGS) == -2) {
                 this.addNewShow(userID, showID);
                 log.fine("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" was added for user \"" + getUserNameFromID(userID) + "\".");
-            } else {
+            } else if (getIgnoredStatus(userID, showID)) {
                 this.setIgnoredStatus(userID, showID, false);
                 log.fine("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" was un-ignored for user \"" + getUserNameFromID(userID) + "\".");
             }
@@ -76,6 +77,10 @@ public class UserInfoController {
         int season = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(showID)) : 1;
         int episode = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(showID, season)) : (ClassHandler.showInfoController().doesEpisodeExist(showID, season, 0)) ? 0 : 1;
         dbUserSettingsManager.addShowSettings(userID, showID, season, episode);
+    }
+
+    public boolean getIgnoredStatus(int userID, int showID) {
+        return dbUserSettingsManager.getBooleanSetting(userID, showID, StringDB.COLUMN_IGNORED, StringDB.TABLE_USERSHOWSETTINGS);
     }
 
     public Set<Integer> getIgnoredShows(int userID) {
@@ -116,7 +121,7 @@ public class UserInfoController {
     }
 
     // Attempts to play the file using the default program for the extension.
-    public boolean playAnyEpisode(int userID, final int episodeID) {
+    public boolean playAnyEpisode(final int userID, final int episodeID) {
         log.info("Attempting to play " + ClassHandler.showInfoController().getShowNameFromEpisodeID(episodeID) + " EpisodeID: " + episodeID);
         File episode = ClassHandler.showInfoController().getEpisode(episodeID);
         if (episode == null) log.warning("Episode wasn't found in database!");
@@ -133,8 +138,8 @@ public class UserInfoController {
     // If no episode is found, then it checks if there is another season, and if there is, checks if it contains the first episode in the season.
     public void changeEpisode(int userID, int showID, final int episode) {
         if (episode == -2) {
-            int currentSeason = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_SEASON, StringDB.TABLE_USERSHOWSETTINGS);
-            int currentEpisode = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_EPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+            int currentSeason = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTSEASON, StringDB.TABLE_USERSHOWSETTINGS);
+            int currentEpisode = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
             if (ClassHandler.showInfoController().isDoubleEpisode(showID, currentSeason, currentEpisode))
                 ++currentEpisode;
             boolean[] isAnotherEpisodeResult = isAnotherEpisode(userID, showID, currentSeason, currentEpisode);
@@ -146,7 +151,7 @@ public class UserInfoController {
                 this.setSeasonEpisode(userID, showID, ++currentSeason, 1);
                 log.info(showName + " is now on season " + currentSeason + " episode " + 1);
             } else {
-                dbUserSettingsManager.changeIntegerSetting(userID, showID, ++currentEpisode, StringDB.COLUMN_EPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+                dbUserSettingsManager.changeIntegerSetting(userID, showID, ++currentEpisode, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
                 log.info(showName + " is now on episode " + currentEpisode);
             }
         } else {
@@ -156,17 +161,17 @@ public class UserInfoController {
     }
 
     public int getCurrentUserSeason(int userID, int showID) {
-        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_SEASON, StringDB.TABLE_USERSHOWSETTINGS);
+        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTSEASON, StringDB.TABLE_USERSHOWSETTINGS);
     }
 
     public int getCurrentUserEpisode(int userID, int showID) {
-        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_EPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
     }
 
     // Directly sets the Season & Episode for a show.
     public void setSeasonEpisode(int userID, int showID, final int season, final int episode) {
-        dbUserSettingsManager.changeIntegerSetting(userID, showID, season, StringDB.COLUMN_SEASON, StringDB.TABLE_USERSHOWSETTINGS);
-        dbUserSettingsManager.changeIntegerSetting(userID, showID, episode, StringDB.COLUMN_EPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+        dbUserSettingsManager.changeIntegerSetting(userID, showID, season, StringDB.COLUMN_CURRENTSEASON, StringDB.TABLE_USERSHOWSETTINGS);
+        dbUserSettingsManager.changeIntegerSetting(userID, showID, episode, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
         log.info(ClassHandler.showInfoController().getShowNameFromShowID(showID) + " is now set to Season: " + season + " - Episode: " + episode);
     }
 

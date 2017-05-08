@@ -45,21 +45,20 @@ public class ShowPlayingBox {
     @SuppressWarnings("SameParameterValue")
     public void showConfirm(final DisplayShow show, final Stage oldStage) throws IOException {
         log.fine("showConfirm has been opened.");
-
         if (ClassHandler.showInfoController().doesEpisodeExist(show.getShowID(), show.getSeason(), show.getEpisode()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(userID, show.getShowID())) {
-            if (!ClassHandler.userInfoController().playAnyEpisode(show.getShowID(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
-                log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
+            if (!ClassHandler.userInfoController().playAnyEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
+                log.info("1: Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 return;
             }
         } else {
-            log.info("Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
+            log.info("2: Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
             new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
             return;
         }
 
         stage = new Stage();
-        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.currentUser))
+        if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.getCurrentUser()))
             stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(oldStage);
         stage.initStyle(StageStyle.UNDECORATED);

@@ -24,7 +24,7 @@ public class FirstRun {
 
     public boolean programFirstRun() throws IOException, SQLException {
         log.info("First Run, Generating Files...");
-        ClassHandler.mainRun().getLanguage();
+        String language = ClassHandler.mainRun().getLanguage();
         if (ClassHandler.mainRun().continueStarting) {
             FileManager fileManager = new FileManager();
             File jarLocation = new File(Strings.EmptyString);
@@ -43,6 +43,7 @@ public class FirstRun {
                 //this.createFolders(false, fileManager);
             } else return false;
             ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), true));
+            if (ClassHandler.getDBManager().getConnection() == null) return false;
            /* boolean hasImportedFiles = false;
             if (new ConfirmBox().confirm(Strings.DoYouWantToImportFiles, null)) {
                 if (fileManager.importSettings(true, null)) {
@@ -78,22 +79,30 @@ public class FirstRun {
             boolean usersAlreadyAdd = /*hasImportedFiles &&*/ !ClassHandler.userInfoController().getAllUsers().isEmpty();
             if (usersAlreadyAdd)
                 Strings.UserName.setValue(ClassHandler.userInfoController().getUserNameFromID(ClassHandler.mainRun().getUser()));
-            else
-                Strings.UserName.setValue(textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, null));
-            if (Strings.UserName.getValue().isEmpty()) ClassHandler.mainRun().continueStarting = false;
+            else {
+                String user = textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, null);
+                if (!user.isEmpty()) {
+                    Variables.setCurrentUser(ClassHandler.userInfoController().addUser(user));
+                    Strings.UserName.setValue(user);
+                }
+            }
+            if (Strings.UserName.getValue().isEmpty() || Variables.getCurrentUser() == -2)
+                ClassHandler.mainRun().continueStarting = false;
             else {
                 if (addDirectories) {
                     LoadingBox loadingBox = new LoadingBox();
                     if (generateShowFilesThread.isAlive()) loadingBox.loadingBox(generateShowFilesThread);
                 }
                 log.info(Strings.UserName.getValue());
-                if (ClassHandler.userInfoController().getEnableFileLogging(Variables.currentUser)) {
+                if (ClassHandler.userInfoController().getEnableFileLogging(Variables.getCurrentUser())) {
                     try {
                         GenericMethods.initFileLogging(log);
                     } catch (IOException e) {
                         GenericMethods.printStackTrace(log, e, this.getClass());
                     }
                 }
+                if (Variables.makeLanguageDefault)
+                    ClassHandler.userInfoController().setLanguage(Variables.getCurrentUser(), language);
                 //ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
                 //if (!usersAlreadyAdd) generateUserSettingsFile(Strings.UserName.getValue());
                 //ClassHandler.userInfoController().loadUserInfo();

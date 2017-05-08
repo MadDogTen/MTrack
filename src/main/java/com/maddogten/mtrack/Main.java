@@ -30,7 +30,7 @@ public class Main extends Application implements Runnable {
     }
 
     public synchronized static void stop(final Stage stage, final boolean forceStop) {
-        if (forceStop || new ConfirmBox().confirm(Strings.AreYouSure, stage)) {
+        if (programRunning && (forceStop || new ConfirmBox().confirm(Strings.AreYouSure, stage))) {
             programFullyRunning = false;
             programRunning = false;
             int timeRan = GenericMethods.timeTakenSeconds(timer);
@@ -47,12 +47,14 @@ public class Main extends Application implements Runnable {
             Controller.closeChangeBoxStage();
             Controller.closeShowPlayingBoxStage();
             try {
+                if ((ClassHandler.getDBManager() != null && ClassHandler.getDBManager().getConnection() != null && !ClassHandler.getDBManager().getConnection().isClosed()) && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
+                    GenericMethods.fadeStageOut(stage, 10, log, Main.class);
                 ClassHandler.getDBManager().closeConnection();
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, Main.class);
+            } catch (IllegalStateException e) {
+                // Do nothing
             }
-            if (ClassHandler.userInfoController().doSpecialEffects(Variables.currentUser))
-                GenericMethods.fadeStageOut(stage, 10, log, Main.class);
             if (stage != null) stage.close();
             Platform.exit();
             if (thread != null) {
@@ -89,7 +91,7 @@ public class Main extends Application implements Runnable {
             stage.setResizable(true);
             stage.setScene(scene);
             stage.show();
-            if (ClassHandler.userInfoController().doSpecialEffects(Variables.currentUser))
+            if (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
                 GenericMethods.fadeStageIn(stage, 10, log, Main.class);
             start();
         } else stop(null, true);

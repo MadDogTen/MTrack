@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.Database;
 
+import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.StringDB;
 
@@ -17,6 +18,7 @@ public class DBManager {
 
     public DBManager(String databaseLocation, boolean shouldCreateDDB) throws SQLException {
         connection = this.getConnection(databaseLocation, shouldCreateDDB);
+        if (connection == null) Main.stop(null, true);
     }
 
     public Connection getConnection() { // TODO Make package private
@@ -43,8 +45,15 @@ public class DBManager {
         try {
             Class.forName(StringDB.DRIVER);
             connection = DriverManager.getConnection(URL, properties);
-        } catch (SQLException | ClassNotFoundException e) {
-            GenericMethods.printStackTrace(log, e, DBManager.class);
+        } catch (SQLException e) {
+            if (e.getNextException().getSQLState().matches("XSDB6")) {
+                log.info("Database already has a connection, Check if another instance of the program is running..."); // TODO Add user popup
+                return null;
+            }
+            GenericMethods.printStackTrace(log, e, this.getClass());
+            System.exit(0);
+        } catch (ClassNotFoundException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return connection;
     }
@@ -64,6 +73,6 @@ public class DBManager {
     }
 
     public void closeConnection() throws SQLException {
-        connection.close();
+        if (connection != null) connection.close();
     }
 }

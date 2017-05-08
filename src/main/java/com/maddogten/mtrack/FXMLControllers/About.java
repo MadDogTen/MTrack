@@ -58,7 +58,7 @@ public class About implements Initializable {
         close.textProperty().bind(Strings.Close);
         close.setOnAction(e -> {
             Stage stage = (Stage) pane.getScene().getWindow();
-            if (ClassHandler.userInfoController().doSpecialEffects(Variables.currentUser))
+            if (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
                 GenericMethods.fadeStageOut(stage, 2, log, this.getClass());
             stage.close();
         });

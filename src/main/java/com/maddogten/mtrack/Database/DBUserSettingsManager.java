@@ -4,7 +4,6 @@ import com.maddogten.mtrack.util.*;
 
 import java.sql.*;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -48,7 +47,7 @@ public class DBUserSettingsManager {
 
     private void createShowSettingsTable(Statement statement) {
         try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_USERSHOWSETTINGS + "(" + StringDB.COLUMN_USER_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_CURRENTSEASON + " INTEGER NOT NULL, " + StringDB.COLUMN_CURRENTEPISODE + " INTEGER NOT NULL, " + StringDB.COLUMN_ACTIVE + " BOOLEAN NOT NULL, " + StringDB.COLUMN_IGNORED + " INTEGER NOT NULL, " + StringDB.COLUMN_HIDDEN + " BOOLEAN NOT NULL)");
+            statement.execute("CREATE TABLE " + StringDB.TABLE_USERSHOWSETTINGS + "(" + StringDB.COLUMN_USER_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_CURRENTSEASON + " INTEGER NOT NULL, " + StringDB.COLUMN_CURRENTEPISODE + " INTEGER NOT NULL, " + StringDB.COLUMN_ACTIVE + " BOOLEAN NOT NULL, " + StringDB.COLUMN_IGNORED + " BOOLEAN NOT NULL, " + StringDB.COLUMN_HIDDEN + " BOOLEAN NOT NULL)");
         } catch (SQLException e) {
             if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -156,7 +155,7 @@ public class DBUserSettingsManager {
     public int getIntegerSetting(int userID, int showID, String settingType, String table) {
         int setting = -2;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? " AND " + StringDB.COLUMN_SHOW_ID + "=" + showID : ""))) {
+             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
             if (resultSet.next()) setting = resultSet.getInt(settingType);
             else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\", using default.");
         } catch (SQLException e) {
@@ -168,7 +167,7 @@ public class DBUserSettingsManager {
     public void changeIntegerSetting(int userID, int showID, int newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             int oldSetting = getIntegerSetting(userID, showID, settingType, table);
-            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? " AND " + StringDB.COLUMN_SHOW_ID + "=" + showID : ""));
+            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
             if (getIntegerSetting(userID, showID, settingType, table) == newSetting)
                 log.info(settingType + " for UserID \"" + userID + "\" was changed to \"" + newSetting + "\" from \"" + oldSetting + "\".");
             else log.info(settingType + " for UserID \"" + userID + "\" was unable to be changed.");
@@ -180,9 +179,9 @@ public class DBUserSettingsManager {
     public String getStringSetting(int userID, int showID, String settingType, String table) {
         String setting = Strings.EmptyString;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? " AND " + StringDB.COLUMN_SHOW_ID + "=" + showID : ""))) {
+             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
             if (resultSet.next()) setting = resultSet.getString(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\", using default.");
+            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -191,13 +190,14 @@ public class DBUserSettingsManager {
 
     public void changeStringSetting(int userID, int showID, String newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
-            int oldSetting = getIntegerSetting(userID, showID, settingType, table);
-            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? " AND " + StringDB.COLUMN_SHOW_ID + "=" + showID : ""));
-            if (Objects.equals(getStringSetting(userID, showID, settingType, table), newSetting))
+            String oldSetting = getStringSetting(userID, showID, settingType, table);
+            statement.execute("UPDATE " + table + " SET " + settingType + "='" + newSetting + "' WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
+            if (oldSetting.matches(newSetting))
                 log.info(settingType + " for UserID \"" + userID + "\" was changed to \"" + newSetting + "\" from \"" + oldSetting + "\".");
             else log.info(settingType + " for UserID \"" + userID + "\" was unable to be changed.");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
+            System.exit(0);
         }
     }
 
@@ -206,7 +206,7 @@ public class DBUserSettingsManager {
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID)) {
             if (resultSet.next()) setting = resultSet.getFloat(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\", using default.");
+            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -225,12 +225,12 @@ public class DBUserSettingsManager {
         }
     }
 
-    public Boolean getBooleanSetting(int userID, int showID, String settingType, String table) {
-        Boolean setting = null;
+    public boolean getBooleanSetting(int userID, int showID, String settingType, String table) {
+        Boolean setting = false;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? " AND " + StringDB.COLUMN_SHOW_ID + "=" + showID : ""))) {
+             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
             if (resultSet.next()) setting = resultSet.getBoolean(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\", using default.");
+            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -240,7 +240,7 @@ public class DBUserSettingsManager {
     public void changeBooleanSetting(int userID, int showID, boolean newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             boolean oldSetting = getBooleanSetting(userID, showID, settingType, table);
-            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? " AND " + StringDB.COLUMN_SHOW_ID + "=" + showID : ""));
+            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
             if (getBooleanSetting(userID, showID, settingType, table) == newSetting)
                 log.info(settingType + " for UserID \"" + userID + "\" was changed to \"" + newSetting + "\" from \"" + oldSetting + "\".");
             else log.info(settingType + " for UserID \"" + userID + "\" was unable to be changed.");
@@ -282,7 +282,7 @@ public class DBUserSettingsManager {
         return result;
     }
 
-    public int getEpisodePosition(int userID, int episodeID) {
+    public int getEpisodePosition(final int userID, int episodeID) {
         int episodePosition = -2;
         try {
             getEpisodePosition.setInt(1, userID);
@@ -297,7 +297,7 @@ public class DBUserSettingsManager {
         return episodePosition;
     }
 
-    public void setEpisodePosition(int userID, int episodeID, int position) {
+    public void setEpisodePosition(final int userID, int episodeID, int position) {
         try {
             if (getEpisodePosition(userID, episodeID) == -2) addEpisodeSettings(userID, episodeID, position);
             else {

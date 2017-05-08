@@ -24,6 +24,7 @@ public class DirectoryController {
     private final Logger log = Logger.getLogger(DirectoryController.class.getName());
     private DBDirectoryHandler dbDirectoryHandler;
     private int lastActiveCheck = -2;
+    private boolean lastSearchSkip = true;
 
     public void initDBHandler(Connection connection) throws SQLException {
         dbDirectoryHandler = new DBDirectoryHandler(connection);
@@ -33,7 +34,7 @@ public class DirectoryController {
     // If it is able to find the directories, then it is found and returns true. If not found, returns false.
     public void checkDirectories(boolean skipKnownInactiveDirectories) {
         Set<Integer> directories;
-        if (lastActiveCheck == -2 || GenericMethods.timeTakenSeconds(lastActiveCheck) > Variables.timeBetweenRecheckingActiveDirectoriesSeconds) {
+        if (lastActiveCheck == -2 || GenericMethods.timeTakenSeconds(lastActiveCheck) > Variables.timeBetweenRecheckingActiveDirectoriesSeconds || (lastSearchSkip && !skipKnownInactiveDirectories)) {
             if (skipKnownInactiveDirectories) {
                 log.finer("skipFoundInactiveDirectories was true, Skipping known inactive directories.");
                 directories = dbDirectoryHandler.getActiveDirectories();
@@ -80,8 +81,8 @@ public class DirectoryController {
                         GenericMethods.printStackTrace(log, e, this.getClass());
                     }
                     while (thread.isAlive()) {
-                        log.finer("Time remaining until directory is skipped = " + (ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.currentUser) - GenericMethods.timeTakenSeconds(timer)));
-                        if (ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.currentUser) - GenericMethods.timeTakenSeconds(timer) < 1) {
+                        log.finer("Time remaining until directory is skipped = " + (ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.getCurrentUser()) - GenericMethods.timeTakenSeconds(timer)));
+                        if (ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.getCurrentUser()) - GenericMethods.timeTakenSeconds(timer) < 1) {
                             log.finer(directory + " took to long to respond to alive check, Check that the drive is plugged in & working.");
                             thread.interrupt();
                             break;
@@ -114,6 +115,7 @@ public class DirectoryController {
                     log.severe("Error- Directory path format not currently supported, please report for the issue to be corrected. - " + directory);
             });
             lastActiveCheck = GenericMethods.getTimeSeconds();
+            lastSearchSkip = skipKnownInactiveDirectories;
         } else
             log.info("Already checked for active directories within " + Variables.timeBetweenRecheckingActiveDirectoriesSeconds + " seconds, Skipping check.");
     }
