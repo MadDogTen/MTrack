@@ -22,7 +22,7 @@ public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
     public boolean firstRun = false, continueStarting = true;
     private boolean starting = true, forceRun = true, disableChecking = false;
-    private int recheckTimer, saveTimer, currentTime, waitTime;
+    private int recheckTimer, currentTime, waitTime;
 
     public boolean startBackend() throws IOException, SQLException { // TODO Remove public
         FileManager fileManager = new FileManager();
@@ -111,7 +111,6 @@ public class MainRun {
         if (starting) {
             log.finer("MainRun Running...");
             this.recheckTimer = GenericMethods.getTimeSeconds();
-            this.saveTimer = GenericMethods.getTimeSeconds();
             this.currentTime = GenericMethods.getTimeSeconds();
             starting = false;
         }

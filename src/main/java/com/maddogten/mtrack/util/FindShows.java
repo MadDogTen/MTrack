@@ -31,19 +31,20 @@ public class FindShows {
         return result;
     }
 
-    public final Set<Integer> findSeasons(final File dir, final String show) {
-        //log.finest("Searching for seasons for: " + show + '.');
+    private Set<Integer> findSeasons(final File dir, final String show) {
         Set<String> showFolder = new HashSet<>();
-        if (new File(dir + Strings.FileSeparator + show).list() != null) {
+        File folder = new File(dir + Strings.FileSeparator + show);
+        if (folder.isDirectory() && folder.list() != null) {
             showFolder.addAll(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
             Set<Integer> seasonNumber = new HashSet<>(showFolder.size());
             Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + Strings.seasonNumberRegex);
             Pattern pattern1 = Pattern.compile("s" + Strings.seasonNumberRegex);
             showFolder.forEach(aShowFolder -> {
-                Matcher matcher = pattern.matcher(aShowFolder.toLowerCase());
+                String aShowFolderLowercase = aShowFolder.toLowerCase();
+                Matcher matcher = pattern.matcher(aShowFolderLowercase);
                 if (matcher.find()) seasonNumber.add(Integer.parseInt(matcher.group().toLowerCase().split(" ")[1]));
                 else {
-                    matcher = pattern1.matcher(aShowFolder.toLowerCase());
+                    matcher = pattern1.matcher(aShowFolderLowercase);
                     if (matcher.find())
                         seasonNumber.add(Integer.parseInt(matcher.group().toLowerCase().replace("s", "")));
                 }
@@ -53,16 +54,18 @@ public class FindShows {
         return new HashSet<>();
     }
 
-    public final Set<String> findEpisodes(final File dir, final String showName, final int season) {
-        //log.finest("Searching for episodes for: " + showName + " || Season: " + season + '.');
+    private Set<String> findEpisodes(final File dir, final String showName, final int season) {
         String seasonFolder = GenericMethods.getSeasonFolderName(dir, showName, season);
         if (!seasonFolder.isEmpty()) {
             File folder = new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator + seasonFolder);
             if (folder.exists() && new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
                 return new HashSet<>(Arrays.asList(folder.list((dir1, name) -> {
-                    for (String extension : Variables.showExtensions)
-                        if (new File(dir1 + Strings.FileSeparator + name).isFile() && name.toLowerCase().endsWith(extension) && ClassHandler.showInfoController().getEpisodeInfo(name)[0] != -2)
-                            return true;
+                    if (new File(dir1 + Strings.FileSeparator + name).isFile()) {
+                        String lowercaseName = name.toLowerCase();
+                        for (String extension : Variables.showExtensions)
+                            if (lowercaseName.endsWith(extension))
+                                return true;
+                    }
                     return false;
                 })));
         }
@@ -102,7 +105,10 @@ public class FindShows {
             public Season(File directory, int season) {
                 this.season = season;
                 this.episodes = new HashSet<>();
-                findEpisodes(directory, show, season).forEach(episodeFilename -> episodes.add(new Episode(episodeFilename)));
+                findEpisodes(directory, show, season).forEach(episodeFilename -> {
+                    Episode episode = new Episode(episodeFilename);
+                    if (episode.episode != -2) episodes.add(episode);
+                });
             }
 
             public int getSeason() {
@@ -111,14 +117,6 @@ public class FindShows {
 
             public Set<Episode> getEpisodes() {
                 return episodes;
-            }
-
-            public Episode containsEpisode(int episodeToCheck) {
-                for (Episode episode : episodes) {
-                    if (episode.episode == episodeToCheck || (episode.doubleEpisode && episode.episode2 == episodeToCheck))
-                        return episode;
-                }
-                return null;
             }
 
             boolean hasEpisodes() {

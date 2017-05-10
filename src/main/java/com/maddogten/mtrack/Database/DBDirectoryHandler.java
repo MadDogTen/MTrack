@@ -18,7 +18,7 @@ public class DBDirectoryHandler {
     private final PreparedStatement getDirectory;
     private final PreparedStatement addDirectory;
     private final PreparedStatement changeDirectory;
-    private final PreparedStatement removeDirectory; // TODO Add
+    //private final PreparedStatement removeDirectory; // TODO Add
     private final PreparedStatement checkDirectory;
     private final PreparedStatement getDirectoryPriority;
     private final PreparedStatement updateDirectoryPriority;
@@ -38,7 +38,7 @@ public class DBDirectoryHandler {
         getDirectory = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORY + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
         addDirectory = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_DIRECTORIES + " VALUES (?, ?, ?, ?)");
         changeDirectory = connection.prepareStatement("UPDATE " + StringDB.TABLE_DIRECTORIES + " SET " + StringDB.COLUMN_DIRECTORY + "=? WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
-        removeDirectory = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
+        //removeDirectory = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
         checkDirectory = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORY + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY + "=?");
         getDirectoryPriority = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORYPRIORITY + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
         updateDirectoryPriority = connection.prepareStatement("UPDATE " + StringDB.TABLE_DIRECTORIES + " SET " + StringDB.COLUMN_DIRECTORYPRIORITY + "=?" + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
@@ -66,7 +66,7 @@ public class DBDirectoryHandler {
         }
     }
 
-    public Set<Integer> getAllDirectories() {
+    public synchronized Set<Integer> getAllDirectories() {
         Set<Integer> directories = new HashSet<>();
         try (ResultSet resultSet = getAllDirectories.executeQuery()) {
             while (resultSet.next()) directories.add(resultSet.getInt(StringDB.COLUMN_DIRECTORY_ID));
@@ -76,7 +76,7 @@ public class DBDirectoryHandler {
         return directories;
     }
 
-    public Set<Integer> getActiveDirectories() {
+    public synchronized Set<Integer> getActiveDirectories() {
         Set<Integer> directories = new HashSet<>();
         try {
             getDirectoriesFromActiveStatus.setBoolean(1, true);
@@ -90,7 +90,7 @@ public class DBDirectoryHandler {
         return directories;
     }
 
-    public Set<Integer> getInactiveDirectories() {
+    public synchronized Set<Integer> getInactiveDirectories() {
         Set<Integer> directories = new HashSet<>();
         try {
             getDirectoriesFromActiveStatus.setBoolean(1, false);
@@ -104,7 +104,7 @@ public class DBDirectoryHandler {
         return directories;
     }
 
-    public boolean doesShowExistsInOtherDirectories(int showID, int... directoryIDs) {
+    public synchronized boolean doesShowExistsInOtherDirectories(int showID, int... directoryIDs) {
         boolean result = false;
         if (directoryIDs.length > 0) {
             try (Statement statement = ClassHandler.getDBManager().getStatement()) {
@@ -123,7 +123,7 @@ public class DBDirectoryHandler {
         return result;
     }
 
-    public int getDirectoryPriority(int directoryID) {
+    public synchronized int getDirectoryPriority(int directoryID) {
         int priority = -2;
         try {
             getDirectoryPriority.setInt(1, directoryID);
@@ -137,7 +137,7 @@ public class DBDirectoryHandler {
         return priority;
     }
 
-    private void adjustDirectoryPriories(int priority) {
+    private synchronized void adjustDirectoryPriories(int priority) {
         try {
             int priorityNext = priority + 1;
             doesContainPriority.setInt(1, priorityNext);
@@ -158,7 +158,7 @@ public class DBDirectoryHandler {
         }
     }
 
-    public void updateDirectoryPriority(int directoryID, int priority) {
+    public synchronized void updateDirectoryPriority(int directoryID, int priority) {
         try {
             Set<Integer> priories = getAllDirectoryPriories();
             if (priories.contains(priority)) {
@@ -174,7 +174,7 @@ public class DBDirectoryHandler {
         }
     }
 
-    public Set<Integer> getAllDirectoryPriories() {
+    public synchronized Set<Integer> getAllDirectoryPriories() {
         Set<Integer> priories = new HashSet<>();
         try (ResultSet resultSet = getDirectoryPriority.executeQuery()) {
             while (resultSet.next()) {
@@ -187,7 +187,7 @@ public class DBDirectoryHandler {
         return priories;
     }
 
-    public boolean addDirectory(File directory, boolean active) {
+    public synchronized boolean addDirectory(File directory, boolean active) {
         boolean added = false;
         try {
             checkDirectory.setString(1, directory.toString());
@@ -211,7 +211,7 @@ public class DBDirectoryHandler {
         return added;
     }
 
-    public String getDirectory(int directoryID) {
+    public synchronized String getDirectory(int directoryID) {
         String result = "";
         try {
             getDirectory.setInt(1, directoryID);
@@ -227,7 +227,7 @@ public class DBDirectoryHandler {
         return result;
     }
 
-    public int getDirectoryID(String directory) {
+    public synchronized int getDirectoryID(String directory) {
         int result = -2;
         try {
             getDirectoryID.setString(1, directory);
@@ -243,7 +243,7 @@ public class DBDirectoryHandler {
         return result;
     }
 
-    private int generateDirectoryID() throws SQLException {
+    private synchronized int generateDirectoryID() throws SQLException {
         Random random = new Random();
         int directoryID;
         ResultSet resultSet;
@@ -257,7 +257,7 @@ public class DBDirectoryHandler {
         return directoryID;
     }
 
-    private boolean changeDirectory(int directoryID, String newDirectory) {
+    private synchronized boolean changeDirectory(int directoryID, String newDirectory) {
         boolean changed = false;
         try {
             checkDirectory.setString(1, newDirectory);
@@ -279,7 +279,7 @@ public class DBDirectoryHandler {
         return changed;
     }
 
-    public boolean isDirectoryActive(int directoryID) {
+    public synchronized boolean isDirectoryActive(int directoryID) {
         boolean active = true;
         try {
             getDirectoryActiveStatus.setInt(1, directoryID);
@@ -293,7 +293,7 @@ public class DBDirectoryHandler {
         return active;
     }
 
-    public void setDirectoryActiveStatus(int directoryID, boolean active) {
+    public synchronized void setDirectoryActiveStatus(int directoryID, boolean active) {
         try {
             setDirectoryActiveStatus.setBoolean(1, active);
             setDirectoryActiveStatus.setInt(2, directoryID);
@@ -304,7 +304,7 @@ public class DBDirectoryHandler {
         }
     }
 
-    public int getDirectoryWithLowestPriorityFromList(Set<Integer> directories) {
+    public synchronized int getDirectoryWithLowestPriorityFromList(Set<Integer> directories) {
         int result = -2;
 
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {

@@ -19,7 +19,6 @@ public class DBUserManager {
     private final PreparedStatement checkUserID;
     private final PreparedStatement getUserID;
     private final PreparedStatement getUsername;
-    private final PreparedStatement checkForUser;
 
     public DBUserManager(Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
@@ -32,43 +31,47 @@ public class DBUserManager {
         checkUserID = connection.prepareStatement("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserID = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USERNAME + " =?");
         getUsername = connection.prepareStatement("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        checkForUser = connection.prepareStatement("SELECT * FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USERNAME + "=?");
     }
 
-    public int addUser(String username) {
+    public synchronized int addUser(String username) {
         return this.addUser(username, true);
     }
 
-    public int addUser(String userName, boolean showUsername) {
-        int userID = -2;
-        try {
-            insertUser.setInt(1, generateUserID());
-            insertUser.setString(2, userName);
-            insertUser.setBoolean(3, showUsername);
-            insertUser.executeUpdate();
-            userID = getUserID(userName);
-            log.info("User \"" + userName + "\" was successfully added with ID \"" + userID + "\".");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
+    public synchronized int addUser(String userName, boolean showUsername) {
+        int userID = doesUserExist(userName);
+        if (userID != -2) {
+            // Set show username here
+            return userID;
+        } else {
+            try {
+                insertUser.setInt(1, generateUserID());
+                insertUser.setString(2, userName);
+                insertUser.setBoolean(3, showUsername);
+                insertUser.executeUpdate();
+                userID = getUserID(userName);
+                log.info("User \"" + userName + "\" was successfully added with ID \"" + userID + "\".");
+            } catch (SQLException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
         }
         return userID;
     }
 
-    public boolean doesUserExist(String userName) {
-        boolean result = false;
+    public synchronized int doesUserExist(String userName) {
+        int result = -2;
         try {
-            checkForUser.setString(1, userName);
-            try (ResultSet resultSet = checkForUser.executeQuery()) {
-                result = resultSet.next();
+            getUserID.setString(1, userName);
+            try (ResultSet resultSet = getUserID.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_USER_ID);
             }
-            checkForUser.clearParameters();
+            getUserID.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return result;
     }
 
-    public void deleteUser(String userName) {
+    public synchronized void deleteUser(String userName) {
         try {
             int userID = getUserID(userName);
             if (userID != -2) {
@@ -84,7 +87,7 @@ public class DBUserManager {
         }
     }
 
-    public void changeUsername(String oldUsername, String newUsername) {
+    public synchronized void changeUsername(String oldUsername, String newUsername) {
         try {
             changeUsername.setString(1, newUsername);
             changeUsername.setString(2, oldUsername);
@@ -95,7 +98,7 @@ public class DBUserManager {
         log.info("Username for \"" + oldUsername + "\" was successfully changed to \"" + newUsername + "\".");
     }
 
-    public ArrayList<Integer> getAllUsers() {
+    public synchronized ArrayList<Integer> getAllUsers() {
         ArrayList<Integer> users = new ArrayList<>();
         try (Statement statement = ClassHandler.getDBManager().executeQuery("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERS);
              ResultSet resultSet = statement.getResultSet()) {
@@ -108,7 +111,7 @@ public class DBUserManager {
         return users;
     }
 
-    public ArrayList<String> getAllUserStrings() { // TODO Remove, Temp Value
+    public synchronized ArrayList<String> getAllUserStrings() { // TODO Remove, Temp Value
         ArrayList<String> allUsers = new ArrayList<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             try (ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS)) {
@@ -120,7 +123,7 @@ public class DBUserManager {
         return allUsers;
     }
 
-    private int generateUserID() throws SQLException {
+    private synchronized int generateUserID() throws SQLException {
         Random random = new Random();
         int userID;
         ResultSet resultSet;
@@ -134,7 +137,7 @@ public class DBUserManager {
         return userID;
     }
 
-    public int getUserID(String username) throws SQLException {
+    public synchronized int getUserID(String username) throws SQLException {
         int result = -2;
         getUserID.setString(1, username);
         try (ResultSet resultSet = getUserID.executeQuery()) {
@@ -146,7 +149,7 @@ public class DBUserManager {
         return result;
     }
 
-    public boolean getShowUsername(String user) {
+    public synchronized boolean getShowUsername(String user) {
         boolean result = true;
         try {
             getShowUsername.setString(1, user);
@@ -171,7 +174,7 @@ public class DBUserManager {
         }
     }
 
-    public String getUsername(int userID) {
+    public synchronized String getUsername(int userID) {
         String result = Strings.EmptyString;
         try {
             getUsername.setInt(1, userID);

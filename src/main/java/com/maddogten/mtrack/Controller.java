@@ -852,7 +852,7 @@ public class Controller implements Initializable {
         });
         deleteUser.textProperty().bind(Strings.DeleteUser);
         deleteUser.setOnAction(e -> {
-            setButtonDisable(true, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
+            /*setButtonDisable(true, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
             ArrayList<Integer> users = ClassHandler.userInfoController().getAllUsers();
             users.remove(Strings.UserName.getValue());
             if (users.isEmpty())
@@ -862,14 +862,14 @@ public class Controller implements Initializable {
                 if (userToDelete != -2) {
                     boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToDelete.getValue() + ClassHandler.userInfoController().getUserNameFromID(userToDelete) + Strings.QuestionMark.getValue()), (Stage) tabPane.getScene().getWindow());
                     // TODO Finish user deletion
-                   /* if (confirm && !new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UserFileExtension))
-                        log.info("Wasn't able to delete user file.");*/
+                   *//* if (confirm && !new FileManager().deleteFile(Variables.UsersFolder, userToDelete, Variables.UserFileExtension))
+                        log.info("Wasn't able to delete user file.");*//*
                 }
             }
             currentUserComboBox.getItems().clear();
             //currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUsers());
             currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
-            setButtonDisable(false, deleteUser, addUser, currentUserComboBox, setDefaultUsername);
+            setButtonDisable(false, deleteUser, addUser, currentUserComboBox, setDefaultUsername);*/
         });
         deleteUserTooltip.textProperty().bind(Strings.DeleteUsersNoteCantDeleteCurrentUser);
 
@@ -1124,9 +1124,9 @@ public class Controller implements Initializable {
         unHideAll.textProperty().bind(Strings.UnHideAll);
         unHideAll.setOnAction(e -> ClassHandler.developerStuff().unHideAllShows());
         setAllActive.textProperty().bind(Strings.SetAllActive);
-        setAllActive.setOnAction(e -> ClassHandler.developerStuff().setAllShowsActive());
+        setAllActive.setOnAction(e -> ClassHandler.developerStuff().toggleAllShowsWithActiveStatus(false));
         setAllInactive.textProperty().bind(Strings.SetAllInactive);
-        setAllInactive.setOnAction(e -> ClassHandler.developerStuff().setAllShowsInactive());
+        setAllInactive.setOnAction(e -> ClassHandler.developerStuff().toggleAllShowsWithActiveStatus(true));
         // Dev 2
         printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO Reenable button
         //printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion())));

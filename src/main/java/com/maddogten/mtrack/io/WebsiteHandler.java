@@ -14,6 +14,7 @@ public class WebsiteHandler {
     private final String websiteData;
 
     public WebsiteHandler(final String string) throws IOException {
+        //noinspection ConstantIfStatement
         if (/*!ClassHandler.userInfoController().useOnlineDatabase(Variables.currentUser)*/false) {
             this.url = new URL("");
             this.websiteData = "";

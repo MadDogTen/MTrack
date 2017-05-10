@@ -1,8 +1,11 @@
 package com.maddogten.mtrack.util;
 
+import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.information.ChangeReporter;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class DeveloperStuff {
@@ -17,125 +20,23 @@ public class DeveloperStuff {
 
     @SuppressWarnings({"CallToPrintStackTrace", "EmptyMethod"})
     public static void startupTest() throws Exception { // Place to test code before the rest of the program is started.
-         /* String userHomeDir = System.getProperty("user.home", ".");
-        String systemDir = userHomeDir + "/.addressbook";
-        System.out.print(systemDir);*//*
-
-
-        String directory = "C:" + Strings.FileSeparator + "Test Folder";
-        if (new File(directory + Strings.FileSeparator + "MTrackDB").exists())
-            new FileManager().deleteFolder(new File(directory + Strings.FileSeparator + "MTrackDB"));
-
-        log.info("\n\n\n\n");
-        DBManager DONOTUSEdatabaseManager = new DBManager(directory, !new File(directory + Strings.FileSeparator + "MTrackDB").exists());
-
-        ClassHandler.setDBManager(DONOTUSEdatabaseManager);
-
-        Connection connection = ClassHandler.getDBManager().getConnection();
-
-
-        try (Statement statement = connection.createStatement()) {
-
-            //statement.execute("DELETE FROM USERS");
-
-            String user1 = "User1", user2 = "Use23523", user3 = "gdfgsdfgsf", user4 = "SDFgdsgfsFdfgds";
-
-            DBDirectoryHandler dbDirectoryHandler = new DBDirectoryHandler();
-            DBShowManager dbShowManager = new DBShowManager();
-            DBUserSettingsManager DBUserSettingsManager = new DBUserSettingsManager();
-            DBUserManager DBUserManager = new DBUserManager();
-            DBUserManager.addUser(user1, false);
-            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user1));
-            DBUserManager.addUser(user2);
-            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user2));
-            DBUserManager.addUser(user3);
-            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user3));
-            DBUserManager.addUser(user4, false);
-            DBUserSettingsManager.addUserSettings(DBUserManager.getUserID(user4));
-
-
-
-            *//*ResultSet resultSet = statement.executeQuery("SELECT USERNAME FROM USERS");
-            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();*//*
-
-            int i = 0;
-            do {
-                log.info("");
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM USERS");
-                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-                int columnCount = resultSetMetaData.getColumnCount();
-                StringBuilder stringBuilder = new StringBuilder();
-                for (int x = 1; x <= columnCount; x++)
-                    stringBuilder.append(resultSetMetaData.getColumnName(x)).append(" | ");
-                log.info(stringBuilder.toString());
-                stringBuilder = new StringBuilder();
-                while (resultSet.next()) {
-                    for (int x = 1; x <= columnCount; x++) stringBuilder.append(resultSet.getString(x)).append(" | ");
-                    log.info(stringBuilder.toString());
-                    stringBuilder = new StringBuilder();
-                }
-                if (i == 0) {
-                    DBUserManager.changeUsername(user1, "FunNewUsername!");
-                    user1 = "FunNewUsername!";
-                    int id = DBUserManager.getUserID(user4);
-                    DBUserSettingsManager.changeIntegerSetting(id, 40, StringDB.COLUMN_UPDATESPEED);
-                    DBUserSettingsManager.changeFloatSetting(id, 25.6f, StringDB.COLUMN_EPISODECOLUMNWIDTH);
-                    DBUserSettingsManager.changeBooleanSetting(id, false, StringDB.COLUMN_AUTOMATICSHOWUPDATING);
-                    log.info(String.valueOf(DBUserSettingsManager.getIntegerSetting(id, StringDB.COLUMN_UPDATESPEED)));
-                    log.info(String.valueOf(DBUserSettingsManager.getFloatSetting(id, StringDB.COLUMN_EPISODECOLUMNWIDTH)));
-                    log.info(String.valueOf(DBUserSettingsManager.getBooleanSetting(id, StringDB.COLUMN_AUTOMATICSHOWUPDATING)));
-                }
-                i++;
-            } while (i < 2);
-            log.info("");
-
-            DBUserManager.deleteUser(user3);
-
-            log.info(String.valueOf(DBUserManager.getAllUsers()));
-
-            log.info(String.valueOf(DBUserManager.getShowUsername(user2)));
-
-
-            ClassHandler.showInfoController().getShows().forEach(show -> {
-                try {
-                    dbShowManager.addShow(show);
-                    int showID = dbShowManager.getShowID(show);
-                    ClassHandler.showInfoController().getSeasonsList(show).forEach(season -> {
-                        dbShowManager.addSeason(showID, season);
-                        ClassHandler.showInfoController().getEpisodesList(show, season).forEach(episode -> dbShowManager.addEpisode(showID, season, episode, ClassHandler.showInfoController().isDoubleEpisode(show, season, episode), ClassHandler.showInfoController().getEpisode(show, season, episode).getEpisodeFilename()));
-                    });
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            ClassHandler.directoryController().findDirectories(true, false, false).forEach(directory1 -> dbDirectoryHandler.addDirectory(directory1.getDirectory().toString()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        connection.close();
-
-        System.exit(0);*/
     }
 
     //---- DirectoryController ----\\
     // Debugging tool - Prints all directories to console.
     public void printAllDirectories() {
         log.info("Printing out all directories:");
-       /* if (ClassHandler.directoryController().getAllDirectories(false, false).isEmpty())
+        Set<Integer> directories = ClassHandler.directoryController().getAllDirectories(false, false);
+        if (directories.isEmpty())
             log.info("No directories.");
         else {
-            Set<Integer> directories = ClassHandler.directoryController().getAllDirectories(false, false);
-            directories.forEach(directory -> {
-                String[] print = new String[4];
-                print[0] = directory.getFileName();
-                print[1] = directory.getDirectory().getPath();
-                print[2] = String.valueOf(directory.getDirectoryFileVersion());
-                print[3] = String.valueOf(directory.getDirectoryID());
+            directories.forEach(directoryID -> {
+                String[] print = new String[2];
+                print[0] = ClassHandler.directoryController().getDirectoryFromID(directoryID).toString();
+                print[1] = String.valueOf(directoryID);
                 log.info(Arrays.toString(print));
             });
-        }*/
+        }
         log.info("Finished printing out all directories.");
     }
 
@@ -261,28 +162,16 @@ public class DeveloperStuff {
         log.info("Finished un-hiding all shows.");
     }
 
-    public void setAllShowsActive() {
-       /* ArrayList<String> showsList = ClassHandler.showInfoController().getShows();
-        if (showsList.isEmpty()) log.info("No shows to change.");
+    public void toggleAllShowsWithActiveStatus(boolean activeStatus) {
+        Set<Integer> showIDsList = ClassHandler.userInfoController().getShowsWithActiveStatus(Variables.getCurrentUser(), activeStatus);
+        if (showIDsList.isEmpty()) log.info("No shows to change.");
         else {
-            showsList.forEach(aShow -> {
-                ClassHandler.userInfoController().setActiveStatus(aShow, true);
-                Controller.updateShowField(aShow, true);
+            showIDsList.forEach(showID -> {
+                ClassHandler.userInfoController().setActiveStatus(Variables.getCurrentUser(), showID, !activeStatus);
+                Controller.updateShowField(showID, true);
             });
-            log.info("Set all shows active.");
-        }*/
-    }
-
-    public void setAllShowsInactive() {
-       /* ArrayList<String> showsList = ClassHandler.showInfoController().getShows();
-        if (showsList.isEmpty()) log.info("No shows to change.");
-        else {
-            showsList.forEach(aShow -> {
-                ClassHandler.userInfoController().setActiveStatus(aShow, false);
-                Controller.updateShowField(aShow, true);
-            });
-            log.info("Set all shows inactive.");
-        }*/
+            log.info("Set all shows " + ((activeStatus) ? "inactive." : "active."));
+        }
     }
 
     //---- UserSettingsController ----\\

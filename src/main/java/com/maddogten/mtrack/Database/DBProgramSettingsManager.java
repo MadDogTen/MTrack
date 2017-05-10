@@ -23,7 +23,7 @@ public class DBProgramSettingsManager {
     }
 
     private void createProgramSettingsTable(Statement statement) throws SQLException {
-        boolean alreadyExists = false;
+        boolean doesNotExist = true;
         try {
             statement.execute("CREATE TABLE " + StringDB.TABLE_PROGRAMSETTINGS + "(" +
                     StringDB.COLUMN_PROGRAMSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
@@ -36,10 +36,10 @@ public class DBProgramSettingsManager {
                     StringDB.COLUMN_USERSTABLEVERSION + " INTEGER NOT NULL, " +
                     StringDB.COLUMN_DEFAULTUSER + " INTEGER NOT NULL " + ")");
         } catch (SQLException e) {
-            if (GenericMethods.doesTableExistsFromError(e)) alreadyExists = true;
+            if (GenericMethods.doesTableExistsFromError(e)) doesNotExist = false;
             else GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        if (!alreadyExists) addSettingsRow(statement);
+        if (doesNotExist) addSettingsRow(statement);
     }
 
     private void addSettingsRow(Statement statement) throws SQLException {
@@ -55,7 +55,7 @@ public class DBProgramSettingsManager {
                 -2 + ")");
     }
 
-    public boolean useDefaultUser() {
+    public synchronized boolean useDefaultUser() {
         boolean result = false;
         try (ResultSet resultSet = getDefaultUser.executeQuery()) {
             result = resultSet.next() && resultSet.getInt(StringDB.COLUMN_USER_ID) != -2;
@@ -65,7 +65,7 @@ public class DBProgramSettingsManager {
         return result;
     }
 
-    public int getDefaultUser() {
+    public synchronized int getDefaultUser() {
         int result = -2;
         try (ResultSet resultSet = getDefaultUser.executeQuery()) {
             if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_DEFAULTUSER);
@@ -75,7 +75,7 @@ public class DBProgramSettingsManager {
         return result;
     }
 
-    public void setDefaultUser(int userID) {
+    public synchronized void setDefaultUser(int userID) {
         try {
             changeDefaultUser.setInt(1, userID);
             changeDefaultUser.execute();
@@ -85,7 +85,7 @@ public class DBProgramSettingsManager {
         }
     }
 
-    public void clearDefaultUser() {
+    public synchronized void clearDefaultUser() {
         try {
             changeDefaultUser.setInt(1, -2);
             changeDefaultUser.execute();

@@ -21,11 +21,11 @@ public class DBManager {
         if (connection == null) Main.stop(null, true);
     }
 
-    public Connection getConnection() { // TODO Make package private
+    public synchronized Connection getConnection() { // TODO Make package private
         return connection;
     }
 
-    public Statement getStatement() throws SQLException {
+    public synchronized Statement getStatement() throws SQLException {
         return connection.createStatement();
     }
 
@@ -72,7 +72,7 @@ public class DBManager {
         return result;
     }
 
-    public void closeConnection() throws SQLException {
+    public synchronized void closeConnection() throws SQLException {
         if (connection != null) connection.close();
     }
 }

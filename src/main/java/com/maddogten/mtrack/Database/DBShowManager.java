@@ -93,7 +93,7 @@ public class DBShowManager {
 
     private void createShowsTable(Statement statement) {
         try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_SHOWS + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_SHOWNAME + " VARCHAR(50) UNIQUE NOT NULL)");
+            statement.execute("CREATE TABLE " + StringDB.TABLE_SHOWS + "(" + StringDB.COLUMN_SHOW_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_SHOWNAME + " VARCHAR(80) UNIQUE NOT NULL)");
         } catch (SQLException e) {
             if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -115,7 +115,7 @@ public class DBShowManager {
         }
     }
 
-    public ArrayList<Integer> getAllShows() {
+    public synchronized ArrayList<Integer> getAllShows() {
         ArrayList<Integer> allShows = new ArrayList<>();
         try {
             try (ResultSet resultSet = getAllShows.executeQuery()) {
@@ -127,7 +127,7 @@ public class DBShowManager {
         return allShows;
     }
 
-    public ArrayList<String> getAllShowStrings() { // TODO Remove, Temp Value
+    public synchronized ArrayList<String> getAllShowStrings() { // TODO Remove, Temp Value
         ArrayList<String> allShows = new ArrayList<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             try (ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOWNAME + " FROM " + StringDB.TABLE_SHOWS)) {
@@ -139,7 +139,7 @@ public class DBShowManager {
         return allShows;
     }
 
-    public String getShowName(int showID) {
+    public synchronized String getShowName(int showID) {
         String showName = Strings.EmptyString;
         try {
             getShowName.setInt(1, showID);
@@ -153,7 +153,7 @@ public class DBShowManager {
         return showName;
     }
 
-    public String getShowNameFromEpisodeID(int episodeID) {
+    public synchronized String getShowNameFromEpisodeID(int episodeID) {
         String showName = Strings.EmptyString;
         try {
             getShowIDFromEpisodeID.setInt(1, episodeID);
@@ -167,7 +167,7 @@ public class DBShowManager {
         return showName;
     }
 
-    public int getShowID(String showName) throws SQLException {
+    public synchronized int getShowID(String showName) throws SQLException {
         getShowID.setString(1, showName);
         int result = -2;
         try (ResultSet resultSet = getShowID.executeQuery()) {
@@ -178,7 +178,7 @@ public class DBShowManager {
         return result;
     }
 
-    public boolean isEpisodePartOfDoubleEpisode(int episodeID) {
+    public synchronized boolean isEpisodePartOfDoubleEpisode(int episodeID) {
         boolean result = false;
         try {
             isEpisodePartOfDoubleEpisode.setInt(1, episodeID);
@@ -192,7 +192,7 @@ public class DBShowManager {
         return result;
     }
 
-    private int generateShowID() throws SQLException {
+    private synchronized int generateShowID() throws SQLException {
         Random random = new Random();
         int showID;
         ResultSet resultSet;
@@ -206,7 +206,7 @@ public class DBShowManager {
         return showID;
     }
 
-    public int[] addShow(String show) {
+    public synchronized int[] addShow(String show) {
         int showID = doesAlreadyContainShow(show);
         if (showID != -2) return new int[]{showID, 0};
         else try {
@@ -221,7 +221,7 @@ public class DBShowManager {
         return new int[]{showID, 1};
     }
 
-    public void removeShow(int showID) {
+    public synchronized void removeShow(int showID) {
         try {
             removeShow.setInt(1, showID);
             removeShow.execute();
@@ -239,7 +239,7 @@ public class DBShowManager {
         }
     }
 
-    public Set<Integer> getSeasons(int showID) {
+    public synchronized Set<Integer> getSeasons(int showID) {
         Set<Integer> seasons = new HashSet<>();
         try {
             getSeasons.setInt(1, showID);
@@ -253,7 +253,7 @@ public class DBShowManager {
         return seasons;
     }
 
-    public Set<Integer> getSeasonEpisodes(int showID, int season) {
+    public synchronized Set<Integer> getSeasonEpisodes(int showID, int season) {
         Set<Integer> episodes = new HashSet<>();
         try {
             getSeasonEpisodes.setInt(1, showID);
@@ -268,7 +268,7 @@ public class DBShowManager {
         return episodes;
     }
 
-    public void addSeason(int showID, int season) {
+    public synchronized void addSeason(int showID, int season) {
         if (!getSeasons(showID).contains(season)) {
             try {
                 addSeason.setInt(1, showID);
@@ -281,7 +281,7 @@ public class DBShowManager {
         }
     }
 
-    public File getEpisode(int episodeID) {
+    public synchronized File getEpisode(int episodeID) {
         File episodeFile = null;
         try {
             getEpisodeDirectories.setInt(1, episodeID);
@@ -296,6 +296,7 @@ public class DBShowManager {
                 if (directories.size() == 1) {
                     getEpisode.setInt(1, episodeID);
                     int directoryID = -2;
+                    //noinspection LoopStatementThatDoesntLoop
                     for (int id : directories) {
                         directoryID = id;
                         break;
@@ -325,7 +326,7 @@ public class DBShowManager {
         return (episodeFile != null && episodeFile.exists()) ? episodeFile : null;
     }
 
-    public Set<String> getShowEpisodeFiles(int episodeID) {
+    public synchronized Set<String> getShowEpisodeFiles(int episodeID) {
         Set<String> episodeFiles = new HashSet<>();
         try {
             getShowEpisodeFiles.setInt(1, episodeID);
@@ -339,7 +340,7 @@ public class DBShowManager {
         return episodeFiles;
     }
 
-    private boolean doesContainEpisode(int episodeID) {
+    private synchronized boolean doesContainEpisode(int episodeID) {
         boolean result = false;
         try {
             doesContainEpisode.setInt(1, episodeID);
@@ -354,7 +355,7 @@ public class DBShowManager {
         return result;
     }
 
-    public int addEpisode(int showID, int season, int episode, Boolean partOfDoubleEpisode) {
+    public synchronized int addEpisode(int showID, int season, int episode, Boolean partOfDoubleEpisode) {
         int episodeID = -2;
         if (!doesContainEpisode(getEpisodeID(showID, season, episode))) {
             try {
@@ -373,7 +374,7 @@ public class DBShowManager {
         return episodeID;
     }
 
-    public void addEpisodeFile(int episodeID, int directoryID, String episodeFile) {
+    public synchronized void addEpisodeFile(int episodeID, int directoryID, String episodeFile) {
         try {
             addEpisodeFile.setInt(1, episodeID);
             addEpisodeFile.setInt(2, directoryID);
@@ -385,7 +386,7 @@ public class DBShowManager {
         }
     }
 
-    public void removeEpisodeFiles(int episodeID) {
+    public synchronized void removeEpisodeFiles(int episodeID) {
         try {
             removeEpisodeFiles.setInt(1, episodeID);
             removeEpisodeFile.execute();
@@ -395,7 +396,7 @@ public class DBShowManager {
         }
     }
 
-    public void removeEpisodeFile(int episodeID, int directoryID, String episodeFile) {
+    public synchronized void removeEpisodeFile(int episodeID, int directoryID, String episodeFile) {
         try {
             removeEpisodeFile.setInt(1, episodeID);
             removeEpisodeFile.setInt(2, directoryID);
@@ -407,7 +408,7 @@ public class DBShowManager {
         }
     }
 
-    /*public void updateEpisodeFile(int showID, int season, int episode, String newFile) {
+    /*public synchronized void updateEpisodeFile(int showID, int season, int episode, String newFile) {
         try {
             updateEpisodeFile.setString(1, newFile);
             updateEpisodeFile.setInt(2, showID);
@@ -420,11 +421,11 @@ public class DBShowManager {
         }
     }*/
 
-    public boolean doesEpisodeExist(int showID, int season, int episode) {
+    public synchronized boolean doesEpisodeExist(int showID, int season, int episode) {
         return getEpisode(getEpisodeID(showID, season, episode)) != null;
     }
 
-    public boolean doesSeasonExist(int showID, int season) {
+    public synchronized boolean doesSeasonExist(int showID, int season) {
         boolean result = false;
         try {
             checkForSeason.setInt(1, showID);
@@ -439,15 +440,15 @@ public class DBShowManager {
         return result;
     }
 
-    public int getEpisodeID(int showID, int season, int episode) {
+    public synchronized int getEpisodeID(int showID, int season, int episode) {
         return GenericMethods.concatenateDigits(showID, season, episode);
     }
 
-    public boolean isEpisodePartOfDoubleEpisode(int showID, int season, int episode) {
+    public synchronized boolean isEpisodePartOfDoubleEpisode(int showID, int season, int episode) {
         return isEpisodePartOfDoubleEpisode(getEpisodeID(showID, season, episode));
     }
 
-    public int getEpisodeSeason(int episodeID) {
+    public synchronized int getEpisodeSeason(int episodeID) {
         int season = -2;
         try {
             getEpisodeSeason.setInt(1, episodeID);
@@ -461,7 +462,7 @@ public class DBShowManager {
         return season;
     }
 
-    public int doesAlreadyContainShow(String showName) {
+    public synchronized int doesAlreadyContainShow(String showName) {
         int showID = -2;
         try {
             checkForShow.setString(1, showName);

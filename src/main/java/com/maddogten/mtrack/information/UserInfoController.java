@@ -45,7 +45,7 @@ public class UserInfoController {
         getAllUsers().forEach(userID -> setIgnoredStatus(userID, showID, ignored));
     }
 
-    public boolean doesUserExist(String userName) {
+    public int doesUserExist(String userName) {
         return dbUserManager.doesUserExist(userName);
     }
 

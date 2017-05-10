@@ -102,7 +102,7 @@ public class TextBox {
         log.fine("isUserValid has been called.");
         if (user.contentEquals(Strings.AddNewUsername.getValue()) || !user.matches("^[a-zA-Z0-9]+$"))
             new MessageBox(new StringProperty[]{Strings.UsernameIsntValid}, oldStage);
-        else if (ClassHandler.userInfoController().doesUserExist(user))
+        else if (ClassHandler.userInfoController().doesUserExist(user) != -2)
             new MessageBox(new StringProperty[]{Strings.UsernameAlreadyTaken}, oldStage);
         else if (user.length() > 20)
             new MessageBox(new StringProperty[]{Strings.UsernameIsTooLong}, oldStage);

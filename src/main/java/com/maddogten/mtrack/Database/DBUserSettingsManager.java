@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 public class DBUserSettingsManager {
     private final Logger log = Logger.getLogger(DBUserSettingsManager.class.getName());
     private final PreparedStatement insertSettings;
-    private final PreparedStatement getShowsMultiConditional;
+    //private final PreparedStatement getShowsMultiConditional;
     private final PreparedStatement getEpisodePosition;
     private final PreparedStatement setEpisodePosition;
     private final PreparedStatement addShowSettings;
@@ -18,22 +18,22 @@ public class DBUserSettingsManager {
     private final PreparedStatement removeEpisode;
 
     public DBUserSettingsManager(Connection connection) throws SQLException {
-        boolean alreadyExists;
+        boolean doesNotExist;
         try (Statement statement = connection.createStatement()) {
-            alreadyExists = createSettingsTable(statement);
+            doesNotExist = !createSettingsTable(statement);
             createShowSettingsTable(statement);
             createEpisodeSettingsTable(statement);
         }
 
         insertSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        getShowsMultiConditional = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_ACTIVE + "=? AND " + StringDB.COLUMN_IGNORED + "=? AND " + StringDB.COLUMN_HIDDEN + "=?");
+        //getShowsMultiConditional = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_ACTIVE + "=? AND " + StringDB.COLUMN_IGNORED + "=? AND " + StringDB.COLUMN_HIDDEN + "=?");
         getEpisodePosition = connection.prepareStatement("SELECT " + StringDB.COLUMN_EPISODETIMEPOSITION + " FROM " + StringDB.TABLE_USEREPISODESETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
         setEpisodePosition = connection.prepareStatement("UPDATE " + StringDB.TABLE_USEREPISODESETTINGS + " SET " + StringDB.COLUMN_EPISODETIMEPOSITION + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
         addShowSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERSHOWSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?)");
         addEpisodeSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USEREPISODESETTINGS + " VALUES (?, ?, ?)");
         removeEpisode = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_USEREPISODESETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
 
-        if (!alreadyExists) addUserSettings(0); // Insert default program settings
+        if (doesNotExist) addUserSettings(0); // Insert default program settings
     }
 
 
@@ -73,7 +73,7 @@ public class DBUserSettingsManager {
         return alreadyExists;
     }
 
-    public void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode, boolean active, boolean ignored, boolean hidden) {
+    public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode, boolean active, boolean ignored, boolean hidden) {
         try {
             addShowSettings.setInt(1, userID);
             addShowSettings.setInt(2, showID);
@@ -89,11 +89,11 @@ public class DBUserSettingsManager {
         }
     }
 
-    public void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode) {
+    public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode) {
         this.addShowSettings(userID, showID, currentSeason, currentEpisode, false, false, false);
     }
 
-    public void addEpisodeSettings(int userID, int episodeID, int showTimePosition) {
+    public synchronized void addEpisodeSettings(int userID, int episodeID, int showTimePosition) {
         try {
             addEpisodeSettings.setInt(1, userID);
             addEpisodeSettings.setInt(2, episodeID);
@@ -105,15 +105,15 @@ public class DBUserSettingsManager {
         }
     }
 
-    public void addEpisodeSettings(int userID, int episodeID) {
+    public synchronized void addEpisodeSettings(int userID, int episodeID) {
         this.addEpisodeSettings(userID, episodeID, 0);
     }
 
-    public void addUserSettings(int userID, boolean showUsername, int updateSpeed, boolean automaticShowUpdating, int timeToWaitForDirectory, boolean show0Remaining, boolean showActiveShows, String language,
-                                boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, boolean moveStageWithParent, boolean haveStageBlockParentStage,
-                                boolean enableSpecialEffects, boolean enableFileLogging, float showColumnWidth,
-                                float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility,
-                                boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType, String videoPlayerLocation) {
+    public synchronized void addUserSettings(int userID, boolean showUsername, int updateSpeed, boolean automaticShowUpdating, int timeToWaitForDirectory, boolean show0Remaining, boolean showActiveShows, String language,
+                                             boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent, boolean moveStageWithParent, boolean haveStageBlockParentStage,
+                                             boolean enableSpecialEffects, boolean enableFileLogging, float showColumnWidth,
+                                             float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility,
+                                             boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType, String videoPlayerLocation) {
         try {
             insertSettings.setInt(1, userID);
             insertSettings.setBoolean(2, showUsername);
@@ -147,12 +147,12 @@ public class DBUserSettingsManager {
         }
     }
 
-    public void addUserSettings(int userID) {
+    public synchronized void addUserSettings(int userID) {
         this.addUserSettings(userID, true, Variables.defaultUpdateSpeed, true, Variables.defaultTimeToWaitForDirectory, false, false, "None", false, false, true, true, true, true,
                 Variables.SHOWS_COLUMN_WIDTH, Variables.REMAINING_COLUMN_WIDTH, Variables.SEASONS_COLUMN_WIDTH, Variables.EPISODE_COLUMN_WIDTH, true, true, false, false, 0, "");
     }
 
-    public int getIntegerSetting(int userID, int showID, String settingType, String table) {
+    public synchronized int getIntegerSetting(int userID, int showID, String settingType, String table) {
         int setting = -2;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
@@ -164,7 +164,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
-    public void changeIntegerSetting(int userID, int showID, int newSetting, String settingType, String table) {
+    public synchronized void changeIntegerSetting(int userID, int showID, int newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             int oldSetting = getIntegerSetting(userID, showID, settingType, table);
             statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
@@ -176,7 +176,7 @@ public class DBUserSettingsManager {
         }
     }
 
-    public String getStringSetting(int userID, int showID, String settingType, String table) {
+    public synchronized String getStringSetting(int userID, int showID, String settingType, String table) {
         String setting = Strings.EmptyString;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
@@ -188,7 +188,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
-    public void changeStringSetting(int userID, int showID, String newSetting, String settingType, String table) {
+    public synchronized void changeStringSetting(int userID, int showID, String newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             String oldSetting = getStringSetting(userID, showID, settingType, table);
             statement.execute("UPDATE " + table + " SET " + settingType + "='" + newSetting + "' WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
@@ -201,7 +201,7 @@ public class DBUserSettingsManager {
         }
     }
 
-    public float getFloatSetting(int userID, String settingType, String table) {
+    public synchronized float getFloatSetting(int userID, String settingType, String table) {
         float setting = -2;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID)) {
@@ -213,7 +213,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
-    public void changeFloatSetting(int userID, float newSetting, String settingType, String table) {
+    public synchronized void changeFloatSetting(int userID, float newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             float oldSetting = getFloatSetting(userID, settingType, table);
             statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID);
@@ -225,7 +225,7 @@ public class DBUserSettingsManager {
         }
     }
 
-    public boolean getBooleanSetting(int userID, int showID, String settingType, String table) {
+    public synchronized boolean getBooleanSetting(int userID, int showID, String settingType, String table) {
         Boolean setting = false;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
@@ -237,7 +237,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
-    public void changeBooleanSetting(int userID, int showID, boolean newSetting, String settingType, String table) {
+    public synchronized void changeBooleanSetting(int userID, int showID, boolean newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             boolean oldSetting = getBooleanSetting(userID, showID, settingType, table);
             statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
@@ -249,7 +249,7 @@ public class DBUserSettingsManager {
         }
     }
 
-    public Set<Integer> getShows(int userID) {
+    public synchronized Set<Integer> getShows(int userID) {
         Set<Integer> result = new HashSet<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID)) {
@@ -260,7 +260,7 @@ public class DBUserSettingsManager {
         return result;
     }
 
-    public Set<Integer> getShows(int userID, String settingType, boolean setting) {
+    public synchronized Set<Integer> getShows(int userID, String settingType, boolean setting) {
         Set<Integer> result = new HashSet<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + " AND " + settingType + "=" + setting)) {
@@ -271,7 +271,7 @@ public class DBUserSettingsManager {
         return result;
     }
 
-    public Set<Integer> getShows(int userID, boolean active, boolean ignored, boolean hidden) {
+    public synchronized Set<Integer> getShows(int userID, boolean active, boolean ignored, boolean hidden) {
         Set<Integer> result = new HashSet<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + " AND " + StringDB.COLUMN_ACTIVE + "=" + active + " AND " + StringDB.COLUMN_IGNORED + "=" + ignored + " AND " + StringDB.COLUMN_HIDDEN + "=" + hidden)) {
@@ -282,7 +282,7 @@ public class DBUserSettingsManager {
         return result;
     }
 
-    public int getEpisodePosition(final int userID, int episodeID) {
+    public synchronized int getEpisodePosition(final int userID, int episodeID) {
         int episodePosition = -2;
         try {
             getEpisodePosition.setInt(1, userID);
@@ -297,7 +297,7 @@ public class DBUserSettingsManager {
         return episodePosition;
     }
 
-    public void setEpisodePosition(final int userID, int episodeID, int position) {
+    public synchronized void setEpisodePosition(final int userID, int episodeID, int position) {
         try {
             if (getEpisodePosition(userID, episodeID) == -2) addEpisodeSettings(userID, episodeID, position);
             else {
@@ -312,7 +312,7 @@ public class DBUserSettingsManager {
         }
     }
 
-    public void removeEpisode(int userID, int episodeID) {
+    public synchronized void removeEpisode(int userID, int episodeID) {
         try {
             removeEpisode.setInt(1, userID);
             removeEpisode.setInt(2, episodeID);

@@ -112,12 +112,6 @@ public class Variables {
         dataFolder = file;
     }
 
-    @Deprecated
-    public static void setStageMoveWithParentAndBlockParent(boolean stageMoveWithParentAndBlockParent) {
-       /* moveStageWithParent = stageMoveWithParentAndBlockParent;
-        haveStageBlockParentStage = stageMoveWithParentAndBlockParent;*/
-    }
-
     public enum ShowColorStatus {
         REMOVED("LightCoral"), ADDED("DeepSkyBlue"), DEFAULT("LimeGreen"), ACTIVE("LightGrey");
 
