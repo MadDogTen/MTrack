@@ -308,6 +308,14 @@ public class UserInfoController {
         return dbUserSettingsManager.getStringSetting(userID, -2, StringDB.COLUMN_LANGUAGE, StringDB.TABLE_USERSETTINGS);
     }
 
+    public boolean doShowUpdating(int userID) {
+        return getUserBooleanSetting(userID, StringDB.COLUMN_AUTOMATICSHOWUPDATING);
+    }
+
+    public void setShowUpdating(int userID, boolean updateShows) {
+        setUserBooleanSetting(userID, StringDB.COLUMN_AUTOMATICSHOWUPDATING, updateShows);
+    }
+
     public void setUpdateSpeed(int userID, final int updateSpeed) {
         dbUserSettingsManager.changeIntegerSetting(userID, -2, updateSpeed, StringDB.COLUMN_UPDATESPEED, StringDB.TABLE_USERSETTINGS);
         log.info("Update speed is now set to: " + updateSpeed);

@@ -76,7 +76,7 @@ public class DBUserManager {
             int userID = getUserID(userName);
             if (userID != -2) {
                 try (Statement statement = ClassHandler.getDBManager().getStatement()) { // TODO Make sure it deletes all associated information.
-                    statement.execute("DELETE FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + " = " + userID);
+                    statement.execute("DELETE FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID);
                     //statement.executeQuery("DELETE FROM " + StringDB.settings + " WHERE " + StringDB.userID + " = " + userID);
 
                     log.info("User \"" + userName + "\" was successfully deleted.");

@@ -157,7 +157,7 @@ public class DBUserSettingsManager {
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
             if (resultSet.next()) setting = resultSet.getInt(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\", using default.");
+            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -253,7 +253,10 @@ public class DBUserSettingsManager {
         Set<Integer> result = new HashSet<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID)) {
-            while (resultSet.next()) result.add(resultSet.getInt(StringDB.COLUMN_SHOW_ID));
+            while (resultSet.next()) {
+                int showID = resultSet.getInt(StringDB.COLUMN_SHOW_ID);
+                if (ClassHandler.showInfoController().doesShowExist(showID)) result.add(showID);
+            }
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

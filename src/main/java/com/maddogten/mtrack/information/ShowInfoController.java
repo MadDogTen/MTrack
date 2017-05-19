@@ -83,6 +83,10 @@ public class ShowInfoController {
         return dbShowManager.doesSeasonExist(showID, season);
     }
 
+    public boolean doesShowExist(int showID) {
+        return dbShowManager.doesShowExist(showID);
+    }
+
     public void addSeason(int showID, int season) { // TODO Have this report a added season
         dbShowManager.addSeason(showID, season);
     }
@@ -138,6 +142,10 @@ public class ShowInfoController {
 
     public int getEpisodeID(int showID, int season, int episode) {
         return dbShowManager.getEpisodeID(showID, season, episode);
+    }
+
+    public Set<Integer> getEpisodeFileDirectories(int episodeID) {
+        return dbShowManager.getEpisodeFileDirectories(episodeID);
     }
 
     /*public Map<Integer, Set<Integer>> getMissingEpisodes(final int aShow) { // TODO Work on later

@@ -4,9 +4,6 @@ public class StringDB {
     public static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
     public static final String DBFolderName = "MTrackDB";
     public static final int directoryLength = 2048;
-
-    public static final String TABLEVERSION = "TableVersion";
-
     // Tables
     public static final String TABLE_SHOWS = "shows";
     public static final String TABLE_SEASONS = "seasons";
@@ -16,12 +13,9 @@ public class StringDB {
     public static final String TABLE_DIRECTORIES = "directories";
     public static final String TABLE_EPISODEFILES = "episodeFiles";
     public static final String TABLE_PROGRAMSETTINGS = "programSettings";
-
     public static final String TABLE_SHOWSINDIRECTORY = "showsInDirectory";
     public static final String TABLE_USERSHOWSETTINGS = "userShowSettings";
     public static final String TABLE_USEREPISODESETTINGS = "userEpisodeSettings";
-
-
     // Columns
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_USERNAME = "username";
@@ -30,7 +24,6 @@ public class StringDB {
     public static final String COLUMN_EPISODE_ID = "episodeID";
     public static final String COLUMN_DIRECTORY_ID = "directoryID";
     public static final String COLUMN_DIRECTORYPRIORITY = "directoryPriority";
-
     // -- Settings -- \\
     public static final String COLUMN_SHOWUSERNAME = "showUsername";
     public static final String COLUMN_UPDATESPEED = "updateSpeed";
@@ -58,30 +51,27 @@ public class StringDB {
     public static final String COLUMN_EPISODECOLUMNVISIBILITY = "episodeColumnVisibility";
     public static final String COLUMN_VIDEOPLAYERTYPE = "videoPlayer";
     public static final String COLUMN_VIDEOPLAYERLOCATION = "videoPlayerLocation";
-
     // -- User Show Settings -- \\
     public static final String COLUMN_CURRENTSEASON = "currentSeason";
     public static final String COLUMN_CURRENTEPISODE = "currentEpisode";
     public static final String COLUMN_ACTIVE = "active";
     public static final String COLUMN_IGNORED = "ignored";
     public static final String COLUMN_HIDDEN = "hidden";
-
     // -- User Episode Settings -- \\
     public static final String COLUMN_EPISODETIMEPOSITION = "episodeTimePosition";
-
     // -- Show -- \\
     public static final String COLUMN_SHOWNAME = "showName";
     public static final String COLUMN_SEASON = "season";
     public static final String COLUMN_EPISODE = "episode";
     public static final String COLUMN_FILE = "file";
     public static final String COLUMN_PARTOFDOUBLEEPISODE = "partOfDoubleEpisode";
-
+    public static final String COLUMN_SHOWEXISTS = "showExists";
     // -- Directory -- \\
     public static final String COLUMN_DIRECTORY = "directory";
     public static final String COLUMN_DIRECTORYACTIVE = "active";
-
     // -- Program Settings -- \\
     public static final String COLUMN_DEFAULTUSER = "defaultUser";
+    private static final String TABLEVERSION = "TableVersion";
     public static final String COLUMN_PROGRAMSETTINGSTABLEVERSION = TABLE_PROGRAMSETTINGS + TABLEVERSION;
     public static final String COLUMN_USERSETTINGSTABLEVERSION = TABLE_USERSETTINGS + TABLEVERSION;
     public static final String COLUMN_SHOWSTABLEVERSION = TABLE_SHOWS + TABLEVERSION;

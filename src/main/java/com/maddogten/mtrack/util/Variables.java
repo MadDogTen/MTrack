@@ -75,7 +75,6 @@ public class Variables {
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     static final int logMaxFileSize = 10000000;
     static final int logMaxNumberOfFiles = 10;
-    public static boolean disableAutomaticRechecking;
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static boolean makeLanguageDefault;

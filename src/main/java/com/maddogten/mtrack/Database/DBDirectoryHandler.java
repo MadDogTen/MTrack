@@ -306,7 +306,6 @@ public class DBDirectoryHandler {
 
     public synchronized int getDirectoryWithLowestPriorityFromList(Set<Integer> directories) {
         int result = -2;
-
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             StringBuilder stringBuilder = new StringBuilder();
             for (int directory : directories) {
@@ -315,8 +314,8 @@ public class DBDirectoryHandler {
             }
             try (ResultSet resultSet = statement.executeQuery("SELECT MIN(" + StringDB.COLUMN_DIRECTORYPRIORITY + ") FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + stringBuilder)) {
                 if (resultSet.next()) {
-                    getDirectoryFromPriority.setInt(1, resultSet.getInt(StringDB.COLUMN_DIRECTORYPRIORITY));
-                    try (ResultSet resultSet1 = getAllDirectoriesPriories.executeQuery()) {
+                    getDirectoryFromPriority.setInt(1, resultSet.getInt(1));
+                    try (ResultSet resultSet1 = getDirectoryFromPriority.executeQuery()) {
                         if (resultSet1.next()) result = resultSet1.getInt(StringDB.COLUMN_DIRECTORY_ID);
                     }
                     getDirectoryFromPriority.clearParameters();

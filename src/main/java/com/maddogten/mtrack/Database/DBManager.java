@@ -16,7 +16,7 @@ public class DBManager {
 
     private final Connection connection;
 
-    public DBManager(String databaseLocation, boolean shouldCreateDDB) throws SQLException {
+    public DBManager(String databaseLocation, boolean shouldCreateDDB) {
         connection = this.getConnection(databaseLocation, shouldCreateDDB);
         if (connection == null) Main.stop(null, true);
     }
@@ -25,7 +25,7 @@ public class DBManager {
         return connection;
     }
 
-    public synchronized Statement getStatement() throws SQLException {
+    synchronized Statement getStatement() throws SQLException {
         return connection.createStatement();
     }
 

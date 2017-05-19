@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.io.FileManager;
+import javafx.concurrent.Task;
 
 import java.io.File;
 import java.util.Arrays;
@@ -24,10 +25,24 @@ public class FindShows {
     public final Set<Show> findShows(final File dir) {
         Set<Show> result = new HashSet<>();
         Set<String> uncheckedShows = new HashSet<>(Arrays.asList(dir.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
-        uncheckedShows.forEach(showName -> {
-            Show show = new Show(dir, showName);
-            if (show.hasSeasons()) result.add(show);
-        });
+        Set<Thread> threads = new HashSet<>();
+        uncheckedShows.forEach(showName -> threads.add(new Thread(new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Show show = new Show(dir, showName);
+                if (show.hasSeasons()) result.add(show);
+                return null;
+            }
+        })));
+        threads.forEach(Thread::start);
+        while (!threads.isEmpty()) {
+            threads.removeIf(next -> !next.isAlive());
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
+        }
         return result;
     }
 
@@ -160,6 +175,5 @@ public class FindShows {
                 }
             }
         }
-
     }
 }

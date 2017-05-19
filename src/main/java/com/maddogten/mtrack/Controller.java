@@ -554,16 +554,7 @@ public class Controller implements Initializable {
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory...");
-                        /*ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(false, true, true);
-                        ArrayList<Directory> folders = new ArrayList<>();
-                        FileManager fileManager = new FileManager();
-                        directories.forEach(aDirectory -> {
-                            File fileName = new File(aDirectory.getDirectory() + Strings.FileSeparator + row.getItem().getShow());
-                            if (fileName.exists())
-                                folders.add(new Directory(fileName, fileName.toString(), -2, null));
-                        });
-                        if (folders.size() == 1) fileManager.openFolder(folders.get(0).getDirectory());
-                        else new ListSelectBox().openDirectory(folders, (Stage) pane.getScene().getWindow());*/
+                        ClassHandler.showInfoController().getEpisodeFiles(ClassHandler.showInfoController().getEpisodeID(row.getItem().getShowID(), row.getItem().getSeason(), row.getItem().getEpisode()));
                         log.info("Finished opening show directory...");
                     });
                     MenuItem getRemaining = new MenuItem();
@@ -585,7 +576,7 @@ public class Controller implements Initializable {
                     printCurrentSeasonEpisode.setOnAction(e -> log.info(row.getItem().getShow() + " - Season: " + ClassHandler.userInfoController().getCurrentUserSeason(Variables.getCurrentUser(), row.getItem().getShowID()) + " - Episode: " + ClassHandler.userInfoController().getCurrentUserEpisode(Variables.getCurrentUser(), row.getItem().getShowID())));
                     MenuItem printShowInformation = new MenuItem();
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
-                    printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShow()));
+                    printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShowID()));
                     MenuItem getMissingEpisodes = new MenuItem();
                     /*getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes); // TODO Fix and Enable
                     getMissingEpisodes.setOnAction(e -> {
@@ -701,7 +692,7 @@ public class Controller implements Initializable {
                 show0RemainingRadioMenuItem.setVisible(false);
                 log.info("TableViewFields set to inactive.");
             } else if (currentList.isInactive()) {
-                if (wereShowsChanged && !Variables.disableAutomaticRechecking) {
+                if (wereShowsChanged && ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser())) {
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
@@ -711,7 +702,8 @@ public class Controller implements Initializable {
                     };
                     new Thread(task).start();
                     wereShowsChanged = false;
-                } else if (Variables.disableAutomaticRechecking) wereShowsChanged = false;
+                } else if (!ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()))
+                    wereShowsChanged = false;
                 setTableViewFields(currentList.ACTIVE);
                 tableView.scrollTo(0);
                 tableView.scrollToColumnIndex(0);
@@ -762,9 +754,9 @@ public class Controller implements Initializable {
         updateText.textProperty().bind(Strings.UpdateTime);
         updateText.setTextAlignment(TextAlignment.CENTER);
         updateTimeTextField.setText(String.valueOf(ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser())));
-        updateTimeTextField.setDisable(Variables.disableAutomaticRechecking);
+        updateTimeTextField.setDisable(!ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()));
         setUpdateTime.textProperty().bind(Strings.Set);
-        setUpdateTime.setDisable(Variables.disableAutomaticRechecking);
+        setUpdateTime.setDisable(!ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()));
         setUpdateTime.setOnAction(e -> {
             if (isNumberValid(updateTimeTextField.getText(), 10))
                 ClassHandler.userInfoController().setUpdateSpeed(Variables.getCurrentUser(), Integer.valueOf(updateTimeTextField.getText()));
@@ -773,13 +765,13 @@ public class Controller implements Initializable {
         });
         disableAutomaticShowUpdating.textProperty().bind(Strings.DisableAutomaticShowSearching);
         //noinspection ConstantConditions
-        disableAutomaticShowUpdating.setSelected(Variables.forceDisableAutomaticRechecking || Variables.disableAutomaticRechecking);
+        disableAutomaticShowUpdating.setSelected(Variables.forceDisableAutomaticRechecking || !ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()));
         disableAutomaticShowUpdating.setDisable(Variables.forceDisableAutomaticRechecking);
         disableAutomaticShowUpdating.setOnAction(e -> {
-            //ClassHandler.programSettingsController().getSettingsFile().setDisableAutomaticShowUpdating(!ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
-            updateTimeTextField.setDisable(Variables.disableAutomaticRechecking);
-            setUpdateTime.setDisable(Variables.disableAutomaticRechecking);
-            log.info("Disable automatic show checking has been set to: " + Variables.disableAutomaticRechecking);
+            ClassHandler.userInfoController().setShowUpdating(Variables.getCurrentUser(), !disableAutomaticShowUpdating.isSelected());
+            updateTimeTextField.setDisable(!ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()));
+            setUpdateTime.setDisable(!ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()));
+            log.info("Automatic show checking has been set to: " + ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()));
         });
         notifyChangesText.textProperty().bind(Strings.NotifyChangesFor);
         notifyChangesText.setTextAlignment(TextAlignment.CENTER);
@@ -1115,8 +1107,6 @@ public class Controller implements Initializable {
         printAllShows.setOnAction(e -> ClassHandler.developerStuff().printOutAllShowsAndEpisodes());
         printAllDirectories.textProperty().bind(Strings.PrintAllDirectories);
         printAllDirectories.setOnAction(e -> ClassHandler.developerStuff().printAllDirectories());
-        printEmptyShowFolders.textProperty().bind(Strings.PrintEmptyShows);
-        printEmptyShowFolders.setOnAction(e -> ClassHandler.developerStuff().printEmptyShows());
         printIgnoredShows.textProperty().bind(Strings.PrintIgnoredShows);
         printIgnoredShows.setOnAction(e -> ClassHandler.developerStuff().printIgnoredShows());
         printHiddenShows.textProperty().bind(Strings.PrintHiddenShows);
@@ -1131,7 +1121,7 @@ public class Controller implements Initializable {
         printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO Reenable button
         //printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion())));
         printAllUserInfo.textProperty().bind(Strings.PrintAllUserInfo);
-        printAllUserInfo.setOnAction(e -> ClassHandler.developerStuff().printAllUserInfo());
+        printAllUserInfo.setOnAction(e -> ClassHandler.developerStuff().printAllInfoForCurrentUser());
         nonForceRecheckShows.textProperty().bind(Strings.NonForceRecheckShows);
         nonForceRecheckShows.setOnAction(e -> {
             setButtonDisable(true, nonForceRecheckShows);

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class FirstRun {
     private final Logger log = Logger.getLogger(FirstRun.class.getName());
 
-    public boolean programFirstRun() throws IOException, SQLException {
+    public boolean programFirstRun() throws SQLException {
         log.info("First Run, Generating Files...");
         String language = ClassHandler.mainRun().getLanguage();
         if (ClassHandler.mainRun().continueStarting) {

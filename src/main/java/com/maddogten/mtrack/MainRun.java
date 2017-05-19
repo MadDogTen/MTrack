@@ -20,11 +20,12 @@ import java.util.logging.Logger;
 
 public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
-    public boolean firstRun = false, continueStarting = true;
+    public boolean continueStarting = true;
+    private boolean firstRun = false;
     private boolean starting = true, forceRun = true, disableChecking = false;
     private int recheckTimer, currentTime, waitTime;
 
-    public boolean startBackend() throws IOException, SQLException { // TODO Remove public
+    boolean startBackend() throws IOException, SQLException { // TODO Remove public
         FileManager fileManager = new FileManager();
         // First it checks if the folder that contains the jar has the settings file.
         try {
@@ -135,7 +136,7 @@ public class MainRun {
 
     private void recheck() {
         // noinspection PointlessBooleanExpression
-        if (!(disableChecking || Variables.disableAutomaticRechecking || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser())) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser()) * 10))) {
+        if (!(disableChecking || !ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()) || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser())) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser()) * 10))) {
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() throws Exception {
