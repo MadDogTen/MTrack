@@ -47,7 +47,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /*
       Controller is the controller for the main stage started in Main. Handles quite a bit, Most likely more then it should.
@@ -271,7 +270,7 @@ public class Controller implements Initializable {
                         list.add(new DisplayShow(ClassHandler.showInfoController().getShowNameFromShowID(showID), remaining, ClassHandler.userInfoController().getCurrentUserSeason(Variables.getCurrentUser(), showID), ClassHandler.userInfoController().getCurrentUserEpisode(Variables.getCurrentUser(), showID), showID));
                 });
             } else
-                list.addAll(showList.stream().map(showID -> new DisplayShow(ClassHandler.showInfoController().getShowNameFromShowID(showID), ClassHandler.userInfoController().getRemainingNumberOfEpisodes(Variables.getCurrentUser(), showID), ClassHandler.userInfoController().getCurrentUserSeason(Variables.getCurrentUser(), showID), ClassHandler.userInfoController().getCurrentUserEpisode(Variables.getCurrentUser(), showID), showID)).collect(Collectors.toList()));
+                showList.forEach(showID -> list.add(new DisplayShow(ClassHandler.showInfoController().getShowNameFromShowID(showID), ClassHandler.userInfoController().getRemainingNumberOfEpisodes(Variables.getCurrentUser(), showID), ClassHandler.userInfoController().getCurrentUserSeason(Variables.getCurrentUser(), showID), ClassHandler.userInfoController().getCurrentUserEpisode(Variables.getCurrentUser(), showID), showID)));
         }
         return list;
     }
@@ -553,8 +552,8 @@ public class Controller implements Initializable {
                     MenuItem openDirectory = new MenuItem();
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
-                        log.info("Started to open show directory...");
-                        ClassHandler.showInfoController().getEpisodeFiles(ClassHandler.showInfoController().getEpisodeID(row.getItem().getShowID(), row.getItem().getSeason(), row.getItem().getEpisode()));
+                        log.info("Started to open show directory..."); // TODO Finish
+                        //ClassHandler.showInfoController().getEpisodeFiles(ClassHandler.showInfoController().getEpisodeID(row.getItem().getShowID(), row.getItem().getSeason(), row.getItem().getEpisode()));
                         log.info("Finished opening show directory...");
                     });
                     MenuItem getRemaining = new MenuItem();
@@ -692,7 +691,7 @@ public class Controller implements Initializable {
                 show0RemainingRadioMenuItem.setVisible(false);
                 log.info("TableViewFields set to inactive.");
             } else if (currentList.isInactive()) {
-                if (wereShowsChanged && ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser())) {
+                /*if (wereShowsChanged && ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser())) { // TODO Remove - Don't think this is necessary anymore.
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
@@ -703,7 +702,7 @@ public class Controller implements Initializable {
                     new Thread(task).start();
                     wereShowsChanged = false;
                 } else if (!ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()))
-                    wereShowsChanged = false;
+                    wereShowsChanged = false;*/
                 setTableViewFields(currentList.ACTIVE);
                 tableView.scrollTo(0);
                 tableView.scrollToColumnIndex(0);

@@ -264,6 +264,7 @@ public class DBShowManager {
             try (ResultSet resultSet = getShowExistsStatus.executeQuery()) {
                 if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOWEXISTS);
             }
+            getShowExistsStatus.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

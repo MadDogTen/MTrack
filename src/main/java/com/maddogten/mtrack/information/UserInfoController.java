@@ -138,8 +138,8 @@ public class UserInfoController {
     // If no episode is found, then it checks if there is another season, and if there is, checks if it contains the first episode in the season.
     public void changeEpisode(int userID, int showID, final int episode) {
         if (episode == -2) {
-            int currentSeason = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTSEASON, StringDB.TABLE_USERSHOWSETTINGS);
-            int currentEpisode = dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+            int currentSeason = getCurrentUserSeason(userID, showID);
+            int currentEpisode = getCurrentUserEpisode(userID, showID);
             if (ClassHandler.showInfoController().isDoubleEpisode(showID, currentSeason, currentEpisode))
                 ++currentEpisode;
             boolean[] isAnotherEpisodeResult = isAnotherEpisode(userID, showID, currentSeason, currentEpisode);
@@ -161,11 +161,11 @@ public class UserInfoController {
     }
 
     public int getCurrentUserSeason(int userID, int showID) {
-        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTSEASON, StringDB.TABLE_USERSHOWSETTINGS);
+        return dbUserSettingsManager.getUserShowSeason(userID, showID);
     }
 
     public int getCurrentUserEpisode(int userID, int showID) {
-        return dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+        return dbUserSettingsManager.getUserShowEpisode(userID, showID);
     }
 
     // Directly sets the Season & Episode for a show.
@@ -234,50 +234,34 @@ public class UserInfoController {
     // Then checks for a following season that contains episode 1.
     public int getRemainingNumberOfEpisodes(int userID, int showID) {
         int remaining = 0;
-        int currentSeason = getCurrentUserSeason(userID, showID), currentEpisode = getCurrentUserEpisode(userID, showID);
-        Set<Integer> allSeasons = ClassHandler.showInfoController().getSeasonsList(showID);
-        ArrayList<Integer> allSeasonAllowed = new ArrayList<>(allSeasons.size());
-        allSeasons.forEach(aSeason -> {
-            if (aSeason >= currentSeason) allSeasonAllowed.add(aSeason);
-        });
-        if (!allSeasonAllowed.isEmpty()) {
-            if (ClassHandler.showInfoController().isDoubleEpisode(showID, currentSeason, currentEpisode))
-                currentEpisode++;
-            boolean isCurrentSeason = true;
-            Collections.sort(allSeasonAllowed);
+        final int[] currentInfo = {getCurrentUserSeason(userID, showID), getCurrentUserEpisode(userID, showID)};
+        SortedSet<Integer> allSeasons = new TreeSet<>();
+        ClassHandler.showInfoController().getSeasonsList(showID).stream().filter(integer -> (integer >= currentInfo[0])).forEach(allSeasons::add);
+        if (!allSeasons.isEmpty()) {
+            if (ClassHandler.showInfoController().isDoubleEpisode(showID, currentInfo[0], currentInfo[1]))
+                currentInfo[1]++;
+            final boolean[] isCurrentSeason = {true};
             int lastSeason = -2;
-            for (int aSeason : allSeasonAllowed) {
+            for (int aSeason : allSeasons) {
                 if (lastSeason != -2 && lastSeason != aSeason - 1) return remaining;
                 int episode = 1;
-                if (isCurrentSeason) {
-                    if (aSeason != currentSeason) return remaining;
-                    episode = currentEpisode;
+                if (isCurrentSeason[0]) {
+                    if (aSeason != currentInfo[0]) return remaining;
+                    episode = currentInfo[1];
                 }
-                Set<Integer> episodes = ClassHandler.showInfoController().getEpisodesList(showID, aSeason);
+                SortedSet<Integer> episodes = new TreeSet<>();
+                ClassHandler.showInfoController().getEpisodesList(showID, aSeason).stream().filter(integer -> (isCurrentSeason[0] && integer >= currentInfo[1]) || !isCurrentSeason[0] && integer > 0).forEach(episodes::add);
                 if (!episodes.isEmpty()) {
-                    ArrayList<Integer> episodesArray = new ArrayList<>(episodes.size());
-                    episodesArray.addAll(episodes);
-                    Collections.sort(episodesArray);
-                    Iterator<Integer> episodesIterator = episodesArray.iterator();
-                    ArrayList<Integer> episodesAllowed = new ArrayList<>(episodesArray.size());
+                    Iterator<Integer> episodesIterator = episodes.iterator();
                     while (episodesIterator.hasNext()) {
-                        int next = episodesIterator.next();
-                        if (isCurrentSeason && next >= currentEpisode) episodesAllowed.add(next);
-                        else if (!isCurrentSeason && next > 0) episodesAllowed.add(next);
-                    }
-                    Collections.sort(episodesAllowed);
-                    Iterator<Integer> episodesIterator2 = episodesAllowed.iterator();
-                    while (episodesIterator2.hasNext()) {
-                        int e = episodesIterator2.next();
-                        if (e == episode) {
+                        if (episodesIterator.next() == episode) {
                             remaining++;
                             episode++;
-                            episodesIterator2.remove();
+                            episodesIterator.remove();
                         } else return remaining;
                     }
-                    if (!episodesAllowed.isEmpty()) return remaining;
                 }
-                if (isCurrentSeason) isCurrentSeason = false;
+                if (isCurrentSeason[0]) isCurrentSeason[0] = false;
                 lastSeason = aSeason;
             }
         }

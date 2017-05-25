@@ -16,6 +16,9 @@ public class DBUserSettingsManager {
     private final PreparedStatement addShowSettings;
     private final PreparedStatement addEpisodeSettings;
     private final PreparedStatement removeEpisode;
+    private final PreparedStatement getShowsForUser;
+    private final PreparedStatement getUserShowSeason;
+    private final PreparedStatement getUserShowEpisode;
 
     public DBUserSettingsManager(Connection connection) throws SQLException {
         boolean doesNotExist;
@@ -32,6 +35,9 @@ public class DBUserSettingsManager {
         addShowSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERSHOWSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?)");
         addEpisodeSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USEREPISODESETTINGS + " VALUES (?, ?, ?)");
         removeEpisode = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_USEREPISODESETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
+        getShowsForUser = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserShowSeason = connection.prepareStatement("SELECT " + StringDB.COLUMN_CURRENTSEASON + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        getUserShowEpisode = connection.prepareStatement("SELECT " + StringDB.COLUMN_CURRENTEPISODE + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
 
         if (doesNotExist) addUserSettings(0); // Insert default program settings
     }
@@ -152,6 +158,7 @@ public class DBUserSettingsManager {
                 Variables.SHOWS_COLUMN_WIDTH, Variables.REMAINING_COLUMN_WIDTH, Variables.SEASONS_COLUMN_WIDTH, Variables.EPISODE_COLUMN_WIDTH, true, true, false, false, 0, "");
     }
 
+    @Deprecated // TODO Remove - Doing it this way is much to inefficient
     public synchronized int getIntegerSetting(int userID, int showID, String settingType, String table) {
         int setting = -2;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
@@ -164,6 +171,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
+    @Deprecated
     public synchronized void changeIntegerSetting(int userID, int showID, int newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             int oldSetting = getIntegerSetting(userID, showID, settingType, table);
@@ -176,6 +184,7 @@ public class DBUserSettingsManager {
         }
     }
 
+    @Deprecated
     public synchronized String getStringSetting(int userID, int showID, String settingType, String table) {
         String setting = Strings.EmptyString;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
@@ -188,6 +197,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
+    @Deprecated
     public synchronized void changeStringSetting(int userID, int showID, String newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             String oldSetting = getStringSetting(userID, showID, settingType, table);
@@ -201,6 +211,7 @@ public class DBUserSettingsManager {
         }
     }
 
+    @Deprecated
     public synchronized float getFloatSetting(int userID, String settingType, String table) {
         float setting = -2;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
@@ -213,6 +224,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
+    @Deprecated
     public synchronized void changeFloatSetting(int userID, float newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             float oldSetting = getFloatSetting(userID, settingType, table);
@@ -225,6 +237,7 @@ public class DBUserSettingsManager {
         }
     }
 
+    @Deprecated
     public synchronized boolean getBooleanSetting(int userID, int showID, String settingType, String table) {
         Boolean setting = false;
         try (Statement statement = ClassHandler.getDBManager().getStatement();
@@ -237,6 +250,7 @@ public class DBUserSettingsManager {
         return setting;
     }
 
+    @Deprecated
     public synchronized void changeBooleanSetting(int userID, int showID, boolean newSetting, String settingType, String table) {
         try (Statement statement = ClassHandler.getDBManager().getStatement()) {
             boolean oldSetting = getBooleanSetting(userID, showID, settingType, table);
@@ -251,12 +265,15 @@ public class DBUserSettingsManager {
 
     public synchronized Set<Integer> getShows(int userID) {
         Set<Integer> result = new HashSet<>();
-        try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID)) {
-            while (resultSet.next()) {
-                int showID = resultSet.getInt(StringDB.COLUMN_SHOW_ID);
-                if (ClassHandler.showInfoController().doesShowExist(showID)) result.add(showID);
+        try {
+            getShowsForUser.setInt(1, userID);
+            try (ResultSet resultSet = getShowsForUser.executeQuery()) {
+                while (resultSet.next()) {
+                    int showID = resultSet.getInt(StringDB.COLUMN_SHOW_ID);
+                    if (ClassHandler.showInfoController().doesShowExist(showID)) result.add(showID);
+                }
             }
+            getShowsForUser.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -324,5 +341,35 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+    }
+
+    public int getUserShowSeason(int userID, int showID) {
+        int season = -2;
+        try {
+            getUserShowSeason.setInt(1, userID);
+            getUserShowSeason.setInt(2, showID);
+            try (ResultSet resultSet = getUserShowSeason.executeQuery()) {
+                if (resultSet.next()) season = resultSet.getInt(StringDB.COLUMN_CURRENTSEASON);
+            }
+            getUserShowSeason.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return season;
+    }
+
+    public int getUserShowEpisode(int userID, int showID) {
+        int episode = -2;
+        try {
+            getUserShowEpisode.setInt(1, userID);
+            getUserShowEpisode.setInt(2, showID);
+            try (ResultSet resultSet = getUserShowEpisode.executeQuery()) {
+                if (resultSet.next()) episode = resultSet.getInt(StringDB.COLUMN_CURRENTEPISODE);
+            }
+            getUserShowEpisode.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return episode;
     }
 }
