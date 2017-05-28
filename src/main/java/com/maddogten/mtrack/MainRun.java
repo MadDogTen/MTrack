@@ -66,6 +66,7 @@ public class MainRun {
                 ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager().getConnection());
                 ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager().getConnection());
                 ClassHandler.userInfoController().initDatabase(ClassHandler.getDBManager().getConnection());
+                ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager().getConnection());
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }

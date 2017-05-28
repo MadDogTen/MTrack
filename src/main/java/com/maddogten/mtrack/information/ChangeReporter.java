@@ -1,7 +1,13 @@
 package com.maddogten.mtrack.information;
 
+import com.maddogten.mtrack.Database.DBChangeTracker;
 import com.maddogten.mtrack.util.ClassHandler;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /*
@@ -11,70 +17,64 @@ import java.util.logging.Logger;
 
 public class ChangeReporter {
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
+
+    private DBChangeTracker dbChangeTracker;
     // Stores all the changes that are added with addChange().
-    private static String[] changes = new String[0];
-    private static boolean isChanges = false;
 
-    // This first saves the current list, Reinitialize changes as the the old length + 1, Adds the newInfo to changes[0], then iterates thorough the rest adding them started at changes[1].
-    public static void addChange(final String newInfo) {
-        int toRemove = -1; // This is to verify no duplicates are added to the list. If one is found, it removes it, and continues adding the new one (So it appears at the top of the list).
-        for (int i = 0; i < changes.length; i++) {
-            if (changes[i].replace("+", "a").replace("-", "m").matches(newInfo.replace("+", "a").replace("-", "m"))) {
-                toRemove = i;
-                break;
-            }
-        }
-        if (toRemove != -1) {
-            String[] correctedList = new String[changes.length - 1];
-            for (int i = 0; i < changes.length; i++)
-                if (toRemove != i) correctedList[i > toRemove ? i - 1 : i] = changes[i];
-            changes = correctedList;
-        }
+    public void initDatabase(Connection connection) throws SQLException {
+        this.dbChangeTracker = new DBChangeTracker(connection);
+    }
 
-        log.fine("Adding new change: \"" + newInfo + "\".");
-        String[] currentList = changes.clone();
-        changes = new String[currentList.length + 1];
-        changes[0] = newInfo;
-        int iterator = 1;
-        for (String aString : currentList) {
-            changes[iterator] = aString;
-            iterator++;
-        }
-        if (!isChanges) isChanges = true;
+    public int addChange(int showID, int season, int episode, boolean found) {
+        return dbChangeTracker.addChange(showID, season, episode, found);
     }
 
     // This completely clears the changes String[] so it can start new.
-    public static void resetChanges() {
-        if (changes.length > 0) {
-            changes = new String[0];
-            isChanges = false;
+    public void resetChangesForUser(int userID) {
+        dbChangeTracker.deleteAllChangesForUser(userID);
+        log.info("Change list has been cleared for " + ClassHandler.userInfoController().getUserNameFromID(userID) + ".");
+    }
+
+    public Set<Integer> getUserChanges(int userID) {
+        return dbChangeTracker.getUserChanges(userID);
+    }
+
+    public int[] getChangeInfo(int changeID) {
+        return dbChangeTracker.getChangeInfo(changeID);
+    }
+
+    public void setAllSeenForUser(int userID) {
+        dbChangeTracker.setAllSeenForUser(userID);
+    }
+
+    public String convertChangeIntoText(int changeID) {
+        int[] changeInfo = getChangeInfo(changeID);
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean found = changeInfo[4] == 1;
+        stringBuilder.append((found) ? "Added - " : "Removed - ");
+        stringBuilder.append(ClassHandler.showInfoController().getShowNameFromShowID(changeInfo[1]));
+        if (changeInfo[2] != -2) {
+            stringBuilder.append(" | S");
+            if (changeInfo[2] < 10) stringBuilder.append(0);
+            stringBuilder.append(changeInfo[2]);
+            if (changeInfo[3] != -2) {
+                stringBuilder.append("E");
+                if (changeInfo[3] < 10) stringBuilder.append(0);
+                stringBuilder.append(changeInfo[3]);
+            }
         }
-        ClassHandler.controller().resetChangedShows();
-        log.info("Change list has been cleared.");
+        return stringBuilder.toString();
     }
 
-    public static String[] getChanges() {
-        return changes;
+    public Set<String> getUserChangesAsStrings(int userID) {
+        SortedSet<String> userChanges = new TreeSet<>();
+        getUserChanges(userID).forEach(changeID -> userChanges.add(convertChangeIntoText(changeID)));
+        return userChanges;
     }
 
-    public static void setChanges(final String[] newChangeList) {
-        if (changes.length == 0) changes = newChangeList;
-        else {
-            String[] tempSave = changes.clone();
-            changes = newChangeList;
-            for (int i = tempSave.length - 1; i >= 0; i--) addChange(tempSave[i]);
-        }
-        if (changes.length > 0 && !isChanges) isChanges = true;
+    public boolean isChangesForUser(int userID) {
+        return !getUserChanges(userID).isEmpty();
     }
-
-    public static boolean getIsChanges() {
-        return isChanges;
-    }
-
-    public static void setIsChanges(final boolean isChanges) {
-        ChangeReporter.isChanges = isChanges;
-    }
-
 
     /*public class ChangedShow {
         private final String show;

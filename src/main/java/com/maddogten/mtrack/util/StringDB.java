@@ -16,6 +16,8 @@ public class StringDB {
     public static final String TABLE_SHOWSINDIRECTORY = "showsInDirectory";
     public static final String TABLE_USERSHOWSETTINGS = "userShowSettings";
     public static final String TABLE_USEREPISODESETTINGS = "userEpisodeSettings";
+    public static final String TABLE_SHOWCHANGES = "showChanges";
+    public static final String TABLE_USERCHANGETRACKING = "userChangeTracking";
     // Columns
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_USERNAME = "username";
@@ -71,6 +73,11 @@ public class StringDB {
     public static final String COLUMN_DIRECTORYACTIVE = "active";
     // -- Program Settings -- \\
     public static final String COLUMN_DEFAULTUSER = "defaultUser";
+    // -- Show Changes -- \\
+    public static final String COLUMN_CHANGE_ID = "changeID";
+    public static final String COLUMN_SHOWFOUND = "showFound";
+    public static final String COLUMN_TIMEADDED = "timeAdded";
+    public static final String COLUMN_USERSEEN = "userSeen";
     private static final String TABLEVERSION = "TableVersion";
     public static final String COLUMN_PROGRAMSETTINGSTABLEVERSION = TABLE_PROGRAMSETTINGS + TABLEVERSION;
     public static final String COLUMN_USERSETTINGSTABLEVERSION = TABLE_USERSETTINGS + TABLEVERSION;
@@ -80,6 +87,5 @@ public class StringDB {
     public static final String COLUMN_EPISODEFILESTABLEVERSION = TABLE_EPISODEFILES + TABLEVERSION;
     public static final String COLUMN_DIRECTORIESTABLEVERSION = TABLE_DIRECTORIES + TABLEVERSION;
     public static final String COLUMN_USERSTABLEVERSION = TABLE_USERS + TABLEVERSION;
-
 
 }

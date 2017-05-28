@@ -1,7 +1,6 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.Controller;
-import com.maddogten.mtrack.information.ChangeReporter;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -193,8 +192,5 @@ public class DeveloperStuff {
 
     //---- Test Stuff ----\\
 
-    public void toggleIsChanges() {
-        ChangeReporter.setIsChanges(!ChangeReporter.getIsChanges());
-    }
 
 }

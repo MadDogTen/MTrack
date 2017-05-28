@@ -1,7 +1,7 @@
 package com.maddogten.mtrack.gui;
 
-import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.io.MoveStage;
+import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
 import com.maddogten.mtrack.util.Strings;
 import com.maddogten.mtrack.util.Variables;
@@ -19,8 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /*
@@ -59,16 +58,14 @@ public class ChangesBox {
         listView.setEditable(false);
 
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        final ArrayList<String[]> changes = new ArrayList<>(ChangeReporter.getChanges().length);
-        changes.add(0, ChangeReporter.getChanges());
-        observableList.addAll(changes.get(0));
+        observableList.addAll(ClassHandler.changeReporter().getUserChangesAsStrings(Variables.getCurrentUser()));
         listView.setItems(observableList);
 
         Button clear = new Button(), close = new Button();
         clear.textProperty().bind(Strings.Clear);
         close.textProperty().bind(Strings.Close);
         clear.setOnAction(e -> {
-            ChangeReporter.resetChanges();
+            ClassHandler.changeReporter().resetChangesForUser(Variables.getCurrentUser());
             listView.getItems().clear();
         });
         close.setOnAction(e -> {
@@ -92,11 +89,11 @@ public class ChangesBox {
             public Void call() throws Exception {
                 while (currentlyOpen) {
                     Thread.sleep(1000);
-                    if (changesStage.isShowing() && !Arrays.equals(changes.get(0), ChangeReporter.getChanges())) {
-                        changes.set(0, ChangeReporter.getChanges());
+                    Set<Integer> newUserChanges = ClassHandler.changeReporter().getUserChanges(Variables.getCurrentUser());
+                    if (changesStage.isShowing() && observableList.size() != newUserChanges.size()) { // TODO Do this in a better way
                         Platform.runLater(() -> {
                             observableList.clear();
-                            observableList.addAll(changes.get(0));
+                            observableList.addAll(ClassHandler.changeReporter().getUserChangesAsStrings(Variables.getCurrentUser()));
                         });
                     }
                 }

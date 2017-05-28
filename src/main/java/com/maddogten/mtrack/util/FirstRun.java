@@ -60,6 +60,7 @@ public class FirstRun {
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);*/
             ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager().getConnection());
             ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager().getConnection());
+            ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager().getConnection());
             boolean addDirectories = /*!hasImportedFiles ||*/ ClassHandler.directoryController().getAllDirectories(true, false).isEmpty();
             Thread generateShowFilesThread = null;
             if (addDirectories) {

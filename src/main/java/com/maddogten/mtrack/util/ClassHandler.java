@@ -3,10 +3,7 @@ package com.maddogten.mtrack.util;
 import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.MainRun;
-import com.maddogten.mtrack.information.DirectoryController;
-import com.maddogten.mtrack.information.ProgramSettingsController;
-import com.maddogten.mtrack.information.ShowInfoController;
-import com.maddogten.mtrack.information.UserInfoController;
+import com.maddogten.mtrack.information.*;
 import com.maddogten.mtrack.io.CheckShowFiles;
 
 public class ClassHandler {
@@ -15,6 +12,7 @@ public class ClassHandler {
     private static final UserInfoController userInfoController = new UserInfoController();
     private static final ProgramSettingsController programSettingsController = new ProgramSettingsController();
     private static final CheckShowFiles checkShowFiles = new CheckShowFiles();
+    private static final ChangeReporter changeReporter = new ChangeReporter();
     private static final DeveloperStuff developerStuff = new DeveloperStuff();
     private static final MainRun mainRun = new MainRun();
     private static DBManager DBManager = null;
@@ -65,5 +63,9 @@ public class ClassHandler {
 
     public static void setDBManager(final DBManager DBManager) {
         ClassHandler.DBManager = DBManager;
+    }
+
+    public static ChangeReporter changeReporter() {
+        return changeReporter;
     }
 }

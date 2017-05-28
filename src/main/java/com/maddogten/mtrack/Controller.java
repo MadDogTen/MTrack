@@ -1,7 +1,6 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.*;
-import com.maddogten.mtrack.information.ChangeReporter;
 import com.maddogten.mtrack.information.show.DisplayShow;
 import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.io.MoveStage;
@@ -806,7 +805,7 @@ public class Controller implements Initializable {
         currentUserComboBox.setOnAction(e -> {
             if (currentUserComboBox.getValue() != null && !currentUserComboBox.getValue().matches(Strings.UserName.getValue())) {
                 Strings.UserName.setValue(currentUserComboBox.getValue());
-                ChangeReporter.resetChanges();
+                //ChangeReporter.resetChanges(); // TODO Fix
                 try {
                     ClassHandler.mainRun().loadUser(new UpdateManager(), false);
                 } catch (IOException e1) {
@@ -1134,11 +1133,11 @@ public class Controller implements Initializable {
             };
             new Thread(task).start();
         });
-        this.toggleIsChanges.textProperty().bind(Strings.ToggleIsChanges);
+        /*this.toggleIsChanges.textProperty().bind(Strings.ToggleIsChanges);
         this.toggleIsChanges.setOnAction(e -> {
             ClassHandler.developerStuff().toggleIsChanges();
-            log.info("isChanges has been set to:" + ChangeReporter.getIsChanges());
-        });
+            log.info("isChanges has been set to:" + ClassHandler.changeReporter().isChangesForUser(Variables.getCurrentUser()));
+        });*/
         clearFile.textProperty().bind(Strings.ClearFile);
         clearFile.setOnAction(e -> {
             setButtonDisable(true, clearFile);
@@ -1299,14 +1298,14 @@ public class Controller implements Initializable {
     }
 
     private void checkIfChangesListIsPopulated() throws InterruptedException {
-        if (ChangeReporter.getIsChanges() && !changesAlert.isVisible()) {
+        if (ClassHandler.changeReporter().isChangesForUser(Variables.getCurrentUser()) && !changesAlert.isVisible()) {
             changesAlert.setVisible(true);
             while (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()) && changesAlert.getOpacity() < 1.0) {
                 final int opacity = (int) (changesAlert.getOpacity() * 100.0) + 10;
                 changesAlert.setOpacity((double) (opacity / 100.0f));
                 Thread.sleep(40);
             }
-        } else if (!ChangeReporter.getIsChanges() && changesAlert.isVisible()) {
+        } else if (!ClassHandler.changeReporter().isChangesForUser(Variables.getCurrentUser()) && changesAlert.isVisible()) {
             while (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()) && changesAlert.getOpacity() > 0.0) {
                 final int opacity = (int) (changesAlert.getOpacity() * 100.0) - 10;
                 changesAlert.setOpacity((double) (opacity / 100.0f));

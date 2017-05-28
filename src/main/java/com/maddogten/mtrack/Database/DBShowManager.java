@@ -215,7 +215,10 @@ public class DBShowManager {
     public synchronized int[] addShow(String show) {
         int showID = doesAlreadyContainShow(show);
         if (showID != -2) {
-            if (!doesShowExist(showID)) setShowExists(showID, true);
+            if (!doesShowExist(showID)) {
+                setShowExists(showID, true);
+                return new int[]{showID, 2};
+            }
             return new int[]{showID, 0};
         } else try {
             showID = generateShowID();
@@ -237,7 +240,7 @@ public class DBShowManager {
             removeSeasons.setInt(1, showID);
             removeSeasons.execute();
             removeSeasons.clearParameters();
-            seasons.forEach(season -> getSeasonEpisodes(showID, season).forEach(this::removeEpisodeFiles));
+            seasons.forEach(season -> getSeasonEpisodes(showID, season).forEach(episode -> removeEpisodeFiles(getEpisodeID(showID, season, episode))));
             removeEpisodes.setInt(1, showID);
             removeEpisodes.execute();
             removeEpisodes.clearParameters();
@@ -388,14 +391,13 @@ public class DBShowManager {
     }
 
     public synchronized int addEpisode(int showID, int season, int episode, Boolean partOfDoubleEpisode) {
-        int episodeID = -2;
-        if (!doesContainEpisode(getEpisodeID(showID, season, episode))) {
+        int episodeID = getEpisodeID(showID, season, episode);
+        if (episodeID != -2 && !doesContainEpisode(episodeID)) {
             try {
                 addEpisode.setInt(1, showID);
                 addEpisode.setInt(2, season);
                 addEpisode.setInt(3, episode);
                 addEpisode.setBoolean(4, partOfDoubleEpisode);
-                episodeID = getEpisodeID(showID, season, episode);
                 addEpisode.setInt(5, episodeID);
                 addEpisode.execute();
                 addEpisode.clearParameters();
@@ -407,22 +409,24 @@ public class DBShowManager {
     }
 
     public synchronized void addEpisodeFile(int episodeID, int directoryID, String episodeFile) {
-        try {
-            addEpisodeFile.setInt(1, episodeID);
-            addEpisodeFile.setInt(2, directoryID);
-            addEpisodeFile.setString(3, episodeFile);
-            addEpisodeFile.execute();
-            addEpisodeFile.clearParameters();
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
+        if (episodeID != -2) {
+            try {
+                addEpisodeFile.setInt(1, episodeID);
+                addEpisodeFile.setInt(2, directoryID);
+                addEpisodeFile.setString(3, episodeFile);
+                addEpisodeFile.execute();
+                addEpisodeFile.clearParameters();
+            } catch (SQLException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
         }
     }
 
     private synchronized void removeEpisodeFiles(int episodeID) {
         try {
             removeEpisodeFiles.setInt(1, episodeID);
-            removeEpisodeFile.execute();
-            removeEpisodeFile.clearParameters();
+            removeEpisodeFiles.execute();
+            removeEpisodeFiles.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

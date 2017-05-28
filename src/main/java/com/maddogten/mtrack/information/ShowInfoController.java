@@ -32,10 +32,13 @@ public class ShowInfoController {
     }
 
     public int[] addShow(String show) {
-        return dbShowManager.addShow(show);
+        int[] showInfo = dbShowManager.addShow(show);
+        if (showInfo[1] == 1 || showInfo[1] == 2) ClassHandler.changeReporter().addChange(showInfo[0], -2, -2, true);
+        return showInfo;
     } // TODO Have this report a added Show
 
     public void removeShow(int showID) {
+        ClassHandler.changeReporter().addChange(showID, -2, -2, false);
         dbShowManager.removeShow(showID);
     }
 
@@ -88,10 +91,12 @@ public class ShowInfoController {
     }
 
     public void addSeason(int showID, int season) { // TODO Have this report a added season
+        ClassHandler.changeReporter().addChange(showID, season, -2, true);
         dbShowManager.addSeason(showID, season);
     }
 
     public int addEpisode(int showID, int season, int episode, boolean partOfDoubleEpisode) { // TODO Have this report a added episode
+        ClassHandler.changeReporter().addChange(showID, season, episode, true);
         return dbShowManager.addEpisode(showID, season, episode, partOfDoubleEpisode);
     }
 
