@@ -79,9 +79,15 @@ public class CheckShowFiles {
                         int[] showAddedInfo = ClassHandler.showInfoController().addShow(show.getShow());
                         int showID = showAddedInfo[0];
                         boolean showAdded = showAddedInfo[1] == 1;
+                        if (showAdded) {
+                            log.info("Here!!!!");
+                        }
                         if (showAdded) printNewShowInfo(show.getShow(), -2, -2, false);
                         show.getSeasons().forEach(season -> {
                             boolean doesNotExist = showAdded || !ClassHandler.showInfoController().doesSeasonExist(showID, season.getSeason());
+                            if (doesNotExist) {
+                                log.info(showAdded + " || " + ClassHandler.showInfoController().doesSeasonExist(showID, season.getSeason()));
+                            }
                             if (doesNotExist) {
                                 printNewShowInfo(show.getShow(), season.getSeason(), -2, false);
                                 ClassHandler.showInfoController().addSeason(showID, season.getSeason());

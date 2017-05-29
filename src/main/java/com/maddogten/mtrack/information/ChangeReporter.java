@@ -76,101 +76,19 @@ public class ChangeReporter {
         return !getUserChanges(userID).isEmpty();
     }
 
-    /*public class ChangedShow {
-        private final String show;
-        private final Status status;
+    public class Change {
+        final int changeID;
+        final String showName;
+        final int showID;
+        final int season;
+        final int episode;
 
-        private final Map<Integer, Set<ChangedEpisode>> changedInfo;
-
-        public ChangedShow(String show) {
-            this.show = show;
-            this.status = Status.UNCHANGED;
-
-            changedInfo = new HashMap<>();
-        }
-
-        public ChangedShow(String show, Status status) {
-            this.show = show;
-            this.status = status;
-
-            changedInfo = new HashMap<>();
-        }
-
-        public LinkedHashSet<String> getText() { // TODO Add localization
-            LinkedHashSet<String> textResult = new LinkedHashSet<>();
-            if (status != Status.UNCHANGED) textResult.add(show + " was " + status.statusTextProperty());
-
-            Map<Integer, Set<Integer>> addedStuff = new HashMap<>();
-            Map<Integer, Set<Integer>> removedStuff = new HashMap<>();
-
-            changedInfo.forEach((seasonInt, changedEpisodes) -> changedEpisodes.forEach(changedEpisode -> {
-                switch (changedEpisode.getStatus()) {
-                    case ADDED:
-                        if (!addedStuff.containsKey(seasonInt)) addedStuff.put(seasonInt, new HashSet<>());
-                        addedStuff.get(seasonInt).add(changedEpisode.getEpisode());
-                    case REMOVED:
-                        if (!removedStuff.containsKey(seasonInt)) removedStuff.put(seasonInt, new HashSet<>());
-                        removedStuff.get(seasonInt).add(changedEpisode.getEpisode());
-                }
-            }));
-
-            StringBuilder stringBuilder = new StringBuilder();
-            if (!addedStuff.isEmpty()) {
-                stringBuilder.append("Added: ");
-                addedStuff.forEach((seasonInt, seasonEpisodes) -> {
-                    stringBuilder.append("Season: ");
-                    seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
-                    stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
-                });
-                textResult.add(stringBuilder.toString());
-                stringBuilder.delete(0, stringBuilder.length());
-            }
-            if (!removedStuff.isEmpty()) {
-                stringBuilder.append("Removed: ");
-                removedStuff.forEach((seasonInt, seasonEpisodes) -> {
-                    stringBuilder.append("Season: ");
-                    seasonEpisodes.forEach(integer -> stringBuilder.append(integer).append(", "));
-                    stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length() - 1);
-                });
-                textResult.add(stringBuilder.toString());
-                stringBuilder.delete(0, stringBuilder.length());
-            }
-            return textResult;
-        }
-
-        class ChangedEpisode {
-            private final int episode;
-            private final Status status;
-
-            public ChangedEpisode(int episode, Status status) {
-                this.episode = episode;
-                this.status = status;
-            }
-
-            public int getEpisode() {
-                return episode;
-            }
-
-            public Status getStatus() {
-                return status;
-            }
+        public Change(int changeID, int showID, int season, int episode) {
+            this.changeID = changeID;
+            this.showID = showID;
+            this.showName = ClassHandler.showInfoController().getShowNameFromShowID(this.showID);
+            this.season = season;
+            this.episode = episode;
         }
     }
-
-    private enum Status {
-        ADDED(new SimpleStringProperty(" added.")), REMOVED(new SimpleStringProperty(" removed.")), UNCHANGED(new SimpleStringProperty("")); //TODO Add localization
-        private final StringProperty statusText;
-
-        public String getStatusText() {
-            return statusText.get();
-        }
-
-        public StringProperty statusTextProperty() {
-            return statusText;
-        }
-
-        Status(StringProperty text) {
-            this.statusText = text;
-        }
-    }*/
 }

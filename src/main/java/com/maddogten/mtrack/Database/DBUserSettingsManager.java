@@ -19,6 +19,49 @@ public class DBUserSettingsManager {
     private final PreparedStatement getShowsForUser;
     private final PreparedStatement getUserShowSeason;
     private final PreparedStatement getUserShowEpisode;
+    private final PreparedStatement checkIfShowSettingsExistForUser;
+
+    // Settings
+    private final PreparedStatement getUserLanguage;
+    private final PreparedStatement setUserLanguage;
+    private final PreparedStatement getUserDoShowUpdating;
+    private final PreparedStatement setUserDoShowUpdating;
+    private final PreparedStatement getUserUpdateSpeed;
+    private final PreparedStatement setUserUpdateSpeed;
+    private final PreparedStatement getUserTimeToWaitForDirectory;
+    private final PreparedStatement setUserTimeToWaitForDirectory;
+    private final PreparedStatement getUserDoFileLogging;
+    private final PreparedStatement setUserDoFileLogging;
+    private final PreparedStatement getUserDoSpecialEffects;
+    private final PreparedStatement setUserDoSpecialEffects;
+    private final PreparedStatement getUserShow0Remaining;
+    private final PreparedStatement setUserShow0Remaining;
+    private final PreparedStatement getUserShowActiveShows;
+    private final PreparedStatement setUserShowActiveShows;
+    private final PreparedStatement getUserRecordChangesForNonActiveShows;
+    private final PreparedStatement setUserRecordChangesForNonActiveShows;
+    private final PreparedStatement getUserRecordChangesSeasonsLowerThanCurrent;
+    private final PreparedStatement setUserRecordChangesSeasonsLowerThanCurrent;
+    private final PreparedStatement getUserMoveStageWithParent;
+    private final PreparedStatement setUserMoveStageWithParent;
+    private final PreparedStatement getUserHaveStageBlockParentStage;
+    private final PreparedStatement setUserHaveStageBlockParentStage;
+    private final PreparedStatement getUserEnableFileLogging;
+    private final PreparedStatement setUserEnableFileLogging;
+    private final PreparedStatement getUserVideoplayerType;
+    private final PreparedStatement setUserVideoplayerType;
+    private final PreparedStatement getUserVideoPlayerLocation;
+    private final PreparedStatement setUserVideoPlayerLocation;
+    private final PreparedStatement setUserShowSeason;
+    private final PreparedStatement setUserShowEpisode;
+    private final PreparedStatement getUserShowIgnoredStatus;
+    private final PreparedStatement setUserShowIgnoredStatus;
+    private final PreparedStatement getUserShowActiveStatus;
+    private final PreparedStatement setUserShowActiveStatus;
+    private final PreparedStatement getUserShowHiddenStatus;
+    private final PreparedStatement setUserShowHiddenStatus;
+    private final PreparedStatement getUserShowUsername;
+    private final PreparedStatement setUserShowUsername;
 
     public DBUserSettingsManager(Connection connection) throws SQLException {
         boolean doesNotExist;
@@ -38,6 +81,49 @@ public class DBUserSettingsManager {
         getShowsForUser = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserShowSeason = connection.prepareStatement("SELECT " + StringDB.COLUMN_CURRENTSEASON + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
         getUserShowEpisode = connection.prepareStatement("SELECT " + StringDB.COLUMN_CURRENTEPISODE + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        getUserLanguage = connection.prepareStatement("SELECT " + StringDB.COLUMN_LANGUAGE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserLanguage = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_LANGUAGE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserDoShowUpdating = connection.prepareStatement("SELECT " + StringDB.COLUMN_AUTOMATICSHOWUPDATING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserDoShowUpdating = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_AUTOMATICSHOWUPDATING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserUpdateSpeed = connection.prepareStatement("SELECT " + StringDB.COLUMN_UPDATESPEED + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserUpdateSpeed = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_UPDATESPEED + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserTimeToWaitForDirectory = connection.prepareStatement("SELECT " + StringDB.COLUMN_TIMETOWAITFORDIRECTORY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserTimeToWaitForDirectory = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_TIMETOWAITFORDIRECTORY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserDoFileLogging = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLEFILELOGGING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserDoFileLogging = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_ENABLEFILELOGGING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserDoSpecialEffects = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLESPECIALEFFECTS + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserDoSpecialEffects = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_ENABLESPECIALEFFECTS + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserShow0Remaining = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW0REMAINING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserShow0Remaining = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOW0REMAINING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserShowActiveShows = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWACTIVESHOWS + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserShowActiveShows = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWACTIVESHOWS + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserRecordChangesForNonActiveShows = connection.prepareStatement("SELECT " + StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserRecordChangesForNonActiveShows = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserRecordChangesSeasonsLowerThanCurrent = connection.prepareStatement("SELECT " + StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserRecordChangesSeasonsLowerThanCurrent = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserMoveStageWithParent = connection.prepareStatement("SELECT " + StringDB.COLUMN_MOVESTAGEWITHPARENT + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserMoveStageWithParent = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_MOVESTAGEWITHPARENT + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserHaveStageBlockParentStage = connection.prepareStatement("SELECT " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserHaveStageBlockParentStage = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserEnableFileLogging = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLEFILELOGGING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserEnableFileLogging = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_ENABLEFILELOGGING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserVideoplayerType = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERTYPE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserVideoplayerType = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERTYPE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserVideoPlayerLocation = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERLOCATION + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserVideoPlayerLocation = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERLOCATION + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+         /*= connection.prepareStatement("SELECT " +  + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+         = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " +  + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");*/
+        setUserShowSeason = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_CURRENTSEASON + "=?" + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        setUserShowEpisode = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_CURRENTEPISODE + "=?" + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        getUserShowIgnoredStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_IGNORED + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        setUserShowIgnoredStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_IGNORED + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        getUserShowActiveStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_ACTIVE + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        setUserShowActiveStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_ACTIVE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        getUserShowHiddenStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_HIDDEN + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        setUserShowHiddenStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_HIDDEN + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        checkIfShowSettingsExistForUser = connection.prepareStatement("SELECT  " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
+        getUserShowUsername = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWUSERNAME + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserShowUsername = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWUSERNAME + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
 
         if (doesNotExist) addUserSettings(0); // Insert default program settings
     }
@@ -158,111 +244,6 @@ public class DBUserSettingsManager {
                 Variables.SHOWS_COLUMN_WIDTH, Variables.REMAINING_COLUMN_WIDTH, Variables.SEASONS_COLUMN_WIDTH, Variables.EPISODE_COLUMN_WIDTH, true, true, false, false, 0, "");
     }
 
-    @Deprecated // TODO Remove - Doing it this way is much to inefficient
-    public synchronized int getIntegerSetting(int userID, int showID, String settingType, String table) {
-        int setting = -2;
-        try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
-            if (resultSet.next()) setting = resultSet.getInt(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        return setting;
-    }
-
-    @Deprecated
-    public synchronized void changeIntegerSetting(int userID, int showID, int newSetting, String settingType, String table) {
-        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
-            int oldSetting = getIntegerSetting(userID, showID, settingType, table);
-            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
-            if (getIntegerSetting(userID, showID, settingType, table) == newSetting)
-                log.info(settingType + " for UserID \"" + userID + "\" was changed to \"" + newSetting + "\" from \"" + oldSetting + "\".");
-            else log.info(settingType + " for UserID \"" + userID + "\" was unable to be changed.");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-    }
-
-    @Deprecated
-    public synchronized String getStringSetting(int userID, int showID, String settingType, String table) {
-        String setting = Strings.EmptyString;
-        try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
-            if (resultSet.next()) setting = resultSet.getString(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        return setting;
-    }
-
-    @Deprecated
-    public synchronized void changeStringSetting(int userID, int showID, String newSetting, String settingType, String table) {
-        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
-            String oldSetting = getStringSetting(userID, showID, settingType, table);
-            statement.execute("UPDATE " + table + " SET " + settingType + "='" + newSetting + "' WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
-            if (oldSetting.matches(newSetting))
-                log.info(settingType + " for UserID \"" + userID + "\" was changed to \"" + newSetting + "\" from \"" + oldSetting + "\".");
-            else log.info(settingType + " for UserID \"" + userID + "\" was unable to be changed.");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-            System.exit(0);
-        }
-    }
-
-    @Deprecated
-    public synchronized float getFloatSetting(int userID, String settingType, String table) {
-        float setting = -2;
-        try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID)) {
-            if (resultSet.next()) setting = resultSet.getFloat(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        return setting;
-    }
-
-    @Deprecated
-    public synchronized void changeFloatSetting(int userID, float newSetting, String settingType, String table) {
-        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
-            float oldSetting = getFloatSetting(userID, settingType, table);
-            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID);
-            if (getFloatSetting(userID, settingType, table) == newSetting)
-                log.info(settingType + " for UserID \"" + userID + "\" was changed to \"" + newSetting + "\" from \"" + oldSetting + "\".");
-            else log.info(settingType + " for UserID \"" + userID + "\" was unable to be changed.");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-    }
-
-    @Deprecated
-    public synchronized boolean getBooleanSetting(int userID, int showID, String settingType, String table) {
-        Boolean setting = false;
-        try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + settingType + " FROM " + table + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""))) {
-            if (resultSet.next()) setting = resultSet.getBoolean(settingType);
-            else log.warning("Unable to load \"" + settingType + "\" for user \"" + userID + "\".");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        return setting;
-    }
-
-    @Deprecated
-    public synchronized void changeBooleanSetting(int userID, int showID, boolean newSetting, String settingType, String table) {
-        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
-            boolean oldSetting = getBooleanSetting(userID, showID, settingType, table);
-            statement.execute("UPDATE " + table + " SET " + settingType + "=" + newSetting + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + ((showID != -2) ? (" AND " + StringDB.COLUMN_SHOW_ID + "=" + showID) : ""));
-            if (getBooleanSetting(userID, showID, settingType, table) == newSetting)
-                log.info(settingType + " for UserID \"" + userID + "\" was changed to \"" + newSetting + "\" from \"" + oldSetting + "\".");
-            else log.info(settingType + " for UserID \"" + userID + "\" was unable to be changed.");
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-    }
-
     public synchronized Set<Integer> getShows(int userID) {
         Set<Integer> result = new HashSet<>();
         try {
@@ -371,5 +352,527 @@ public class DBUserSettingsManager {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return episode;
+    }
+
+    public synchronized String getUserLanguage(int userID) {
+        String result = Strings.EmptyString;
+        try {
+            getUserLanguage.setInt(1, userID);
+            try (ResultSet resultSet = getUserLanguage.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getString(StringDB.COLUMN_LANGUAGE);
+            }
+            getUserLanguage.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserLanguage(int userID, String language) {
+        try {
+            setUserLanguage.setString(1, language);
+            setUserLanguage.setInt(2, userID);
+            setUserLanguage.execute();
+            setUserLanguage.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserDoShowUpdating(int userID) {
+        boolean result = false;
+        try {
+            getUserDoShowUpdating.setInt(1, userID);
+            try (ResultSet resultSet = getUserDoShowUpdating.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_AUTOMATICSHOWUPDATING);
+            }
+            getUserDoShowUpdating.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserDoShowUpdating(int userID, boolean doShowUpdating) {
+        try {
+            setUserDoShowUpdating.setBoolean(1, doShowUpdating);
+            setUserDoShowUpdating.setInt(2, userID);
+            setUserDoShowUpdating.execute();
+            setUserDoShowUpdating.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized int getUserUpdateSpeed(int userID) {
+        int result = Variables.defaultUpdateSpeed;
+        try {
+            getUserUpdateSpeed.setInt(1, userID);
+            try (ResultSet resultSet = getUserUpdateSpeed.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_UPDATESPEED);
+            }
+            getUserUpdateSpeed.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserUpdateSpeed(int userID, int updateSpeed) {
+        try {
+            setUserUpdateSpeed.setInt(1, updateSpeed);
+            setUserUpdateSpeed.setInt(2, userID);
+            setUserUpdateSpeed.execute();
+            setUserUpdateSpeed.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized int getUserTimeToWaitForDirectory(int userID) {
+        int result = Variables.defaultTimeToWaitForDirectory;
+        try {
+            getUserTimeToWaitForDirectory.setInt(1, userID);
+            try (ResultSet resultSet = getUserTimeToWaitForDirectory.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_TIMETOWAITFORDIRECTORY);
+            }
+            getUserTimeToWaitForDirectory.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserTimeToWaitForDirectory(int userID, int timeToWaitForDirectory) {
+        try {
+            setUserTimeToWaitForDirectory.setInt(1, timeToWaitForDirectory);
+            setUserTimeToWaitForDirectory.setInt(2, userID);
+            setUserTimeToWaitForDirectory.execute();
+            setUserTimeToWaitForDirectory.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserDoFileLogging(int userID) {
+        boolean result = false;
+        try {
+            getUserDoFileLogging.setInt(1, userID);
+            try (ResultSet resultSet = getUserDoFileLogging.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ENABLEFILELOGGING);
+            }
+            getUserDoFileLogging.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserDoFileLogging(int userID, boolean doFileLogging) {
+        try {
+            setUserDoFileLogging.setBoolean(1, doFileLogging);
+            setUserDoFileLogging.setInt(2, userID);
+            setUserDoFileLogging.execute();
+            setUserDoFileLogging.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserDoSpecialEffects(int userID) {
+        boolean result = false;
+        try {
+            getUserDoSpecialEffects.setInt(1, userID);
+            try (ResultSet resultSet = getUserDoSpecialEffects.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ENABLESPECIALEFFECTS);
+            }
+            getUserDoSpecialEffects.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserDoSpecialEffects(int userID, boolean doSpecialEffects) {
+        try {
+            setUserDoSpecialEffects.setBoolean(1, doSpecialEffects);
+            setUserDoSpecialEffects.setInt(2, userID);
+            setUserDoSpecialEffects.execute();
+            setUserDoSpecialEffects.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserShow0Remaining(int userID) {
+        boolean result = false;
+        try {
+            getUserShow0Remaining.setInt(1, userID);
+            try (ResultSet resultSet = getUserShow0Remaining.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOW0REMAINING);
+            }
+            getUserShow0Remaining.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserShow0Remaining(int userID, boolean show0Remaining) {
+        try {
+            setUserShow0Remaining.setBoolean(1, show0Remaining);
+            setUserShow0Remaining.setInt(2, userID);
+            setUserShow0Remaining.execute();
+            setUserShow0Remaining.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserShowActiveShows(int userID) {
+        boolean result = false;
+        try {
+            getUserShowActiveShows.setInt(1, userID);
+            try (ResultSet resultSet = getUserShowActiveShows.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOWACTIVESHOWS);
+            }
+            getUserShowActiveShows.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserShowActiveShows(int userID, boolean showActiveShows) {
+        try {
+            setUserShowActiveShows.setBoolean(1, showActiveShows);
+            setUserShowActiveShows.setInt(2, userID);
+            setUserShowActiveShows.execute();
+            setUserShowActiveShows.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserRecordChangesForNonActiveShows(int userID) {
+        boolean result = false;
+        try {
+            getUserRecordChangesForNonActiveShows.setInt(1, userID);
+            try (ResultSet resultSet = getUserRecordChangesForNonActiveShows.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS);
+            }
+            getUserRecordChangesForNonActiveShows.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserRecordChangesForNonActiveShows(int userID, boolean recordChangesForNonActiveShows) {
+        try {
+            setUserRecordChangesForNonActiveShows.setBoolean(1, recordChangesForNonActiveShows);
+            setUserRecordChangesForNonActiveShows.setInt(2, userID);
+            setUserRecordChangesForNonActiveShows.execute();
+            setUserRecordChangesForNonActiveShows.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserRecordChangesSeasonsLowerThanCurrent(int userID) {
+        boolean result = false;
+        try {
+            getUserRecordChangesSeasonsLowerThanCurrent.setInt(1, userID);
+            try (ResultSet resultSet = getUserRecordChangesSeasonsLowerThanCurrent.executeQuery()) {
+                if (resultSet.next())
+                    result = resultSet.getBoolean(StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT);
+            }
+            getUserRecordChangesSeasonsLowerThanCurrent.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserRecordChangesSeasonsLowerThanCurrent(int userID, boolean recordChangesSeasonsLowerThanCurrent) {
+        try {
+            setUserRecordChangesSeasonsLowerThanCurrent.setBoolean(1, recordChangesSeasonsLowerThanCurrent);
+            setUserRecordChangesSeasonsLowerThanCurrent.setInt(2, userID);
+            setUserRecordChangesSeasonsLowerThanCurrent.execute();
+            setUserRecordChangesSeasonsLowerThanCurrent.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserMoveStageWithParent(int userID) {
+        boolean result = false;
+        try {
+            getUserMoveStageWithParent.setInt(1, userID);
+            try (ResultSet resultSet = getUserMoveStageWithParent.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_MOVESTAGEWITHPARENT);
+            }
+            getUserMoveStageWithParent.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserMoveStageWithParent(int userID, boolean moveStageWithParent) {
+        try {
+            setUserMoveStageWithParent.setBoolean(1, moveStageWithParent);
+            setUserMoveStageWithParent.setInt(2, userID);
+            setUserMoveStageWithParent.execute();
+            setUserMoveStageWithParent.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserHaveStageBlockParentStage(int userID) {
+        boolean result = false;
+        try {
+            getUserHaveStageBlockParentStage.setInt(1, userID);
+            try (ResultSet resultSet = getUserHaveStageBlockParentStage.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE);
+            }
+            getUserHaveStageBlockParentStage.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserHaveStageBlockParentStage(int userID, boolean haveStageBlockParentStage) {
+        try {
+            setUserHaveStageBlockParentStage.setBoolean(1, haveStageBlockParentStage);
+            setUserHaveStageBlockParentStage.setInt(2, userID);
+            setUserHaveStageBlockParentStage.execute();
+            setUserHaveStageBlockParentStage.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserEnableFileLogging(int userID) {
+        boolean result = false;
+        try {
+            getUserEnableFileLogging.setInt(1, userID);
+            try (ResultSet resultSet = getUserEnableFileLogging.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ENABLEFILELOGGING);
+            }
+            getUserEnableFileLogging.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserEnableFileLogging(int userID, boolean enableFileLogging) {
+        try {
+            setUserEnableFileLogging.setBoolean(1, enableFileLogging);
+            setUserEnableFileLogging.setInt(2, userID);
+            setUserEnableFileLogging.execute();
+            setUserEnableFileLogging.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized int getUserVideoPlayerType(int userID) {
+        int result = -2;
+        try {
+            getUserVideoplayerType.setInt(1, userID);
+            try (ResultSet resultSet = getUserVideoplayerType.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_VIDEOPLAYERTYPE);
+            }
+            getUserVideoplayerType.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserVideoPlayerType(int userID, int videoPlayerType) {
+        try {
+            setUserVideoplayerType.setInt(1, videoPlayerType);
+            setUserVideoplayerType.setInt(2, userID);
+            setUserVideoplayerType.execute();
+            setUserVideoplayerType.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized String getUserVideoPlayerLocation(int userID) {
+        String result = Strings.EmptyString;
+        try {
+            getUserVideoPlayerLocation.setInt(1, userID);
+            try (ResultSet resultSet = getUserVideoPlayerLocation.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getString(StringDB.COLUMN_VIDEOPLAYERLOCATION);
+            }
+            getUserVideoPlayerLocation.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserVideoPlayerLocation(int userID, String videoPlayerLocation) {
+        try {
+            setUserVideoPlayerLocation.setString(1, videoPlayerLocation);
+            setUserVideoPlayerLocation.setInt(2, userID);
+            setUserVideoPlayerLocation.execute();
+            setUserVideoPlayerLocation.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized void setUserShowSeason(int userID, int showID, int showSeason) {
+        try {
+            setUserShowSeason.setInt(1, showSeason);
+            setUserShowSeason.setInt(2, userID);
+            setUserShowSeason.setInt(3, showID);
+            setUserShowSeason.execute();
+            setUserShowSeason.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized void setUserShowEpisode(int userID, int showID, int showEpisode) {
+        try {
+            setUserShowEpisode.setInt(1, showEpisode);
+            setUserShowEpisode.setInt(2, userID);
+            setUserShowSeason.setInt(3, showID);
+            setUserShowEpisode.execute();
+            setUserShowEpisode.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserShowIgnoredStatus(int userID, int showID) {
+        boolean result = false;
+        try {
+            getUserShowIgnoredStatus.setInt(1, userID);
+            getUserShowIgnoredStatus.setInt(2, showID);
+            try (ResultSet resultSet = getUserShowIgnoredStatus.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_IGNORED);
+            }
+            getUserShowIgnoredStatus.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserShowIgnoredStatus(int userID, int showID, boolean showIgnoredStatus) {
+        try {
+            setUserShowIgnoredStatus.setBoolean(1, showIgnoredStatus);
+            setUserShowIgnoredStatus.setInt(2, userID);
+            setUserShowIgnoredStatus.setInt(3, showID);
+            setUserShowIgnoredStatus.execute();
+            setUserShowIgnoredStatus.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserShowActiveStatus(int userID, int showID) {
+        boolean result = false;
+        try {
+            getUserShowActiveStatus.setInt(1, userID);
+            getUserShowActiveStatus.setInt(2, showID);
+            try (ResultSet resultSet = getUserShowActiveStatus.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ACTIVE);
+            }
+            getUserShowActiveStatus.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserShowActiveStatus(int userID, int showID, boolean showActiveStatus) {
+        try {
+            setUserShowActiveStatus.setBoolean(1, showActiveStatus);
+            setUserShowActiveStatus.setInt(2, userID);
+            setUserShowActiveStatus.setInt(3, showID);
+            setUserShowActiveStatus.execute();
+            setUserShowActiveStatus.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserShowHiddenStatus(int userID, int showID) {
+        boolean result = false;
+        try {
+            getUserShowHiddenStatus.setInt(1, userID);
+            getUserShowHiddenStatus.setInt(2, showID);
+            try (ResultSet resultSet = getUserShowHiddenStatus.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_HIDDEN);
+            }
+            getUserShowHiddenStatus.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+
+    public synchronized void setUserShowHiddenStatus(int userID, int showID, boolean showHiddenStatus) {
+        try {
+            setUserShowHiddenStatus.setBoolean(1, showHiddenStatus);
+            setUserShowHiddenStatus.setInt(2, userID);
+            setUserShowHiddenStatus.setInt(3, showID);
+            setUserShowHiddenStatus.execute();
+            setUserShowHiddenStatus.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public boolean doesShowSettingExistForUser(int userID, int showID) {
+        boolean result = false;
+        try {
+            checkIfShowSettingsExistForUser.setInt(1, userID);
+            checkIfShowSettingsExistForUser.setInt(2, showID);
+            try (ResultSet resultSet = checkIfShowSettingsExistForUser.executeQuery()) {
+                result = resultSet.next();
+            }
+            checkIfShowSettingsExistForUser.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized boolean getUserShowUsername(int userID) {
+        boolean result = false;
+        try {
+            getUserShowUsername.setInt(1, userID);
+            try (ResultSet resultSet = getUserShowUsername.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOWUSERNAME);
+            }
+            getUserShowUsername.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserShowUsername(int userID, boolean showUsername) {
+        try {
+            setUserShowUsername.setBoolean(1, showUsername);
+            setUserShowUsername.setInt(2, userID);
+            setUserShowUsername.execute();
+            setUserShowUsername.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
     }
 }

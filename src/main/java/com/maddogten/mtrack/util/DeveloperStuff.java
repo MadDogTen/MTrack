@@ -160,7 +160,7 @@ public class DeveloperStuff {
         Set<String> printInfo = new LinkedHashSet<>();
         printInfo.add("Username: " + userName + "\n");
         printInfo.add("UserID: " + userID + "\n");
-        printInfo.add("Show username: " + ClassHandler.userInfoController().getUserBooleanSetting(userID, StringDB.COLUMN_SHOWUSERNAME) + "\n");
+        printInfo.add("Show username: " + ClassHandler.userInfoController().showUsername(userID) + "\n");
         printInfo.add("Update speed: " + ClassHandler.userInfoController().getUpdateSpeed(userID) + "\n");
         printInfo.add("Automatic show updating: " + ClassHandler.userInfoController().doShowUpdating(userID) + "\n");
         printInfo.add("Time to wait for directory: " + ClassHandler.userInfoController().getTimeToWaitForDirectory(userID) + "\n");

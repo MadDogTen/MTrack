@@ -38,7 +38,7 @@ public class UserInfoController {
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
     public void setIgnoredStatus(int userID, final int showID, final boolean ignored) {
         log.fine(showID + " ignore status is: " + ignored);
-        dbUserSettingsManager.changeBooleanSetting(userID, showID, ignored, StringDB.COLUMN_IGNORED, StringDB.TABLE_USERSHOWSETTINGS);
+        dbUserSettingsManager.getUserShowIgnoredStatus(userID, showID);
     }
 
     public void setIgnoredStatusAllUsers(int showID, boolean ignored) {
@@ -61,7 +61,7 @@ public class UserInfoController {
 
     public void addShowForUsers(int showID) {
         getAllUsers().forEach(userID -> {
-            if (dbUserSettingsManager.getIntegerSetting(userID, showID, StringDB.COLUMN_SHOW_ID, StringDB.TABLE_USERSHOWSETTINGS) == -2) {
+            if (!dbUserSettingsManager.doesShowSettingExistForUser(userID, showID)) {
                 this.addNewShow(userID, showID);
                 log.fine("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" was added for user \"" + getUserNameFromID(userID) + "\".");
             } else if (getIgnoredStatus(userID, showID)) {
@@ -80,7 +80,7 @@ public class UserInfoController {
     }
 
     public boolean getIgnoredStatus(int userID, int showID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, showID, StringDB.COLUMN_IGNORED, StringDB.TABLE_USERSHOWSETTINGS);
+        return dbUserSettingsManager.getUserShowIgnoredStatus(userID, showID);
     }
 
     public Set<Integer> getIgnoredShows(int userID) {
@@ -89,11 +89,11 @@ public class UserInfoController {
 
     // Saves whether or not a show is currently active. If a show is Active, it means the user is actively watching it, and it is being searched for in rechecks.
     public void setActiveStatus(int userID, final int showID, final boolean active) {
-        dbUserSettingsManager.changeBooleanSetting(userID, showID, active, StringDB.COLUMN_ACTIVE, StringDB.TABLE_USERSHOWSETTINGS);
+        dbUserSettingsManager.setUserShowActiveStatus(userID, showID, active);
     }
 
     public boolean isShowActive(int userID, final int showID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, showID, StringDB.COLUMN_ACTIVE, StringDB.TABLE_USERSHOWSETTINGS);
+        return dbUserSettingsManager.getUserShowActiveStatus(userID, showID);
     }
 
     public Set<Integer> getShowsWithActiveStatus(int userID, boolean getActiveShows) {
@@ -113,7 +113,7 @@ public class UserInfoController {
     // If a user doesn't want a show clogging up any lists, then it can be set hidden. It shouldn't be able to be found anywhere at that point.
     public void setHiddenStatus(int userID, final int showID, final boolean isHidden) {
         log.fine(showID + " hidden status is: " + isHidden);
-        dbUserSettingsManager.changeBooleanSetting(userID, showID, isHidden, StringDB.COLUMN_HIDDEN, StringDB.TABLE_USERSHOWSETTINGS);
+        dbUserSettingsManager.setUserShowHiddenStatus(userID, showID, isHidden);
     }
 
     public Set<Integer> getHiddenShows(int userID) {
@@ -151,7 +151,7 @@ public class UserInfoController {
                 this.setSeasonEpisode(userID, showID, ++currentSeason, 1);
                 log.info(showName + " is now on season " + currentSeason + " episode " + 1);
             } else {
-                dbUserSettingsManager.changeIntegerSetting(userID, showID, ++currentEpisode, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+                dbUserSettingsManager.setUserShowEpisode(userID, showID, ++currentEpisode);
                 log.info(showName + " is now on episode " + currentEpisode);
             }
         } else {
@@ -170,8 +170,8 @@ public class UserInfoController {
 
     // Directly sets the Season & Episode for a show.
     public void setSeasonEpisode(int userID, int showID, final int season, final int episode) {
-        dbUserSettingsManager.changeIntegerSetting(userID, showID, season, StringDB.COLUMN_CURRENTSEASON, StringDB.TABLE_USERSHOWSETTINGS);
-        dbUserSettingsManager.changeIntegerSetting(userID, showID, episode, StringDB.COLUMN_CURRENTEPISODE, StringDB.TABLE_USERSHOWSETTINGS);
+        dbUserSettingsManager.setUserShowSeason(userID, showID, season);
+        dbUserSettingsManager.setUserShowEpisode(userID, showID, episode);
         log.info(ClassHandler.showInfoController().getShowNameFromShowID(showID) + " is now set to Season: " + season + " - Episode: " + episode);
     }
 
@@ -284,55 +284,46 @@ public class UserInfoController {
     }
 
     public void setLanguage(int userID, String language) {
-        dbUserSettingsManager.changeStringSetting(userID, -2, language, StringDB.COLUMN_LANGUAGE, StringDB.TABLE_USERSETTINGS);
+        dbUserSettingsManager.setUserLanguage(userID, language);
         log.info("Default language was set to " + language + '.');
     }
 
     public String getLanguage(int userID) {
-        return dbUserSettingsManager.getStringSetting(userID, -2, StringDB.COLUMN_LANGUAGE, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserLanguage(userID);
     }
 
     public boolean doShowUpdating(int userID) {
-        return getUserBooleanSetting(userID, StringDB.COLUMN_AUTOMATICSHOWUPDATING);
+        return dbUserSettingsManager.getUserDoShowUpdating(userID);
     }
 
     public void setShowUpdating(int userID, boolean updateShows) {
-        setUserBooleanSetting(userID, StringDB.COLUMN_AUTOMATICSHOWUPDATING, updateShows);
+        dbUserSettingsManager.setUserDoShowUpdating(userID, updateShows);
     }
 
     public void setUpdateSpeed(int userID, final int updateSpeed) {
-        dbUserSettingsManager.changeIntegerSetting(userID, -2, updateSpeed, StringDB.COLUMN_UPDATESPEED, StringDB.TABLE_USERSETTINGS);
+        dbUserSettingsManager.setUserUpdateSpeed(userID, updateSpeed);
         log.info("Update speed is now set to: " + updateSpeed);
     }
 
     public int getUpdateSpeed(int userID) {
-        return dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.COLUMN_UPDATESPEED, StringDB.TABLE_USERSETTINGS);
-    }
-
-    public void setSavingSpeed(int userID, final int savingSpeed) {
-        dbUserSettingsManager.changeIntegerSetting(userID, -2, savingSpeed, StringDB.COLUMN_SAVESPEED, StringDB.TABLE_USERSETTINGS);
-        log.info("Save speed is now set to: " + savingSpeed);
-    }
-
-    public int getSavingSpeed(int userID) {
-        return dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.COLUMN_SAVESPEED, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserUpdateSpeed(userID);
     }
 
     public void setTimeToWaitForDirectory(int userID, final int timeToWaitForDirectory) {
-        dbUserSettingsManager.changeIntegerSetting(userID, -2, timeToWaitForDirectory, StringDB.COLUMN_TIMETOWAITFORDIRECTORY, StringDB.TABLE_USERSETTINGS);
+        dbUserSettingsManager.setUserTimeToWaitForDirectory(userID, timeToWaitForDirectory);
         log.info("Time to wait for directory is now set to: " + timeToWaitForDirectory);
     }
 
     public int getTimeToWaitForDirectory(int userID) {
-        return dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.COLUMN_TIMETOWAITFORDIRECTORY, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserTimeToWaitForDirectory(userID);
     }
 
     public boolean doFileLogging(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_ENABLEFILELOGGING, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserDoFileLogging(userID);
     }
 
     public void setFileLogging(int userID, final boolean enableFileLogging) {
-        dbUserSettingsManager.changeBooleanSetting(userID, -2, enableFileLogging, StringDB.COLUMN_ENABLEFILELOGGING, StringDB.TABLE_USERSETTINGS);
+        dbUserSettingsManager.setUserDoFileLogging(userID, enableFileLogging);
         if (enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
             try {
                 GenericMethods.initFileLogging(log);
@@ -343,58 +334,50 @@ public class UserInfoController {
     }
 
     public boolean doSpecialEffects(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_ENABLESPECIALEFFECTS, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserDoSpecialEffects(userID);
     }
 
     public boolean show0Remaining(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_SHOW0REMAINING, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserShow0Remaining(userID);
     }
 
     public boolean showActiveShows(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_SHOWACTIVESHOWS, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserShowActiveShows(userID);
     }
 
     public boolean getRecordChangesForNonActiveShows(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserRecordChangesForNonActiveShows(userID);
     }
 
     public boolean getRecordChangedSeasonsLowerThanCurrent(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserRecordChangesSeasonsLowerThanCurrent(userID);
     }
 
     public boolean getMoveStageWithParent(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_MOVESTAGEWITHPARENT, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserMoveStageWithParent(userID);
     }
 
     public boolean getHaveStageBlockParentStage(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserHaveStageBlockParentStage(userID);
     }
 
     public boolean getEnableFileLogging(int userID) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, StringDB.COLUMN_ENABLEFILELOGGING, StringDB.TABLE_USERSETTINGS);
+        return dbUserSettingsManager.getUserEnableFileLogging(userID);
     }
 
-    public boolean getColumnVisibilityStatus(int userID, String column) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, column, StringDB.TABLE_USERSETTINGS);
+    public boolean getColumnVisibilityStatus(int userID, String column) { // TODO Fix this tomorrow
+        return true; //dbUserSettingsManager.getBooleanSetting(userID, -2, column, StringDB.TABLE_USERSETTINGS);
     }
 
-    public float getColumnWidth(int userID, String column) {
-        return dbUserSettingsManager.getFloatSetting(userID, column, StringDB.TABLE_USERSETTINGS);
-    }
-
-    public boolean getUserBooleanSetting(int userID, String setting) {
-        return dbUserSettingsManager.getBooleanSetting(userID, -2, setting, StringDB.TABLE_USERSETTINGS);
-    }
-
-    public void setUserBooleanSetting(int userID, String setting, boolean newSetting) {
-        dbUserSettingsManager.changeBooleanSetting(userID, -2, newSetting, setting, StringDB.TABLE_USERSETTINGS);
+    public float getColumnWidth(int userID, String column) { // TODO Fix this tomorrow
+        return 20; //dbUserSettingsManager.getFloatSetting(userID, column, StringDB.TABLE_USERSETTINGS);
     }
 
     public VideoPlayer getVideoPlayer(int userID) {
         VideoPlayer videoPlayer = new VideoPlayer();
-        videoPlayer.setVideoPlayerEnum(VideoPlayer.VideoPlayerEnum.getVideoPlayerFromID(dbUserSettingsManager.getIntegerSetting(userID, -2, StringDB.COLUMN_VIDEOPLAYERTYPE, StringDB.TABLE_USERSETTINGS)));
+        videoPlayer.setVideoPlayerEnum(VideoPlayer.VideoPlayerEnum.getVideoPlayerFromID(dbUserSettingsManager.getUserVideoPlayerType(userID)));
         if (videoPlayer.getVideoPlayerEnum() != VideoPlayer.VideoPlayerEnum.OTHER)
-            videoPlayer.setVideoPlayerLocation(new File(dbUserSettingsManager.getStringSetting(userID, -2, StringDB.COLUMN_VIDEOPLAYERLOCATION, StringDB.TABLE_USERSETTINGS)));
+            videoPlayer.setVideoPlayerLocation(new File(dbUserSettingsManager.getUserVideoPlayerLocation(userID)));
         return videoPlayer;
     }
 
@@ -423,5 +406,53 @@ public class UserInfoController {
         });
         if (mostUsedLanguage[0].matches(Strings.EmptyString)) mostUsedLanguage[0] = Variables.DefaultLanguage[0];
         return mostUsedLanguage[0];
+    }
+
+    public void setDoSpecialEffects(int userID, boolean doSpecialEffects) {
+        dbUserSettingsManager.setUserDoSpecialEffects(userID, doSpecialEffects);
+    }
+
+    public void setShow0Remaining(int userID, boolean show0Remaining) {
+        dbUserSettingsManager.setUserShow0Remaining(userID, show0Remaining);
+    }
+
+    public void setShowActiveShows(int userID, boolean showActiveShows) {
+        dbUserSettingsManager.setUserShowActiveShows(userID, showActiveShows);
+    }
+
+    public void setRecordChangesForNonActiveShows(int userID, boolean recordChangesForNonActiveShows) {
+        dbUserSettingsManager.setUserRecordChangesForNonActiveShows(userID, recordChangesForNonActiveShows);
+    }
+
+    public void setRecordChangesSeasonsLowerThanCurrent(int userID, boolean recordChangesSeasonsLowerThanCurrent) {
+        dbUserSettingsManager.setUserRecordChangesSeasonsLowerThanCurrent(userID, recordChangesSeasonsLowerThanCurrent);
+    }
+
+    public void setMoveStageWithParent(int userID, boolean moveStageWithParent) {
+        dbUserSettingsManager.setUserMoveStageWithParent(userID, moveStageWithParent);
+    }
+
+    public void setHaveStageBlockParentStage(int userID, boolean haveStageBlockParentStage) {
+        dbUserSettingsManager.setUserHaveStageBlockParentStage(userID, haveStageBlockParentStage);
+    }
+
+    public synchronized void setEnableFileLogging(int userID, boolean enableFileLogging) {
+        dbUserSettingsManager.setUserEnableFileLogging(userID, enableFileLogging);
+    }
+
+    public void setVideoPlayerType(int userID, int videoPlayerType) {
+        dbUserSettingsManager.setUserVideoPlayerType(userID, videoPlayerType);
+    }
+
+    public void setVideoPlayerLocation(int userID, String videoPlayerLocation) {
+        dbUserSettingsManager.setUserVideoPlayerLocation(userID, videoPlayerLocation);
+    }
+
+    public boolean showUsername(int userID) {
+        return dbUserSettingsManager.getUserShowUsername(userID);
+    }
+
+    public void setShowUsername(int userID, boolean showUsername) {
+        dbUserSettingsManager.setUserShowUsername(userID, showUsername);
     }
 }

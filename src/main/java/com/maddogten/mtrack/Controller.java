@@ -715,9 +715,9 @@ public class Controller implements Initializable {
             changesAlert.setOpacity(0.0);
         else changesAlert.setOpacity(1.0);
         show0RemainingRadioMenuItem.textProperty().bind(Strings.Show0Remaining);
-        show0RemainingRadioMenuItem.setSelected(ClassHandler.userInfoController().getUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_SHOW0REMAINING));
+        show0RemainingRadioMenuItem.setSelected(ClassHandler.userInfoController().show0Remaining(Variables.getCurrentUser()));
         show0RemainingRadioMenuItem.setOnAction(e -> {
-            ClassHandler.userInfoController().setUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_SHOW0REMAINING, !ClassHandler.userInfoController().show0Remaining(Variables.getCurrentUser()));
+            ClassHandler.userInfoController().setShow0Remaining(Variables.getCurrentUser(), !ClassHandler.userInfoController().show0Remaining(Variables.getCurrentUser()));
             if (ClassHandler.userInfoController().show0Remaining(Variables.getCurrentUser()))
                 log.info("Now showing shows with 0 episodes remaining.");
             else log.info("No longer showing shows with 0 episodes remaining.");
@@ -726,7 +726,7 @@ public class Controller implements Initializable {
         });
         showActiveShowsCheckbox.setSelected(ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()));
         showActiveShowsCheckbox.setOnAction(e -> {
-            ClassHandler.userInfoController().setUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_SHOWACTIVESHOWS, showActiveShowsCheckbox.isSelected());
+            ClassHandler.userInfoController().setShowActiveShows(Variables.getCurrentUser(), showActiveShowsCheckbox.isSelected());
             if (ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()))
                 log.info("Now showing active shows.");
             else log.info("No longer showing active shows.");
@@ -778,13 +778,13 @@ public class Controller implements Initializable {
         inactiveShowsCheckBox.textProperty().bind(Strings.InactiveShows);
         inactiveShowsCheckBox.setSelected(ClassHandler.userInfoController().getRecordChangesForNonActiveShows(Variables.getCurrentUser()));
         inactiveShowsCheckBox.setOnAction(e -> {
-            ClassHandler.userInfoController().setUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS, !ClassHandler.userInfoController().getRecordChangesForNonActiveShows(Variables.getCurrentUser()));
+            ClassHandler.userInfoController().setRecordChangesForNonActiveShows(Variables.getCurrentUser(), !ClassHandler.userInfoController().getRecordChangesForNonActiveShows(Variables.getCurrentUser()));
             log.info("Record inactive shows has been set to: " + ClassHandler.userInfoController().getRecordChangesForNonActiveShows(Variables.getCurrentUser()));
         });
         olderSeasonsCheckBox.textProperty().bind(Strings.OlderSeasons);
         olderSeasonsCheckBox.setSelected(ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(Variables.getCurrentUser()));
         olderSeasonsCheckBox.setOnAction(e -> {
-            ClassHandler.userInfoController().setUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT, !ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(Variables.getCurrentUser()));
+            ClassHandler.userInfoController().setRecordChangesSeasonsLowerThanCurrent(Variables.getCurrentUser(), !ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(Variables.getCurrentUser()));
             log.info("Record older seasons has been set to: " + ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(Variables.getCurrentUser()));
         });
         about.textProperty().bind(Strings.About);
@@ -1164,14 +1164,14 @@ public class Controller implements Initializable {
         settingsButton.setOnAction(e -> {
             mainPane.setVisible(false);
             settingsAnchorPane.setVisible(true);
-            if (ClassHandler.userInfoController().getUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_SHOWUSERNAME)) {
+            if (ClassHandler.userInfoController().showUsername(Variables.getCurrentUser())) {
                 userNameComboBox.setVisible(false);
             }
         });
         homeButton.setOnAction(e -> {
             settingsAnchorPane.setVisible(false);
             mainPane.setVisible(true);
-            if (ClassHandler.userInfoController().getUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_SHOWUSERNAME)) {
+            if (ClassHandler.userInfoController().showUsername(Variables.getCurrentUser())) {
                 userNameComboBox.setVisible(true);
             }
         });

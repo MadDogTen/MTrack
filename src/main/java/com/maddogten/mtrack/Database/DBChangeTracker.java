@@ -76,9 +76,7 @@ public class DBChangeTracker {
             else {
                 changeFoundStatus(changeID, found);
                 removeChangeForUsers(changeID);
-                usersSeenChange.forEach(userID -> {
-                    addUserChange(userID, changeID);
-                });
+                usersSeenChange.forEach(userID -> addUserChange(userID, changeID));
             }
         } else {
             try {
