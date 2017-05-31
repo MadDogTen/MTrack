@@ -75,20 +75,4 @@ public class ChangeReporter {
     public boolean isChangesForUser(int userID) {
         return !getUserChanges(userID).isEmpty();
     }
-
-    public class Change {
-        final int changeID;
-        final String showName;
-        final int showID;
-        final int season;
-        final int episode;
-
-        public Change(int changeID, int showID, int season, int episode) {
-            this.changeID = changeID;
-            this.showID = showID;
-            this.showName = ClassHandler.showInfoController().getShowNameFromShowID(this.showID);
-            this.season = season;
-            this.episode = episode;
-        }
-    }
 }

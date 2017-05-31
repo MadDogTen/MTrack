@@ -31,6 +31,10 @@ public class ShowInfoController {
         return dbShowManager.getAllShows();
     }
 
+    public ArrayList<Integer> getShowsThatExist() {
+        return dbShowManager.getAllShowsThatExist();
+    }
+
     public int[] addShow(String show) {
         int[] showInfo = dbShowManager.addShow(show);
         if (showInfo[1] == 1 || showInfo[1] == 2) ClassHandler.changeReporter().addChange(showInfo[0], -2, -2, true);

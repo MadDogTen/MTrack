@@ -62,6 +62,23 @@ public class DBUserSettingsManager {
     private final PreparedStatement setUserShowHiddenStatus;
     private final PreparedStatement getUserShowUsername;
     private final PreparedStatement setUserShowUsername;
+    private final PreparedStatement getUserShowColumnVisibility;
+    private final PreparedStatement setUserShowColumnVisibility;
+    private final PreparedStatement getUserShowColumnWidth;
+    private final PreparedStatement setUserShowColumnWidth;
+    private final PreparedStatement getUserSeasonColumnVisibility;
+    private final PreparedStatement setUserSeasonColumnVisibility;
+    private final PreparedStatement getUserSeasonColumnWidth;
+    private final PreparedStatement setUserSeasonColumnWidth;
+    private final PreparedStatement getUserEpisodeColumnVisibility;
+    private final PreparedStatement setUserEpisodeColumnVisibility;
+    private final PreparedStatement getUserEpisodeColumnWidth;
+    private final PreparedStatement setUserEpisodeColumnWidth;
+    private final PreparedStatement getUserRemainingColumnVisibility;
+    private final PreparedStatement setUserRemainingColumnVisibility;
+    private final PreparedStatement getUserRemainingColumnWidth;
+    private final PreparedStatement setUserRemainingColumnWidth;
+
 
     public DBUserSettingsManager(Connection connection) throws SQLException {
         boolean doesNotExist;
@@ -124,6 +141,22 @@ public class DBUserSettingsManager {
         checkIfShowSettingsExistForUser = connection.prepareStatement("SELECT  " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
         getUserShowUsername = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWUSERNAME + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         setUserShowUsername = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWUSERNAME + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserShowColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWCOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserShowColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWCOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserShowColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWCOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserShowColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWCOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserSeasonColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_SEASONCOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserSeasonColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SEASONCOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserSeasonColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_SEASONCOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserSeasonColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SEASONCOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserEpisodeColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_EPISODECOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserEpisodeColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_EPISODECOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserEpisodeColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_EPISODECOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserEpisodeColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_EPISODECOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserRemainingColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_REMAININGCOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserRemainingColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_REMAININGCOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserRemainingColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_REMAININGCOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserRemainingColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_REMAININGCOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
 
         if (doesNotExist) addUserSettings(0); // Insert default program settings
     }
@@ -261,7 +294,7 @@ public class DBUserSettingsManager {
         return result;
     }
 
-    public synchronized Set<Integer> getShows(int userID, String settingType, boolean setting) {
+    public synchronized Set<Integer> getShows(int userID, String settingType, boolean setting) { // TODO Remove?
         Set<Integer> result = new HashSet<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + " AND " + settingType + "=" + setting)) {
@@ -272,7 +305,7 @@ public class DBUserSettingsManager {
         return result;
     }
 
-    public synchronized Set<Integer> getShows(int userID, boolean active, boolean ignored, boolean hidden) {
+    public synchronized Set<Integer> getShows(int userID, boolean active, boolean ignored, boolean hidden) { // TODO Remove?
         Set<Integer> result = new HashSet<>();
         try (Statement statement = ClassHandler.getDBManager().getStatement();
              ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + " AND " + StringDB.COLUMN_ACTIVE + "=" + active + " AND " + StringDB.COLUMN_IGNORED + "=" + ignored + " AND " + StringDB.COLUMN_HIDDEN + "=" + hidden)) {
@@ -324,7 +357,7 @@ public class DBUserSettingsManager {
         }
     }
 
-    public int getUserShowSeason(int userID, int showID) {
+    public synchronized int getUserShowSeason(int userID, int showID) {
         int season = -2;
         try {
             getUserShowSeason.setInt(1, userID);
@@ -339,7 +372,7 @@ public class DBUserSettingsManager {
         return season;
     }
 
-    public int getUserShowEpisode(int userID, int showID) {
+    public synchronized int getUserShowEpisode(int userID, int showID) {
         int episode = -2;
         try {
             getUserShowEpisode.setInt(1, userID);
@@ -836,7 +869,7 @@ public class DBUserSettingsManager {
         }
     }
 
-    public boolean doesShowSettingExistForUser(int userID, int showID) {
+    public synchronized boolean doesShowSettingExistForUser(int userID, int showID) {
         boolean result = false;
         try {
             checkIfShowSettingsExistForUser.setInt(1, userID);
@@ -871,6 +904,206 @@ public class DBUserSettingsManager {
             setUserShowUsername.setInt(2, userID);
             setUserShowUsername.execute();
             setUserShowUsername.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserShowColumnVisibility(int userID) {
+        boolean result = false;
+        try {
+            getUserShowColumnVisibility.setInt(1, userID);
+            try (ResultSet resultSet = getUserShowColumnVisibility.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOWCOLUMNVISIBILITY);
+            }
+            getUserShowColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserShowColumnVisibility(int userID, boolean showColumn) {
+        try {
+            setUserShowColumnVisibility.setBoolean(1, showColumn);
+            setUserShowColumnVisibility.setInt(2, userID);
+            setUserShowColumnVisibility.execute();
+            setUserShowColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized float getUserShowColumnWidth(int userID) {
+        float result = -2.0f;
+        try {
+            getUserShowColumnWidth.setInt(1, userID);
+            try (ResultSet resultSet = getUserShowColumnWidth.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_SHOWCOLUMNWIDTH);
+            }
+            getUserShowColumnWidth.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserShowColumnWidth(int userID, float columnWidth) {
+        try {
+            setUserShowColumnWidth.setFloat(1, columnWidth);
+            setUserShowColumnWidth.setInt(2, userID);
+            setUserShowColumnWidth.execute();
+            setUserShowColumnWidth.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserSeasonColumnVisibility(int userID) {
+        boolean result = false;
+        try {
+            getUserSeasonColumnVisibility.setInt(1, userID);
+            try (ResultSet resultSet = getUserSeasonColumnVisibility.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SEASONCOLUMNVISIBILITY);
+            }
+            getUserSeasonColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserSeasonColumnVisibility(int userID, boolean showColumn) {
+        try {
+            setUserSeasonColumnVisibility.setBoolean(1, showColumn);
+            setUserSeasonColumnVisibility.setInt(2, userID);
+            setUserSeasonColumnVisibility.execute();
+            setUserSeasonColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized float getUserSeasonColumnWidth(int userID) {
+        float result = -2.0f;
+        try {
+            getUserSeasonColumnWidth.setInt(1, userID);
+            try (ResultSet resultSet = getUserSeasonColumnWidth.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_SEASONCOLUMNWIDTH);
+            }
+            getUserSeasonColumnWidth.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserSeasonColumnWidth(int userID, float columnWidth) {
+        try {
+            setUserSeasonColumnWidth.setFloat(1, columnWidth);
+            setUserSeasonColumnWidth.setInt(2, userID);
+            setUserSeasonColumnWidth.execute();
+            setUserSeasonColumnWidth.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserEpisodeColumnVisibility(int userID) {
+        boolean result = false;
+        try {
+            getUserEpisodeColumnVisibility.setInt(1, userID);
+            try (ResultSet resultSet = getUserEpisodeColumnVisibility.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_EPISODECOLUMNVISIBILITY);
+            }
+            getUserEpisodeColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserEpisodeColumnVisibility(int userID, boolean showColumn) {
+        try {
+            setUserEpisodeColumnVisibility.setBoolean(1, showColumn);
+            setUserEpisodeColumnVisibility.setInt(2, userID);
+            setUserEpisodeColumnVisibility.execute();
+            setUserEpisodeColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized float getUserEpisodeColumnWidth(int userID) {
+        float result = -2.0f;
+        try {
+            getUserEpisodeColumnWidth.setInt(1, userID);
+            try (ResultSet resultSet = getUserEpisodeColumnWidth.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_EPISODECOLUMNWIDTH);
+            }
+            getUserEpisodeColumnWidth.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserEpisodeColumnWidth(int userID, float columnWidth) {
+        try {
+            setUserEpisodeColumnWidth.setFloat(1, columnWidth);
+            setUserEpisodeColumnWidth.setInt(2, userID);
+            setUserEpisodeColumnWidth.execute();
+            setUserEpisodeColumnWidth.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean getUserRemainingColumnVisibility(int userID) {
+        boolean result = false;
+        try {
+            getUserRemainingColumnVisibility.setInt(1, userID);
+            try (ResultSet resultSet = getUserRemainingColumnVisibility.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_REMAININGCOLUMNVISIBILITY);
+            }
+            getUserRemainingColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserRemainingColumnVisibility(int userID, boolean showColumn) {
+        try {
+            setUserRemainingColumnVisibility.setBoolean(1, showColumn);
+            setUserRemainingColumnVisibility.setInt(2, userID);
+            setUserRemainingColumnVisibility.execute();
+            setUserRemainingColumnVisibility.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized float getUserRemainingColumnWidth(int userID) {
+        float result = -2.0f;
+        try {
+            getUserRemainingColumnWidth.setInt(1, userID);
+            try (ResultSet resultSet = getUserRemainingColumnWidth.executeQuery()) {
+                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_REMAININGCOLUMNWIDTH);
+            }
+            getUserRemainingColumnWidth.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
+    }
+
+    public synchronized void setUserRemainingColumnWidth(int userID, float columnWidth) {
+        try {
+            setUserRemainingColumnWidth.setFloat(1, columnWidth);
+            setUserRemainingColumnWidth.setInt(2, userID);
+            setUserRemainingColumnWidth.execute();
+            setUserRemainingColumnWidth.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

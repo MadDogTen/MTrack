@@ -37,7 +37,7 @@ public class UserInfoController {
 
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
     public void setIgnoredStatus(int userID, final int showID, final boolean ignored) {
-        log.fine(showID + " ignore status is: " + ignored);
+        log.fine(ClassHandler.showInfoController().getShowNameFromShowID(showID) + " ignore status is: " + ignored + " for user: " + ClassHandler.userInfoController().getUserNameFromID(userID));
         dbUserSettingsManager.getUserShowIgnoredStatus(userID, showID);
     }
 
@@ -279,10 +279,6 @@ public class UserInfoController {
         } else return false;
     }
 
-    public ArrayList<String> getAllUsersString() {
-        return dbUserManager.getAllUserStrings();
-    }
-
     public void setLanguage(int userID, String language) {
         dbUserSettingsManager.setUserLanguage(userID, language);
         log.info("Default language was set to " + language + '.');
@@ -363,14 +359,6 @@ public class UserInfoController {
 
     public boolean getEnableFileLogging(int userID) {
         return dbUserSettingsManager.getUserEnableFileLogging(userID);
-    }
-
-    public boolean getColumnVisibilityStatus(int userID, String column) { // TODO Fix this tomorrow
-        return true; //dbUserSettingsManager.getBooleanSetting(userID, -2, column, StringDB.TABLE_USERSETTINGS);
-    }
-
-    public float getColumnWidth(int userID, String column) { // TODO Fix this tomorrow
-        return 20; //dbUserSettingsManager.getFloatSetting(userID, column, StringDB.TABLE_USERSETTINGS);
     }
 
     public VideoPlayer getVideoPlayer(int userID) {
@@ -454,5 +442,69 @@ public class UserInfoController {
 
     public void setShowUsername(int userID, boolean showUsername) {
         dbUserSettingsManager.setUserShowUsername(userID, showUsername);
+    }
+
+    public boolean getShowColumnVisibility(int userID) {
+        return dbUserSettingsManager.getUserShowColumnVisibility(userID);
+    }
+
+    public void setShowColumnVisibility(int userID, boolean showColumn) {
+        dbUserSettingsManager.setUserShowColumnVisibility(userID, showColumn);
+    }
+
+    public float getShowColumnWidth(int userID) {
+        return dbUserSettingsManager.getUserShowColumnWidth(userID);
+    }
+
+    public void setShowColumnWidth(int userID, float columnWidth) {
+        dbUserSettingsManager.setUserShowColumnWidth(userID, columnWidth);
+    }
+
+    public boolean getSeasonColumnVisibility(int userID) {
+        return dbUserSettingsManager.getUserSeasonColumnVisibility(userID);
+    }
+
+    public void setSeasonColumnVisibility(int userID, boolean showColumn) {
+        dbUserSettingsManager.setUserSeasonColumnVisibility(userID, showColumn);
+    }
+
+    public float getSeasonColumnWidth(int userID) {
+        return dbUserSettingsManager.getUserSeasonColumnWidth(userID);
+    }
+
+    public void setSeasonColumnWidth(int userID, float columnWidth) {
+        dbUserSettingsManager.setUserSeasonColumnWidth(userID, columnWidth);
+    }
+
+    public boolean getEpisodeColumnVisibility(int userID) {
+        return dbUserSettingsManager.getUserEpisodeColumnVisibility(userID);
+    }
+
+    public void setEpisodeColumnVisibility(int userID, boolean showColumn) {
+        dbUserSettingsManager.setUserEpisodeColumnVisibility(userID, showColumn);
+    }
+
+    public float getEpisodeColumnWidth(int userID) {
+        return dbUserSettingsManager.getUserEpisodeColumnWidth(userID);
+    }
+
+    public void setEpisodeColumnWidth(int userID, float columnWidth) {
+        dbUserSettingsManager.setUserEpisodeColumnWidth(userID, columnWidth);
+    }
+
+    public boolean getRemainingColumnVisibility(int userID) {
+        return dbUserSettingsManager.getUserRemainingColumnVisibility(userID);
+    }
+
+    public void setRemainingColumnVisibility(int userID, boolean showColumn) {
+        dbUserSettingsManager.setUserRemainingColumnVisibility(userID, showColumn);
+    }
+
+    public float getRemainingColumnWidth(int userID) {
+        return dbUserSettingsManager.getUserRemainingColumnWidth(userID);
+    }
+
+    public void setRemainingColumnWidth(int userID, float columnWidth) {
+        dbUserSettingsManager.setUserRemainingColumnWidth(userID, columnWidth);
     }
 }

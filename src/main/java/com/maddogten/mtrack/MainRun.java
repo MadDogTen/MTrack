@@ -69,6 +69,8 @@ public class MainRun {
                 ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager().getConnection());
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
+                // TODO User popup saying program failed to start
+                System.exit(0);
             }
             new LanguageHandler().setLanguage(ClassHandler.userInfoController().getMostUsedLanguage());
             /*if (fileManager.checkFileExists("", Strings.SettingsFileName, Variables.SettingFileExtension))

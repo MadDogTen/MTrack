@@ -58,20 +58,6 @@ public class DBManager {
         return connection;
     }
 
-    Statement executeQuery(String query) throws SQLException {
-        Statement statement = connection.createStatement();
-        statement.executeQuery(query);
-        return statement;
-    }
-
-    boolean execute(String execute) throws SQLException {
-        boolean result;
-        try (Statement statement = connection.createStatement()) {
-            result = statement.execute(execute);
-        }
-        return result;
-    }
-
     public synchronized void closeConnection() throws SQLException {
         if (connection != null) connection.close();
     }

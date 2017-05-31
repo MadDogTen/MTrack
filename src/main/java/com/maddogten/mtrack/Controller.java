@@ -412,20 +412,20 @@ public class Controller implements Initializable {
         shows.setCellValueFactory(new PropertyValueFactory<>("show"));
         shows.setSortType(TableColumn.SortType.ASCENDING);
         shows.textProperty().bind(Strings.Shows);
-        shows.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.getCurrentUser(), StringDB.COLUMN_SHOWCOLUMNWIDTH)); // TODO Make visibility and width change on user change
-        shows.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.getCurrentUser(), StringDB.COLUMN_SHOWCOLUMNVISIBILITY));
+        shows.setPrefWidth(ClassHandler.userInfoController().getShowColumnWidth(Variables.getCurrentUser())); // TODO Make visibility and width change on user change
+        shows.setVisible(ClassHandler.userInfoController().getShowColumnVisibility(Variables.getCurrentUser()));
         remaining.setCellValueFactory(new PropertyValueFactory<>("remaining"));
         remaining.textProperty().bind(Strings.Left);
-        remaining.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.getCurrentUser(), StringDB.COLUMN_REMAININGCOLUMNWIDTH));
-        remaining.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.getCurrentUser(), StringDB.COLUMN_REMAININGCOLUMNVISIBILITY));
+        remaining.setPrefWidth(ClassHandler.userInfoController().getRemainingColumnWidth(Variables.getCurrentUser()));
+        remaining.setVisible(ClassHandler.userInfoController().getRemainingColumnVisibility(Variables.getCurrentUser()));
         season.setCellValueFactory(new PropertyValueFactory<>("season"));
         season.textProperty().bind(Strings.Season);
-        season.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.getCurrentUser(), StringDB.COLUMN_SEASONCOLUMNWIDTH));
-        season.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.getCurrentUser(), StringDB.COLUMN_SEASONCOLUMNVISIBILITY));
+        season.setPrefWidth(ClassHandler.userInfoController().getSeasonColumnWidth(Variables.getCurrentUser()));
+        season.setVisible(ClassHandler.userInfoController().getSeasonColumnVisibility(Variables.getCurrentUser()));
         episode.setCellValueFactory(new PropertyValueFactory<>("episode"));
         episode.textProperty().bind(Strings.Episode);
-        episode.setPrefWidth(ClassHandler.userInfoController().getColumnWidth(Variables.getCurrentUser(), StringDB.COLUMN_EPISODECOLUMNWIDTH));
-        episode.setVisible(ClassHandler.userInfoController().getColumnVisibilityStatus(Variables.getCurrentUser(), StringDB.COLUMN_EPISODECOLUMNVISIBILITY));
+        episode.setPrefWidth(ClassHandler.userInfoController().getEpisodeColumnWidth(Variables.getCurrentUser()));
+        episode.setVisible(ClassHandler.userInfoController().getEpisodeColumnVisibility(Variables.getCurrentUser()));
         setTableViewFields(currentList.ACTIVE);
         setTableView();
         tableView.getItems();

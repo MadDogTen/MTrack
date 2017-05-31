@@ -49,8 +49,8 @@ public class CheckShowFiles {
         checkInterval++;
         currentlyCheckingDirectories = true;
         Set<Integer> activeDirectories = ClassHandler.directoryController().getActiveDirectories(true, !(checkInterval >= Variables.checkInterval));
-        ClassHandler.directoryController().getActiveDirectories(true, !(checkInterval >= Variables.checkInterval));
         currentlyCheckingDirectories = false;
+
         long timer = GenericMethods.getTimeMilliSeconds();
         if (activeDirectories.isEmpty()) {
             log.info("No active directories...Skipping check.");
@@ -79,15 +79,9 @@ public class CheckShowFiles {
                         int[] showAddedInfo = ClassHandler.showInfoController().addShow(show.getShow());
                         int showID = showAddedInfo[0];
                         boolean showAdded = showAddedInfo[1] == 1;
-                        if (showAdded) {
-                            log.info("Here!!!!");
-                        }
                         if (showAdded) printNewShowInfo(show.getShow(), -2, -2, false);
                         show.getSeasons().forEach(season -> {
                             boolean doesNotExist = showAdded || !ClassHandler.showInfoController().doesSeasonExist(showID, season.getSeason());
-                            if (doesNotExist) {
-                                log.info(showAdded + " || " + ClassHandler.showInfoController().doesSeasonExist(showID, season.getSeason()));
-                            }
                             if (doesNotExist) {
                                 printNewShowInfo(show.getShow(), season.getSeason(), -2, false);
                                 ClassHandler.showInfoController().addSeason(showID, season.getSeason());
@@ -142,7 +136,7 @@ public class CheckShowFiles {
                         addRecheckShowFilePercentage(percentageInterval);
                     }))));
             startAndWaitForThreads(checkingThreads);
-            ArrayList<Integer> shows = ClassHandler.showInfoController().getShows();
+            ArrayList<Integer> shows = ClassHandler.showInfoController().getShowsThatExist();
             shows.removeIf(allShows::contains);
             if (shows.isEmpty()) addRecheckShowFilePercentage(5.0);
             else {

@@ -19,6 +19,7 @@ public class DBUserManager {
     private final PreparedStatement checkUserID;
     private final PreparedStatement getUserID;
     private final PreparedStatement getUsername;
+    private final PreparedStatement getAllUsers;
 
     public DBUserManager(Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
@@ -31,6 +32,7 @@ public class DBUserManager {
         checkUserID = connection.prepareStatement("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserID = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USERNAME + " =?");
         getUsername = connection.prepareStatement("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getAllUsers = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERS);
     }
 
     public synchronized int addUser(String username) {
@@ -71,7 +73,7 @@ public class DBUserManager {
         return result;
     }
 
-    public synchronized void deleteUser(String userName) {
+    public synchronized void deleteUser(String userName) { // TODO Finish
         try {
             int userID = getUserID(userName);
             if (userID != -2) {
@@ -100,8 +102,7 @@ public class DBUserManager {
 
     public synchronized ArrayList<Integer> getAllUsers() {
         ArrayList<Integer> users = new ArrayList<>();
-        try (Statement statement = ClassHandler.getDBManager().executeQuery("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERS);
-             ResultSet resultSet = statement.getResultSet()) {
+        try (ResultSet resultSet = getAllUsers.executeQuery()) {
             while (resultSet.next()) {
                 users.add(resultSet.getInt(StringDB.COLUMN_USER_ID));
             }
@@ -109,18 +110,6 @@ public class DBUserManager {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return users;
-    }
-
-    public synchronized ArrayList<String> getAllUserStrings() { // TODO Remove, Temp Value
-        ArrayList<String> allUsers = new ArrayList<>();
-        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
-            try (ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS)) {
-                while (resultSet.next()) allUsers.add(resultSet.getString(StringDB.COLUMN_USERNAME));
-            }
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        return allUsers;
     }
 
     private synchronized int generateUserID() throws SQLException {

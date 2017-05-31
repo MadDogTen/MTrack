@@ -44,6 +44,7 @@ public class DBShowManager {
     private final PreparedStatement setShowExistsStatus;
     private final PreparedStatement getShowExistsStatus;
     private final PreparedStatement getEpisodeFileDirectories;
+    private final PreparedStatement getAllShowsThatExist;
 
     public DBShowManager(Connection connection) throws SQLException {
         initTables(connection);
@@ -76,6 +77,7 @@ public class DBShowManager {
         setShowExistsStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_SHOWS + " SET " + StringDB.COLUMN_SHOWEXISTS + "=? WHERE " + StringDB.COLUMN_SHOW_ID + "=?");
         getShowExistsStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWEXISTS + " FROM " + StringDB.TABLE_SHOWS + " WHERE " + StringDB.COLUMN_SHOW_ID + "=?");
         getEpisodeFileDirectories = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORY_ID + " FROM " + StringDB.TABLE_EPISODEFILES + " WHERE " + StringDB.COLUMN_EPISODE_ID + "=?");
+        getAllShowsThatExist = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_SHOWS + " WHERE " + StringDB.COLUMN_SHOWEXISTS + "=" + Boolean.TRUE);
     }
 
     private void initTables(Connection connection) {
@@ -133,16 +135,16 @@ public class DBShowManager {
         return allShows;
     }
 
-    public synchronized ArrayList<String> getAllShowStrings() { // TODO Remove, Temp Value
-        ArrayList<String> allShows = new ArrayList<>();
-        try (Statement statement = ClassHandler.getDBManager().getStatement()) {
-            try (ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOWNAME + " FROM " + StringDB.TABLE_SHOWS)) {
-                while (resultSet.next()) allShows.add(resultSet.getString(StringDB.COLUMN_SHOWNAME));
+    public synchronized ArrayList<Integer> getAllShowsThatExist() {
+        ArrayList<Integer> shows = new ArrayList<>();
+        try {
+            try (ResultSet resultSet = getAllShowsThatExist.executeQuery()) {
+                while (resultSet.next()) shows.add(resultSet.getInt(StringDB.COLUMN_SHOW_ID));
             }
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        return allShows;
+        return shows;
     }
 
     public synchronized String getShowName(int showID) {
@@ -249,7 +251,7 @@ public class DBShowManager {
         }
     }
 
-    private void setShowExists(int showID, boolean exists) {
+    private synchronized void setShowExists(int showID, boolean exists) {
         try {
             setShowExistsStatus.setBoolean(1, exists);
             setShowExistsStatus.setInt(2, showID);
@@ -260,7 +262,7 @@ public class DBShowManager {
         }
     }
 
-    public boolean doesShowExist(int showID) {
+    public synchronized boolean doesShowExist(int showID) {
         boolean result = false;
         try {
             getShowExistsStatus.setInt(1, showID);
@@ -350,7 +352,7 @@ public class DBShowManager {
                     File mainFolder = ClassHandler.directoryController().getDirectoryFromID(directoryID);
                     try (ResultSet resultSet = getEpisode.executeQuery()) {
                         if (resultSet.next())
-                            episodeFile = new File(mainFolder + Strings.FileSeparator + GenericMethods.getSeasonFolderName(mainFolder, showName, season) + Strings.FileSeparator + resultSet.getString(StringDB.COLUMN_FILE));
+                            episodeFile = new File(mainFolder + Strings.FileSeparator + showName + Strings.FileSeparator + GenericMethods.getSeasonFolderName(mainFolder, showName, season) + Strings.FileSeparator + resultSet.getString(StringDB.COLUMN_FILE));
                     }
                     getEpisode.clearParameters();
                 }
@@ -512,7 +514,7 @@ public class DBShowManager {
         return showID;
     }
 
-    public Set<Integer> getEpisodeFileDirectories(int episodeID) {
+    public synchronized Set<Integer> getEpisodeFileDirectories(int episodeID) {
         Set<Integer> directories = new HashSet<>();
         try {
             getEpisodeFileDirectories.setInt(1, episodeID);
