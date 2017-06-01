@@ -46,6 +46,20 @@ public class ShowInfoController {
         dbShowManager.removeShow(showID);
     }
 
+    public void removeSeason(int showID, int season) {
+        ClassHandler.changeReporter().addChange(showID, season, -2, false);
+        dbShowManager.removeSeason(showID, season);
+    }
+
+    public void removeEpisode(int showID, int season, int episode) {
+        ClassHandler.changeReporter().addChange(showID, season, episode, false);
+        dbShowManager.removeEpisode(getEpisodeID(showID, season, episode));
+    }
+
+    public void removeEpisodeFile(String episodeFile) {
+        dbShowManager.removeEpisodeFile(episodeFile);
+    }
+
     // Returns a Set of all season in a given show.
     public Set<Integer> getSeasonsList(int showID) {
         return dbShowManager.getSeasons(showID);
@@ -74,7 +88,7 @@ public class ShowInfoController {
     }
 
     // Returns whether or not an episode is part of a double episode.
-    boolean isDoubleEpisode(int episodeID) {
+    public boolean isDoubleEpisode(int episodeID) {
         return dbShowManager.isEpisodePartOfDoubleEpisode(episodeID);
     }
 
@@ -155,6 +169,18 @@ public class ShowInfoController {
 
     public Set<Integer> getEpisodeFileDirectories(int episodeID) {
         return dbShowManager.getEpisodeFileDirectories(episodeID);
+    }
+
+    public Set<Integer> getShowsForDirectory(int directoryID) {
+        return dbShowManager.getAllShowsForDirectory(directoryID);
+    }
+
+    public Set<Integer> getDirectoryShowSeasons(int showID, int directoryID) {
+        return dbShowManager.getDirectoryShowSeasons(showID, directoryID);
+    }
+
+    public Set<String> getEpisodeFilesForDirectory(int episodeID, int directoryID) {
+        return dbShowManager.getEpisodeFilesForDirectory(episodeID, directoryID);
     }
 
     /*public Map<Integer, Set<Integer>> getMissingEpisodes(final int aShow) { // TODO Work on later

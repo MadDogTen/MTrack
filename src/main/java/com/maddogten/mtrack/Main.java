@@ -25,7 +25,7 @@ public class Main extends Application implements Runnable {
     public static Stage stage;
     private static Thread thread;
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         launch(args);
     }
 

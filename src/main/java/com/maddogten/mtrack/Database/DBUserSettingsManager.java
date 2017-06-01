@@ -48,8 +48,8 @@ public class DBUserSettingsManager {
     private final PreparedStatement setUserHaveStageBlockParentStage;
     private final PreparedStatement getUserEnableFileLogging;
     private final PreparedStatement setUserEnableFileLogging;
-    private final PreparedStatement getUserVideoplayerType;
-    private final PreparedStatement setUserVideoplayerType;
+    private final PreparedStatement getUserVideoPlayerType;
+    private final PreparedStatement setUserVideoPlayerType;
     private final PreparedStatement getUserVideoPlayerLocation;
     private final PreparedStatement setUserVideoPlayerLocation;
     private final PreparedStatement setUserShowSeason;
@@ -124,8 +124,8 @@ public class DBUserSettingsManager {
         setUserHaveStageBlockParentStage = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserEnableFileLogging = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLEFILELOGGING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         setUserEnableFileLogging = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_ENABLEFILELOGGING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserVideoplayerType = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERTYPE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserVideoplayerType = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERTYPE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        getUserVideoPlayerType = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERTYPE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        setUserVideoPlayerType = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERTYPE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserVideoPlayerLocation = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERLOCATION + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         setUserVideoPlayerLocation = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERLOCATION + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
          /*= connection.prepareStatement("SELECT " +  + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
@@ -716,11 +716,11 @@ public class DBUserSettingsManager {
     public synchronized int getUserVideoPlayerType(int userID) {
         int result = -2;
         try {
-            getUserVideoplayerType.setInt(1, userID);
-            try (ResultSet resultSet = getUserVideoplayerType.executeQuery()) {
+            getUserVideoPlayerType.setInt(1, userID);
+            try (ResultSet resultSet = getUserVideoPlayerType.executeQuery()) {
                 if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_VIDEOPLAYERTYPE);
             }
-            getUserVideoplayerType.clearParameters();
+            getUserVideoPlayerType.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -729,10 +729,10 @@ public class DBUserSettingsManager {
 
     public synchronized void setUserVideoPlayerType(int userID, int videoPlayerType) {
         try {
-            setUserVideoplayerType.setInt(1, videoPlayerType);
-            setUserVideoplayerType.setInt(2, userID);
-            setUserVideoplayerType.execute();
-            setUserVideoplayerType.clearParameters();
+            setUserVideoPlayerType.setInt(1, videoPlayerType);
+            setUserVideoPlayerType.setInt(2, userID);
+            setUserVideoPlayerType.execute();
+            setUserVideoPlayerType.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

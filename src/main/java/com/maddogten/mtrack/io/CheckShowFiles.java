@@ -42,7 +42,7 @@ public class CheckShowFiles {
 
     public void checkShowFiles() {
         if (isRecheckingShowFile) return;
-        log.info("Checking for new show files...");
+        log.info("Checking for show files...");
         isRecheckingShowFile = true;
         ClassHandler.directoryController().checkDirectories(true);
         Map<Integer, Set<FindShows.Show>> directoryShows = new HashMap<>();
@@ -69,32 +69,106 @@ public class CheckShowFiles {
             log.info("Finished mapping out directories.");
             final int[] numberOfShows = {0};
             directoryShows.forEach((integer, shows) -> numberOfShows[0] += shows.size());
-            double percentageInterval = 70.0 / ((numberOfShows[0] != 0) ? numberOfShows[0] : 1);
+            double percentageInterval = 60.0 / ((numberOfShows[0] != 0) ? numberOfShows[0] : 1);
             final boolean[] changesFound = {false};
-            Set<Integer> allShows = new HashSet<>();
+            Map<Integer, Show> allShows = new HashMap<>();
+            directoryShows.forEach((directoryID, shows) -> shows.forEach(show -> {
+                Show showInfo;
+                if (allShows.containsKey(show.getShowID())) {
+                    showInfo = allShows.get(show.getShowID());
+                } else showInfo = new Show(show.getShowID(), show.getShow());
+                show.getSeasons().forEach(season -> {
+                    Season seasonInfo;
+                    if (showInfo.doesContainSeason(season.getSeason())) {
+                        seasonInfo = showInfo.getSeason(season.getSeason());
+                    } else seasonInfo = new Season(season.getSeason());
+                    season.getEpisodes().forEach(episode -> {
+                        if (episode.getEpisode() != -2) {
+                            if (seasonInfo.doesContainEpisode(episode.getEpisode())) {
+                                seasonInfo.getEpisode(episode.getEpisode()).addEpisodeFile(episode.getEpisodeHash());
+                            } else {
+                                Episode episodeInfo = new Episode(episode.getEpisode());
+                                episodeInfo.addEpisodeFile(episode.getEpisodeHash());
+                                seasonInfo.addEpisode(episode.getEpisode(), episodeInfo);
+                            }
+                            if (episode.isDoubleEpisode()) {
+                                if (seasonInfo.doesContainEpisode(episode.getEpisode2())) {
+                                    seasonInfo.getEpisode(episode.getEpisode2()).addEpisodeFile(episode.getEpisodeHash());
+                                } else {
+                                    Episode episodeInfo = new Episode(episode.getEpisode2());
+                                    episodeInfo.addEpisodeFile(episode.getEpisodeHash());
+                                    seasonInfo.addEpisode(episode.getEpisode2(), episodeInfo);
+                                }
+                            }
+                        }
+                    });
+                    showInfo.addSeason(season.getSeason(), seasonInfo);
+                });
+                allShows.put(show.getShowID(), showInfo);
+            }));
+
+            if (allShows.isEmpty()) addRecheckShowFilePercentage(5.0);
+            else {
+                double removedShowsPercentageInterval = 15.0 / allShows.size();
+                ClassHandler.showInfoController().getShowsThatExist().forEach(showID -> {
+                    String showName = ClassHandler.showInfoController().getShowNameFromShowID(showID);
+                    if (!allShows.keySet().contains(showID)) {
+                        log.info("\"" + showName + "\" was no longer found, and is now ignored.");
+                        ClassHandler.showInfoController().removeShow(showID);
+                        ClassHandler.userInfoController().setIgnoredStatusAllUsers(showID, true);
+                        if (!changesFound[0]) changesFound[0] = true;
+                    } else {
+                        Show show = allShows.get(showID);
+                        ClassHandler.showInfoController().getSeasonsList(showID).forEach(seasonInt -> {
+                            if (show.doesContainSeason(seasonInt)) {
+                                Season season = show.getSeason(seasonInt);
+                                ClassHandler.showInfoController().getEpisodesList(showID, seasonInt).forEach(episodeInt -> {
+                                    if (season.doesContainEpisode(episodeInt)) {
+                                        Episode episode = season.getEpisode(episodeInt);
+                                        ClassHandler.showInfoController().getEpisodeFiles(ClassHandler.showInfoController().getEpisodeID(showID, seasonInt, episodeInt)).forEach(episodeFile -> {
+                                            if (!episode.doesEpisodeFileHash(episodeFile.hashCode())) {
+                                                printRemovedShowInfo(showName, seasonInt, episodeInt, true);
+                                                ClassHandler.showInfoController().removeEpisodeFile(episodeFile);
+                                                if (!changesFound[0]) changesFound[0] = true;
+                                            }
+                                        });
+                                    } else {
+                                        printRemovedShowInfo(showName, seasonInt, episodeInt, false);
+                                        ClassHandler.showInfoController().removeEpisode(showID, seasonInt, episodeInt);
+                                        if (!changesFound[0]) changesFound[0] = true;
+                                    }
+                                });
+                            } else {
+                                printRemovedShowInfo(showName, seasonInt, -2, false);
+                                ClassHandler.showInfoController().removeSeason(showID, seasonInt);
+                                if (!changesFound[0]) changesFound[0] = true;
+                            }
+                        });
+                    }
+                    addRecheckShowFilePercentage(removedShowsPercentageInterval);
+                });
+            }
+
             Set<Thread> checkingThreads = new HashSet<>();
             directoryShows.forEach((directoryID, shows) ->
                     checkingThreads.add(new Thread(() -> shows.forEach(show -> {
                         log.fine("Checking \"" + show.getShow() + "\" for changes.");
-                        int[] showAddedInfo = ClassHandler.showInfoController().addShow(show.getShow());
-                        int showID = showAddedInfo[0];
-                        boolean showAdded = showAddedInfo[1] == 1;
-                        if (showAdded) printNewShowInfo(show.getShow(), -2, -2, false);
+                        if (show.isNewShow()) printNewShowInfo(show.getShow(), -2, -2, false);
                         show.getSeasons().forEach(season -> {
-                            boolean doesNotExist = showAdded || !ClassHandler.showInfoController().doesSeasonExist(showID, season.getSeason());
+                            boolean doesNotExist = show.isNewShow() || !ClassHandler.showInfoController().doesSeasonExist(show.getShowID(), season.getSeason());
                             if (doesNotExist) {
                                 printNewShowInfo(show.getShow(), season.getSeason(), -2, false);
-                                ClassHandler.showInfoController().addSeason(showID, season.getSeason());
+                                ClassHandler.showInfoController().addSeason(show.getShowID(), season.getSeason());
                             }
                             season.getEpisodes().forEach(episode -> {
                                 if (episode.getEpisode() != -2) {
-                                    if (doesNotExist || !ClassHandler.showInfoController().doesEpisodeExist(showID, season.getSeason(), episode.getEpisode())) {
+                                    if (doesNotExist || !ClassHandler.showInfoController().doesEpisodeExist(show.getShowID(), season.getSeason(), episode.getEpisode())) {
                                         printNewShowInfo(show.getShow(), season.getSeason(), episode.getEpisode(), false);
-                                        ClassHandler.showInfoController().addEpisodeFile(ClassHandler.showInfoController().addEpisode(showID, season.getSeason(), episode.getEpisode(), episode.isDoubleEpisode()), directoryID, episode.getEpisodeFilename());
+                                        ClassHandler.showInfoController().addEpisodeFile(ClassHandler.showInfoController().addEpisode(show.getShowID(), season.getSeason(), episode.getEpisode(), episode.isDoubleEpisode()), directoryID, episode.getEpisodeFilename());
                                         if (!changesFound[0]) changesFound[0] = true;
                                     } else {
                                         boolean episodeFileNotFound = true;
-                                        int episodeID = ClassHandler.showInfoController().getEpisodeID(showID, season.getSeason(), episode.getEpisode());
+                                        int episodeID = ClassHandler.showInfoController().getEpisodeID(show.getShowID(), season.getSeason(), episode.getEpisode());
                                         for (String episodeFile : ClassHandler.showInfoController().getEpisodeFiles(episodeID)) {
                                             if (episode.getEpisodeHash() == episodeFile.hashCode()) {
                                                 episodeFileNotFound = false;
@@ -108,13 +182,13 @@ public class CheckShowFiles {
                                         }
                                     }
                                     if (episode.isDoubleEpisode()) {
-                                        if (doesNotExist || !ClassHandler.showInfoController().doesEpisodeExist(showID, season.getSeason(), episode.getEpisode2())) {
+                                        if (doesNotExist || !ClassHandler.showInfoController().doesEpisodeExist(show.getShowID(), season.getSeason(), episode.getEpisode2())) {
                                             printNewShowInfo(show.getShow(), season.getSeason(), episode.getEpisode2(), false);
-                                            ClassHandler.showInfoController().addEpisodeFile(ClassHandler.showInfoController().addEpisode(showID, season.getSeason(), episode.getEpisode2(), true), directoryID, episode.getEpisodeFilename());
+                                            ClassHandler.showInfoController().addEpisodeFile(ClassHandler.showInfoController().addEpisode(show.getShowID(), season.getSeason(), episode.getEpisode2(), true), directoryID, episode.getEpisodeFilename());
                                             if (!changesFound[0]) changesFound[0] = true;
                                         } else {
                                             boolean episodeFileNotFound = true;
-                                            int episodeID = ClassHandler.showInfoController().getEpisodeID(showID, season.getSeason(), episode.getEpisode2());
+                                            int episodeID = ClassHandler.showInfoController().getEpisodeID(show.getShowID(), season.getSeason(), episode.getEpisode2());
                                             for (String episodeFile : ClassHandler.showInfoController().getEpisodeFiles(episodeID)) {
                                                 if (episode.getEpisodeHash() == episodeFile.hashCode()) {
                                                     episodeFileNotFound = false;
@@ -130,26 +204,16 @@ public class CheckShowFiles {
                                     }
                                 }
                             });
-                            allShows.add(showID);
+
                         });
-                        ClassHandler.userInfoController().addShowForUsers(showID);
+                        ClassHandler.userInfoController().addShowForUsers(show.getShowID());
                         addRecheckShowFilePercentage(percentageInterval);
                     }))));
             startAndWaitForThreads(checkingThreads);
-            ArrayList<Integer> shows = ClassHandler.showInfoController().getShowsThatExist();
-            shows.removeIf(allShows::contains);
-            if (shows.isEmpty()) addRecheckShowFilePercentage(5.0);
-            else {
-                double removedShowsPercentageInterval = 5.0 / shows.size();
-                shows.forEach(showID -> {
-                    log.info("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" was no longer found, and is now ignored.");
-                    ClassHandler.showInfoController().removeShow(showID);
-                    ClassHandler.userInfoController().setIgnoredStatusAllUsers(showID, true);
-                    addRecheckShowFilePercentage(removedShowsPercentageInterval);
-                });
-            }
+
             if (recheckShowFilePercentage != 100.0) recheckShowFilePercentage = 100.0;
-            if (changesFound[0]) log.info("New files were found.");
+            if (changesFound[0]) log.info("Changes were found.");
+            else log.info("No changes were found.");
         }
         if (checkInterval == Variables.checkInterval) checkInterval = 0;
         isRecheckingShowFile = false;
@@ -197,5 +261,94 @@ public class CheckShowFiles {
             else log.warning("Missing information to print about a new file that was added.");
         } else
             log.info("\"" + show + ((season != -2) ? "\" - Season: \"" + season + "\"" : "") + ((season != -2 && episode != -2) ? " - Episode: \"" + episode : "") + "\" was found and added.");
+    }
+
+    private void printRemovedShowInfo(String show, int season, int episode, boolean removedFile) {
+        if (removedFile) {
+            if (season != -2 && episode != -2)
+                log.info("Removed file for \"" + show + "\" - Season: \"" + season + "\" - Episode: \"" + episode + "\".");
+            else log.warning("Missing information to print about a new file that was added.");
+        } else
+            log.info("\"" + show + ((season != -2) ? "\" - Season: \"" + season + "\"" : "") + ((season != -2 && episode != -2) ? " - Episode: \"" + episode : "") + "\" was removed.");
+    }
+
+    private class Show {
+        final int showID;
+        final String showName;
+        final Map<Integer, Season> seasons;
+
+        public Show(int showID, String showName) {
+            this.showID = showID;
+            this.showName = showName;
+            this.seasons = new HashMap<>();
+        }
+
+        public void addSeason(int seasonInt, Season season) {
+            seasons.put(seasonInt, season);
+        }
+
+        public boolean doesContainSeason(int season) {
+            return seasons.containsKey(season);
+        }
+
+        public Season getSeason(int season) {
+            return seasons.get(season);
+        }
+
+        public int getShowID() {
+            return showID;
+        }
+
+        public String getShowName() {
+            return showName;
+        }
+    }
+
+    private class Season {
+        private final int season;
+        private final Map<Integer, Episode> episodes;
+
+        public Season(int season) {
+            this.season = season;
+            this.episodes = new HashMap<>();
+        }
+
+        public void addEpisode(int episodeInt, Episode episode) {
+            episodes.put(episodeInt, episode);
+        }
+
+        public boolean doesContainEpisode(int episode) {
+            return episodes.containsKey(episode);
+        }
+
+        public Episode getEpisode(int episode) {
+            return episodes.get(episode);
+        }
+
+        public int getSeason() {
+            return season;
+        }
+    }
+
+    private class Episode {
+        private final int episode;
+        private final ArrayList<Integer> episodeFileHashes;
+
+        public Episode(int episode) {
+            this.episode = episode;
+            this.episodeFileHashes = new ArrayList<>();
+        }
+
+        public void addEpisodeFile(int episodeFileHash) {
+            episodeFileHashes.add(episodeFileHash);
+        }
+
+        public boolean doesEpisodeFileHash(int episodeHash) {
+            return episodeFileHashes.contains(episodeHash);
+        }
+
+        public int getEpisode() {
+            return episode;
+        }
     }
 }

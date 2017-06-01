@@ -90,6 +90,8 @@ public class FindShows {
     public class Show {
         private final String show;
         private final Set<Season> seasons;
+        private final int showID;
+        private final boolean newShow;
 
         public Show(File directory, String show) {
             this.show = show;
@@ -99,6 +101,25 @@ public class FindShows {
                 Season season = new Season(directory, seasonInt);
                 if (season.hasEpisodes()) seasons.add(season);
             });
+
+            if (hasSeasons()) {
+                int[] showInfo = ClassHandler.showInfoController().addShow(show);
+                this.showID = showInfo[0];
+                this.newShow = showInfo[1] == 1;
+            } else {
+                this.showID = -2;
+                this.newShow = false;
+            }
+
+
+        }
+
+        public int getShowID() {
+            return showID;
+        }
+
+        public boolean isNewShow() {
+            return newShow;
         }
 
         public String getShow() {

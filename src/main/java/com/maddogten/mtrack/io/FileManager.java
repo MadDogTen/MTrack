@@ -266,7 +266,7 @@ public class FileManager {
                             int season = Integer.parseInt(element.getElementsByTagName("Season").item(0).getTextContent()), episode = Integer.parseInt(element.getElementsByTagName("Episode").item(0).getTextContent()) + 1;
                             UserSettings userSettings = ClassHandler.userInfoController().getUserSettings();
                             if (userSettings.getShowSettings().containsKey(show)) {
-                                log.info("Show: \"" + show + "\" was found in user file, Updating Season & Episode...");
+                                log.info("Show: \"" + show + "\" was found in user file, Updating Season & Episode ...");
                                 if (!userSettings.getShowSettings().get(show).isActive())
                                     userSettings.getShowSettings().get(show).setActive(true);
                                 userSettings.getShowSettings().get(show).setCurrentSeason(season);

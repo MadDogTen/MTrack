@@ -1116,7 +1116,7 @@ public class Controller implements Initializable {
         setAllInactive.textProperty().bind(Strings.SetAllInactive);
         setAllInactive.setOnAction(e -> ClassHandler.developerStuff().toggleAllShowsWithActiveStatus(true));
         // Dev 2
-        printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO Reenable button
+        printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO ReEnable button
         //printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion())));
         printAllUserInfo.textProperty().bind(Strings.PrintAllUserInfo);
         printAllUserInfo.setOnAction(e -> ClassHandler.developerStuff().printAllInfoForCurrentUser());

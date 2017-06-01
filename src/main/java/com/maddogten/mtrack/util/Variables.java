@@ -63,6 +63,7 @@ public class Variables {
     public static final String LogsFolder = Strings.FileSeparator + "Logs";
     public static final Level loggerLevel = Level.INFO; // INFO
     public static final int sleepTimeDelay = 61;
+    public final static int checkInterval = 5;
     // Base Directories
     static final String ProgramRootFolder = Strings.FileSeparator + "MTrack";
     static final String LogExtension = ".log";
@@ -78,7 +79,6 @@ public class Variables {
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static boolean makeLanguageDefault;
-    public static int checkInterval = 5;
     private static int currentUser;
 
     static {

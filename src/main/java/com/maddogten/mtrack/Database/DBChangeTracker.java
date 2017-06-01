@@ -24,7 +24,7 @@ public class DBChangeTracker {
     private final PreparedStatement changeFoundStatus;
     private final PreparedStatement getUsersWithChange;
     private final PreparedStatement getChangesWithUsers;
-    private final PreparedStatement getAllChanges;
+    //private final PreparedStatement getAllChanges;
     private final PreparedStatement deleteAllChangesForUser;
     private final PreparedStatement setAllSeenForUser;
 
@@ -46,7 +46,7 @@ public class DBChangeTracker {
         changeFoundStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_SHOWCHANGES + " SET " + StringDB.COLUMN_SHOWFOUND + "=? WHERE " + StringDB.COLUMN_CHANGE_ID + "=?");
         getUsersWithChange = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_CHANGE_ID + "=?");
         getChangesWithUsers = connection.prepareStatement("SELECT " + StringDB.COLUMN_CHANGE_ID + " FROM " + StringDB.TABLE_USERCHANGETRACKING);
-        getAllChanges = connection.prepareStatement("SELECT " + StringDB.COLUMN_CHANGE_ID + " FROM " + StringDB.TABLE_SHOWCHANGES);
+        //getAllChanges = connection.prepareStatement("SELECT " + StringDB.COLUMN_CHANGE_ID + " FROM " + StringDB.TABLE_SHOWCHANGES);
         deleteAllChangesForUser = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         setAllSeenForUser = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERCHANGETRACKING + " SET " + StringDB.COLUMN_USERSEEN + "=" + Boolean.TRUE + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
     }
@@ -90,10 +90,8 @@ public class DBChangeTracker {
                 addChange.clearParameters();
                 ClassHandler.userInfoController().getAllUsers().forEach(userID -> {
                     boolean isSeasonValid = season == -2 || ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(userID) || !(ClassHandler.userInfoController().getCurrentUserSeason(userID, showID) < season);
-                    if ((ClassHandler.userInfoController().getRecordChangesForNonActiveShows(userID) && isSeasonValid || (ClassHandler.userInfoController().isShowActive(userID, showID) && isSeasonValid))) {
+                    if ((ClassHandler.userInfoController().getRecordChangesForNonActiveShows(userID) && isSeasonValid || (ClassHandler.userInfoController().isShowActive(userID, showID) && isSeasonValid)))
                         addUserChange(userID, changeID);
-                        log.info("Added change for user!"); // TODO Remove - Temp
-                    }
                 });
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
