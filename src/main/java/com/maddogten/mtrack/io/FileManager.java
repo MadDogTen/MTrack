@@ -199,7 +199,7 @@ public class FileManager {
         File file = new TextBox().pickFile(Strings.EnterLocationToSaveExport, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, true, stage);
         if (!file.toString().isEmpty()) {
             try (PrintWriter printWriter = new PrintWriter(file)) {
-                String spacer = ",";
+                String spacer = "$";
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("PROGRAM_SETTINGS_START");
                 stringBuilder.append(spacer);

@@ -56,7 +56,7 @@ public class Variables {
     public static final Level loggerLevel = Level.INFO; // INFO
     public static final int sleepTimeDelay = 61;
     // Base Directories
-    static final String ProgramRootFolder = Strings.FileSeparator + "MTrackPersonal";
+    static final String ProgramRootFolder = Strings.FileSeparator + "MTrack";
     static final String LogExtension = ".log";
     final static String findShowURL = "http://api.tvmaze.com/singlesearch/shows?q=";
     final static String getShowWithID = "http://api.tvmaze.com/shows/";
