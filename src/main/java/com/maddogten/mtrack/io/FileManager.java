@@ -1,5 +1,7 @@
 package com.maddogten.mtrack.io;
 
+import com.maddogten.mtrack.Main;
+import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
@@ -18,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -245,26 +249,27 @@ public class FileManager {
     }
 
     public boolean importSettings(final boolean firstRun, final Stage stage) {
-        /*log.info("importSettings has been started.");
+        log.info("importSettings has been started.");
         boolean result = false, showRestartWindow = true;
         File importFile = new TextBox().pickFile(Strings.EnterFileLocation, new SimpleStringProperty(Strings.EmptyString), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, false, stage);
         if (importFile.toString().isEmpty()) log.info("importFile was empty, Nothing imported.");
         else {
             // Start of custom code for personal use only.
             if (!firstRun && importFile.getName().endsWith(".xml")) {
-                log.info("XML importing has started.");
+                /*log.info("XML importing has started.");
                 try {
                     NodeList nodeList = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(importFile).getElementsByTagName("Series");
-                    Set<String> shows = new HashSet<>();
+                    Set<Integer> shows = new HashSet<>();
                     for (int x = 0; x < nodeList.getLength(); x++) {
                         Node node = nodeList.item(x);
                         if (node.getNodeType() == Node.ELEMENT_NODE) {
                             Element element = (Element) node;
                             String show = element.getElementsByTagName("SeriesName").item(0).getTextContent();
-                            shows.add(show);
+                            int[] showInfo = ClassHandler.showInfoController().addShow(show);
+                            int showID = showInfo[0];
+                            shows.add(showID);
                             log.info("Found Show in XML: \"" + show + "\".");
                             int season = Integer.parseInt(element.getElementsByTagName("Season").item(0).getTextContent()), episode = Integer.parseInt(element.getElementsByTagName("Episode").item(0).getTextContent()) + 1;
-                            UserSettings userSettings = ClassHandler.userInfoController().getUserSettings();
                             if (userSettings.getShowSettings().containsKey(show)) {
                                 log.info("Show: \"" + show + "\" was found in user file, Updating Season & Episode ...");
                                 if (!userSettings.getShowSettings().get(show).isActive())
@@ -283,45 +288,47 @@ public class FileManager {
                 } catch (SAXException | IOException | ParserConfigurationException e) {
                     GenericMethods.printStackTrace(log, e, getClass());
                 }
-                log.info("XML importing is now finished.");
+                log.info("XML importing is now finished.");*/
             } // end of custom code for personal use only.
             else {
-                try {
-                    byte[] buffer = new byte[2048];
-                    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(importFile))) {
-                        ZipEntry zipEntry = zipInputStream.getNextEntry();
-                        boolean autoOverwrite = firstRun || new ConfirmBox().confirm(Strings.AutomaticallyOverwriteFilesIfNoYouWillBeAskedForEachExistingFile, stage);
-                        while (zipEntry != null) {
-                            String entryName = zipEntry.getName();
-                            File file = new File(Variables.dataFolder + Strings.FileSeparator + entryName);
-                            log.info("Next file to be imported: \"" + file + '\"');
-                            if (!file.exists() || (autoOverwrite || new ConfirmBox().confirm(new SimpleStringProperty(Strings.Warning.getValue() + " \"" + entryName + "\" " + Strings.AlreadyExistsOverwriteIt.getValue()), stage))) {
-                                if (zipEntry.isDirectory()) log.info(file + " is a directory.");
-                                else {
-                                    try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                                        int count;
-                                        while ((count = zipInputStream.read(buffer)) > 0)
-                                            fileOutputStream.write(buffer, 0, count);
-                                    }
-                                }
-                                log.info("File imported successfully.");
-                            } else log.info("File wasn't imported.");
-                            zipInputStream.closeEntry();
-                            zipEntry = zipInputStream.getNextEntry();
-                        }
-                        zipInputStream.closeEntry();
-                    }
+                Set<String> importedStrings = new LinkedHashSet<>();
+                try (FileReader fileReader = new FileReader(importFile);
+                     BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) importedStrings.add(line);
                     result = true;
                 } catch (Exception e) {
                     GenericMethods.printStackTrace(log, e, FileManager.class);
                 }
+                importedStrings.forEach(settingsString -> {
+                    String[] settings = settingsString.split(",");
+                    if (settings[0].matches("PROGRAM_SETTINGS_START")) {
+
+                    } else if (settings[0].matches("DIRECTORIES_START")) {
+
+                    } else if (settings[0].matches("USERS_START")) {
+
+                    } else if (settings[0].matches("SHOW_START")) {
+                        int i = 1;
+                        while (settings[i].matches("NEW_SHOW")) {
+                            String showName = settings[++i];
+                            boolean active = Boolean.valueOf(settings[++i]);
+                            boolean hidden = Boolean.valueOf(settings[++i]);
+                            boolean ignored = Boolean.valueOf(settings[++i]);
+                            int currentSeason = Integer.parseInt(settings[++i]);
+                            int currentEpisode = Integer.parseInt(settings[++i]);
+                            i++;
+
+                            log.info(showName + " | " + active + " | " + hidden + " | " + ignored + " | " + currentSeason + " | " + currentEpisode);
+                        }
+                    }
+                });
             }
             if (showRestartWindow && !firstRun && new ConfirmBox().confirm(Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved, stage))
-                Main.stop(stage, true, false);
+                Main.stop(stage, true);
             else new MessageBox(new StringProperty[]{Strings.MTrackHasNowImportedTheFiles}, stage);
         }
         log.info("importSettings has finished.");
-        return result;*/
-        return false; // TODO FIX
+        return result;
     }
 }
