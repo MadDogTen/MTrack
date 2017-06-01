@@ -4,7 +4,6 @@ import com.maddogten.mtrack.Controller;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.MessageBox;
-import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
 import com.maddogten.mtrack.information.settings.UserSettings;
 import com.maddogten.mtrack.information.settings.UserShowSettings;
@@ -24,15 +23,12 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 /*
       FileManager handles the saving and loading of files, checking if files exist, as well as accessing other things needed from the OS.
@@ -200,7 +196,116 @@ public class FileManager {
 
     public void exportSettings(final Stage stage) {
         log.info("exportSettings has been started.");
-        ArrayList<String> choices = new MultiChoice().multipleCheckbox(new StringProperty[]{Strings.ChooseWhatToExport}, new StringProperty[]{Strings.All, Strings.Program, Strings.Users, Strings.Directories}, null, Strings.All, false, stage);
+        File file = new TextBox().pickFile(Strings.EnterLocationToSaveExport, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, true, stage);
+        if (!file.toString().isEmpty()) {
+            try (PrintWriter printWriter = new PrintWriter(file)) {
+                String spacer = ",";
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("PROGRAM_SETTINGS_START");
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getLanguage());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getUpdateSpeed());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isDisableAutomaticShowUpdating());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getTimeToWaitForDirectory());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isShow0Remaining());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isShowActiveShows());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isRecordChangesForNonActiveShows());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isRecordChangedSeasonsLowerThanCurrent());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isFileLogging());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getShowColumnWidth());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getRemainingColumnWidth());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getShowColumnWidth());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getEpisodeColumnWidth());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isShowColumnVisibility());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isRemainingColumnVisibility());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isSeasonColumnVisibility());
+                stringBuilder.append(spacer);
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().isEpisodeColumnVisibility());
+                printWriter.println(stringBuilder);
+                stringBuilder.delete(0, stringBuilder.length());
+                stringBuilder.append("DIRECTORIES_START");
+                stringBuilder.append(spacer);
+                ClassHandler.directoryController().findDirectories(true, false, true).forEach(directory -> {
+                    stringBuilder.append(directory);
+                    stringBuilder.append(spacer);
+                });
+                printWriter.println(stringBuilder);
+                stringBuilder.delete(0, stringBuilder.length());
+                stringBuilder.append("USERS_START");
+                stringBuilder.append(spacer);
+                ClassHandler.userInfoController().getAllUsers().forEach(user -> {
+                    stringBuilder.append(user);
+                    Strings.UserName.setValue(user);
+                    ClassHandler.userInfoController().loadUserInfo();
+                    stringBuilder.append(spacer);
+                    VideoPlayer.VideoPlayerEnum videoPlayerEnum = ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerEnum();
+                    switch (videoPlayerEnum) {
+                        case VLC:
+                            stringBuilder.append(1000);
+                            break;
+                        case BS_PLAYER:
+                            stringBuilder.append(1002);
+                            break;
+                        case MEDIA_PLAYER_CLASSIC:
+                            stringBuilder.append(1001);
+                            break;
+                        default:
+                            stringBuilder.append(0);
+                            break;
+                    }
+                    stringBuilder.append(spacer);
+                    stringBuilder.append(ClassHandler.userInfoController().getUserSettings().getVideoPlayer().getVideoPlayerLocation());
+                    stringBuilder.append(spacer);
+                    printWriter.println(stringBuilder);
+                    stringBuilder.delete(0, stringBuilder.length());
+                    stringBuilder.append("SHOW_START");
+                    stringBuilder.append(spacer);
+                    ClassHandler.userInfoController().getUserSettings().getShowSettings().forEach((showName, userShowSettings) -> {
+                        stringBuilder.append("NEW_SHOW");
+                        stringBuilder.append(spacer);
+                        stringBuilder.append(showName);
+                        stringBuilder.append(spacer);
+                        stringBuilder.append(userShowSettings.isActive());
+                        stringBuilder.append(spacer);
+                        stringBuilder.append(userShowSettings.isHidden());
+                        stringBuilder.append(spacer);
+                        stringBuilder.append(userShowSettings.isIgnored());
+                        stringBuilder.append(spacer);
+                        stringBuilder.append(userShowSettings.getCurrentSeason());
+                        stringBuilder.append(spacer);
+                        stringBuilder.append(userShowSettings.getCurrentEpisode());
+                        stringBuilder.append(spacer);
+                    });
+                });
+                printWriter.println(stringBuilder);
+            } catch (FileNotFoundException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
+        }
+
+
+
+
+        /*ArrayList<String> choices = new MultiChoice().multipleCheckbox(new StringProperty[]{Strings.ChooseWhatToExport}, new StringProperty[]{Strings.All, Strings.Program, Strings.Users, Strings.Directories}, null, Strings.All, false, stage);
         if (choices.isEmpty()) log.info("No choices were selected, Noting exported");
         else {
             ArrayList<String> fileList = new ArrayList<>();
@@ -251,7 +356,7 @@ public class FileManager {
                     GenericMethods.printStackTrace(log, e, FileManager.class);
                 }
             }
-        }
+        }*/
         log.info("exportSettings has finished.");
     }
 

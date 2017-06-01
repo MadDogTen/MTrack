@@ -123,8 +123,11 @@ public class UserShowSettings implements Serializable {
         if (savedInformationMap == null) savedInformationMap = new HashMap<>();
     }
 
+    public Map<Integer, SavedInformation> getSavedInformationMap() {
+        return savedInformationMap;
+    }
 
-    private class SavedInformation implements Serializable {
+    public class SavedInformation implements Serializable {
         private static final long serialVersionUID = 8456648000944054454L;
         private final Map<Integer, EpisodeInfo> episodeInfo;
 
@@ -162,6 +165,4 @@ public class UserShowSettings implements Serializable {
             }
         }
     }
-
-
 }
