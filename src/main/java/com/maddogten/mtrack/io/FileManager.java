@@ -196,7 +196,7 @@ public class FileManager {
 
     public void exportSettings(final Stage stage) {
         log.info("exportSettings has been started.");
-        File file = new TextBox().pickFile(Strings.EnterLocationToSaveExport, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, true, stage);
+        File file = new TextBox().pickFile(Strings.EnterLocationToSaveExport, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("MTrackText (*.MTrackText)")}, new String[]{".MTrack"}, true, stage);
         if (!file.toString().isEmpty()) {
             try (PrintWriter printWriter = new PrintWriter(file)) {
                 String spacer = "<>";
@@ -229,7 +229,7 @@ public class FileManager {
                 stringBuilder.append(spacer);
                 stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getRemainingColumnWidth());
                 stringBuilder.append(spacer);
-                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getShowColumnWidth());
+                stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getSeasonColumnWidth());
                 stringBuilder.append(spacer);
                 stringBuilder.append(ClassHandler.programSettingsController().getSettingsFile().getEpisodeColumnWidth());
                 stringBuilder.append(spacer);
@@ -290,8 +290,6 @@ public class FileManager {
                         stringBuilder.append(spacer);
                         stringBuilder.append(userShowSettings.isHidden());
                         stringBuilder.append(spacer);
-                        stringBuilder.append(userShowSettings.isIgnored());
-                        stringBuilder.append(spacer);
                         stringBuilder.append(userShowSettings.getCurrentSeason());
                         stringBuilder.append(spacer);
                         stringBuilder.append(userShowSettings.getCurrentEpisode());
@@ -303,62 +301,6 @@ public class FileManager {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
         }
-
-
-
-
-        /*ArrayList<String> choices = new MultiChoice().multipleCheckbox(new StringProperty[]{Strings.ChooseWhatToExport}, new StringProperty[]{Strings.All, Strings.Program, Strings.Users, Strings.Directories}, null, Strings.All, false, stage);
-        if (choices.isEmpty()) log.info("No choices were selected, Noting exported");
-        else {
-            ArrayList<String> fileList = new ArrayList<>();
-            if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Program.getValue()))
-                fileList.add(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension);
-            if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Directories.getValue())) {
-                Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
-                            if (aFile.endsWith(Variables.ShowFileExtension))
-                                fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder + Strings.FileSeparator + aFile);
-                        }
-                );
-            }
-            if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Users.getValue())) {
-                Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
-                    if (aFile.endsWith(Variables.UserFileExtension))
-                        fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile);
-                });
-            }
-
-            if (fileList.isEmpty()) log.info("Nothing found to export - Must be an error.");
-            else {
-                try {
-                    File file = new TextBox().pickFile(Strings.EnterLocationToSaveExport, new SimpleStringProperty("MTrackExport"), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, true, stage);
-                    if (!file.toString().isEmpty()) {
-                        log.info("Directory to save export in: \"" + file + "\'.");
-                        byte[] buffer = new byte[1024];
-                        try (FileOutputStream fileOutputStream = new FileOutputStream(file); ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
-                            fileList.forEach(file1 -> {
-                                try {
-                                    File srcFile = new File(file1);
-                                    try (FileInputStream fileInputStream = new FileInputStream(srcFile)) {
-                                        String nameTrimmed = srcFile.getPath().substring(Variables.dataFolder.getPath().length() + 1, srcFile.getPath().length());
-                                        log.info(nameTrimmed);
-                                        zipOutputStream.putNextEntry(new ZipEntry(nameTrimmed));
-                                        int length;
-                                        while ((length = fileInputStream.read(buffer)) > 0) {
-                                            zipOutputStream.write(buffer, 0, length);
-                                        }
-                                        zipOutputStream.closeEntry();
-                                    }
-                                } catch (Exception e) {
-                                    GenericMethods.printStackTrace(log, e, FileManager.class);
-                                }
-                            });
-                        }
-                    }
-                } catch (Exception e) {
-                    GenericMethods.printStackTrace(log, e, FileManager.class);
-                }
-            }
-        }*/
         log.info("exportSettings has finished.");
     }
 
