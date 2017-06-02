@@ -279,6 +279,8 @@ public class FileManager {
                     stringBuilder.delete(0, stringBuilder.length());
                     stringBuilder.append("SHOW_START");
                     stringBuilder.append(spacer);
+                    stringBuilder.append(user);
+                    stringBuilder.append(spacer);
                     ClassHandler.userInfoController().getUserSettings().getShowSettings().forEach((showName, userShowSettings) -> {
                         stringBuilder.append("NEW_SHOW");
                         stringBuilder.append(spacer);
