@@ -453,10 +453,6 @@ public class UserInfoController {
         dbUserSettingsManager.setUserHaveStageBlockParentStage(userID, haveStageBlockParentStage);
     }
 
-    public synchronized void setEnableFileLogging(int userID, boolean enableFileLogging) {
-        dbUserSettingsManager.setUserEnableFileLogging(userID, enableFileLogging);
-    }
-
     public void setVideoPlayerType(int userID, int videoPlayerType) {
         dbUserSettingsManager.setUserVideoPlayerType(userID, videoPlayerType);
     }

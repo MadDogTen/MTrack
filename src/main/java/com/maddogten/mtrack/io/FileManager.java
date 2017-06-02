@@ -249,7 +249,7 @@ public class FileManager {
     public boolean importSettings(final boolean firstRun, final Stage stage) {
         log.info("importSettings has been started.");
         boolean result = false, showRestartWindow = true;
-        File importFile = new TextBox().pickFile(Strings.EnterFileLocation, new SimpleStringProperty(Strings.EmptyString), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)")}, new String[]{".MTrack"}, false, stage);
+        File importFile = new TextBox().pickFile(Strings.EnterFileLocation, new SimpleStringProperty(Strings.EmptyString), new StringProperty[]{new SimpleStringProperty("MTrack (*.MTrack)"), new SimpleStringProperty(".MTrackText (*.MTrackText)")}, new String[]{".MTrack", ".MTrackText"}, false, stage);
         if (importFile.toString().isEmpty()) log.info("importFile was empty, Nothing imported.");
         else {
             // Start of custom code for personal use only.
@@ -288,7 +288,7 @@ public class FileManager {
                 }
                 log.info("XML importing is now finished.");*/
             } // end of custom code for personal use only.
-            else {
+            else if (importFile.getName().endsWith(".MTrackText")) {
                 Set<String> importedStrings = new LinkedHashSet<>();
                 try (FileReader fileReader = new FileReader(importFile);
                      BufferedReader bufferedReader = new BufferedReader(fileReader)) {
@@ -298,7 +298,6 @@ public class FileManager {
                 } catch (Exception e) {
                     GenericMethods.printStackTrace(log, e, FileManager.class);
                 }
-
                 boolean loadedProgramSettings = false;
                 String language = Strings.EmptyString;
                 int updateSpeed = 0;
@@ -328,23 +327,23 @@ public class FileManager {
                             language = settings[++i];
                             if (!new LanguageHandler().isStringValidLanguage(language)) language = Strings.EmptyString;
                             updateSpeed = Integer.parseInt(settings[++i]);
-                            enableAutomaticShowUpdating = !Boolean.getBoolean(settings[++i]);
+                            enableAutomaticShowUpdating = !Boolean.parseBoolean(settings[++i]);
                             timeToWaitForDirectory = Integer.parseInt(settings[++i]);
-                            show0Remaining = Boolean.getBoolean(settings[++i]);
-                            showActiveShows = Boolean.getBoolean(settings[++i]);
-                            isRecordChangesForNonActiveShows = Boolean.getBoolean(settings[++i]);
-                            isRecordChangesForSeasonsLowerThanCurrent = Boolean.getBoolean(settings[++i]);
-                            isStageMoveWithParentAndBlockParent = Boolean.getBoolean(settings[++i]);
-                            isEnableSpecialEffects = Boolean.getBoolean(settings[++i]);
-                            isFileLogging = Boolean.getBoolean(settings[++i]);
+                            show0Remaining = Boolean.parseBoolean(settings[++i]);
+                            showActiveShows = Boolean.parseBoolean(settings[++i]);
+                            isRecordChangesForNonActiveShows = Boolean.parseBoolean(settings[++i]);
+                            isRecordChangesForSeasonsLowerThanCurrent = Boolean.parseBoolean(settings[++i]);
+                            isStageMoveWithParentAndBlockParent = Boolean.parseBoolean(settings[++i]);
+                            isEnableSpecialEffects = Boolean.parseBoolean(settings[++i]);
+                            isFileLogging = Boolean.parseBoolean(settings[++i]);
                             showColumnWidth = Float.parseFloat(settings[++i]);
                             remainingColumnWidth = Float.parseFloat(settings[++i]);
                             seasonColumnWidth = Float.parseFloat(settings[++i]);
                             episodeColumnWidth = Float.parseFloat(settings[++i]);
-                            showColumnVisibility = Boolean.getBoolean(settings[++i]);
-                            remainingColumnVisibility = Boolean.getBoolean(settings[++i]);
-                            seasonColumnVisibility = Boolean.getBoolean(settings[++i]);
-                            episodeColumnVisibility = Boolean.getBoolean(settings[++i]);
+                            showColumnVisibility = Boolean.parseBoolean(settings[++i]);
+                            remainingColumnVisibility = Boolean.parseBoolean(settings[++i]);
+                            seasonColumnVisibility = Boolean.parseBoolean(settings[++i]);
+                            episodeColumnVisibility = Boolean.parseBoolean(settings[++i]);
                             log.info(language + " | " + updateSpeed + " | " + enableAutomaticShowUpdating + " | "
                                     + timeToWaitForDirectory + " | " + show0Remaining + " | " + showActiveShows + " | " +
                                     isRecordChangesForNonActiveShows + " | " + isRecordChangesForSeasonsLowerThanCurrent + " | " +
@@ -377,16 +376,27 @@ public class FileManager {
                                     userInfoController.setHaveStageBlockParentStage(userID, isStageMoveWithParentAndBlockParent);
                                     userInfoController.setDoSpecialEffects(userID, isEnableSpecialEffects);
                                     userInfoController.setFileLogging(userID, isFileLogging);
-                                    userInfoController.setShowColumnWidth(userID, showColumnWidth);
-                                    userInfoController.setRemainingColumnWidth(userID, remainingColumnWidth);
-                                    userInfoController.setSeasonColumnWidth(userID, seasonColumnWidth);
-                                    userInfoController.setEpisodeColumnWidth(userID, episodeColumnWidth);
-                                    userInfoController.setShowColumnVisibility(userID, showColumnVisibility);
-                                    userInfoController.setRemainingColumnVisibility(userID, remainingColumnVisibility);
-                                    userInfoController.setSeasonColumnVisibility(userID, seasonColumnVisibility);
-                                    userInfoController.setEpisodeColumnVisibility(userID, episodeColumnVisibility);
-                                    userInfoController.setVideoPlayerType(userID, videoPlayerType);
-                                    userInfoController.setVideoPlayerLocation(userID, videoPlayerFile);
+                                    if (Variables.getCurrentUser() == userID) {
+                                        Variables.setShowColumnVisibility(showColumnVisibility);
+                                        Variables.setShowColumnWidth(showColumnWidth);
+                                        Variables.setRemainingColumnVisibility(remainingColumnVisibility);
+                                        Variables.setRemainingColumnWidth(remainingColumnWidth);
+                                        Variables.setSeasonColumnVisibility(seasonColumnVisibility);
+                                        Variables.setSeasonColumnWidth(seasonColumnWidth);
+                                        Variables.setEpisodeColumnVisibility(episodeColumnVisibility);
+                                        Variables.setEpisodeColumnWidth(episodeColumnWidth);
+                                    } else {
+                                        userInfoController.setShowColumnWidth(userID, showColumnWidth);
+                                        userInfoController.setRemainingColumnWidth(userID, remainingColumnWidth);
+                                        userInfoController.setSeasonColumnWidth(userID, seasonColumnWidth);
+                                        userInfoController.setEpisodeColumnWidth(userID, episodeColumnWidth);
+                                        userInfoController.setShowColumnVisibility(userID, showColumnVisibility);
+                                        userInfoController.setRemainingColumnVisibility(userID, remainingColumnVisibility);
+                                        userInfoController.setSeasonColumnVisibility(userID, seasonColumnVisibility);
+                                        userInfoController.setEpisodeColumnVisibility(userID, episodeColumnVisibility);
+                                        userInfoController.setVideoPlayerType(userID, videoPlayerType);
+                                        userInfoController.setVideoPlayerLocation(userID, videoPlayerFile);
+                                    }
                                 }
                             }
                             break;
@@ -396,7 +406,6 @@ public class FileManager {
                                 String showName = settings[++i];
                                 boolean active = Boolean.valueOf(settings[++i]);
                                 boolean hidden = Boolean.valueOf(settings[++i]);
-                                ++i; // This spot contains the ignored status.
                                 int currentSeason = Integer.parseInt(settings[++i]);
                                 int currentEpisode = Integer.parseInt(settings[++i]);
                                 int showID = ClassHandler.showInfoController().addShow(showName)[0];

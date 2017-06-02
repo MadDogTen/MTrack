@@ -48,7 +48,6 @@ public class DBUserSettingsManager {
     private final PreparedStatement getUserHaveStageBlockParentStage;
     private final PreparedStatement setUserHaveStageBlockParentStage;
     private final PreparedStatement getUserEnableFileLogging;
-    private final PreparedStatement setUserEnableFileLogging;
     private final PreparedStatement getUserVideoPlayerType;
     private final PreparedStatement setUserVideoPlayerType;
     private final PreparedStatement getUserVideoPlayerLocation;
@@ -124,7 +123,6 @@ public class DBUserSettingsManager {
         getUserHaveStageBlockParentStage = connection.prepareStatement("SELECT " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         setUserHaveStageBlockParentStage = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserEnableFileLogging = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLEFILELOGGING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserEnableFileLogging = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_ENABLEFILELOGGING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserVideoPlayerType = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERTYPE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         setUserVideoPlayerType = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERTYPE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserVideoPlayerLocation = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERLOCATION + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
@@ -717,17 +715,6 @@ public class DBUserSettingsManager {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return result;
-    }
-
-    public synchronized void setUserEnableFileLogging(int userID, boolean enableFileLogging) {
-        try {
-            setUserEnableFileLogging.setBoolean(1, enableFileLogging);
-            setUserEnableFileLogging.setInt(2, userID);
-            setUserEnableFileLogging.execute();
-            setUserEnableFileLogging.clearParameters();
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
     }
 
     public synchronized int getUserVideoPlayerType(int userID) {

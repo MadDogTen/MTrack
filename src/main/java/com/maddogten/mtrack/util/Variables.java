@@ -1,5 +1,10 @@
 package com.maddogten.mtrack.util;
 
+import com.maddogten.mtrack.information.UserInfoController;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.text.Font;
 
 import java.io.File;
@@ -76,6 +81,14 @@ public class Variables {
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     static final int logMaxFileSize = 10000000;
     static final int logMaxNumberOfFiles = 10;
+    private final static DoubleProperty showColumnWidth = new SimpleDoubleProperty(SHOWS_COLUMN_WIDTH);
+    private final static DoubleProperty remainingColumnWidth = new SimpleDoubleProperty(REMAINING_COLUMN_WIDTH);
+    private final static DoubleProperty seasonColumnWidth = new SimpleDoubleProperty(SEASONS_COLUMN_WIDTH);
+    private final static DoubleProperty episodeColumnWidth = new SimpleDoubleProperty(EPISODE_COLUMN_WIDTH);
+    private final static BooleanProperty showColumnVisibility = new SimpleBooleanProperty(true);
+    private final static BooleanProperty remainingColumnVisibility = new SimpleBooleanProperty(true);
+    private final static BooleanProperty seasonColumnVisibility = new SimpleBooleanProperty(false);
+    private final static BooleanProperty episodeColumnVisibility = new SimpleBooleanProperty(false);
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static boolean makeLanguageDefault;
@@ -109,6 +122,114 @@ public class Variables {
 
     public static void setDataFolder(File file) {
         dataFolder = file;
+    }
+
+    public static double getShowColumnWidth() {
+        return showColumnWidth.get();
+    }
+
+    public static void setShowColumnWidth(double showColumnWidth) {
+        Variables.showColumnWidth.set(showColumnWidth);
+    }
+
+    public static DoubleProperty showColumnWidthProperty() {
+        return showColumnWidth;
+    }
+
+    public static double getRemainingColumnWidth() {
+        return remainingColumnWidth.get();
+    }
+
+    public static void setRemainingColumnWidth(double remainingColumnWidth) {
+        Variables.remainingColumnWidth.set(remainingColumnWidth);
+    }
+
+    public static DoubleProperty remainingColumnWidthProperty() {
+        return remainingColumnWidth;
+    }
+
+    public static double getSeasonColumnWidth() {
+        return seasonColumnWidth.get();
+    }
+
+    public static void setSeasonColumnWidth(double seasonColumnWidth) {
+        Variables.seasonColumnWidth.set(seasonColumnWidth);
+    }
+
+    public static DoubleProperty seasonColumnWidthProperty() {
+        return seasonColumnWidth;
+    }
+
+    public static double getEpisodeColumnWidth() {
+        return episodeColumnWidth.get();
+    }
+
+    public static void setEpisodeColumnWidth(double episodeColumnWidth) {
+        Variables.episodeColumnWidth.set(episodeColumnWidth);
+    }
+
+    public static DoubleProperty episodeColumnWidthProperty() {
+        return episodeColumnWidth;
+    }
+
+    public static boolean isShowColumnVisibility() {
+        return showColumnVisibility.get();
+    }
+
+    public static void setShowColumnVisibility(boolean showColumnVisibility) {
+        Variables.showColumnVisibility.set(showColumnVisibility);
+    }
+
+    public static BooleanProperty showColumnVisibilityProperty() {
+        return showColumnVisibility;
+    }
+
+    public static boolean isRemainingColumnVisibility() {
+        return remainingColumnVisibility.get();
+    }
+
+    public static void setRemainingColumnVisibility(boolean remainingColumnVisibility) {
+        Variables.remainingColumnVisibility.set(remainingColumnVisibility);
+    }
+
+    public static BooleanProperty remainingColumnVisibilityProperty() {
+        return remainingColumnVisibility;
+    }
+
+    public static boolean isSeasonColumnVisibility() {
+        return seasonColumnVisibility.get();
+    }
+
+    public static void setSeasonColumnVisibility(boolean seasonColumnVisibility) {
+        Variables.seasonColumnVisibility.set(seasonColumnVisibility);
+    }
+
+    public static BooleanProperty seasonColumnVisibilityProperty() {
+        return seasonColumnVisibility;
+    }
+
+    public static boolean isEpisodeColumnVisibility() {
+        return episodeColumnVisibility.get();
+    }
+
+    public static void setEpisodeColumnVisibility(boolean episodeColumnVisibility) {
+        Variables.episodeColumnVisibility.set(episodeColumnVisibility);
+    }
+
+    public static BooleanProperty episodeColumnVisibilityProperty() {
+        return episodeColumnVisibility;
+    }
+
+    public static void initColumns(int userID) {
+        UserInfoController userInfoController = ClassHandler.userInfoController();
+        setShowColumnWidth(userInfoController.getShowColumnWidth(userID));
+        setRemainingColumnWidth(userInfoController.getRemainingColumnWidth(userID));
+        setSeasonColumnWidth(userInfoController.getSeasonColumnWidth(userID));
+        setEpisodeColumnWidth(userInfoController.getEpisodeColumnWidth(userID));
+        setShowColumnVisibility(userInfoController.getShowColumnVisibility(userID));
+        setRemainingColumnVisibility(userInfoController.getRemainingColumnVisibility(userID));
+        setSeasonColumnVisibility(userInfoController.getSeasonColumnVisibility(userID));
+        setEpisodeColumnVisibility(userInfoController.getEpisodeColumnVisibility(userID));
     }
 
     public enum ShowColorStatus {
