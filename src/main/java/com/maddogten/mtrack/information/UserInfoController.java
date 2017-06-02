@@ -30,6 +30,10 @@ public class UserInfoController {
         return dbUserManager.getUsername(userID);
     }
 
+    public int getUserIDFromName(String userName) {
+        return dbUserManager.getUserID(userName);
+    }
+
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
     public ArrayList<Integer> getAllUsers() {
         return dbUserManager.getAllUsers();
@@ -47,6 +51,10 @@ public class UserInfoController {
 
     public int doesUserExist(String userName) {
         return dbUserManager.doesUserExist(userName);
+    }
+
+    public boolean doesUserContainShowSettings(int userID, int showID) {
+        return dbUserSettingsManager.doesUserHaveShowSettings(userID, showID);
     }
 
     public int addUser(String userName) {

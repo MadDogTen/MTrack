@@ -126,15 +126,19 @@ public class DBUserManager {
         return userID;
     }
 
-    public synchronized int getUserID(String username) throws SQLException {
+    public synchronized int getUserID(String username) {
         int result = -2;
-        getUserID.setString(1, username);
-        try (ResultSet resultSet = getUserID.executeQuery()) {
-            if (resultSet.next()) {
-                result = resultSet.getInt(StringDB.COLUMN_USER_ID);
-            } else log.warning("Couldn't find UserID for \"" + username + "\".");
+        try {
+            getUserID.setString(1, username);
+            try (ResultSet resultSet = getUserID.executeQuery()) {
+                if (resultSet.next()) {
+                    result = resultSet.getInt(StringDB.COLUMN_USER_ID);
+                } else log.warning("Couldn't find UserID for \"" + username + "\".");
+            }
+            getUserID.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        getUserID.clearParameters();
         return result;
     }
 

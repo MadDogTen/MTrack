@@ -27,6 +27,10 @@ public class LanguageHandler {
         languages.put("template", new template());  // Only temporary, For demonstration purposes. Note- Remove
     }
 
+    public boolean isStringValidLanguage(String string) {
+        return languages.keySet().contains(string);
+    }
+
     public Map<String, String> getLanguageNames() {
         Map<String, String> languageNames = new HashMap<>();
         languages.forEach((internalName, languages) -> languageNames.put(internalName, languages.getName()));

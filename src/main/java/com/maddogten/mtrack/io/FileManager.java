@@ -5,6 +5,7 @@ import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
+import com.maddogten.mtrack.information.UserInfoController;
 import com.maddogten.mtrack.util.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -321,9 +322,11 @@ public class FileManager {
                 for (String string : importedStrings) {
                     String[] settings = string.split("<>");
                     int i = 0;
+                    UserInfoController userInfoController = ClassHandler.userInfoController();
                     switch (settings[0]) {
                         case "PROGRAM_SETTINGS_START":
                             language = settings[++i];
+                            if (!new LanguageHandler().isStringValidLanguage(language)) language = Strings.EmptyString;
                             updateSpeed = Integer.parseInt(settings[++i]);
                             enableAutomaticShowUpdating = !Boolean.getBoolean(settings[++i]);
                             timeToWaitForDirectory = Integer.parseInt(settings[++i]);
@@ -357,29 +360,54 @@ public class FileManager {
                         case "USERS_START":
                             while (i + 1 < settings.length) {
                                 String user = settings[++i];
-                                int videoPlayer = Integer.parseInt(settings[i]);
+                                int videoPlayerType = Integer.parseInt(settings[++i]);
                                 String videoPlayerFile = settings[++i];
-                                if (loadedProgramSettings)
-                                    ClassHandler.userInfoController().addUser(user, true, updateSpeed, enableAutomaticShowUpdating,
-                                            timeToWaitForDirectory, show0Remaining, showActiveShows,
-                                            language, isRecordChangesForNonActiveShows, isRecordChangesForSeasonsLowerThanCurrent,
-                                            isStageMoveWithParentAndBlockParent, isStageMoveWithParentAndBlockParent,
-                                            isEnableSpecialEffects, isFileLogging, showColumnWidth, remainingColumnWidth,
-                                            seasonColumnWidth, episodeColumnWidth, showColumnVisibility, remainingColumnVisibility,
-                                            seasonColumnVisibility, episodeColumnVisibility, videoPlayer, videoPlayerFile);
-                                else ClassHandler.userInfoController().addUser(user);
+                                int userID = userInfoController.getUserIDFromName(user);
+                                if (userID == -2) userID = userInfoController.addUser(user);
+                                if (loadedProgramSettings) { // TODO Add popup that asks the users if they want to overwrite settings if user already exists.
+                                    if (!language.isEmpty()) userInfoController.setLanguage(userID, language);
+                                    userInfoController.setUpdateSpeed(userID, updateSpeed);
+                                    userInfoController.setShowUpdating(userID, enableAutomaticShowUpdating);
+                                    userInfoController.setTimeToWaitForDirectory(userID, timeToWaitForDirectory);
+                                    userInfoController.setShow0Remaining(userID, show0Remaining);
+                                    userInfoController.setShowActiveShows(userID, showActiveShows);
+                                    userInfoController.setRecordChangesForNonActiveShows(userID, isRecordChangesForNonActiveShows);
+                                    userInfoController.setRecordChangesSeasonsLowerThanCurrent(userID, isRecordChangesForSeasonsLowerThanCurrent);
+                                    userInfoController.setMoveStageWithParent(userID, isStageMoveWithParentAndBlockParent);
+                                    userInfoController.setHaveStageBlockParentStage(userID, isStageMoveWithParentAndBlockParent);
+                                    userInfoController.setDoSpecialEffects(userID, isEnableSpecialEffects);
+                                    userInfoController.setFileLogging(userID, isFileLogging);
+                                    userInfoController.setShowColumnWidth(userID, showColumnWidth);
+                                    userInfoController.setRemainingColumnWidth(userID, remainingColumnWidth);
+                                    userInfoController.setSeasonColumnWidth(userID, seasonColumnWidth);
+                                    userInfoController.setEpisodeColumnWidth(userID, episodeColumnWidth);
+                                    userInfoController.setShowColumnVisibility(userID, showColumnVisibility);
+                                    userInfoController.setRemainingColumnVisibility(userID, remainingColumnVisibility);
+                                    userInfoController.setSeasonColumnVisibility(userID, seasonColumnVisibility);
+                                    userInfoController.setEpisodeColumnVisibility(userID, episodeColumnVisibility);
+                                    userInfoController.setVideoPlayerType(userID, videoPlayerType);
+                                    userInfoController.setVideoPlayerLocation(userID, videoPlayerFile);
+                                }
                             }
                             break;
                         case "SHOW_START":
-                            while (i < settings.length && settings[++i].matches("NEW_SHOW")) {
+                            int userID = userInfoController.getUserIDFromName(settings[++i]);
+                            while (++i < settings.length && settings[i].matches("NEW_SHOW")) {
                                 String showName = settings[++i];
                                 boolean active = Boolean.valueOf(settings[++i]);
                                 boolean hidden = Boolean.valueOf(settings[++i]);
-                                boolean ignored = Boolean.valueOf(settings[++i]);
+                                ++i; // This spot contains the ignored status.
                                 int currentSeason = Integer.parseInt(settings[++i]);
                                 int currentEpisode = Integer.parseInt(settings[++i]);
-
-                                log.info(showName + " | " + active + " | " + hidden + " | " + ignored + " | " + currentSeason + " | " + currentEpisode);
+                                int showID = ClassHandler.showInfoController().addShow(showName)[0];
+                                if (showID != 0) {
+                                    if (!userInfoController.doesUserContainShowSettings(userID, showID))
+                                        userInfoController.addNewShow(userID, showID);
+                                    userInfoController.setActiveStatus(userID, showID, active);
+                                    userInfoController.setHiddenStatus(userID, showID, hidden);
+                                    userInfoController.setIgnoredStatus(userID, showID, ClassHandler.showInfoController().doesShowExist(showID));
+                                    userInfoController.setSeasonEpisode(userID, showID, currentSeason, currentEpisode);
+                                }
                             }
                             break;
 

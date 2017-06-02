@@ -20,6 +20,7 @@ public class DBUserSettingsManager {
     private final PreparedStatement getUserShowSeason;
     private final PreparedStatement getUserShowEpisode;
     private final PreparedStatement checkIfShowSettingsExistForUser;
+    private final PreparedStatement checkUserHasShowID;
 
     // Settings
     private final PreparedStatement getUserLanguage;
@@ -157,6 +158,7 @@ public class DBUserSettingsManager {
         setUserRemainingColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_REMAININGCOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
         getUserRemainingColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_REMAININGCOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
         setUserRemainingColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_REMAININGCOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
+        checkUserHasShowID = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
 
         if (doesNotExist) addUserSettings(0); // Insert default program settings
     }
@@ -355,6 +357,21 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+    }
+
+    public synchronized boolean doesUserHaveShowSettings(int userID, int showID) {
+        boolean result = false;
+        try {
+            checkUserHasShowID.setInt(1, userID);
+            checkUserHasShowID.setInt(2, showID);
+            try (ResultSet resultSet = checkUserHasShowID.executeQuery()) {
+                result = resultSet.next();
+            }
+            checkUserHasShowID.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
     }
 
     public synchronized int getUserShowSeason(int userID, int showID) {
@@ -779,7 +796,7 @@ public class DBUserSettingsManager {
         try {
             setUserShowEpisode.setInt(1, showEpisode);
             setUserShowEpisode.setInt(2, userID);
-            setUserShowSeason.setInt(3, showID);
+            setUserShowEpisode.setInt(3, showID);
             setUserShowEpisode.execute();
             setUserShowEpisode.clearParameters();
         } catch (SQLException e) {
