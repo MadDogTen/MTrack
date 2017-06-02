@@ -59,6 +59,27 @@ public class UserInfoController {
         return dbUserManager.addUser(userName);
     }
 
+    public int addUser(String userName, boolean showUsername, int updateSpeed, boolean automaticShowUpdating,
+                       int timeToWaitForDirectory, boolean show0Remaining, boolean showActiveShows,
+                       String language,
+                       boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent,
+                       boolean moveStageWithParent, boolean haveStageBlockParentStage,
+                       boolean enableSpecialEffects, boolean enableFileLogging, float showColumnWidth,
+                       float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth,
+                       boolean showColumnVisibility, boolean remainingColumnVisibility,
+                       boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType,
+                       String videoPlayerLocation) {
+        int userID = dbUserManager.addUser(userName);
+        dbUserSettingsManager.addUserSettings(userID, showUsername, updateSpeed, automaticShowUpdating, timeToWaitForDirectory, show0Remaining, showActiveShows, language, recordChangesForNonActiveShows,
+                recordChangedSeasonsLowerThanCurrent, moveStageWithParent, haveStageBlockParentStage, enableSpecialEffects, enableFileLogging, showColumnWidth, remainingColumnWidth, seasonColumnWidth,
+                episodeColumnWidth, showColumnVisibility, remainingColumnVisibility, seasonColumnVisibility, episodeColumnVisibility, videoPlayerType, videoPlayerLocation);
+        if (userID != -2) {
+            ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
+        }
+        log.fine("Generated all show data for " + userName + ".");
+        return dbUserManager.addUser(userName);
+    }
+
     public void addShowForUsers(int showID) {
         getAllUsers().forEach(userID -> {
             if (!dbUserSettingsManager.doesShowSettingExistForUser(userID, showID)) {

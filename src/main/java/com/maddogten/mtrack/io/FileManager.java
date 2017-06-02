@@ -5,10 +5,7 @@ import com.maddogten.mtrack.gui.ConfirmBox;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.gui.MultiChoice;
 import com.maddogten.mtrack.gui.TextBox;
-import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.OperatingSystem;
-import com.maddogten.mtrack.util.Strings;
-import com.maddogten.mtrack.util.Variables;
+import com.maddogten.mtrack.util.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
@@ -300,29 +297,94 @@ public class FileManager {
                 } catch (Exception e) {
                     GenericMethods.printStackTrace(log, e, FileManager.class);
                 }
-                importedStrings.forEach(settingsString -> {
-                    String[] settings = settingsString.split(",");
-                    if (settings[0].matches("PROGRAM_SETTINGS_START")) {
 
-                    } else if (settings[0].matches("DIRECTORIES_START")) {
+                boolean loadedProgramSettings = false;
+                String language = Strings.EmptyString;
+                int updateSpeed = 0;
+                boolean enableAutomaticShowUpdating = false;
+                int timeToWaitForDirectory = 0;
+                boolean show0Remaining = false;
+                boolean showActiveShows = false;
+                boolean isRecordChangesForNonActiveShows = false;
+                boolean isRecordChangesForSeasonsLowerThanCurrent = false;
+                boolean isStageMoveWithParentAndBlockParent = true;
+                boolean isEnableSpecialEffects = true;
+                boolean isFileLogging = true;
+                float showColumnWidth = Variables.SHOWS_COLUMN_WIDTH;
+                float remainingColumnWidth = Variables.REMAINING_COLUMN_WIDTH;
+                float seasonColumnWidth = Variables.SEASONS_COLUMN_WIDTH;
+                float episodeColumnWidth = Variables.EPISODE_COLUMN_WIDTH;
+                boolean showColumnVisibility = true;
+                boolean remainingColumnVisibility = true;
+                boolean seasonColumnVisibility = false;
+                boolean episodeColumnVisibility = false;
+                for (String string : importedStrings) {
+                    String[] settings = string.split("<>");
+                    int i = 0;
+                    switch (settings[0]) {
+                        case "PROGRAM_SETTINGS_START":
+                            language = settings[++i];
+                            updateSpeed = Integer.parseInt(settings[++i]);
+                            enableAutomaticShowUpdating = !Boolean.getBoolean(settings[++i]);
+                            timeToWaitForDirectory = Integer.parseInt(settings[++i]);
+                            show0Remaining = Boolean.getBoolean(settings[++i]);
+                            showActiveShows = Boolean.getBoolean(settings[++i]);
+                            isRecordChangesForNonActiveShows = Boolean.getBoolean(settings[++i]);
+                            isRecordChangesForSeasonsLowerThanCurrent = Boolean.getBoolean(settings[++i]);
+                            isStageMoveWithParentAndBlockParent = Boolean.getBoolean(settings[++i]);
+                            isEnableSpecialEffects = Boolean.getBoolean(settings[++i]);
+                            isFileLogging = Boolean.getBoolean(settings[++i]);
+                            showColumnWidth = Float.parseFloat(settings[++i]);
+                            remainingColumnWidth = Float.parseFloat(settings[++i]);
+                            seasonColumnWidth = Float.parseFloat(settings[++i]);
+                            episodeColumnWidth = Float.parseFloat(settings[++i]);
+                            showColumnVisibility = Boolean.getBoolean(settings[++i]);
+                            remainingColumnVisibility = Boolean.getBoolean(settings[++i]);
+                            seasonColumnVisibility = Boolean.getBoolean(settings[++i]);
+                            episodeColumnVisibility = Boolean.getBoolean(settings[++i]);
+                            log.info(language + " | " + updateSpeed + " | " + enableAutomaticShowUpdating + " | "
+                                    + timeToWaitForDirectory + " | " + show0Remaining + " | " + showActiveShows + " | " +
+                                    isRecordChangesForNonActiveShows + " | " + isRecordChangesForSeasonsLowerThanCurrent + " | " +
+                                    isStageMoveWithParentAndBlockParent + " | " + isEnableSpecialEffects + " | " + isFileLogging + " | " +
+                                    showColumnWidth + " | " + remainingColumnWidth + " | " + seasonColumnWidth + " | " + episodeColumnWidth + " | " +
+                                    showColumnVisibility + " | " + remainingColumnVisibility + " | " + seasonColumnVisibility + " | " + episodeColumnVisibility);
+                            loadedProgramSettings = true;
+                            break;
+                        case "DIRECTORIES_START":
+                            while (++i < settings.length)
+                                ClassHandler.directoryController().addDirectory(new File(settings[i]));
+                            break;
+                        case "USERS_START":
+                            while (i + 1 < settings.length) {
+                                String user = settings[++i];
+                                int videoPlayer = Integer.parseInt(settings[i]);
+                                String videoPlayerFile = settings[++i];
+                                if (loadedProgramSettings)
+                                    ClassHandler.userInfoController().addUser(user, true, updateSpeed, enableAutomaticShowUpdating,
+                                            timeToWaitForDirectory, show0Remaining, showActiveShows,
+                                            language, isRecordChangesForNonActiveShows, isRecordChangesForSeasonsLowerThanCurrent,
+                                            isStageMoveWithParentAndBlockParent, isStageMoveWithParentAndBlockParent,
+                                            isEnableSpecialEffects, isFileLogging, showColumnWidth, remainingColumnWidth,
+                                            seasonColumnWidth, episodeColumnWidth, showColumnVisibility, remainingColumnVisibility,
+                                            seasonColumnVisibility, episodeColumnVisibility, videoPlayer, videoPlayerFile);
+                                else ClassHandler.userInfoController().addUser(user);
+                            }
+                            break;
+                        case "SHOW_START":
+                            while (i < settings.length && settings[++i].matches("NEW_SHOW")) {
+                                String showName = settings[++i];
+                                boolean active = Boolean.valueOf(settings[++i]);
+                                boolean hidden = Boolean.valueOf(settings[++i]);
+                                boolean ignored = Boolean.valueOf(settings[++i]);
+                                int currentSeason = Integer.parseInt(settings[++i]);
+                                int currentEpisode = Integer.parseInt(settings[++i]);
 
-                    } else if (settings[0].matches("USERS_START")) {
+                                log.info(showName + " | " + active + " | " + hidden + " | " + ignored + " | " + currentSeason + " | " + currentEpisode);
+                            }
+                            break;
 
-                    } else if (settings[0].matches("SHOW_START")) {
-                        int i = 1;
-                        while (settings[i].matches("NEW_SHOW")) {
-                            String showName = settings[++i];
-                            boolean active = Boolean.valueOf(settings[++i]);
-                            boolean hidden = Boolean.valueOf(settings[++i]);
-                            boolean ignored = Boolean.valueOf(settings[++i]);
-                            int currentSeason = Integer.parseInt(settings[++i]);
-                            int currentEpisode = Integer.parseInt(settings[++i]);
-                            i++;
-
-                            log.info(showName + " | " + active + " | " + hidden + " | " + ignored + " | " + currentSeason + " | " + currentEpisode);
-                        }
                     }
-                });
+                }
             }
             if (showRestartWindow && !firstRun && new ConfirmBox().confirm(Strings.DoYouWantToRestartTheProgramForTheImportToTakeFullEffectWarningSettingsChangedOutsideOfTheImportWontBeSaved, stage))
                 Main.stop(stage, true);

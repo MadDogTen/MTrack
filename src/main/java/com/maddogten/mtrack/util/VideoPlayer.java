@@ -22,7 +22,7 @@ public class VideoPlayer {
         this.videoPlayerLocation = videoPlayerLocation;
     }
 
-    public enum VideoPlayerEnum { // TODO Add setting for this
+    public enum VideoPlayerEnum {
         VLC(1000, "VLC", "vlc"), MEDIA_PLAYER_CLASSIC(1001, "MPC", "mpc-hc"), BS_PLAYER(1002, "BSPlayer", "bsplayer"), OTHER(0, "Other", "");
 
         private final String name;
