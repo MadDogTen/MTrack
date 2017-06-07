@@ -21,7 +21,7 @@ public class DBManager {
         if (connection == null) Main.stop(null, true);
     }
 
-    public synchronized Connection getConnection() { // TODO Make package private
+    synchronized Connection getConnection() {
         return connection;
     }
 
@@ -60,5 +60,15 @@ public class DBManager {
 
     public synchronized void closeConnection() throws SQLException {
         if (connection != null) connection.close();
+    }
+
+    public boolean hasConnection() {
+        boolean hasConnection = false;
+        try {
+            hasConnection = (connection != null && !connection.isClosed());
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return hasConnection;
     }
 }

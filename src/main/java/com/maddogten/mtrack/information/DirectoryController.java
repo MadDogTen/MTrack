@@ -1,6 +1,7 @@
 package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.Database.DBDirectoryHandler;
+import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.gui.MessageBox;
 import com.maddogten.mtrack.util.ClassHandler;
@@ -13,7 +14,6 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.File;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -26,8 +26,8 @@ public class DirectoryController {
     private int lastActiveCheck = -2;
     private boolean lastSearchSkip = true;
 
-    public void initDBHandler(Connection connection) throws SQLException {
-        dbDirectoryHandler = new DBDirectoryHandler(connection);
+    public void initDBHandler(DBManager dbManager) throws SQLException {
+        dbDirectoryHandler = new DBDirectoryHandler(dbManager);
     }
 
 

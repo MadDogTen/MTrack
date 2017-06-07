@@ -1,8 +1,8 @@
 package com.maddogten.mtrack.information;
 
+import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.Database.DBProgramSettingsManager;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
@@ -14,8 +14,8 @@ public class ProgramSettingsController {
     private final Logger log = Logger.getLogger(ProgramSettingsController.class.getName());
     private DBProgramSettingsManager dbProgramSettingsManager;
 
-    public void initDatabase(Connection connection) throws SQLException {
-        dbProgramSettingsManager = new DBProgramSettingsManager(connection);
+    public void initDatabase(DBManager dbManager) throws SQLException {
+        dbProgramSettingsManager = new DBProgramSettingsManager(dbManager);
     }
 
 

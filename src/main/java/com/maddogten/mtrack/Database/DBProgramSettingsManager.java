@@ -13,7 +13,8 @@ public class DBProgramSettingsManager {
     private final PreparedStatement getDefaultUser;
     private final PreparedStatement changeDefaultUser;
 
-    public DBProgramSettingsManager(Connection connection) throws SQLException {
+    public DBProgramSettingsManager(DBManager dbManager) throws SQLException {
+        Connection connection = dbManager.getConnection();
         try (Statement statement = connection.createStatement()) {
             createProgramSettingsTable(statement);
         }

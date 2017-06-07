@@ -41,6 +41,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -58,7 +59,7 @@ public class Controller implements Initializable {
     // show0Remaining - If this true, It will display shows that have 0 episodes remaining, and if false, hides them. Only works with the active list.
     // wereShowsChanged - This is set the true if you set a show active while in the inactive list. If this is true when you switch back to the active this, it will start a recheck. This is because the show may be highly outdated as inactive shows aren't updated.
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
-    private static boolean wereShowsChanged, menuExpanded, menuChanging, stopMenuChanging;
+    private static boolean menuExpanded, menuChanging, stopMenuChanging;
     private static DisplayShow showCurrentlyPlaying = null;
     private final Map<String, Integer> changedShows = new HashMap<>();
     private final ChangesBox changesBox = new ChangesBox();
@@ -515,7 +516,6 @@ public class Controller implements Initializable {
                                 row.setStyle("");
                             } else {
                                 ClassHandler.userInfoController().setActiveStatus(Variables.getCurrentUser(), row.getItem().getShowID(), true);
-                                if (!wereShowsChanged) wereShowsChanged = true;
                                 if (ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()))
                                     row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
                                 else
@@ -542,7 +542,6 @@ public class Controller implements Initializable {
                             ClassHandler.userInfoController().setSeasonEpisode(Variables.getCurrentUser(), row.getItem().getShowID(), seasonEpisode[0], seasonEpisode[1]);
                             updateShowField(row.getItem().getShowID(), true);
                             ClassHandler.userInfoController().setActiveStatus(Variables.getCurrentUser(), row.getItem().getShowID(), true);
-                            if (!wereShowsChanged) wereShowsChanged = true;
                             if (ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()))
                                 row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
                             else
@@ -561,7 +560,12 @@ public class Controller implements Initializable {
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
                         log.info("Started to open show directory..."); // TODO Finish
-                        //ClassHandler.showInfoController().getEpisodeFiles(ClassHandler.showInfoController().getEpisodeID(row.getItem().getShowID(), row.getItem().getSeason(), row.getItem().getEpisode()));
+                        ArrayList<File> directories = new ArrayList<>();
+                        ClassHandler.showInfoController().getShowDirectories(row.getItem().getShowID()).forEach(directoryID -> directories.add(ClassHandler.directoryController().getDirectoryFromID(directoryID)));
+                        if (directories.isEmpty())
+                            new MessageBox(new StringProperty[]{new SimpleStringProperty("No directories found found show.")}, (Stage) pane.getScene().getWindow()); // TODO Add localization
+                        else if (directories.size() == 1) new FileManager().openFolder(directories.get(0));
+                        else new ListSelectBox().openDirectory(directories, (Stage) pane.getScene().getWindow());
                         log.info("Finished opening show directory...");
                     });
                     MenuItem getRemaining = new MenuItem();
@@ -699,18 +703,6 @@ public class Controller implements Initializable {
                 show0RemainingRadioMenuItem.setVisible(false);
                 log.info("TableViewFields set to inactive.");
             } else if (currentList.isInactive()) {
-                /*if (wereShowsChanged && ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser())) { // TODO Remove - Don't think this is necessary anymore.
-                    Task<Void> task = new Task<Void>() {
-                        @Override
-                        protected Void call() throws Exception {
-                            ClassHandler.checkShowFiles().checkShowFiles();
-                            return null;
-                        }
-                    };
-                    new Thread(task).start();
-                    wereShowsChanged = false;
-                } else if (!ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()))
-                    wereShowsChanged = false;*/
                 setTableViewFields(currentList.ACTIVE);
                 tableView.scrollTo(0);
                 tableView.scrollToColumnIndex(0);
@@ -888,19 +880,19 @@ public class Controller implements Initializable {
         });
         unHideShow.textProperty().bind(Strings.UnHideShow);
         unHideShow.setOnAction(e -> {
-           /* setButtonDisable(true, unHideShow);
-            ArrayList<String> hiddenShows = ClassHandler.userInfoController().getHiddenShows();
+            setButtonDisable(true, unHideShow);
+            Set<Integer> hiddenShows = ClassHandler.userInfoController().getHiddenShows(Variables.getCurrentUser());
             if (hiddenShows.isEmpty())
                 new MessageBox(new StringProperty[]{Strings.ThereAreNoHiddenShows}, (Stage) tabPane.getScene().getWindow());
             else {
-                String showToUnHide = new ListSelectBox().pickShow(ClassHandler.userInfoController().getHiddenShows(Variables.getCurrentUser()), (Stage) tabPane.getScene().getWindow());
-                if (showToUnHide != null && !showToUnHide.isEmpty()) {
+                int showToUnHide = new ListSelectBox().pickShow(hiddenShows, (Stage) tabPane.getScene().getWindow());
+                if (showToUnHide != -2) {
                     ClassHandler.userInfoController().setHiddenStatus(Variables.getCurrentUser(), showToUnHide, false);
                     Controller.updateShowField(showToUnHide, true);
                     log.info(showToUnHide + " was unhidden.");
                 } else log.info("No show was unhidden.");
             }
-            setButtonDisable(false, unHideShow);*/
+            setButtonDisable(false, unHideShow);
         });
         /*useOnlineDatabaseCheckbox.textProperty().bind(Strings.UseOnlineDatabase); // TODO Enable once working
         useOnlineDatabaseCheckbox.setSelected(ClassHandler.userInfoController().useOnlineDatabase(Variables.getCurrentUser()));
@@ -911,34 +903,35 @@ public class Controller implements Initializable {
         onlineWarningText.textProperty().bind(Strings.WarningConnectsToRemoteWebsite);
         useOnlineDatabaseCheckbox.setDisable(true);*/
         changeVideoPlayerButton.setOnAction(e -> { // TODO Add Localization
-            /*try {
-                ClassHandler.userInfoController().getUserSettings().setVideoPlayer(new VideoPlayerSelectorBox().videoPlayerSelector((Stage) tabPane.getScene().getWindow()));
+            try {
+                VideoPlayer videoPlayer = new VideoPlayerSelectorBox().videoPlayerSelector((Stage) tabPane.getScene().getWindow());
+                ClassHandler.userInfoController().setVideoPlayerType(Variables.getCurrentUser(), videoPlayer.getVideoPlayerEnum().getID());
+                ClassHandler.userInfoController().setVideoPlayerLocation(Variables.getCurrentUser(), videoPlayer.getVideoPlayerLocation().toString());
             } catch (IOException e1) {
                 GenericMethods.printStackTrace(log, e1, getClass());
-            }*/
+            }
         });
 
         // UI
         unlockParentScene.textProperty().bind(Strings.AllowFullWindowMovementUse);
-        // unlockParentScene.setSelected(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
+        unlockParentScene.setSelected(!ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.getCurrentUser()));
         unlockParentScene.setOnAction(e -> {
-            /*ClassHandler.programSettingsController().getSettingsFile().setStageMoveWithParentAndBlockParent(!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-            Variables.setStageMoveWithParentAndBlockParent(ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-            log.info("MoveAndBlock has been set to: " + ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent());
-            if (!ClassHandler.programSettingsController().getSettingsFile().isStageMoveWithParentAndBlockParent())
-                new MessageBox(new StringProperty[]{new SimpleStringProperty("Warning- Using this can cause things to break if used improperly.")}, (Stage) mainPane.getScene().getWindow()); // TODO Add localization*/
+            ClassHandler.userInfoController().setHaveStageBlockParentStage(Variables.getCurrentUser(), !unlockParentScene.isSelected());
+            log.info("MoveAndBlock has been set to: " + ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.getCurrentUser()));
+            if (ClassHandler.userInfoController().getHaveStageBlockParentStage(Variables.getCurrentUser()))
+                new MessageBox(new StringProperty[]{new SimpleStringProperty("Warning- Using this can cause things to break if used improperly.")}, (Stage) mainPane.getScene().getWindow()); // TODO Add localization
         });
         showUsername.textProperty().bind(Strings.ShowUsername);
-        //showUsername.setSelected(ClassHandler.userInfoController().getUserSettings().isShowUsername());
+        showUsername.setSelected(ClassHandler.userInfoController().showUsername(Variables.getCurrentUser()));
         showUsername.setOnAction(e -> {
-            /*ClassHandler.userInfoController().getUserSettings().setShowUsername(showUsername.isSelected());
-            userName.setVisible(ClassHandler.userInfoController().getUserSettings().isShowUsername());*/
+            ClassHandler.userInfoController().setShowUsername(Variables.getCurrentUser(), showUsername.isSelected());
+            userName.setVisible(ClassHandler.userInfoController().showUsername(Variables.getCurrentUser()));
         });
         specialEffects.textProperty().bind(Strings.SpecialEffects);
         specialEffects.setSelected(ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()));
         specialEffects.setOnAction(e -> {
-            /*ClassHandler.programSettingsController().getSettingsFile().setEnableSpecialEffects(!ClassHandler.programSettingsController().getSettingsFile().isEnableSpecialEffects());
-            log.info("Special Effects has been set to: " + ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()));*/
+            ClassHandler.userInfoController().setDoSpecialEffects(Variables.getCurrentUser(), specialEffects.isSelected());
+            log.info("Special Effects has been set to: " + ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()));
         });
         /*automaticSaving.textProperty().bind(Strings.EnableAutomaticSaving);
         automaticSaving.setSelected(Variables.enableAutoSavingOnTimer);
@@ -1063,18 +1056,18 @@ public class Controller implements Initializable {
         directoryTimeoutTextField.setText(String.valueOf(ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.getCurrentUser())));
         setDirectoryTimeout.textProperty().bind(Strings.Set);
         setDirectoryTimeout.setOnAction(e -> {
-            /*if (isNumberValid(directoryTimeoutTextField.getText(), 2)) {
+            if (isNumberValid(directoryTimeoutTextField.getText(), 2)) {
                 if (directoryTimeoutTextField.getText().isEmpty())
                     directoryTimeoutTextField.setText(String.valueOf(ClassHandler.userInfoController().getTimeToWaitForDirectory(Variables.getCurrentUser())));
                 else
-                    ClassHandler.programSettingsController().setTimeToWaitForDirectory(Integer.valueOf(directoryTimeoutTextField.getText()));
-            }*/
+                    ClassHandler.userInfoController().setTimeToWaitForDirectory(Variables.getCurrentUser(), Integer.valueOf(directoryTimeoutTextField.getText()));
+            }
         });
         enableLoggingCheckbox.textProperty().bind(Strings.EnableFileLogging);
         enableLoggingCheckbox.setSelected(ClassHandler.userInfoController().doFileLogging(Variables.getCurrentUser()));
         enableLoggingCheckbox.setOnAction(e -> {
-            /*ClassHandler.programSettingsController().setFileLogging(!ClassHandler.programSettingsController().getSettingsFile().isFileLogging());
-            log.info("Enable file logging is now: " + ClassHandler.userInfoController().doFileLogging(Variables.getCurrentUser()));*/
+            ClassHandler.userInfoController().setFileLogging(Variables.getCurrentUser(), enableLoggingCheckbox.isSelected());
+            log.info("Enable file logging is now: " + ClassHandler.userInfoController().doFileLogging(Variables.getCurrentUser()));
         });
         exportSettings.textProperty().bind(Strings.ExportSettings);
         exportSettings.setOnAction(e -> new FileManager().exportSettings((Stage) tabPane.getScene().getWindow()));

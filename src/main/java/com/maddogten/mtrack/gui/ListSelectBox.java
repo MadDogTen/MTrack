@@ -468,7 +468,7 @@ public class ListSelectBox {
         return result;
     }
 
-    public String pickShow(final ArrayList<String> shows, final Stage oldStage) {
+    public int pickShow(final Set<Integer> shows, final Stage oldStage) {
         log.fine("pickShow has been opened.");
 
         Stage pickShowStage = new Stage();
@@ -480,7 +480,9 @@ public class ListSelectBox {
         Label label = new Label();
         label.textProperty().bind(Strings.PickShowToUnHide);
 
-        ObservableList<String> showsList = FXCollections.observableList(shows);
+        Map<String, Integer> showsMap = new HashMap<>();
+        shows.forEach(showID -> showsMap.put(ClassHandler.showInfoController().getShowNameFromShowID(showID), showID));
+        ObservableList<String> showsList = FXCollections.observableList(new ArrayList<>(showsMap.keySet()));
         showsList.sorted();
         ComboBox<String> showComboBox = new ComboBox<>(showsList);
 
@@ -519,6 +521,6 @@ public class ListSelectBox {
         pickShowStage.showAndWait();
 
         log.fine("pickShow has been closed.");
-        return returnShow[0];
+        return (!returnShow[0].isEmpty() && showsMap.get(returnShow[0]) != null) ? showsMap.get(returnShow[0]) : -2;
     }
 }

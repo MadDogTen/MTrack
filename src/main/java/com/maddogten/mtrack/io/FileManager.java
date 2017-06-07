@@ -344,12 +344,6 @@ public class FileManager {
                             remainingColumnVisibility = Boolean.parseBoolean(settings[++i]);
                             seasonColumnVisibility = Boolean.parseBoolean(settings[++i]);
                             episodeColumnVisibility = Boolean.parseBoolean(settings[++i]);
-                            log.info(language + " | " + updateSpeed + " | " + enableAutomaticShowUpdating + " | "
-                                    + timeToWaitForDirectory + " | " + show0Remaining + " | " + showActiveShows + " | " +
-                                    isRecordChangesForNonActiveShows + " | " + isRecordChangesForSeasonsLowerThanCurrent + " | " +
-                                    isStageMoveWithParentAndBlockParent + " | " + isEnableSpecialEffects + " | " + isFileLogging + " | " +
-                                    showColumnWidth + " | " + remainingColumnWidth + " | " + seasonColumnWidth + " | " + episodeColumnWidth + " | " +
-                                    showColumnVisibility + " | " + remainingColumnVisibility + " | " + seasonColumnVisibility + " | " + episodeColumnVisibility);
                             loadedProgramSettings = true;
                             break;
                         case "DIRECTORIES_START":
@@ -419,7 +413,6 @@ public class FileManager {
                                 }
                             }
                             break;
-
                     }
                 }
             }

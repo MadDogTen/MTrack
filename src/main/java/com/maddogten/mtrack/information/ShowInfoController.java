@@ -1,11 +1,11 @@
 package com.maddogten.mtrack.information;
 
+import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.Database.DBShowManager;
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +22,8 @@ public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
     private DBShowManager dbShowManager;
 
-    public void initDBManager(Connection connection) throws SQLException {
-        dbShowManager = new DBShowManager(connection);
+    public void initDBManager(DBManager dbManager) throws SQLException {
+        dbShowManager = new DBShowManager(dbManager);
     }
 
     // Returns an arrayList of all shows.
@@ -39,7 +39,7 @@ public class ShowInfoController {
         int[] showInfo = dbShowManager.addShow(show);
         if (showInfo[1] == 1 || showInfo[1] == 2) ClassHandler.changeReporter().addChange(showInfo[0], -2, -2, true);
         return showInfo;
-    } // TODO Have this report a added Show
+    }
 
     public void removeShow(int showID) {
         ClassHandler.changeReporter().addChange(showID, -2, -2, false);
@@ -108,12 +108,12 @@ public class ShowInfoController {
         return dbShowManager.doesShowExist(showID);
     }
 
-    public void addSeason(int showID, int season) { // TODO Have this report a added season
+    public void addSeason(int showID, int season) {
         ClassHandler.changeReporter().addChange(showID, season, -2, true);
         dbShowManager.addSeason(showID, season);
     }
 
-    public int addEpisode(int showID, int season, int episode, boolean partOfDoubleEpisode) { // TODO Have this report a added episode
+    public int addEpisode(int showID, int season, int episode, boolean partOfDoubleEpisode) {
         ClassHandler.changeReporter().addChange(showID, season, episode, true);
         return dbShowManager.addEpisode(showID, season, episode, partOfDoubleEpisode);
     }
@@ -181,6 +181,10 @@ public class ShowInfoController {
 
     public Set<String> getEpisodeFilesForDirectory(int episodeID, int directoryID) {
         return dbShowManager.getEpisodeFilesForDirectory(episodeID, directoryID);
+    }
+
+    public Set<Integer> getShowDirectories(int showID) {
+        return dbShowManager.getShowDirectories(showID);
     }
 
     /*public Map<Integer, Set<Integer>> getMissingEpisodes(final int aShow) { // TODO Work on later

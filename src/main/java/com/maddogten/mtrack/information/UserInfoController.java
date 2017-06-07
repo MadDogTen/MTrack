@@ -1,13 +1,13 @@
 package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.Database.DBUserManager;
 import com.maddogten.mtrack.Database.DBUserSettingsManager;
 import com.maddogten.mtrack.util.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -21,9 +21,9 @@ public class UserInfoController {
     private DBUserManager dbUserManager;
     private DBUserSettingsManager dbUserSettingsManager;
 
-    public void initDatabase(Connection connection) throws SQLException {
-        dbUserManager = new DBUserManager(connection);
-        dbUserSettingsManager = new DBUserSettingsManager(connection);
+    public void initDatabase(DBManager dbManager) throws SQLException {
+        dbUserManager = new DBUserManager(dbManager);
+        dbUserSettingsManager = new DBUserSettingsManager(dbManager);
     }
 
     public String getUserNameFromID(int userID) {
@@ -60,30 +60,21 @@ public class UserInfoController {
     public int addUser(String userName) {
         int userID = dbUserManager.addUser(userName);
         dbUserSettingsManager.addUserSettings(userID);
-        if (userID != -2) {
-            ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
-        }
+        if (userID != -2) ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
         log.fine("Generated all show data for " + userName + ".");
         return dbUserManager.addUser(userName);
     }
 
-    public int addUser(String userName, boolean showUsername, int updateSpeed, boolean automaticShowUpdating,
-                       int timeToWaitForDirectory, boolean show0Remaining, boolean showActiveShows,
-                       String language,
-                       boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent,
-                       boolean moveStageWithParent, boolean haveStageBlockParentStage,
-                       boolean enableSpecialEffects, boolean enableFileLogging, float showColumnWidth,
-                       float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth,
-                       boolean showColumnVisibility, boolean remainingColumnVisibility,
-                       boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType,
-                       String videoPlayerLocation) {
+    public int addUser(String userName, boolean showUsername, int updateSpeed, boolean automaticShowUpdating, int timeToWaitForDirectory, boolean show0Remaining,
+                       boolean showActiveShows, String language, boolean recordChangesForNonActiveShows, boolean recordChangedSeasonsLowerThanCurrent,
+                       boolean moveStageWithParent, boolean haveStageBlockParentStage, boolean enableSpecialEffects, boolean enableFileLogging, float showColumnWidth,
+                       float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility,
+                       boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType, String videoPlayerLocation) {
         int userID = dbUserManager.addUser(userName);
         dbUserSettingsManager.addUserSettings(userID, showUsername, updateSpeed, automaticShowUpdating, timeToWaitForDirectory, show0Remaining, showActiveShows, language, recordChangesForNonActiveShows,
                 recordChangedSeasonsLowerThanCurrent, moveStageWithParent, haveStageBlockParentStage, enableSpecialEffects, enableFileLogging, showColumnWidth, remainingColumnWidth, seasonColumnWidth,
                 episodeColumnWidth, showColumnVisibility, remainingColumnVisibility, seasonColumnVisibility, episodeColumnVisibility, videoPlayerType, videoPlayerLocation);
-        if (userID != -2) {
-            ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
-        }
+        if (userID != -2) ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
         log.fine("Generated all show data for " + userName + ".");
         return dbUserManager.addUser(userName);
     }

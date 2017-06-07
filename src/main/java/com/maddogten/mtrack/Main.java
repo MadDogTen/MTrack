@@ -47,7 +47,7 @@ public class Main extends Application implements Runnable {
             Controller.closeChangeBoxStage();
             Controller.closeShowPlayingBoxStage();
             try {
-                if ((ClassHandler.getDBManager() != null && ClassHandler.getDBManager().getConnection() != null && !ClassHandler.getDBManager().getConnection().isClosed()) && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
+                if ((ClassHandler.getDBManager() != null && ClassHandler.getDBManager().hasConnection() && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser())))
                     GenericMethods.fadeStageOut(stage, 10, log, Main.class);
                 ClassHandler.getDBManager().closeConnection();
             } catch (SQLException e) {

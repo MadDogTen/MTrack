@@ -25,7 +25,7 @@ public class MainRun {
     private boolean starting = true, forceRun = true, disableChecking = false;
     private int recheckTimer, currentTime, waitTime;
 
-    boolean startBackend() throws IOException, SQLException { // TODO Remove public
+    boolean startBackend() throws SQLException {
         FileManager fileManager = new FileManager();
         // First it checks if the folder that contains the jar has the settings file.
         try {
@@ -61,12 +61,12 @@ public class MainRun {
         if (needsToRun) {
             try {
                 ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), false));
-                if (ClassHandler.getDBManager().getConnection() == null) return false;
-                ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager().getConnection());
-                ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager().getConnection());
-                ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager().getConnection());
-                ClassHandler.userInfoController().initDatabase(ClassHandler.getDBManager().getConnection());
-                ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager().getConnection());
+                if (!ClassHandler.getDBManager().hasConnection()) return false;
+                ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager());
+                ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager());
+                ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager());
+                ClassHandler.userInfoController().initDatabase(ClassHandler.getDBManager());
+                ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager());
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
                 // TODO User popup saying program failed to start
@@ -103,7 +103,7 @@ public class MainRun {
         return continueStarting;
     }
 
-    void loadUser(final UpdateManager updateManager, final boolean mainLoad) throws IOException {
+    void loadUser(final UpdateManager updateManager, final boolean mainLoad) {
         /*if (!ClassHandler.userInfoController().getAllUsers().contains(Strings.UserName.getValue()))
             new FirstRun().generateUserSettingsFile(Strings.UserName.getValue());*/
         //updateManager.updateUserSettingsFile();
@@ -120,7 +120,6 @@ public class MainRun {
         }
         timeCheck();
         recheck();
-        //saveSettings();
     }
 
     private void timeCheck() {

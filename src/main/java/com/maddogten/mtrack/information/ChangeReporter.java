@@ -1,9 +1,9 @@
 package com.maddogten.mtrack.information;
 
 import com.maddogten.mtrack.Database.DBChangeTracker;
+import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.util.ClassHandler;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.SortedSet;
@@ -21,8 +21,8 @@ public class ChangeReporter {
     private DBChangeTracker dbChangeTracker;
     // Stores all the changes that are added with addChange().
 
-    public void initDatabase(Connection connection) throws SQLException {
-        this.dbChangeTracker = new DBChangeTracker(connection);
+    public void initDatabase(DBManager dbManager) throws SQLException {
+        this.dbChangeTracker = new DBChangeTracker(dbManager);
     }
 
     public int addChange(int showID, int season, int episode, boolean found) {

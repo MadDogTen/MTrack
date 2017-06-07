@@ -22,7 +22,6 @@ public class DBDirectoryHandler {
     private final PreparedStatement checkDirectory;
     private final PreparedStatement getDirectoryPriority;
     private final PreparedStatement updateDirectoryPriority;
-    //private final PreparedStatement getAllDirectoriesPriories;
     private final PreparedStatement updateDirectoryPriorityWithoutID;
     private final PreparedStatement doesContainPriority;
     private final PreparedStatement getDirectoryActiveStatus;
@@ -31,7 +30,8 @@ public class DBDirectoryHandler {
     private final PreparedStatement getDirectoriesFromActiveStatus;
     private final PreparedStatement getDirectoryFromPriority;
 
-    public DBDirectoryHandler(Connection connection) throws SQLException {
+    public DBDirectoryHandler(DBManager dbManager) throws SQLException {
+        Connection connection = dbManager.getConnection();
         initTables(connection);
 
         getDirectoryID = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORY_ID + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY + "=?");
@@ -42,7 +42,6 @@ public class DBDirectoryHandler {
         checkDirectory = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORY + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY + "=?");
         getDirectoryPriority = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORYPRIORITY + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
         updateDirectoryPriority = connection.prepareStatement("UPDATE " + StringDB.TABLE_DIRECTORIES + " SET " + StringDB.COLUMN_DIRECTORYPRIORITY + "=?" + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");
-        //getAllDirectoriesPriories = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORYPRIORITY + " FROM " + StringDB.TABLE_DIRECTORIES);
         updateDirectoryPriorityWithoutID = connection.prepareStatement("UPDATE " + StringDB.TABLE_DIRECTORIES + " SET " + StringDB.COLUMN_DIRECTORYPRIORITY + "=? WHERE " + StringDB.COLUMN_DIRECTORYPRIORITY + "=?");
         doesContainPriority = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORYPRIORITY + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORYPRIORITY + "=?");
         getDirectoryActiveStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_DIRECTORYACTIVE + " FROM " + StringDB.TABLE_DIRECTORIES + " WHERE " + StringDB.COLUMN_DIRECTORY_ID + "=?");

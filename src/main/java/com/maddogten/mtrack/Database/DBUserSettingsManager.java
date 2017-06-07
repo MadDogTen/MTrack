@@ -80,7 +80,8 @@ public class DBUserSettingsManager {
     private final PreparedStatement setUserRemainingColumnWidth;
 
 
-    public DBUserSettingsManager(Connection connection) throws SQLException {
+    public DBUserSettingsManager(DBManager dbManager) throws SQLException {
+        Connection connection = dbManager.getConnection();
         boolean doesNotExist;
         try (Statement statement = connection.createStatement()) {
             doesNotExist = !createSettingsTable(statement);

@@ -43,7 +43,7 @@ public class FirstRun {
                 //this.createFolders(false, fileManager);
             } else return false;
             ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), true));
-            if (ClassHandler.getDBManager().getConnection() == null) return false;
+            if (!ClassHandler.getDBManager().hasConnection()) return false;
            /* boolean hasImportedFiles = false;
             if (new ConfirmBox().confirm(Strings.DoYouWantToImportFiles, null)) {
                 if (fileManager.importSettings(true, null)) {
@@ -53,14 +53,14 @@ public class FirstRun {
                     } else hasImportedFiles = true;
                 }
             }*/
-            ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager().getConnection());
+            ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager());
             //generateProgramSettingsFile();
             //ClassHandler.programSettingsController().loadProgramSettingsFile();
             /*if (Variables.makeLanguageDefault)
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);*/
-            ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager().getConnection());
-            ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager().getConnection());
-            ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager().getConnection());
+            ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager());
+            ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager());
+            ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager());
             boolean addDirectories = /*!hasImportedFiles ||*/ ClassHandler.directoryController().getAllDirectories(true, false).isEmpty();
             Thread generateShowFilesThread = null;
             if (addDirectories) {
@@ -76,7 +76,7 @@ public class FirstRun {
                 generateShowFilesThread.start();
             }
             TextBox textBox = new TextBox();
-            ClassHandler.userInfoController().initDatabase(ClassHandler.getDBManager().getConnection());
+            ClassHandler.userInfoController().initDatabase(ClassHandler.getDBManager());
             boolean usersAlreadyAdd = /*hasImportedFiles &&*/ !ClassHandler.userInfoController().getAllUsers().isEmpty();
             if (usersAlreadyAdd)
                 Strings.UserName.setValue(ClassHandler.userInfoController().getUserNameFromID(ClassHandler.mainRun().getUser()));

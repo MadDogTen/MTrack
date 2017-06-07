@@ -21,7 +21,8 @@ public class DBUserManager {
     private final PreparedStatement getUsername;
     private final PreparedStatement getAllUsers;
 
-    public DBUserManager(Connection connection) throws SQLException {
+    public DBUserManager(DBManager dbManager) throws SQLException {
+        Connection connection = dbManager.getConnection();
         try (Statement statement = connection.createStatement()) {
             createUserTables(statement);
         }

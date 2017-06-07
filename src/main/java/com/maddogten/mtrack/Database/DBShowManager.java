@@ -53,7 +53,8 @@ public class DBShowManager {
     private final PreparedStatement removeSeasonEpisodes;
     private final PreparedStatement removeEpisode;
 
-    public DBShowManager(Connection connection) throws SQLException {
+    public DBShowManager(DBManager dbManager) throws SQLException {
+        Connection connection = dbManager.getConnection();
         initTables(connection);
 
         getAllShows = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_SHOWS);
@@ -651,5 +652,11 @@ public class DBShowManager {
         });
         episodeIDs.forEach(episodeID -> seasons.add(getEpisodeSeason(episodeID)));
         return seasons;
+    }
+
+    public synchronized Set<Integer> getShowDirectories(int showID) {
+        Set<Integer> showDirectories = new HashSet<>();
+        getSeasons(showID).forEach(season -> getSeasonEpisodes(showID, season).forEach(episode -> showDirectories.addAll(getEpisodeFileDirectories(getEpisodeID(showID, season, episode)))));
+        return showDirectories;
     }
 }

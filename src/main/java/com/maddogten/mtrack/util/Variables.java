@@ -27,7 +27,6 @@ public class Variables {
     public static final short EPISODE_COLUMN_WIDTH = 50;
     public static final String DirectoriesFolder = Strings.FileSeparator + "Directories";
     public static final String UsersFolder = Strings.FileSeparator + "Users";
-    public static final String DatabaseFolderName = Strings.FileSeparator + "MTrackDB";
     // Extensions
     public static final String ShowFileExtension = ".shows";
     public static final String UserFileExtension = ".user";
@@ -50,13 +49,9 @@ public class Variables {
 
     public static final int defaultUpdateSpeed = 120;
     public static final int defaultTimeToWaitForDirectory = 20;
-    public static final int defaultSavingSpeed = 600;
     public static final int maxWaitTimeSeconds = 172800; // 2 Days will be the max wait time - Might be changed
     public static final int timeBetweenRecheckingActiveDirectoriesSeconds = 2;
     public static final String Logo = "/image/MTrackLogo.png";
-    public static final int checkAllNonIgnoredShowsInterval = 10; // May add user option to change these.
-    public static final int checkSeasonsLowerThanCurrentInterval = 5;
-    public static final int recheckPreviouslyFoundEmptyShowsInterval = 5;
     /**/public static final boolean forceDisableAutomaticRechecking = false; // false
     public static final boolean genUserShowInfoAtFirstFound = false; // Add to user settings // Add choice when creating user
     //---------- Episode Variables ----------\\
@@ -64,7 +59,6 @@ public class Variables {
     public static final ArrayList<Pattern> doubleEpisodePatterns = new ArrayList<>(Collections.singletonList(Pattern.compile("s\\d{1,4}e(\\d{1,4})[e|-](\\d{1,4})")));
     @SuppressWarnings("PublicStaticCollectionField")
     public static final ArrayList<Pattern> singleEpisodePatterns = new ArrayList<>(Arrays.asList(Pattern.compile("s\\d{1,4}e(\\d{1,4})"), Pattern.compile("episode\\s(\\d{1,4})"), Pattern.compile("\\d{1,4}\\s?x\\s?(\\d{1,4})"), Pattern.compile("(\\d{1,4})")));
-    public static final String fileNameReplace = "[(]|[)]|[\\\\]|[\\[]]|[\\]]|[\\[]|[\\]]|[+][\\{][\\}]";
     public static final String LogsFolder = Strings.FileSeparator + "Logs";
     public static final Level loggerLevel = Level.INFO; // INFO
     public static final int sleepTimeDelay = 61;
@@ -124,20 +118,12 @@ public class Variables {
         dataFolder = file;
     }
 
-    public static double getShowColumnWidth() {
-        return showColumnWidth.get();
-    }
-
     public static void setShowColumnWidth(double showColumnWidth) {
         Variables.showColumnWidth.set(showColumnWidth);
     }
 
     public static DoubleProperty showColumnWidthProperty() {
         return showColumnWidth;
-    }
-
-    public static double getRemainingColumnWidth() {
-        return remainingColumnWidth.get();
     }
 
     public static void setRemainingColumnWidth(double remainingColumnWidth) {
@@ -148,20 +134,12 @@ public class Variables {
         return remainingColumnWidth;
     }
 
-    public static double getSeasonColumnWidth() {
-        return seasonColumnWidth.get();
-    }
-
     public static void setSeasonColumnWidth(double seasonColumnWidth) {
         Variables.seasonColumnWidth.set(seasonColumnWidth);
     }
 
     public static DoubleProperty seasonColumnWidthProperty() {
         return seasonColumnWidth;
-    }
-
-    public static double getEpisodeColumnWidth() {
-        return episodeColumnWidth.get();
     }
 
     public static void setEpisodeColumnWidth(double episodeColumnWidth) {
@@ -172,20 +150,12 @@ public class Variables {
         return episodeColumnWidth;
     }
 
-    public static boolean isShowColumnVisibility() {
-        return showColumnVisibility.get();
-    }
-
     public static void setShowColumnVisibility(boolean showColumnVisibility) {
         Variables.showColumnVisibility.set(showColumnVisibility);
     }
 
     public static BooleanProperty showColumnVisibilityProperty() {
         return showColumnVisibility;
-    }
-
-    public static boolean isRemainingColumnVisibility() {
-        return remainingColumnVisibility.get();
     }
 
     public static void setRemainingColumnVisibility(boolean remainingColumnVisibility) {
@@ -196,20 +166,12 @@ public class Variables {
         return remainingColumnVisibility;
     }
 
-    public static boolean isSeasonColumnVisibility() {
-        return seasonColumnVisibility.get();
-    }
-
     public static void setSeasonColumnVisibility(boolean seasonColumnVisibility) {
         Variables.seasonColumnVisibility.set(seasonColumnVisibility);
     }
 
     public static BooleanProperty seasonColumnVisibilityProperty() {
         return seasonColumnVisibility;
-    }
-
-    public static boolean isEpisodeColumnVisibility() {
-        return episodeColumnVisibility.get();
     }
 
     public static void setEpisodeColumnVisibility(boolean episodeColumnVisibility) {

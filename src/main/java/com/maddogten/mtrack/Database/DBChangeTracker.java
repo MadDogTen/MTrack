@@ -28,7 +28,8 @@ public class DBChangeTracker {
     private final PreparedStatement deleteAllChangesForUser;
     private final PreparedStatement setAllSeenForUser;
 
-    public DBChangeTracker(Connection connection) throws SQLException {
+    public DBChangeTracker(DBManager dbManager) throws SQLException {
+        Connection connection = dbManager.getConnection();
         try (Statement statement = connection.createStatement()) {
             createChangesTable(statement);
             createUserChangeTrackTable(statement);
