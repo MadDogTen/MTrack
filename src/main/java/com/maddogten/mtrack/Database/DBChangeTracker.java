@@ -81,19 +81,24 @@ public class DBChangeTracker {
             }
         } else {
             try {
-                addChange.setInt(1, changeID);
-                addChange.setInt(2, showID);
-                addChange.setInt(3, season);
-                addChange.setInt(4, episode);
-                addChange.setBoolean(5, found);
-                addChange.setInt(6, GenericMethods.getTimeSeconds());
-                addChange.execute();
-                addChange.clearParameters();
+                boolean[] changeAddedForUser = {false};
                 ClassHandler.userInfoController().getAllUsers().forEach(userID -> {
                     boolean isSeasonValid = season == -2 || ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(userID) || !(ClassHandler.userInfoController().getCurrentUserSeason(userID, showID) < season);
-                    if ((ClassHandler.userInfoController().getRecordChangesForNonActiveShows(userID) && isSeasonValid || (ClassHandler.userInfoController().isShowActive(userID, showID) && isSeasonValid)))
+                    if ((ClassHandler.userInfoController().getRecordChangesForNonActiveShows(userID) && isSeasonValid || (ClassHandler.userInfoController().isShowActive(userID, showID) && isSeasonValid))) {
                         addUserChange(userID, changeID);
+                        changeAddedForUser[0] = true;
+                    }
                 });
+                if (changeAddedForUser[0]) {
+                    addChange.setInt(1, changeID);
+                    addChange.setInt(2, showID);
+                    addChange.setInt(3, season);
+                    addChange.setInt(4, episode);
+                    addChange.setBoolean(5, found);
+                    addChange.setInt(6, GenericMethods.getTimeSeconds());
+                    addChange.execute();
+                    addChange.clearParameters();
+                }
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
@@ -216,21 +221,35 @@ public class DBChangeTracker {
             removeUserChange.setInt(1, userID);
             removeUserChange.setInt(2, changeID);
             removeUserChange.clearParameters();
-            getUsersWithChange.setInt(1, changeID);
-            try (ResultSet resultSet = getChangesWithUsers.executeQuery()) {
-                if (!resultSet.next()) removeChange(changeID);
-            }
-            getUsersWithChange.clearParameters();
+            if (getUsersWithChange(changeID).isEmpty()) removeChange(changeID);
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
     }
 
+    public synchronized Set<Integer> getUsersWithChange(int changeID) {
+        Set<Integer> usersWithChange = new HashSet<>();
+        try {
+            getUsersWithChange.setInt(1, changeID);
+            try (ResultSet resultSet = getUsersWithChange.executeQuery()) {
+                while (resultSet.next()) usersWithChange.add(resultSet.getInt(StringDB.COLUMN_USER_ID));
+            }
+            getUsersWithChange.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return usersWithChange;
+    }
+
     public synchronized void deleteAllChangesForUser(int userID) {
         try {
+            Set<Integer> userChanges = getUserChanges(userID);
             deleteAllChangesForUser.setInt(1, userID);
             deleteAllChangesForUser.execute();
             deleteAllChangesForUser.clearParameters();
+            userChanges.forEach(changeID -> {
+                if (getUsersWithChange(changeID).isEmpty()) removeChange(changeID);
+            });
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }

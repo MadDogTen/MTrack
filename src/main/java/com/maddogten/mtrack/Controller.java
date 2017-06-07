@@ -807,11 +807,7 @@ public class Controller implements Initializable {
             if (currentUserComboBox.getValue() != null && !currentUserComboBox.getValue().matches(Strings.UserName.getValue())) {
                 Strings.UserName.setValue(currentUserComboBox.getValue());
                 //ChangeReporter.resetChanges(); // TODO Fix
-                try {
-                    ClassHandler.mainRun().loadUser(new UpdateManager(), false);
-                } catch (IOException e1) {
-                    GenericMethods.printStackTrace(log, e1, getClass());
-                }
+                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
                 Controller.setTableViewFields();
             }
         });
