@@ -30,6 +30,8 @@ public class DBChangeTracker {
     //private PreparedStatement getAllChanges;
     private PreparedStatement deleteAllChangesForUser;
     private PreparedStatement setAllSeenForUser;
+    private PreparedStatement isShowChanged;
+    private PreparedStatement doesUserContainChange;
 
     public DBChangeTracker(DBManager dbManager) {
         this.dbManager = dbManager;
@@ -256,6 +258,32 @@ public class DBChangeTracker {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+    }
+
+    public synchronized boolean isShowChangedForUser(int userID, int showID) {
+        if (isNull(isShowChanged))
+            isShowChanged = dbManager.prepareStatement(DBStrings.DBChangeTracker_isShowChangedSQL);
+        if (isNull(doesUserContainChange))
+            doesUserContainChange = dbManager.prepareStatement(DBStrings.DBChangeTracker_doesUserContainChangeSQL);
+        boolean result = false;
+        try {
+            isShowChanged.setInt(1, showID);
+            try (ResultSet resultSet = isShowChanged.executeQuery()) {
+                while (!result && resultSet.next()) {
+                    int changeID = resultSet.getInt(DBStrings.COLUMN_CHANGE_ID);
+                    doesUserContainChange.setInt(1, userID);
+                    doesUserContainChange.setInt(2, changeID);
+                    try (ResultSet resultSet1 = doesUserContainChange.executeQuery()) {
+                        if (resultSet1.next()) result = true;
+                    }
+                    doesUserContainChange.clearParameters();
+                }
+            }
+            isShowChanged.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return result;
     }
 
     private boolean isNull(Object object) {

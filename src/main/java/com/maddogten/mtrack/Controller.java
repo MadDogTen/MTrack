@@ -62,10 +62,8 @@ public class Controller implements Initializable {
     // isShowCurrentlyPlaying - While a show is currently playing, this is true, otherwise it is false. This is used in mainRun to make rechecking take 10x longer to happen when a show is playing.
     private static boolean menuExpanded, menuChanging, stopMenuChanging;
     private static DisplayShow showCurrentlyPlaying = null;
-    private final Map<String, Integer> changedShows = new HashMap<>();
     private final ChangesBox changesBox = new ChangesBox();
     private final ShowPlayingBox showPlayingBox = new ShowPlayingBox(Variables.getCurrentUser()); // TODO Not valid
-    @SuppressWarnings("unused")
     @FXML
     private Pane pane;
     @FXML
@@ -78,7 +76,6 @@ public class Controller implements Initializable {
     private AnchorPane settingsAnchorPane;
     @FXML
     private Pane topBarRectangle;
-    @SuppressWarnings("unused")
     @FXML
     private Button exit;
     @FXML
@@ -138,7 +135,6 @@ public class Controller implements Initializable {
     private Tab dev1Tab;
     @FXML
     private Tab dev2Tab;
-    @SuppressWarnings("unused")
     @FXML
     private Button forceRecheck;
     @FXML
@@ -317,64 +313,12 @@ public class Controller implements Initializable {
         return showCurrentlyPlaying != null;
     }
 
-    public static double getShowColumnWidth() {
-        return ClassHandler.controller().shows.getWidth();
-    }
-
-    public static double getRemainingColumnWidth() {
-        return ClassHandler.controller().remaining.getWidth();
-    }
-
-    public static double getSeasonColumnWidth() {
-        return ClassHandler.controller().season.getWidth();
-    }
-
-    public static double getEpisodeColumnWidth() {
-        return ClassHandler.controller().episode.getWidth();
-    }
-
-    public static boolean getShowColumnVisibility() {
-        return ClassHandler.controller().shows.isVisible();
-    }
-
-    public static boolean getRemainingColumnVisibility() {
-        return ClassHandler.controller().remaining.isVisible();
-    }
-
-    public static boolean getSeasonColumnVisibility() {
-        return ClassHandler.controller().season.isVisible();
-    }
-
-    public static boolean getEpisodeColumnVisibility() {
-        return ClassHandler.controller().episode.isVisible();
-    }
-
     public static void closeChangeBoxStage() {
         if (ClassHandler.controller() != null) ClassHandler.controller().changesBox.closeStage();
     }
 
     public static void closeShowPlayingBoxStage() {
         if (ClassHandler.controller() != null) ClassHandler.controller().showPlayingBox.closeStage();
-    }
-
-    public Map<String, Integer> getChangedShows() {
-        return this.changedShows;
-    }
-
-    public void setChangedShows(final Map<String, Integer> newShows) {
-        newShows.forEach(this.changedShows::put);
-    }
-
-    public void addChangedShow(final String aShow, final int remaining) {
-        if (!this.changedShows.containsKey(aShow)) {
-            this.changedShows.put(aShow, remaining);
-            tableView.refresh();
-        }
-    }
-
-    public void resetChangedShows() {
-        this.changedShows.clear();
-        Controller.setTableViewFields();
     }
 
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
@@ -436,10 +380,10 @@ public class Controller implements Initializable {
                             if (item != null) {
                                 if (getTooltip() == null) setTooltip(rowToolTip);
                                 rowToolTip.textProperty().bind(Bindings.concat(getItem().showProperty(), " - ", Strings.Season, " ", getItem().seasonProperty(), " - ", Strings.Episode, " ", getItem().episodeProperty(), " - ", getItem().remainingProperty(), " ", Strings.Left));
-                                if (currentList.isInactive() && ((ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) && ClassHandler.userInfoController().isShowActive(Variables.getCurrentUser(), item.getShowID())) || (changedShows.containsKey(item.getShow()) && changedShows.get(item.getShow()) == -2)))
-                                    setStyle("-fx-background-color: " + ((changedShows.containsKey(item.getShow()) && changedShows.get(item.getShow()) == -2) ? Variables.ShowColorStatus.ADDED.getColor() : Variables.ShowColorStatus.ACTIVE.getColor()));
-                                else if (currentList.isActive() && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()) && changedShows.containsKey(item.getShow()) && !isSelected())
-                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(changedShows.get(item.getShow()), item.getRemaining()).getColor());
+                                if (currentList.isInactive() && ((ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) && ClassHandler.userInfoController().isShowActive(Variables.getCurrentUser(), item.getShowID())))) // TODO Find a way to add back the different colors
+                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor()); // TODO Add coloring back for new shows added to the inactive list.
+                                else if (currentList.isActive() && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()) && ClassHandler.changeReporter().isShowChangedForUser(Variables.getCurrentUser(), getItem().getShowID()) && !isSelected())
+                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.DEFAULT.getColor());
                                 else if (!getStyle().isEmpty()) setStyle(Strings.EmptyString);
                             } else {
                                 if (getTooltip() != null) setTooltip(null);
@@ -453,8 +397,8 @@ public class Controller implements Initializable {
                             if (!row.isSelected() && currentList.isInactive() && ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) && ClassHandler.userInfoController().isShowActive(Variables.getCurrentUser(), row.getItem().getShowID())) {
                                 row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor());
                                 return;
-                            } else if (!row.isSelected() && currentList.isActive() && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()) && this.changedShows.containsKey(row.getItem().getShow())) {
-                                row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.findColorFromRemaining(this.changedShows.get(row.getItem().getShow()), row.getItem().getRemaining()).getColor());
+                            } else if (!row.isSelected() && currentList.isActive() && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()) && ClassHandler.changeReporter().isShowChangedForUser(Variables.getCurrentUser(), row.getItem().getShowID())) {
+                                row.setStyle("-fx-background-color: " + Variables.ShowColorStatus.DEFAULT.getColor());
                                 return;
                             }
                         }

@@ -75,4 +75,8 @@ public class ChangeReporter {
     public boolean isChangesForUser(int userID) {
         return !getUserChanges(userID).isEmpty();
     }
+
+    public boolean isShowChangedForUser(int userID, int showID) {
+        return dbChangeTracker.isShowChangedForUser(userID, showID);
+    }
 }

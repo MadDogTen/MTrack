@@ -1,5 +1,6 @@
 package com.maddogten.mtrack.gui;
 
+import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.io.MoveStage;
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
@@ -91,7 +92,7 @@ public class ChangesBox {
         Task<Void> task = new Task<Void>() {
             @Override
             public Void call() throws Exception {
-                while (currentlyOpen) {
+                while (Main.programRunning && currentlyOpen) {
                     Thread.sleep(1000);
                     boolean diffrentUser = currentUser != Variables.getCurrentUser();
                     Set<Integer> newUserChanges = ClassHandler.changeReporter().getUserChanges(currentUser);

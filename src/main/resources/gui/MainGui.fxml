@@ -69,7 +69,7 @@
                 </ImageView>
             </children>
         </Pane>
-        <AnchorPane fx:id="settingsAnchorPane" layoutY="30.0" prefHeight="426.0" prefWidth="281.0">
+        <AnchorPane fx:id="settingsAnchorPane" layoutY="30.0" prefHeight="426.0" prefWidth="281.0" visible="false">
             <children>
                 <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
                          minWidth="-Infinity" prefHeight="426.0" prefWidth="281.0" tabClosingPolicy="UNAVAILABLE">
@@ -371,7 +371,7 @@
                 </Button>
             </children>
         </AnchorPane>
-        <Pane fx:id="mainPane" layoutY="30.0" visible="false">
+        <Pane fx:id="mainPane" layoutY="30.0">
             <children>
                 <TextField fx:id="textField" layoutX="5.0" layoutY="3.0" visible="false"/>
                 <Button id="clearTextField" fx:id="clearTextField" layoutX="136.0" layoutY="8.0" mnemonicParsing="false"
