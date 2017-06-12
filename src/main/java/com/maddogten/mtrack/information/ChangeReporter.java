@@ -14,7 +14,7 @@ import java.util.logging.Logger;
       Any changes added are put on top of the list.
  */
 
-public class ChangeReporter {
+public class ChangeReporter { // TODO Finish this - Including grouping similar items (If a show was added, No need to notify seasons or episodes; and so on)
     private static final Logger log = Logger.getLogger(ChangeReporter.class.getName());
 
     private DBChangeTracker dbChangeTracker;

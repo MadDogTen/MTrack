@@ -1,6 +1,11 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.Controller;
+import com.maddogten.mtrack.gui.ConfirmBox;
+import com.maddogten.mtrack.gui.ListSelectBox;
+import com.maddogten.mtrack.gui.MessageBox;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -46,27 +51,17 @@ public class DeveloperStuff {
 
     // Removes all associated information for the given directory.
     @SuppressWarnings("EmptyMethod")
-    public void clearDirectory(final Stage stage) { // TODO Fix
-       /* ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
+    public void clearDirectory(final Stage stage) {
+        Set<Integer> directories = ClassHandler.directoryController().getAllDirectories(false, false);
         if (directories.isEmpty())
             new MessageBox(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, stage);
         else {
-            Directory directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, directories, stage);
-            if (directoryToClear != null && !directoryToClear.getDirectory().toString().isEmpty()) {
-                boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + directoryToClear + Strings.QuestionMark.getValue()), stage);
-                if (confirm) {
-                    directoryToClear.getShows().keySet().forEach(aShow -> {
-                        boolean showExistsElsewhere = ClassHandler.showInfoController().doesShowExistElsewhere(aShow, ClassHandler.directoryController().findDirectories(directoryToClear.getDirectoryID(), true, false, true));
-                        if (!showExistsElsewhere)
-                            ClassHandler.userInfoController().setIgnoredStatus(aShow, true);
-                        Controller.updateShowField(aShow, showExistsElsewhere);
-                    });
-                    directoryToClear.setShows(new HashMap<>());
-                    ClassHandler.directoryController().saveDirectory(directoryToClear, true);
-                    ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
-                }
+            int directoryToClear = new ListSelectBox().pickDirectory(Strings.DirectoryToClear, directories, stage);
+            if (directoryToClear != -2) {
+                boolean confirm = new ConfirmBox().confirm(new SimpleStringProperty(Strings.AreYouSureToWantToClear.getValue() + ClassHandler.directoryController().getDirectoryFromID(directoryToClear) + Strings.QuestionMark.getValue()), stage);
+                if (confirm) ClassHandler.showInfoController().removeDirectory(directoryToClear);
             }
-        }*/
+        }
     }
 
     //---- ShowInfoController ----\\

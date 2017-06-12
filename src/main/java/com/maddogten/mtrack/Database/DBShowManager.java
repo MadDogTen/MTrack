@@ -190,7 +190,7 @@ public class DBShowManager {
         return new int[]{showID, 1};
     }
 
-    public synchronized void removeShow(int showID) {
+    public synchronized void removeShow(int showID) { // TODO Add checking for if any users modified the show setting, and if not, completely remove the show.
         if (isNull(removeSeasons)) removeSeasons = dbManager.prepareStatement(DBStrings.DBShowManager_removeSeasonsSQL);
         if (isNull(removeEpisodes))
             removeEpisodes = dbManager.prepareStatement(DBStrings.DBShowManager_removeEpisodesSQL);
@@ -233,6 +233,29 @@ public class DBShowManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+    }
+
+    public void removeDirectory(int directoryID) { // TODO Verify this works correctly
+        getAllShowsForDirectory(directoryID).forEach(showID -> {
+            getSeasons(showID).forEach(season -> {
+                getSeasonEpisodes(showID, season).forEach(episode -> {
+                    int episodeID = getEpisodeID(showID, season, episode);
+                    getEpisodeFilesForDirectory(episodeID, directoryID).forEach(this::removeEpisodeFile);
+                    if (getShowEpisodeFiles(episodeID).isEmpty()) {
+                        removeEpisode(episodeID);
+                        ClassHandler.changeReporter().addChange(showID, season, episode, false);
+                    }
+                });
+                if (getSeasonEpisodes(showID, season).isEmpty()) {
+                    removeSeason(showID, season);
+                    ClassHandler.changeReporter().addChange(showID, season, -2, false);
+                }
+            });
+            if (getSeasons(showID).isEmpty()) {
+                removeShow(showID);
+                ClassHandler.changeReporter().addChange(showID, -2, -2, false);
+            }
+        });
     }
 
     public synchronized void removeSeasonEpisodes(int showID, int season) {

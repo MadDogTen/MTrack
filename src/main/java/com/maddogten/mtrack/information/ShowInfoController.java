@@ -40,6 +40,10 @@ public class ShowInfoController {
         return showInfo;
     }
 
+    public void removeDirectory(int directoryID) {
+        dbShowManager.removeDirectory(directoryID);
+    }
+
     public void removeShow(int showID) {
         ClassHandler.changeReporter().addChange(showID, -2, -2, false);
         dbShowManager.removeShow(showID);

@@ -234,7 +234,7 @@ public class ListSelectBox {
         log.fine("openDirectory has been closed.");
     }
 
-    public File pickDirectory(final StringProperty message, final ArrayList<File> files, final Stage oldStage) {
+    public int pickDirectory(final StringProperty message, final Set<Integer> files, final Stage oldStage) {
         log.fine("pickDirectory has been opened.");
 
         Stage pickDirectoryStage = new Stage();
@@ -247,19 +247,22 @@ public class ListSelectBox {
         Label label = new Label();
         label.textProperty().bind(message);
 
-        ObservableList<File> fileList = FXCollections.observableArrayList(files);
+        Map<File, Integer> directoryMap = new HashMap<>();
+        files.forEach(directoryID -> directoryMap.put(ClassHandler.directoryController().getDirectoryFromID(directoryID), directoryID));
+        ObservableList<File> fileList = FXCollections.observableArrayList(directoryMap.keySet());
         fileList.sorted();
         ComboBox<File> comboBox = new ComboBox<>(fileList);
 
         Button submit = new Button(), exit = new Button(Strings.EmptyString, new ImageView("/image/UI/ExitButtonSmall.png"));
         submit.textProperty().bind(Strings.Submit);
-        final File[] directory = new File[1];
+        final int[] directory = {-2};
         submit.setOnAction(e -> {
             if (comboBox.getValue() != null) {
                 if (comboBox.getValue().toString().isEmpty())
                     new MessageBox(new StringProperty[]{Strings.PleaseChooseAFolder}, pickDirectoryStage);
                 else {
-                    directory[0] = comboBox.getValue();
+                    if (directoryMap.containsKey(comboBox.getValue()))
+                        directory[0] = directoryMap.get(comboBox.getValue());
                     pickDirectoryStage.close();
                 }
             }
