@@ -17,7 +17,7 @@ public enum OperatingSystem {
 
     public static boolean openVideo(final File file, final int startTime, VideoPlayer videoPlayer) {
         try {
-            if (startTime != 0) log.info("Show is continuing at: \"" + startTime + "\"");
+            if (startTime != 0 || startTime != -2) log.info("Show is continuing at: \"" + startTime + "\"");
             ProcessBuilder processBuilder = null;
             switch (operatingSystem) {
                 case WINDOWS:

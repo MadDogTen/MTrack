@@ -2,9 +2,10 @@ package com.maddogten.mtrack.Database;
 
 import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.StringDB;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -12,63 +13,32 @@ import java.util.logging.Logger;
 public class DBChangeTracker {
     private final Logger log = Logger.getLogger(DBChangeTracker.class.getName());
 
-    private final PreparedStatement addChange;
-    private final PreparedStatement getChangeInfo;
-    private final PreparedStatement removeChange;
-    private final PreparedStatement addUserChange;
-    private final PreparedStatement getUserChanges;
-    private final PreparedStatement removeUserChange;
-    private final PreparedStatement removeChangeForUsers;
-    private final PreparedStatement setUserChangeSeen;
-    private final PreparedStatement findUsersSeenChange;
-    private final PreparedStatement changeFoundStatus;
-    private final PreparedStatement getUsersWithChange;
-    private final PreparedStatement getChangesWithUsers;
-    //private final PreparedStatement getAllChanges;
-    private final PreparedStatement deleteAllChangesForUser;
-    private final PreparedStatement setAllSeenForUser;
+    private final DBManager dbManager;
+
+    private PreparedStatement addChange;
+    private PreparedStatement getChangeInfo;
+    private PreparedStatement removeChange;
+    private PreparedStatement addUserChange;
+    private PreparedStatement getUserChanges;
+    private PreparedStatement removeUserChange;
+    private PreparedStatement removeChangeForUsers;
+    private PreparedStatement setUserChangeSeen;
+    private PreparedStatement findUsersSeenChange;
+    private PreparedStatement changeFoundStatus;
+    private PreparedStatement getUsersWithChange;
+    private PreparedStatement getChangesWithUsers;
+    //private PreparedStatement getAllChanges;
+    private PreparedStatement deleteAllChangesForUser;
+    private PreparedStatement setAllSeenForUser;
 
     public DBChangeTracker(DBManager dbManager) throws SQLException {
-        Connection connection = dbManager.getConnection();
-        try (Statement statement = connection.createStatement()) {
-            createChangesTable(statement);
-            createUserChangeTrackTable(statement);
-        }
-
-        addChange = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_SHOWCHANGES + " VALUES(?,?,?,?,?,?)");
-        getChangeInfo = connection.prepareStatement("SELECT * FROM " + StringDB.TABLE_SHOWCHANGES + " WHERE " + StringDB.COLUMN_CHANGE_ID + "=?");
-        removeChange = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_SHOWCHANGES + " WHERE " + StringDB.COLUMN_CHANGE_ID + "=?");
-        addUserChange = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERCHANGETRACKING + " VALUES(?,?,?)");
-        getUserChanges = connection.prepareStatement("SELECT " + StringDB.COLUMN_CHANGE_ID + " FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        removeUserChange = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_CHANGE_ID + "=?");
-        removeChangeForUsers = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_CHANGE_ID + "=?");
-        setUserChangeSeen = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERCHANGETRACKING + " SET " + StringDB.COLUMN_USERSEEN + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_CHANGE_ID + "=?");
-        findUsersSeenChange = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_USERSEEN + "=" + Boolean.TRUE + " AND " + StringDB.COLUMN_CHANGE_ID + "=?");
-        changeFoundStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_SHOWCHANGES + " SET " + StringDB.COLUMN_SHOWFOUND + "=? WHERE " + StringDB.COLUMN_CHANGE_ID + "=?");
-        getUsersWithChange = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_CHANGE_ID + "=?");
-        getChangesWithUsers = connection.prepareStatement("SELECT " + StringDB.COLUMN_CHANGE_ID + " FROM " + StringDB.TABLE_USERCHANGETRACKING);
-        //getAllChanges = connection.prepareStatement("SELECT " + StringDB.COLUMN_CHANGE_ID + " FROM " + StringDB.TABLE_SHOWCHANGES);
-        deleteAllChangesForUser = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_USERCHANGETRACKING + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setAllSeenForUser = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERCHANGETRACKING + " SET " + StringDB.COLUMN_USERSEEN + "=" + Boolean.TRUE + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-    }
-
-    private void createUserChangeTrackTable(Statement statement) {
-        try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_USERCHANGETRACKING + "(" + StringDB.COLUMN_USER_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_CHANGE_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_USERSEEN + " BOOLEAN NOT NULL)");
-        } catch (SQLException e) {
-            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-    }
-
-    private void createChangesTable(Statement statement) {
-        try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_SHOWCHANGES + "(" + StringDB.COLUMN_CHANGE_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL , " + StringDB.COLUMN_SEASON + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODE + " INTEGER NOT NULL, " + StringDB.COLUMN_SHOWFOUND + " BOOLEAN NOT NULL, " + StringDB.COLUMN_TIMEADDED + " INTEGER NOT NULL)");
-        } catch (SQLException e) {
-            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
-        }
+        this.dbManager = dbManager;
+        this.dbManager.createTable(DBStrings.CREATE_USERCHANGETRACKINGTABLE);
+        this.dbManager.createTable(DBStrings.CREATE_SHOWCHANGESTABLE);
     }
 
     public synchronized int addChange(int showID, int season, int episode, boolean found) {
+        if (isNull(addChange)) addChange = dbManager.prepareStatement(DBStrings.DBChangeTracker_addChangeSQL);
         int changeID = getChangeID(showID, season, episode);
         int[] changeInfo = getChangeInfo(changeID);
         if (changeInfo != null) {
@@ -107,6 +77,8 @@ public class DBChangeTracker {
     }
 
     private synchronized void changeFoundStatus(int changeID, boolean status) {
+        if (isNull(changeFoundStatus))
+            changeFoundStatus = dbManager.prepareStatement(DBStrings.DBChangeTracker_changeFoundStatusSQL);
         try {
             changeFoundStatus.setBoolean(1, status);
             changeFoundStatus.setInt(2, changeID);
@@ -118,6 +90,7 @@ public class DBChangeTracker {
     }
 
     public synchronized void removeChange(int changeID) {
+        if (isNull(removeChange)) removeChange = dbManager.prepareStatement(DBStrings.DBChangeTracker_removeChangeSQL);
         try {
             removeChangeForUsers(changeID);
             removeChange.setInt(1, changeID);
@@ -129,6 +102,8 @@ public class DBChangeTracker {
     }
 
     public synchronized void removeChangeForUsers(int changeID) {
+        if (isNull(removeChangeForUsers))
+            removeChangeForUsers = dbManager.prepareStatement(DBStrings.DBChangeTracker_removeChangeForUsersSQL);
         try {
             removeChangeForUsers.setInt(1, changeID);
             removeChangeForUsers.execute();
@@ -139,18 +114,20 @@ public class DBChangeTracker {
     }
 
     public synchronized int[] getChangeInfo(int changeID) {
+        if (isNull(getChangeInfo))
+            getChangeInfo = dbManager.prepareStatement(DBStrings.DBChangeTracker_getChangeInfoSQL);
         int[] result = null;
         try {
             getChangeInfo.setInt(1, changeID);
             try (ResultSet resultSet = getChangeInfo.executeQuery()) {
                 if (resultSet.next()) {
                     result = new int[6];
-                    result[0] = resultSet.getInt(StringDB.COLUMN_CHANGE_ID);
-                    result[1] = resultSet.getInt(StringDB.COLUMN_SHOW_ID);
-                    result[2] = resultSet.getInt(StringDB.COLUMN_SEASON);
-                    result[3] = resultSet.getInt(StringDB.COLUMN_EPISODE);
-                    result[4] = (resultSet.getBoolean(StringDB.COLUMN_SHOWFOUND) ? 1 : 0);
-                    result[5] = resultSet.getInt(StringDB.COLUMN_TIMEADDED);
+                    result[0] = resultSet.getInt(DBStrings.COLUMN_CHANGE_ID);
+                    result[1] = resultSet.getInt(DBStrings.COLUMN_SHOW_ID);
+                    result[2] = resultSet.getInt(DBStrings.COLUMN_SEASON);
+                    result[3] = resultSet.getInt(DBStrings.COLUMN_EPISODE);
+                    result[4] = (resultSet.getBoolean(DBStrings.COLUMN_SHOWFOUND) ? 1 : 0);
+                    result[5] = resultSet.getInt(DBStrings.COLUMN_TIMEADDED);
                 }
             }
             getChangeInfo.clearParameters();
@@ -165,6 +142,8 @@ public class DBChangeTracker {
     }
 
     public synchronized void addUserChange(int userID, int changeID) {
+        if (isNull(addUserChange))
+            addUserChange = dbManager.prepareStatement(DBStrings.DBChangeTracker_addUserChangeSQL);
         try {
             addUserChange.setInt(1, userID);
             addUserChange.setInt(2, changeID);
@@ -177,6 +156,8 @@ public class DBChangeTracker {
     }
 
     public synchronized void setUserChangeSeen(int userID, int changeID) {
+        if (isNull(setUserChangeSeen))
+            setUserChangeSeen = dbManager.prepareStatement(DBStrings.DBChangeTracker_setUserChangeSeenSQL);
         try {
             setUserChangeSeen.setBoolean(1, true);
             setUserChangeSeen.setInt(2, userID);
@@ -189,11 +170,13 @@ public class DBChangeTracker {
     }
 
     public synchronized Set<Integer> findUsersSeenChange(int changeID) {
+        if (isNull(findUsersSeenChange))
+            findUsersSeenChange = dbManager.prepareStatement(DBStrings.DBChangeTracker_findUsersSeenChangeSQL);
         Set<Integer> seenBy = new HashSet<>();
         try {
             findUsersSeenChange.setInt(1, changeID);
             try (ResultSet resultSet = findUsersSeenChange.executeQuery()) {
-                while (resultSet.next()) seenBy.add(resultSet.getInt(StringDB.COLUMN_USER_ID));
+                while (resultSet.next()) seenBy.add(resultSet.getInt(DBStrings.COLUMN_USER_ID));
             }
             findUsersSeenChange.clearParameters();
         } catch (SQLException e) {
@@ -203,11 +186,13 @@ public class DBChangeTracker {
     }
 
     public synchronized Set<Integer> getUserChanges(int userID) {
+        if (isNull(getUserChanges))
+            getUserChanges = dbManager.prepareStatement(DBStrings.DBChangeTracker_getUserChangesSQL);
         Set<Integer> userChanges = new HashSet<>();
         try {
             getUserChanges.setInt(1, userID);
             try (ResultSet resultSet = getUserChanges.executeQuery()) {
-                while (resultSet.next()) userChanges.add(resultSet.getInt(StringDB.COLUMN_CHANGE_ID));
+                while (resultSet.next()) userChanges.add(resultSet.getInt(DBStrings.COLUMN_CHANGE_ID));
             }
             getUserChanges.clearParameters();
         } catch (SQLException e) {
@@ -217,6 +202,8 @@ public class DBChangeTracker {
     }
 
     public synchronized void removeUserChange(int userID, int changeID) {
+        if (isNull(removeUserChange))
+            removeUserChange = dbManager.prepareStatement(DBStrings.DBChangeTracker_removeUserChangeSQL);
         try {
             removeUserChange.setInt(1, userID);
             removeUserChange.setInt(2, changeID);
@@ -228,11 +215,13 @@ public class DBChangeTracker {
     }
 
     public synchronized Set<Integer> getUsersWithChange(int changeID) {
+        if (isNull(getUsersWithChange))
+            getUsersWithChange = dbManager.prepareStatement(DBStrings.DBChangeTracker_getUsersWithChangeSQL);
         Set<Integer> usersWithChange = new HashSet<>();
         try {
             getUsersWithChange.setInt(1, changeID);
             try (ResultSet resultSet = getUsersWithChange.executeQuery()) {
-                while (resultSet.next()) usersWithChange.add(resultSet.getInt(StringDB.COLUMN_USER_ID));
+                while (resultSet.next()) usersWithChange.add(resultSet.getInt(DBStrings.COLUMN_USER_ID));
             }
             getUsersWithChange.clearParameters();
         } catch (SQLException e) {
@@ -242,6 +231,8 @@ public class DBChangeTracker {
     }
 
     public synchronized void deleteAllChangesForUser(int userID) {
+        if (isNull(deleteAllChangesForUser))
+            deleteAllChangesForUser = dbManager.prepareStatement(DBStrings.DBChangeTracker_deleteAllChangesForUserSQL);
         try {
             Set<Integer> userChanges = getUserChanges(userID);
             deleteAllChangesForUser.setInt(1, userID);
@@ -256,6 +247,8 @@ public class DBChangeTracker {
     }
 
     public synchronized void setAllSeenForUser(int userID) {
+        if (isNull(setAllSeenForUser))
+            setAllSeenForUser = dbManager.prepareStatement(DBStrings.DBChangeTracker_setAllSeenForUserSQL);
         try {
             setAllSeenForUser.setInt(1, userID);
             setAllSeenForUser.execute();
@@ -263,5 +256,9 @@ public class DBChangeTracker {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+    }
+
+    private boolean isNull(Object object) {
+        return object == null;
     }
 }

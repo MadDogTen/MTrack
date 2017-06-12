@@ -36,15 +36,19 @@ public class Variables {
     public static final Font Font = javafx.scene.text.Font.font(("Times New Roman"));
     @SuppressWarnings("PublicStaticArrayField")
     public static final String[] DefaultLanguage = new String[]{"en_US", "English US"};
-    // Inner Version Numbers \\ // Set to 1000+ for Pre-Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
-    public static final int programSettingsTableVersion = 0;
-    public static final int settingsTableVersion = 0;
-    public static final int showsTableVersion = 0;
-    public static final int seasonsTableVersion = 0;
-    public static final int episodesTableVersion = 0;
-    public static final int episodeFilesTableVersion = 0;
-    public static final int directoriesTableVersion = 0;
-    public static final int usersTableVersion = 0;
+    // Inner Version Numbers \\ // Set to 1000+ for Alpha / Alpha / Beta -- // Note- Set back to 1 for full release. \\
+    public static final int programSettingsTableVersion = 1000;
+    public static final int userSettingsTableVersion = 1000;
+    public static final int showsTableVersion = 1000;
+    public static final int seasonsTableVersion = 1000;
+    public static final int episodesTableVersion = 1000;
+    public static final int episodeFilesTableVersion = 1000;
+    public static final int directoriesTableVersion = 1000;
+    public static final int usersTableVersion = 1000;
+    public static final int userShowSettingsTableVersion = 1001;
+    public static final int userEpisodeSettingsTableVersion = 1000;
+    public static final int showChangesTableVersion = 1000;
+    public static final int userChangeTrackingTableVersion = 1000;
 
 
     public static final int defaultUpdateSpeed = 120;

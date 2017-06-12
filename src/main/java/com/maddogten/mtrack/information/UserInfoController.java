@@ -94,9 +94,16 @@ public class UserInfoController {
     // Adds a new show to the shows file.
     public void addNewShow(int userID, int showID) {
         log.fine("Adding " + ClassHandler.showInfoController().getShowNameFromShowID(showID) + " to " + dbUserManager.getUsername(userID) + "'s settings file.");
-        int season = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(showID)) : 1;
-        int episode = (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(showID, season)) : (ClassHandler.showInfoController().doesEpisodeExist(showID, season, 0)) ? 0 : 1;
-        dbUserSettingsManager.addShowSettings(userID, showID, season, episode);
+        int season = getShowDefaultSeason(showID);
+        dbUserSettingsManager.addShowSettings(userID, showID, season, getShowDefaultEpisode(showID, season));
+    }
+
+    public int getShowDefaultSeason(int showID) {
+        return (Variables.genUserShowInfoAtFirstFound) ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getSeasonsList(showID)) : 1;
+    }
+
+    public int getShowDefaultEpisode(int showID, int season) {
+        return Variables.genUserShowInfoAtFirstFound ? ClassHandler.showInfoController().findLowestInt(ClassHandler.showInfoController().getEpisodesList(showID, season)) : (ClassHandler.showInfoController().doesEpisodeExist(showID, season, 0)) ? 0 : 1;
     }
 
     public boolean getIgnoredStatus(int userID, int showID) {
@@ -104,7 +111,7 @@ public class UserInfoController {
     }
 
     public Set<Integer> getIgnoredShows(int userID) {
-        return dbUserSettingsManager.getShows(userID, StringDB.COLUMN_IGNORED, true);
+        return dbUserSettingsManager.getUserIgnoredShows(userID);
     }
 
     // Saves whether or not a show is currently active. If a show is Active, it means the user is actively watching it, and it is being searched for in rechecks.
@@ -116,8 +123,12 @@ public class UserInfoController {
         return dbUserSettingsManager.getUserShowActiveStatus(userID, showID);
     }
 
-    public Set<Integer> getShowsWithActiveStatus(int userID, boolean getActiveShows) {
-        return dbUserSettingsManager.getShows(userID, StringDB.COLUMN_ACTIVE, getActiveShows);
+    public Set<Integer> getActiveShows(int userID) {
+        return dbUserSettingsManager.getUserActiveShows(userID);
+    }
+
+    public Set<Integer> getInactiveShows(int userID) {
+        return dbUserSettingsManager.getUserInactiveShows(userID);
     }
 
     // Returns all the shows applicable to the type requested
@@ -127,7 +138,7 @@ public class UserInfoController {
 
     // Returns all the shows the program currently has being tracked.
     public Set<Integer> getAllNonIgnoredShows(int userID) {
-        return dbUserSettingsManager.getShows(userID, StringDB.COLUMN_IGNORED, false);
+        return dbUserSettingsManager.getUserNonIgnoredShows(userID);
     }
 
     // If a user doesn't want a show clogging up any lists, then it can be set hidden. It shouldn't be able to be found anywhere at that point.
@@ -137,7 +148,11 @@ public class UserInfoController {
     }
 
     public Set<Integer> getHiddenShows(int userID) {
-        return dbUserSettingsManager.getShows(userID, StringDB.COLUMN_HIDDEN, true);
+        return dbUserSettingsManager.getUserHiddenShows(userID);
+    }
+
+    public boolean isShowHidden(int userID, int showID) {
+        return dbUserSettingsManager.getUserShowHiddenStatus(userID, showID);
     }
 
     // Attempts to play the file using the default program for the extension.

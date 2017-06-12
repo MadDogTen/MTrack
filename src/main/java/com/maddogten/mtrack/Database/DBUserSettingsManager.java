@@ -1,205 +1,108 @@
 package com.maddogten.mtrack.Database;
 
-import com.maddogten.mtrack.util.*;
+import com.maddogten.mtrack.util.ClassHandler;
+import com.maddogten.mtrack.util.GenericMethods;
+import com.maddogten.mtrack.util.Strings;
+import com.maddogten.mtrack.util.Variables;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
 public class DBUserSettingsManager {
     private final Logger log = Logger.getLogger(DBUserSettingsManager.class.getName());
-    private final PreparedStatement insertSettings;
-    //private final PreparedStatement getShowsMultiConditional;
-    private final PreparedStatement getEpisodePosition;
-    private final PreparedStatement setEpisodePosition;
-    private final PreparedStatement addShowSettings;
-    private final PreparedStatement addEpisodeSettings;
-    private final PreparedStatement removeEpisode;
-    private final PreparedStatement getShowsForUser;
-    private final PreparedStatement getUserShowSeason;
-    private final PreparedStatement getUserShowEpisode;
-    private final PreparedStatement checkIfShowSettingsExistForUser;
-    private final PreparedStatement checkUserHasShowID;
+    private final DBManager dbManager;
+
+    private PreparedStatement insertSettings = null;
+    private PreparedStatement getEpisodePosition = null;
+    private PreparedStatement setEpisodePosition = null;
+    private PreparedStatement addShowSettings = null;
+    private PreparedStatement addEpisodeSettings = null;
+    private PreparedStatement removeEpisode = null;
+    private PreparedStatement getShowsForUser = null;
+    private PreparedStatement getUserShowSeason = null;
+    private PreparedStatement getUserShowEpisode = null;
+    private PreparedStatement checkIfShowSettingsExistForUser = null;
+    private PreparedStatement checkUserHasShowID = null;
+    private PreparedStatement getUserIgnoredShows = null;
+    private PreparedStatement getUserHiddenShows = null;
+    private PreparedStatement getUserActiveShows = null;
+    private PreparedStatement getUserNonIgnoredShows = null;
+    private PreparedStatement getUserInactiveShows = null;
 
     // Settings
-    private final PreparedStatement getUserLanguage;
-    private final PreparedStatement setUserLanguage;
-    private final PreparedStatement getUserDoShowUpdating;
-    private final PreparedStatement setUserDoShowUpdating;
-    private final PreparedStatement getUserUpdateSpeed;
-    private final PreparedStatement setUserUpdateSpeed;
-    private final PreparedStatement getUserTimeToWaitForDirectory;
-    private final PreparedStatement setUserTimeToWaitForDirectory;
-    private final PreparedStatement getUserDoFileLogging;
-    private final PreparedStatement setUserDoFileLogging;
-    private final PreparedStatement getUserDoSpecialEffects;
-    private final PreparedStatement setUserDoSpecialEffects;
-    private final PreparedStatement getUserShow0Remaining;
-    private final PreparedStatement setUserShow0Remaining;
-    private final PreparedStatement getUserShowActiveShows;
-    private final PreparedStatement setUserShowActiveShows;
-    private final PreparedStatement getUserRecordChangesForNonActiveShows;
-    private final PreparedStatement setUserRecordChangesForNonActiveShows;
-    private final PreparedStatement getUserRecordChangesSeasonsLowerThanCurrent;
-    private final PreparedStatement setUserRecordChangesSeasonsLowerThanCurrent;
-    private final PreparedStatement getUserMoveStageWithParent;
-    private final PreparedStatement setUserMoveStageWithParent;
-    private final PreparedStatement getUserHaveStageBlockParentStage;
-    private final PreparedStatement setUserHaveStageBlockParentStage;
-    private final PreparedStatement getUserEnableFileLogging;
-    private final PreparedStatement getUserVideoPlayerType;
-    private final PreparedStatement setUserVideoPlayerType;
-    private final PreparedStatement getUserVideoPlayerLocation;
-    private final PreparedStatement setUserVideoPlayerLocation;
-    private final PreparedStatement setUserShowSeason;
-    private final PreparedStatement setUserShowEpisode;
-    private final PreparedStatement getUserShowIgnoredStatus;
-    private final PreparedStatement setUserShowIgnoredStatus;
-    private final PreparedStatement getUserShowActiveStatus;
-    private final PreparedStatement setUserShowActiveStatus;
-    private final PreparedStatement getUserShowHiddenStatus;
-    private final PreparedStatement setUserShowHiddenStatus;
-    private final PreparedStatement getUserShowUsername;
-    private final PreparedStatement setUserShowUsername;
-    private final PreparedStatement getUserShowColumnVisibility;
-    private final PreparedStatement setUserShowColumnVisibility;
-    private final PreparedStatement getUserShowColumnWidth;
-    private final PreparedStatement setUserShowColumnWidth;
-    private final PreparedStatement getUserSeasonColumnVisibility;
-    private final PreparedStatement setUserSeasonColumnVisibility;
-    private final PreparedStatement getUserSeasonColumnWidth;
-    private final PreparedStatement setUserSeasonColumnWidth;
-    private final PreparedStatement getUserEpisodeColumnVisibility;
-    private final PreparedStatement setUserEpisodeColumnVisibility;
-    private final PreparedStatement getUserEpisodeColumnWidth;
-    private final PreparedStatement setUserEpisodeColumnWidth;
-    private final PreparedStatement getUserRemainingColumnVisibility;
-    private final PreparedStatement setUserRemainingColumnVisibility;
-    private final PreparedStatement getUserRemainingColumnWidth;
-    private final PreparedStatement setUserRemainingColumnWidth;
+    private PreparedStatement getUserLanguage = null;
+    private PreparedStatement setUserLanguage = null;
+    private PreparedStatement getUserDoShowUpdating = null;
+    private PreparedStatement setUserDoShowUpdating = null;
+    private PreparedStatement getUserUpdateSpeed = null;
+    private PreparedStatement setUserUpdateSpeed = null;
+    private PreparedStatement getUserTimeToWaitForDirectory = null;
+    private PreparedStatement setUserTimeToWaitForDirectory = null;
+    private PreparedStatement getUserDoFileLogging = null;
+    private PreparedStatement setUserDoFileLogging = null;
+    private PreparedStatement getUserDoSpecialEffects = null;
+    private PreparedStatement setUserDoSpecialEffects = null;
+    private PreparedStatement getUserShow0Remaining = null;
+    private PreparedStatement setUserShow0Remaining = null;
+    private PreparedStatement getUserShowActiveShows = null;
+    private PreparedStatement setUserShowActiveShows = null;
+    private PreparedStatement getUserRecordChangesForNonActiveShows = null;
+    private PreparedStatement setUserRecordChangesForNonActiveShows = null;
+    private PreparedStatement getUserRecordChangesSeasonsLowerThanCurrent = null;
+    private PreparedStatement setUserRecordChangesSeasonsLowerThanCurrent = null;
+    private PreparedStatement getUserMoveStageWithParent = null;
+    private PreparedStatement setUserMoveStageWithParent = null;
+    private PreparedStatement getUserHaveStageBlockParentStage = null;
+    private PreparedStatement setUserHaveStageBlockParentStage = null;
+    private PreparedStatement getUserEnableFileLogging = null;
+    private PreparedStatement getUserVideoPlayerType = null;
+    private PreparedStatement setUserVideoPlayerType = null;
+    private PreparedStatement getUserVideoPlayerLocation = null;
+    private PreparedStatement setUserVideoPlayerLocation = null;
+    private PreparedStatement setUserShowSeason = null;
+    private PreparedStatement setUserShowEpisode = null;
+    private PreparedStatement getUserShowIgnoredStatus = null;
+    private PreparedStatement setUserShowIgnoredStatus = null;
+    private PreparedStatement getUserShowActiveStatus = null;
+    private PreparedStatement setUserShowActiveStatus = null;
+    private PreparedStatement getUserShowHiddenStatus = null;
+    private PreparedStatement setUserShowHiddenStatus = null;
+    private PreparedStatement getUserShowUsername = null;
+    private PreparedStatement setUserShowUsername = null;
+    private PreparedStatement getUserShowColumnVisibility = null;
+    private PreparedStatement setUserShowColumnVisibility = null;
+    private PreparedStatement getUserShowColumnWidth = null;
+    private PreparedStatement setUserShowColumnWidth = null;
+    private PreparedStatement getUserSeasonColumnVisibility = null;
+    private PreparedStatement setUserSeasonColumnVisibility = null;
+    private PreparedStatement getUserSeasonColumnWidth = null;
+    private PreparedStatement setUserSeasonColumnWidth = null;
+    private PreparedStatement getUserEpisodeColumnVisibility = null;
+    private PreparedStatement setUserEpisodeColumnVisibility = null;
+    private PreparedStatement getUserEpisodeColumnWidth = null;
+    private PreparedStatement setUserEpisodeColumnWidth = null;
+    private PreparedStatement getUserRemainingColumnVisibility = null;
+    private PreparedStatement setUserRemainingColumnVisibility = null;
+    private PreparedStatement getUserRemainingColumnWidth = null;
+    private PreparedStatement setUserRemainingColumnWidth = null;
 
 
     public DBUserSettingsManager(DBManager dbManager) throws SQLException {
-        Connection connection = dbManager.getConnection();
-        boolean doesNotExist;
-        try (Statement statement = connection.createStatement()) {
-            doesNotExist = !createSettingsTable(statement);
-            createShowSettingsTable(statement);
-            createEpisodeSettingsTable(statement);
-        }
+        this.dbManager = dbManager;
+        boolean tableCreated = this.dbManager.createTable(DBStrings.CREATE_USERSETTINGSTABLE);
+        this.dbManager.createTable(DBStrings.CREATE_USERSHOWSETTINGSTABLE);
+        this.dbManager.createTable(DBStrings.CREATE_USEREPISODESETTINGSTABLE);
 
-        insertSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        //getShowsMultiConditional = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_ACTIVE + "=? AND " + StringDB.COLUMN_IGNORED + "=? AND " + StringDB.COLUMN_HIDDEN + "=?");
-        getEpisodePosition = connection.prepareStatement("SELECT " + StringDB.COLUMN_EPISODETIMEPOSITION + " FROM " + StringDB.TABLE_USEREPISODESETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
-        setEpisodePosition = connection.prepareStatement("UPDATE " + StringDB.TABLE_USEREPISODESETTINGS + " SET " + StringDB.COLUMN_EPISODETIMEPOSITION + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
-        addShowSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERSHOWSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?)");
-        addEpisodeSettings = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USEREPISODESETTINGS + " VALUES (?, ?, ?)");
-        removeEpisode = connection.prepareStatement("DELETE FROM " + StringDB.TABLE_USEREPISODESETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_EPISODE_ID + "=?");
-        getShowsForUser = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserShowSeason = connection.prepareStatement("SELECT " + StringDB.COLUMN_CURRENTSEASON + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        getUserShowEpisode = connection.prepareStatement("SELECT " + StringDB.COLUMN_CURRENTEPISODE + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        getUserLanguage = connection.prepareStatement("SELECT " + StringDB.COLUMN_LANGUAGE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserLanguage = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_LANGUAGE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserDoShowUpdating = connection.prepareStatement("SELECT " + StringDB.COLUMN_AUTOMATICSHOWUPDATING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserDoShowUpdating = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_AUTOMATICSHOWUPDATING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserUpdateSpeed = connection.prepareStatement("SELECT " + StringDB.COLUMN_UPDATESPEED + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserUpdateSpeed = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_UPDATESPEED + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserTimeToWaitForDirectory = connection.prepareStatement("SELECT " + StringDB.COLUMN_TIMETOWAITFORDIRECTORY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserTimeToWaitForDirectory = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_TIMETOWAITFORDIRECTORY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserDoFileLogging = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLEFILELOGGING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserDoFileLogging = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_ENABLEFILELOGGING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserDoSpecialEffects = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLESPECIALEFFECTS + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserDoSpecialEffects = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_ENABLESPECIALEFFECTS + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserShow0Remaining = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW0REMAINING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserShow0Remaining = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOW0REMAINING + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserShowActiveShows = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWACTIVESHOWS + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserShowActiveShows = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWACTIVESHOWS + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserRecordChangesForNonActiveShows = connection.prepareStatement("SELECT " + StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserRecordChangesForNonActiveShows = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserRecordChangesSeasonsLowerThanCurrent = connection.prepareStatement("SELECT " + StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserRecordChangesSeasonsLowerThanCurrent = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserMoveStageWithParent = connection.prepareStatement("SELECT " + StringDB.COLUMN_MOVESTAGEWITHPARENT + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserMoveStageWithParent = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_MOVESTAGEWITHPARENT + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserHaveStageBlockParentStage = connection.prepareStatement("SELECT " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserHaveStageBlockParentStage = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserEnableFileLogging = connection.prepareStatement("SELECT " + StringDB.COLUMN_ENABLEFILELOGGING + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserVideoPlayerType = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERTYPE + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserVideoPlayerType = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERTYPE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserVideoPlayerLocation = connection.prepareStatement("SELECT " + StringDB.COLUMN_VIDEOPLAYERLOCATION + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserVideoPlayerLocation = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_VIDEOPLAYERLOCATION + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-         /*= connection.prepareStatement("SELECT " +  + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-         = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " +  + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");*/
-        setUserShowSeason = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_CURRENTSEASON + "=?" + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        setUserShowEpisode = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_CURRENTEPISODE + "=?" + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        getUserShowIgnoredStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_IGNORED + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        setUserShowIgnoredStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_IGNORED + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        getUserShowActiveStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_ACTIVE + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        setUserShowActiveStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_ACTIVE + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        getUserShowHiddenStatus = connection.prepareStatement("SELECT " + StringDB.COLUMN_HIDDEN + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        setUserShowHiddenStatus = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSHOWSETTINGS + " SET " + StringDB.COLUMN_HIDDEN + "=? WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        checkIfShowSettingsExistForUser = connection.prepareStatement("SELECT  " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-        getUserShowUsername = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWUSERNAME + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserShowUsername = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWUSERNAME + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserShowColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWCOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserShowColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWCOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserShowColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWCOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserShowColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SHOWCOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserSeasonColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_SEASONCOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserSeasonColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SEASONCOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserSeasonColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_SEASONCOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserSeasonColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_SEASONCOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserEpisodeColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_EPISODECOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserEpisodeColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_EPISODECOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserEpisodeColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_EPISODECOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserEpisodeColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_EPISODECOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserRemainingColumnVisibility = connection.prepareStatement("SELECT " + StringDB.COLUMN_REMAININGCOLUMNVISIBILITY + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserRemainingColumnVisibility = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_REMAININGCOLUMNVISIBILITY + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserRemainingColumnWidth = connection.prepareStatement("SELECT " + StringDB.COLUMN_REMAININGCOLUMNWIDTH + " FROM " + StringDB.TABLE_USERSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        setUserRemainingColumnWidth = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERSETTINGS + " SET " + StringDB.COLUMN_REMAININGCOLUMNWIDTH + "=? WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        checkUserHasShowID = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=? AND " + StringDB.COLUMN_SHOW_ID + "=?");
-
-        if (doesNotExist) addUserSettings(0); // Insert default program settings
-    }
-
-
-    private void createEpisodeSettingsTable(Statement statement) {
-        try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_USEREPISODESETTINGS + "(" + StringDB.COLUMN_USER_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODE_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_EPISODETIMEPOSITION + " INTEGER NOT NULL)");
-        } catch (SQLException e) {
-            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-    }
-
-    private void createShowSettingsTable(Statement statement) {
-        try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_USERSHOWSETTINGS + "(" + StringDB.COLUMN_USER_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_SHOW_ID + " INTEGER NOT NULL, " + StringDB.COLUMN_CURRENTSEASON + " INTEGER NOT NULL, " + StringDB.COLUMN_CURRENTEPISODE + " INTEGER NOT NULL, " + StringDB.COLUMN_ACTIVE + " BOOLEAN NOT NULL, " + StringDB.COLUMN_IGNORED + " BOOLEAN NOT NULL, " + StringDB.COLUMN_HIDDEN + " BOOLEAN NOT NULL)");
-        } catch (SQLException e) {
-            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-    }
-
-    private boolean createSettingsTable(Statement statement) {
-        boolean alreadyExists = false;
-        try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_USERSETTINGS + "(" + StringDB.COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_SHOWUSERNAME + " BOOLEAN NOT NULL, " + StringDB.COLUMN_UPDATESPEED + " INTEGER NOT NULL," +
-                    StringDB.COLUMN_AUTOMATICSHOWUPDATING + " BOOLEAN NOT NULL, " + StringDB.COLUMN_TIMETOWAITFORDIRECTORY + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_SHOW0REMAINING + " BOOLEAN NOT NULL, " + StringDB.COLUMN_SHOWACTIVESHOWS + " BOOLEAN NOT NULL, " + StringDB.COLUMN_LANGUAGE + " VARCHAR(20) NOT NULL, " +
-                    StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS + " BOOLEAN NOT NULL, " + StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT + " BOOLEAN NOT NULL, " +
-                    StringDB.COLUMN_MOVESTAGEWITHPARENT + " BOOLEAN NOT NULL, " + StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE + " BOOLEAN NOT NULL, " + StringDB.COLUMN_ENABLESPECIALEFFECTS + " BOOLEAN NOT NULL, " +
-                    StringDB.COLUMN_ENABLEFILELOGGING + " BOOLEAN NOT NULL, " +
-                    StringDB.COLUMN_SHOWCOLUMNWIDTH + " FLOAT NOT NULL, " + StringDB.COLUMN_REMAININGCOLUMNWIDTH + " FLOAT NOT NULL, " +
-                    StringDB.COLUMN_SEASONCOLUMNWIDTH + " FLOAT NOT NULL, " + StringDB.COLUMN_EPISODECOLUMNWIDTH + " FLOAT NOT NULL, " + StringDB.COLUMN_SHOWCOLUMNVISIBILITY + " BOOLEAN NOT NULL, " +
-                    StringDB.COLUMN_REMAININGCOLUMNVISIBILITY + " BOOLEAN NOT NULL, " + StringDB.COLUMN_SEASONCOLUMNVISIBILITY + " BOOLEAN NOT NULL, " + StringDB.COLUMN_EPISODECOLUMNVISIBILITY + " BOOLEAN NOT NULL, " +
-                    StringDB.COLUMN_VIDEOPLAYERTYPE + " INTEGER NOT NULL, " + StringDB.COLUMN_VIDEOPLAYERLOCATION + " VARCHAR(" + StringDB.directoryLength + ") NOT NULL)");
-        } catch (SQLException e) {
-            if (GenericMethods.doesTableExistsFromError(e)) alreadyExists = true;
-            else GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        return alreadyExists;
+        if (tableCreated) addUserSettings(0); // Insert default program settings
     }
 
     public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode, boolean active, boolean ignored, boolean hidden) {
+        if (isNull(addShowSettings))
+            addShowSettings = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_addShowSettingsSQL);
         try {
             addShowSettings.setInt(1, userID);
             addShowSettings.setInt(2, showID);
@@ -220,6 +123,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void addEpisodeSettings(int userID, int episodeID, int showTimePosition) {
+        if (isNull(addEpisodeSettings))
+            addEpisodeSettings = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_addEpisodeSettingsSQL);
         try {
             addEpisodeSettings.setInt(1, userID);
             addEpisodeSettings.setInt(2, episodeID);
@@ -240,6 +145,8 @@ public class DBUserSettingsManager {
                                              boolean enableSpecialEffects, boolean enableFileLogging, float showColumnWidth,
                                              float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility,
                                              boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType, String videoPlayerLocation) {
+        if (isNull(insertSettings))
+            insertSettings = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_insertSettingsSQL);
         try {
             insertSettings.setInt(1, userID);
             insertSettings.setBoolean(2, showUsername);
@@ -279,12 +186,14 @@ public class DBUserSettingsManager {
     }
 
     public synchronized Set<Integer> getShows(int userID) {
+        if (isNull(getShowsForUser))
+            getShowsForUser = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getShowsForUserSQL);
         Set<Integer> result = new HashSet<>();
         try {
             getShowsForUser.setInt(1, userID);
             try (ResultSet resultSet = getShowsForUser.executeQuery()) {
                 while (resultSet.next()) {
-                    int showID = resultSet.getInt(StringDB.COLUMN_SHOW_ID);
+                    int showID = resultSet.getInt(DBStrings.COLUMN_SHOW_ID);
                     if (ClassHandler.showInfoController().doesShowExist(showID)) result.add(showID);
                 }
             }
@@ -295,35 +204,96 @@ public class DBUserSettingsManager {
         return result;
     }
 
-    public synchronized Set<Integer> getShows(int userID, String settingType, boolean setting) { // TODO Remove?
-        Set<Integer> result = new HashSet<>();
-        try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + " AND " + settingType + "=" + setting)) {
-            while (resultSet.next()) result.add(resultSet.getInt(StringDB.COLUMN_SHOW_ID));
+    public synchronized Set<Integer> getUserActiveShows(int userID) {
+        if (isNull(getUserActiveShows))
+            getUserActiveShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserActiveShows);
+        Set<Integer> ignoredShows = new HashSet<>();
+        try {
+            getUserActiveShows.setInt(1, userID);
+            try (ResultSet resultSet = getUserActiveShows.executeQuery()) {
+                while (resultSet.next()) ignoredShows.add(resultSet.getInt(DBStrings.COLUMN_SHOW_ID));
+            }
+            getUserActiveShows.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        return result;
+        return ignoredShows;
     }
 
-    public synchronized Set<Integer> getShows(int userID, boolean active, boolean ignored, boolean hidden) { // TODO Remove?
-        Set<Integer> result = new HashSet<>();
-        try (Statement statement = ClassHandler.getDBManager().getStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT " + StringDB.COLUMN_SHOW_ID + " FROM " + StringDB.TABLE_USERSHOWSETTINGS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID + " AND " + StringDB.COLUMN_ACTIVE + "=" + active + " AND " + StringDB.COLUMN_IGNORED + "=" + ignored + " AND " + StringDB.COLUMN_HIDDEN + "=" + hidden)) {
-            while (resultSet.next()) result.add(resultSet.getInt(StringDB.COLUMN_SHOW_ID));
+    public synchronized Set<Integer> getUserInactiveShows(int userID) {
+        if (isNull(getUserInactiveShows))
+            getUserInactiveShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserInactiveShows);
+        Set<Integer> ignoredShows = new HashSet<>();
+        try {
+            getUserInactiveShows.setInt(1, userID);
+            try (ResultSet resultSet = getUserInactiveShows.executeQuery()) {
+                while (resultSet.next()) ignoredShows.add(resultSet.getInt(DBStrings.COLUMN_SHOW_ID));
+            }
+            getUserInactiveShows.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-        return result;
+        return ignoredShows;
+    }
+
+
+    public synchronized Set<Integer> getUserNonIgnoredShows(int userID) {
+        if (isNull(getUserNonIgnoredShows))
+            getUserNonIgnoredShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserNonIgnoredShows);
+        Set<Integer> ignoredShows = new HashSet<>();
+        try {
+            getUserNonIgnoredShows.setInt(1, userID);
+            try (ResultSet resultSet = getUserNonIgnoredShows.executeQuery()) {
+                while (resultSet.next()) ignoredShows.add(resultSet.getInt(DBStrings.COLUMN_SHOW_ID));
+            }
+            getUserNonIgnoredShows.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return ignoredShows;
+    }
+
+    public synchronized Set<Integer> getUserIgnoredShows(int userID) {
+        if (isNull(getUserIgnoredShows))
+            getUserIgnoredShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserIgnoredShows);
+        Set<Integer> ignoredShows = new HashSet<>();
+        try {
+            getUserIgnoredShows.setInt(1, userID);
+            try (ResultSet resultSet = getUserIgnoredShows.executeQuery()) {
+                while (resultSet.next()) ignoredShows.add(resultSet.getInt(DBStrings.COLUMN_SHOW_ID));
+            }
+            getUserIgnoredShows.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return ignoredShows;
+    }
+
+    public synchronized Set<Integer> getUserHiddenShows(int userID) {
+        if (isNull(getUserHiddenShows))
+            getUserHiddenShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserHiddenShows);
+        Set<Integer> ignoredShows = new HashSet<>();
+        try {
+            getUserHiddenShows.setInt(1, userID);
+            try (ResultSet resultSet = getUserHiddenShows.executeQuery()) {
+                while (resultSet.next()) ignoredShows.add(resultSet.getInt(DBStrings.COLUMN_SHOW_ID));
+            }
+            getUserHiddenShows.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return ignoredShows;
     }
 
     public synchronized int getEpisodePosition(final int userID, int episodeID) {
+        if (isNull(getEpisodePosition))
+            getEpisodePosition = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getEpisodePositionSQL);
         int episodePosition = -2;
         try {
             getEpisodePosition.setInt(1, userID);
             getEpisodePosition.setInt(2, episodeID);
             try (ResultSet resultSet = getEpisodePosition.executeQuery()) {
-                if (resultSet.next()) episodePosition = resultSet.getInt(StringDB.COLUMN_EPISODETIMEPOSITION);
+                if (resultSet.next()) episodePosition = resultSet.getInt(DBStrings.COLUMN_EPISODETIMEPOSITION);
             }
             getEpisodePosition.clearParameters();
         } catch (SQLException e) {
@@ -333,6 +303,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setEpisodePosition(final int userID, int episodeID, int position) {
+        if (isNull(setEpisodePosition))
+            setEpisodePosition = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setEpisodePositionSQL);
         try {
             if (getEpisodePosition(userID, episodeID) == -2) addEpisodeSettings(userID, episodeID, position);
             else {
@@ -348,6 +320,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void removeEpisode(int userID, int episodeID) {
+        if (isNull(removeEpisode))
+            removeEpisode = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_removeEpisodeSQL);
         try {
             removeEpisode.setInt(1, userID);
             removeEpisode.setInt(2, episodeID);
@@ -359,6 +333,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean doesUserHaveShowSettings(int userID, int showID) {
+        if (isNull(checkUserHasShowID))
+            checkUserHasShowID = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_checkUserHasShowIDSQL);
         boolean result = false;
         try {
             checkUserHasShowID.setInt(1, userID);
@@ -374,12 +350,14 @@ public class DBUserSettingsManager {
     }
 
     public synchronized int getUserShowSeason(int userID, int showID) {
+        if (isNull(getUserShowSeason))
+            getUserShowSeason = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowSeasonSQL);
         int season = -2;
         try {
             getUserShowSeason.setInt(1, userID);
             getUserShowSeason.setInt(2, showID);
             try (ResultSet resultSet = getUserShowSeason.executeQuery()) {
-                if (resultSet.next()) season = resultSet.getInt(StringDB.COLUMN_CURRENTSEASON);
+                if (resultSet.next()) season = resultSet.getInt(DBStrings.COLUMN_CURRENTSEASON);
             }
             getUserShowSeason.clearParameters();
         } catch (SQLException e) {
@@ -389,12 +367,14 @@ public class DBUserSettingsManager {
     }
 
     public synchronized int getUserShowEpisode(int userID, int showID) {
+        if (isNull(getUserShowEpisode))
+            getUserShowEpisode = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowEpisodeSQL);
         int episode = -2;
         try {
             getUserShowEpisode.setInt(1, userID);
             getUserShowEpisode.setInt(2, showID);
             try (ResultSet resultSet = getUserShowEpisode.executeQuery()) {
-                if (resultSet.next()) episode = resultSet.getInt(StringDB.COLUMN_CURRENTEPISODE);
+                if (resultSet.next()) episode = resultSet.getInt(DBStrings.COLUMN_CURRENTEPISODE);
             }
             getUserShowEpisode.clearParameters();
         } catch (SQLException e) {
@@ -404,11 +384,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized String getUserLanguage(int userID) {
+        if (isNull(getUserLanguage))
+            getUserLanguage = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserLanguageSQL);
         String result = Strings.EmptyString;
         try {
             getUserLanguage.setInt(1, userID);
             try (ResultSet resultSet = getUserLanguage.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getString(StringDB.COLUMN_LANGUAGE);
+                if (resultSet.next()) result = resultSet.getString(DBStrings.COLUMN_LANGUAGE);
             }
             getUserLanguage.clearParameters();
         } catch (SQLException e) {
@@ -418,6 +400,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserLanguage(int userID, String language) {
+        if (isNull(setUserLanguage))
+            setUserLanguage = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserLanguageSQL);
         try {
             setUserLanguage.setString(1, language);
             setUserLanguage.setInt(2, userID);
@@ -429,11 +413,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserDoShowUpdating(int userID) {
+        if (isNull(getUserDoShowUpdating))
+            getUserDoShowUpdating = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserDoShowUpdatingSQL);
         boolean result = false;
         try {
             getUserDoShowUpdating.setInt(1, userID);
             try (ResultSet resultSet = getUserDoShowUpdating.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_AUTOMATICSHOWUPDATING);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_AUTOMATICSHOWUPDATING);
             }
             getUserDoShowUpdating.clearParameters();
         } catch (SQLException e) {
@@ -443,6 +429,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserDoShowUpdating(int userID, boolean doShowUpdating) {
+        if (isNull(setUserDoShowUpdating))
+            setUserDoShowUpdating = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserDoShowUpdatingSQL);
         try {
             setUserDoShowUpdating.setBoolean(1, doShowUpdating);
             setUserDoShowUpdating.setInt(2, userID);
@@ -454,11 +442,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized int getUserUpdateSpeed(int userID) {
+        if (isNull(getUserUpdateSpeed))
+            getUserUpdateSpeed = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserUpdateSpeedSQL);
         int result = Variables.defaultUpdateSpeed;
         try {
             getUserUpdateSpeed.setInt(1, userID);
             try (ResultSet resultSet = getUserUpdateSpeed.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_UPDATESPEED);
+                if (resultSet.next()) result = resultSet.getInt(DBStrings.COLUMN_UPDATESPEED);
             }
             getUserUpdateSpeed.clearParameters();
         } catch (SQLException e) {
@@ -468,6 +458,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserUpdateSpeed(int userID, int updateSpeed) {
+        if (isNull(setUserUpdateSpeed))
+            setUserUpdateSpeed = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserUpdateSpeedSQL);
         try {
             setUserUpdateSpeed.setInt(1, updateSpeed);
             setUserUpdateSpeed.setInt(2, userID);
@@ -479,11 +471,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized int getUserTimeToWaitForDirectory(int userID) {
+        if (isNull(getUserTimeToWaitForDirectory))
+            getUserTimeToWaitForDirectory = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserTimeToWaitForDirectorySQL);
         int result = Variables.defaultTimeToWaitForDirectory;
         try {
             getUserTimeToWaitForDirectory.setInt(1, userID);
             try (ResultSet resultSet = getUserTimeToWaitForDirectory.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_TIMETOWAITFORDIRECTORY);
+                if (resultSet.next()) result = resultSet.getInt(DBStrings.COLUMN_TIMETOWAITFORDIRECTORY);
             }
             getUserTimeToWaitForDirectory.clearParameters();
         } catch (SQLException e) {
@@ -493,6 +487,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserTimeToWaitForDirectory(int userID, int timeToWaitForDirectory) {
+        if (isNull(setUserTimeToWaitForDirectory))
+            setUserTimeToWaitForDirectory = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserTimeToWaitForDirectorySQL);
         try {
             setUserTimeToWaitForDirectory.setInt(1, timeToWaitForDirectory);
             setUserTimeToWaitForDirectory.setInt(2, userID);
@@ -504,11 +500,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserDoFileLogging(int userID) {
+        if (isNull(getUserDoFileLogging))
+            getUserDoFileLogging = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserDoFileLoggingSQL);
         boolean result = false;
         try {
             getUserDoFileLogging.setInt(1, userID);
             try (ResultSet resultSet = getUserDoFileLogging.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ENABLEFILELOGGING);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_ENABLEFILELOGGING);
             }
             getUserDoFileLogging.clearParameters();
         } catch (SQLException e) {
@@ -518,6 +516,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserDoFileLogging(int userID, boolean doFileLogging) {
+        if (isNull(setUserDoFileLogging))
+            setUserDoFileLogging = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserDoFileLoggingSQL);
         try {
             setUserDoFileLogging.setBoolean(1, doFileLogging);
             setUserDoFileLogging.setInt(2, userID);
@@ -529,11 +529,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserDoSpecialEffects(int userID) {
+        if (isNull(getUserDoSpecialEffects))
+            getUserDoSpecialEffects = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserDoSpecialEffectsSQL);
         boolean result = false;
         try {
             getUserDoSpecialEffects.setInt(1, userID);
             try (ResultSet resultSet = getUserDoSpecialEffects.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ENABLESPECIALEFFECTS);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_ENABLESPECIALEFFECTS);
             }
             getUserDoSpecialEffects.clearParameters();
         } catch (SQLException e) {
@@ -543,6 +545,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserDoSpecialEffects(int userID, boolean doSpecialEffects) {
+        if (isNull(setUserDoSpecialEffects))
+            setUserDoSpecialEffects = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserDoSpecialEffectsSQL);
         try {
             setUserDoSpecialEffects.setBoolean(1, doSpecialEffects);
             setUserDoSpecialEffects.setInt(2, userID);
@@ -554,11 +558,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserShow0Remaining(int userID) {
+        if (isNull(getUserShow0Remaining))
+            getUserShow0Remaining = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShow0RemainingSQL);
         boolean result = false;
         try {
             getUserShow0Remaining.setInt(1, userID);
             try (ResultSet resultSet = getUserShow0Remaining.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOW0REMAINING);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_SHOW0REMAINING);
             }
             getUserShow0Remaining.clearParameters();
         } catch (SQLException e) {
@@ -568,6 +574,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShow0Remaining(int userID, boolean show0Remaining) {
+        if (isNull(setUserShow0Remaining))
+            setUserShow0Remaining = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShow0RemainingSQL);
         try {
             setUserShow0Remaining.setBoolean(1, show0Remaining);
             setUserShow0Remaining.setInt(2, userID);
@@ -579,11 +587,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserShowActiveShows(int userID) {
+        if (isNull(getUserShowActiveShows))
+            getUserShowActiveShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowActiveShowsSQL);
         boolean result = false;
         try {
             getUserShowActiveShows.setInt(1, userID);
             try (ResultSet resultSet = getUserShowActiveShows.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOWACTIVESHOWS);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_SHOWACTIVESHOWS);
             }
             getUserShowActiveShows.clearParameters();
         } catch (SQLException e) {
@@ -593,6 +603,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowActiveShows(int userID, boolean showActiveShows) {
+        if (isNull(setUserShowActiveShows))
+            setUserShowActiveShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowActiveShowsSQL);
         try {
             setUserShowActiveShows.setBoolean(1, showActiveShows);
             setUserShowActiveShows.setInt(2, userID);
@@ -604,11 +616,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserRecordChangesForNonActiveShows(int userID) {
+        if (isNull(getUserRecordChangesForNonActiveShows))
+            getUserRecordChangesForNonActiveShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserRecordChangesForNonActiveShowsSQL);
         boolean result = false;
         try {
             getUserRecordChangesForNonActiveShows.setInt(1, userID);
             try (ResultSet resultSet = getUserRecordChangesForNonActiveShows.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_RECORDCHANGESFORNONACTIVESHOWS);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_RECORDCHANGESFORNONACTIVESHOWS);
             }
             getUserRecordChangesForNonActiveShows.clearParameters();
         } catch (SQLException e) {
@@ -618,6 +632,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserRecordChangesForNonActiveShows(int userID, boolean recordChangesForNonActiveShows) {
+        if (isNull(setUserRecordChangesForNonActiveShows))
+            setUserRecordChangesForNonActiveShows = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserRecordChangesForNonActiveShowsSQL);
         try {
             setUserRecordChangesForNonActiveShows.setBoolean(1, recordChangesForNonActiveShows);
             setUserRecordChangesForNonActiveShows.setInt(2, userID);
@@ -629,12 +645,14 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserRecordChangesSeasonsLowerThanCurrent(int userID) {
+        if (isNull(getUserRecordChangesSeasonsLowerThanCurrent))
+            getUserRecordChangesSeasonsLowerThanCurrent = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserRecordChangesSeasonsLowerThanCurrentSQL);
         boolean result = false;
         try {
             getUserRecordChangesSeasonsLowerThanCurrent.setInt(1, userID);
             try (ResultSet resultSet = getUserRecordChangesSeasonsLowerThanCurrent.executeQuery()) {
                 if (resultSet.next())
-                    result = resultSet.getBoolean(StringDB.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT);
+                    result = resultSet.getBoolean(DBStrings.COLUMN_RECORDCHANGEDSEASONSLOWERTHANCURRENT);
             }
             getUserRecordChangesSeasonsLowerThanCurrent.clearParameters();
         } catch (SQLException e) {
@@ -644,6 +662,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserRecordChangesSeasonsLowerThanCurrent(int userID, boolean recordChangesSeasonsLowerThanCurrent) {
+        if (isNull(setUserRecordChangesSeasonsLowerThanCurrent))
+            setUserRecordChangesSeasonsLowerThanCurrent = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserRecordChangesSeasonsLowerThanCurrentSQL);
         try {
             setUserRecordChangesSeasonsLowerThanCurrent.setBoolean(1, recordChangesSeasonsLowerThanCurrent);
             setUserRecordChangesSeasonsLowerThanCurrent.setInt(2, userID);
@@ -655,11 +675,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserMoveStageWithParent(int userID) {
+        if (isNull(getUserMoveStageWithParent))
+            getUserMoveStageWithParent = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserMoveStageWithParentSQL);
         boolean result = false;
         try {
             getUserMoveStageWithParent.setInt(1, userID);
             try (ResultSet resultSet = getUserMoveStageWithParent.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_MOVESTAGEWITHPARENT);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_MOVESTAGEWITHPARENT);
             }
             getUserMoveStageWithParent.clearParameters();
         } catch (SQLException e) {
@@ -669,6 +691,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserMoveStageWithParent(int userID, boolean moveStageWithParent) {
+        if (isNull(setUserMoveStageWithParent))
+            setUserMoveStageWithParent = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserMoveStageWithParentSQL);
         try {
             setUserMoveStageWithParent.setBoolean(1, moveStageWithParent);
             setUserMoveStageWithParent.setInt(2, userID);
@@ -680,11 +704,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserHaveStageBlockParentStage(int userID) {
+        if (isNull(getUserHaveStageBlockParentStage))
+            getUserHaveStageBlockParentStage = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserHaveStageBlockParentStageSQL);
         boolean result = false;
         try {
             getUserHaveStageBlockParentStage.setInt(1, userID);
             try (ResultSet resultSet = getUserHaveStageBlockParentStage.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_HAVESTAGEBLOCKPARENTSTAGE);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_HAVESTAGEBLOCKPARENTSTAGE);
             }
             getUserHaveStageBlockParentStage.clearParameters();
         } catch (SQLException e) {
@@ -694,6 +720,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserHaveStageBlockParentStage(int userID, boolean haveStageBlockParentStage) {
+        if (isNull(setUserHaveStageBlockParentStage))
+            setUserHaveStageBlockParentStage = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserHaveStageBlockParentStageSQL);
         try {
             setUserHaveStageBlockParentStage.setBoolean(1, haveStageBlockParentStage);
             setUserHaveStageBlockParentStage.setInt(2, userID);
@@ -705,11 +733,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserEnableFileLogging(int userID) {
+        if (isNull(getUserEnableFileLogging))
+            getUserEnableFileLogging = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserEnableFileLoggingSQL);
         boolean result = false;
         try {
             getUserEnableFileLogging.setInt(1, userID);
             try (ResultSet resultSet = getUserEnableFileLogging.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ENABLEFILELOGGING);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_ENABLEFILELOGGING);
             }
             getUserEnableFileLogging.clearParameters();
         } catch (SQLException e) {
@@ -719,11 +749,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized int getUserVideoPlayerType(int userID) {
+        if (isNull(getUserVideoPlayerType))
+            getUserVideoPlayerType = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserVideoPlayerTypeSQL);
         int result = -2;
         try {
             getUserVideoPlayerType.setInt(1, userID);
             try (ResultSet resultSet = getUserVideoPlayerType.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_VIDEOPLAYERTYPE);
+                if (resultSet.next()) result = resultSet.getInt(DBStrings.COLUMN_VIDEOPLAYERTYPE);
             }
             getUserVideoPlayerType.clearParameters();
         } catch (SQLException e) {
@@ -733,6 +765,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserVideoPlayerType(int userID, int videoPlayerType) {
+        if (isNull(setUserVideoPlayerType))
+            setUserVideoPlayerType = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserVideoPlayerTypeSQL);
         try {
             setUserVideoPlayerType.setInt(1, videoPlayerType);
             setUserVideoPlayerType.setInt(2, userID);
@@ -744,11 +778,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized String getUserVideoPlayerLocation(int userID) {
+        if (isNull(getUserVideoPlayerLocation))
+            getUserVideoPlayerLocation = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserVideoPlayerLocationSQL);
         String result = Strings.EmptyString;
         try {
             getUserVideoPlayerLocation.setInt(1, userID);
             try (ResultSet resultSet = getUserVideoPlayerLocation.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getString(StringDB.COLUMN_VIDEOPLAYERLOCATION);
+                if (resultSet.next()) result = resultSet.getString(DBStrings.COLUMN_VIDEOPLAYERLOCATION);
             }
             getUserVideoPlayerLocation.clearParameters();
         } catch (SQLException e) {
@@ -758,6 +794,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserVideoPlayerLocation(int userID, String videoPlayerLocation) {
+        if (isNull(setUserVideoPlayerLocation))
+            setUserVideoPlayerLocation = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserVideoPlayerLocationSQL);
         try {
             setUserVideoPlayerLocation.setString(1, videoPlayerLocation);
             setUserVideoPlayerLocation.setInt(2, userID);
@@ -769,6 +807,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowSeason(int userID, int showID, int showSeason) {
+        if (isNull(setUserShowSeason))
+            setUserShowSeason = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowSeasonSQL);
         try {
             setUserShowSeason.setInt(1, showSeason);
             setUserShowSeason.setInt(2, userID);
@@ -781,6 +821,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowEpisode(int userID, int showID, int showEpisode) {
+        if (isNull(setUserShowEpisode))
+            setUserShowEpisode = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowEpisodeSQL);
         try {
             setUserShowEpisode.setInt(1, showEpisode);
             setUserShowEpisode.setInt(2, userID);
@@ -793,12 +835,14 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserShowIgnoredStatus(int userID, int showID) {
+        if (isNull(getUserShowIgnoredStatus))
+            getUserShowIgnoredStatus = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowIgnoredStatusSQL);
         boolean result = false;
         try {
             getUserShowIgnoredStatus.setInt(1, userID);
             getUserShowIgnoredStatus.setInt(2, showID);
             try (ResultSet resultSet = getUserShowIgnoredStatus.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_IGNORED);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_IGNORED);
             }
             getUserShowIgnoredStatus.clearParameters();
         } catch (SQLException e) {
@@ -808,6 +852,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowIgnoredStatus(int userID, int showID, boolean showIgnoredStatus) {
+        if (isNull(setUserShowIgnoredStatus))
+            setUserShowIgnoredStatus = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowIgnoredStatusSQL);
         try {
             setUserShowIgnoredStatus.setBoolean(1, showIgnoredStatus);
             setUserShowIgnoredStatus.setInt(2, userID);
@@ -820,12 +866,14 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserShowActiveStatus(int userID, int showID) {
+        if (isNull(getUserShowActiveStatus))
+            getUserShowActiveStatus = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowActiveStatusSQL);
         boolean result = false;
         try {
             getUserShowActiveStatus.setInt(1, userID);
             getUserShowActiveStatus.setInt(2, showID);
             try (ResultSet resultSet = getUserShowActiveStatus.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_ACTIVE);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_ACTIVE);
             }
             getUserShowActiveStatus.clearParameters();
         } catch (SQLException e) {
@@ -835,6 +883,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowActiveStatus(int userID, int showID, boolean showActiveStatus) {
+        if (isNull(setUserShowActiveStatus))
+            setUserShowActiveStatus = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowActiveStatusSQL);
         try {
             setUserShowActiveStatus.setBoolean(1, showActiveStatus);
             setUserShowActiveStatus.setInt(2, userID);
@@ -847,12 +897,14 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserShowHiddenStatus(int userID, int showID) {
+        if (isNull(getUserShowHiddenStatus))
+            getUserShowHiddenStatus = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowHiddenStatusSQL);
         boolean result = false;
         try {
             getUserShowHiddenStatus.setInt(1, userID);
             getUserShowHiddenStatus.setInt(2, showID);
             try (ResultSet resultSet = getUserShowHiddenStatus.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_HIDDEN);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_HIDDEN);
             }
             getUserShowHiddenStatus.clearParameters();
         } catch (SQLException e) {
@@ -863,6 +915,8 @@ public class DBUserSettingsManager {
 
 
     public synchronized void setUserShowHiddenStatus(int userID, int showID, boolean showHiddenStatus) {
+        if (isNull(setUserShowHiddenStatus))
+            setUserShowHiddenStatus = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowHiddenStatusSQL);
         try {
             setUserShowHiddenStatus.setBoolean(1, showHiddenStatus);
             setUserShowHiddenStatus.setInt(2, userID);
@@ -875,6 +929,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean doesShowSettingExistForUser(int userID, int showID) {
+        if (isNull(checkIfShowSettingsExistForUser))
+            checkIfShowSettingsExistForUser = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_checkIfShowSettingsExistForUserSQL);
         boolean result = false;
         try {
             checkIfShowSettingsExistForUser.setInt(1, userID);
@@ -890,11 +946,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserShowUsername(int userID) {
+        if (isNull(getUserShowUsername))
+            getUserShowUsername = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowUsernameSQL);
         boolean result = false;
         try {
             getUserShowUsername.setInt(1, userID);
             try (ResultSet resultSet = getUserShowUsername.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOWUSERNAME);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_SHOWUSERNAME);
             }
             getUserShowUsername.clearParameters();
         } catch (SQLException e) {
@@ -904,6 +962,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowUsername(int userID, boolean showUsername) {
+        if (isNull(setUserShowUsername))
+            setUserShowUsername = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowUsernameSQL);
         try {
             setUserShowUsername.setBoolean(1, showUsername);
             setUserShowUsername.setInt(2, userID);
@@ -915,11 +975,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserShowColumnVisibility(int userID) {
+        if (isNull(getUserShowColumnVisibility))
+            getUserShowColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowColumnVisibilitySQL);
         boolean result = false;
         try {
             getUserShowColumnVisibility.setInt(1, userID);
             try (ResultSet resultSet = getUserShowColumnVisibility.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SHOWCOLUMNVISIBILITY);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_SHOWCOLUMNVISIBILITY);
             }
             getUserShowColumnVisibility.clearParameters();
         } catch (SQLException e) {
@@ -929,6 +991,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowColumnVisibility(int userID, boolean showColumn) {
+        if (isNull(setUserShowColumnVisibility))
+            setUserShowColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowColumnVisibilitySQL);
         try {
             setUserShowColumnVisibility.setBoolean(1, showColumn);
             setUserShowColumnVisibility.setInt(2, userID);
@@ -940,11 +1004,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized float getUserShowColumnWidth(int userID) {
+        if (isNull(getUserShowColumnWidth))
+            getUserShowColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserShowColumnWidthSQL);
         float result = -2.0f;
         try {
             getUserShowColumnWidth.setInt(1, userID);
             try (ResultSet resultSet = getUserShowColumnWidth.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_SHOWCOLUMNWIDTH);
+                if (resultSet.next()) result = resultSet.getFloat(DBStrings.COLUMN_SHOWCOLUMNWIDTH);
             }
             getUserShowColumnWidth.clearParameters();
         } catch (SQLException e) {
@@ -954,6 +1020,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserShowColumnWidth(int userID, float columnWidth) {
+        if (isNull(setUserShowColumnWidth))
+            setUserShowColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserShowColumnWidthSQL);
         try {
             setUserShowColumnWidth.setFloat(1, columnWidth);
             setUserShowColumnWidth.setInt(2, userID);
@@ -965,11 +1033,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserSeasonColumnVisibility(int userID) {
+        if (isNull(getUserSeasonColumnVisibility))
+            getUserSeasonColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserSeasonColumnVisibilitySQL);
         boolean result = false;
         try {
             getUserSeasonColumnVisibility.setInt(1, userID);
             try (ResultSet resultSet = getUserSeasonColumnVisibility.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_SEASONCOLUMNVISIBILITY);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_SEASONCOLUMNVISIBILITY);
             }
             getUserSeasonColumnVisibility.clearParameters();
         } catch (SQLException e) {
@@ -979,6 +1049,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserSeasonColumnVisibility(int userID, boolean showColumn) {
+        if (isNull(setUserSeasonColumnVisibility))
+            setUserSeasonColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserSeasonColumnVisibilitySQL);
         try {
             setUserSeasonColumnVisibility.setBoolean(1, showColumn);
             setUserSeasonColumnVisibility.setInt(2, userID);
@@ -990,11 +1062,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized float getUserSeasonColumnWidth(int userID) {
+        if (isNull(getUserSeasonColumnWidth))
+            getUserSeasonColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserSeasonColumnWidthSQL);
         float result = -2.0f;
         try {
             getUserSeasonColumnWidth.setInt(1, userID);
             try (ResultSet resultSet = getUserSeasonColumnWidth.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_SEASONCOLUMNWIDTH);
+                if (resultSet.next()) result = resultSet.getFloat(DBStrings.COLUMN_SEASONCOLUMNWIDTH);
             }
             getUserSeasonColumnWidth.clearParameters();
         } catch (SQLException e) {
@@ -1004,6 +1078,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserSeasonColumnWidth(int userID, float columnWidth) {
+        if (isNull(setUserSeasonColumnWidth))
+            setUserSeasonColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserSeasonColumnWidthSQL);
         try {
             setUserSeasonColumnWidth.setFloat(1, columnWidth);
             setUserSeasonColumnWidth.setInt(2, userID);
@@ -1015,11 +1091,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserEpisodeColumnVisibility(int userID) {
+        if (isNull(getUserEpisodeColumnVisibility))
+            getUserEpisodeColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserEpisodeColumnVisibilitySQL);
         boolean result = false;
         try {
             getUserEpisodeColumnVisibility.setInt(1, userID);
             try (ResultSet resultSet = getUserEpisodeColumnVisibility.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_EPISODECOLUMNVISIBILITY);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_EPISODECOLUMNVISIBILITY);
             }
             getUserEpisodeColumnVisibility.clearParameters();
         } catch (SQLException e) {
@@ -1029,6 +1107,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserEpisodeColumnVisibility(int userID, boolean showColumn) {
+        if (isNull(setUserEpisodeColumnVisibility))
+            setUserEpisodeColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserEpisodeColumnVisibilitySQL);
         try {
             setUserEpisodeColumnVisibility.setBoolean(1, showColumn);
             setUserEpisodeColumnVisibility.setInt(2, userID);
@@ -1040,11 +1120,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized float getUserEpisodeColumnWidth(int userID) {
+        if (isNull(getUserEpisodeColumnWidth))
+            getUserEpisodeColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserEpisodeColumnWidthSQL);
         float result = -2.0f;
         try {
             getUserEpisodeColumnWidth.setInt(1, userID);
             try (ResultSet resultSet = getUserEpisodeColumnWidth.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_EPISODECOLUMNWIDTH);
+                if (resultSet.next()) result = resultSet.getFloat(DBStrings.COLUMN_EPISODECOLUMNWIDTH);
             }
             getUserEpisodeColumnWidth.clearParameters();
         } catch (SQLException e) {
@@ -1054,6 +1136,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserEpisodeColumnWidth(int userID, float columnWidth) {
+        if (isNull(setUserEpisodeColumnWidth))
+            setUserEpisodeColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserEpisodeColumnWidthSQL);
         try {
             setUserEpisodeColumnWidth.setFloat(1, columnWidth);
             setUserEpisodeColumnWidth.setInt(2, userID);
@@ -1065,11 +1149,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized boolean getUserRemainingColumnVisibility(int userID) {
+        if (isNull(getUserRemainingColumnVisibility))
+            getUserRemainingColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserRemainingColumnVisibilitySQL);
         boolean result = false;
         try {
             getUserRemainingColumnVisibility.setInt(1, userID);
             try (ResultSet resultSet = getUserRemainingColumnVisibility.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getBoolean(StringDB.COLUMN_REMAININGCOLUMNVISIBILITY);
+                if (resultSet.next()) result = resultSet.getBoolean(DBStrings.COLUMN_REMAININGCOLUMNVISIBILITY);
             }
             getUserRemainingColumnVisibility.clearParameters();
         } catch (SQLException e) {
@@ -1079,6 +1165,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserRemainingColumnVisibility(int userID, boolean showColumn) {
+        if (isNull(setUserRemainingColumnVisibility))
+            setUserRemainingColumnVisibility = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserRemainingColumnVisibilitySQL);
         try {
             setUserRemainingColumnVisibility.setBoolean(1, showColumn);
             setUserRemainingColumnVisibility.setInt(2, userID);
@@ -1090,11 +1178,13 @@ public class DBUserSettingsManager {
     }
 
     public synchronized float getUserRemainingColumnWidth(int userID) {
+        if (isNull(getUserRemainingColumnWidth))
+            getUserRemainingColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserRemainingColumnWidthSQL);
         float result = -2.0f;
         try {
             getUserRemainingColumnWidth.setInt(1, userID);
             try (ResultSet resultSet = getUserRemainingColumnWidth.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getFloat(StringDB.COLUMN_REMAININGCOLUMNWIDTH);
+                if (resultSet.next()) result = resultSet.getFloat(DBStrings.COLUMN_REMAININGCOLUMNWIDTH);
             }
             getUserRemainingColumnWidth.clearParameters();
         } catch (SQLException e) {
@@ -1104,6 +1194,8 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void setUserRemainingColumnWidth(int userID, float columnWidth) {
+        if (isNull(setUserRemainingColumnWidth))
+            setUserRemainingColumnWidth = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserRemainingColumnWidthSQL);
         try {
             setUserRemainingColumnWidth.setFloat(1, columnWidth);
             setUserRemainingColumnWidth.setInt(2, userID);
@@ -1112,5 +1204,9 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+    }
+
+    private boolean isNull(Object object) {
+        return object == null;
     }
 }

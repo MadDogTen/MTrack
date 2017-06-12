@@ -26,7 +26,7 @@ public class DirectoryController {
     private int lastActiveCheck = -2;
     private boolean lastSearchSkip = true;
 
-    public void initDBHandler(DBManager dbManager) throws SQLException {
+    public void initDatabase(DBManager dbManager) throws SQLException {
         dbDirectoryHandler = new DBDirectoryHandler(dbManager);
     }
 
@@ -143,10 +143,6 @@ public class DirectoryController {
 
     public int getDirectoryWithLowestPriority(Set<Integer> directories) {
         return dbDirectoryHandler.getDirectoryWithLowestPriorityFromList(directories);
-    }
-
-    public boolean doesShowExistsInOtherDirectories(int showID, int... directoryIDs) {
-        return dbDirectoryHandler.doesShowExistsInOtherDirectories(showID, directoryIDs);
     }
 
     public Set<Integer> getAllDirectories(boolean recheck, boolean skipKnownInactiveDirectories) {

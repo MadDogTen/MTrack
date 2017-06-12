@@ -63,10 +63,11 @@ public class MainRun {
                 ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), false));
                 if (!ClassHandler.getDBManager().hasConnection()) return false;
                 ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager());
-                ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager());
-                ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager());
+                ClassHandler.directoryController().initDatabase(ClassHandler.getDBManager());
+                ClassHandler.showInfoController().initDatabase(ClassHandler.getDBManager());
                 ClassHandler.userInfoController().initDatabase(ClassHandler.getDBManager());
                 ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager());
+                new UpdateManager().updateDatabase(ClassHandler.getDBManager());
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
                 // TODO User popup saying program failed to start

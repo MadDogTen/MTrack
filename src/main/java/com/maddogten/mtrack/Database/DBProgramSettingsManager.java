@@ -1,52 +1,33 @@
 package com.maddogten.mtrack.Database;
 
 import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.StringDB;
 import com.maddogten.mtrack.util.Variables;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Logger;
 
 public class DBProgramSettingsManager {
     private final Logger log = Logger.getLogger(DBProgramSettingsManager.class.getName());
 
-    private final PreparedStatement getDefaultUser;
-    private final PreparedStatement changeDefaultUser;
+    private final DBManager dbManager;
+
+    private PreparedStatement getDefaultUser;
+    private PreparedStatement changeDefaultUser;
 
     public DBProgramSettingsManager(DBManager dbManager) throws SQLException {
-        Connection connection = dbManager.getConnection();
-        try (Statement statement = connection.createStatement()) {
-            createProgramSettingsTable(statement);
+        this.dbManager = dbManager;
+        try (Statement statement = this.dbManager.getStatement()) {
+            if (this.dbManager.createTable(DBStrings.CREATE_PROGRAMSETTINGSTABLE)) addSettingsRow(statement);
         }
-
-        getDefaultUser = connection.prepareStatement("SELECT " + StringDB.COLUMN_DEFAULTUSER + " FROM " + StringDB.TABLE_PROGRAMSETTINGS);
-        changeDefaultUser = connection.prepareStatement("UPDATE " + StringDB.TABLE_PROGRAMSETTINGS + " SET " + StringDB.COLUMN_DEFAULTUSER + "=?");
-    }
-
-    private void createProgramSettingsTable(Statement statement) throws SQLException {
-        boolean doesNotExist = true;
-        try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_PROGRAMSETTINGS + "(" +
-                    StringDB.COLUMN_PROGRAMSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_USERSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_SHOWSTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_SEASONSTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_EPISODESTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_EPISODEFILESTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_DIRECTORIESTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_USERSTABLEVERSION + " INTEGER NOT NULL, " +
-                    StringDB.COLUMN_DEFAULTUSER + " INTEGER NOT NULL " + ")");
-        } catch (SQLException e) {
-            if (GenericMethods.doesTableExistsFromError(e)) doesNotExist = false;
-            else GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        if (doesNotExist) addSettingsRow(statement);
     }
 
     private void addSettingsRow(Statement statement) throws SQLException {
-        statement.execute("INSERT INTO " + StringDB.TABLE_PROGRAMSETTINGS + " VALUES (" +
+        statement.execute("INSERT INTO " + DBStrings.TABLE_PROGRAMSETTINGS + " VALUES (" +
+                Variables.userSettingsTableVersion + ", " +
                 Variables.programSettingsTableVersion + ", " +
-                Variables.seasonsTableVersion + ", " +
                 Variables.showsTableVersion + ", " +
                 Variables.seasonsTableVersion + ", " +
                 Variables.episodesTableVersion + ", " +
@@ -57,9 +38,11 @@ public class DBProgramSettingsManager {
     }
 
     public synchronized boolean useDefaultUser() {
+        if (isNull(getDefaultUser))
+            getDefaultUser = dbManager.prepareStatement(DBStrings.DBProgramSettingsManager_getDefaultUserSQL);
         boolean result = false;
         try (ResultSet resultSet = getDefaultUser.executeQuery()) {
-            result = resultSet.next() && resultSet.getInt(StringDB.COLUMN_USER_ID) != -2;
+            result = resultSet.next() && resultSet.getInt(DBStrings.COLUMN_USER_ID) != -2;
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -67,9 +50,11 @@ public class DBProgramSettingsManager {
     }
 
     public synchronized int getDefaultUser() {
+        if (isNull(getDefaultUser))
+            getDefaultUser = dbManager.prepareStatement(DBStrings.DBProgramSettingsManager_getDefaultUserSQL);
         int result = -2;
         try (ResultSet resultSet = getDefaultUser.executeQuery()) {
-            if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_DEFAULTUSER);
+            if (resultSet.next()) result = resultSet.getInt(DBStrings.COLUMN_DEFAULTUSER);
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
@@ -77,6 +62,8 @@ public class DBProgramSettingsManager {
     }
 
     public synchronized void setDefaultUser(int userID) {
+        if (isNull(changeDefaultUser))
+            changeDefaultUser = dbManager.prepareStatement(DBStrings.DBProgramSettingsManager_changeDefaultUserSQL);
         try {
             changeDefaultUser.setInt(1, userID);
             changeDefaultUser.execute();
@@ -87,6 +74,8 @@ public class DBProgramSettingsManager {
     }
 
     public synchronized void clearDefaultUser() {
+        if (isNull(changeDefaultUser))
+            changeDefaultUser = dbManager.prepareStatement(DBStrings.DBProgramSettingsManager_changeDefaultUserSQL);
         try {
             changeDefaultUser.setInt(1, -2);
             changeDefaultUser.execute();
@@ -94,5 +83,9 @@ public class DBProgramSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+    }
+
+    private boolean isNull(Object object) {
+        return object == null;
     }
 }

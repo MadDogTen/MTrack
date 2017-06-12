@@ -1,39 +1,30 @@
 package com.maddogten.mtrack.Database;
 
-import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.StringDB;
 import com.maddogten.mtrack.util.Strings;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
 
 public class DBUserManager {
     private final Logger log = Logger.getLogger(DBUserManager.class.getName());
+    private final DBManager dbManager;
 
-    private final PreparedStatement insertUser;
-    private final PreparedStatement changeUsername;
-    private final PreparedStatement getShowUsername;
-    private final PreparedStatement checkUserID;
-    private final PreparedStatement getUserID;
-    private final PreparedStatement getUsername;
-    private final PreparedStatement getAllUsers;
+    private PreparedStatement insertUser = null;
+    private PreparedStatement changeUsername = null;
+    private PreparedStatement getShowUsername = null;
+    private PreparedStatement checkUserID = null;
+    private PreparedStatement getUserID = null;
+    private PreparedStatement getUsername = null;
+    private PreparedStatement getAllUsers = null;
 
     public DBUserManager(DBManager dbManager) throws SQLException {
-        Connection connection = dbManager.getConnection();
-        try (Statement statement = connection.createStatement()) {
-            createUserTables(statement);
-        }
-
-        insertUser = connection.prepareStatement("INSERT INTO " + StringDB.TABLE_USERS + " VALUES (?, ?, ?)");
-        changeUsername = connection.prepareStatement("UPDATE " + StringDB.TABLE_USERS + " SET " + StringDB.COLUMN_USERNAME + "=? WHERE " + StringDB.COLUMN_USERNAME + " =?");
-        getShowUsername = connection.prepareStatement("SELECT " + StringDB.COLUMN_SHOWUSERNAME + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USERNAME + "=?");
-        checkUserID = connection.prepareStatement("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getUserID = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USERNAME + " =?");
-        getUsername = connection.prepareStatement("SELECT " + StringDB.COLUMN_USERNAME + " FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=?");
-        getAllUsers = connection.prepareStatement("SELECT " + StringDB.COLUMN_USER_ID + " FROM " + StringDB.TABLE_USERS);
+        this.dbManager = dbManager;
+        this.dbManager.createTable(DBStrings.CREATE_USERSTABLE);
     }
 
     public synchronized int addUser(String username) {
@@ -41,6 +32,7 @@ public class DBUserManager {
     }
 
     public synchronized int addUser(String userName, boolean showUsername) {
+        if (isNull(insertUser)) insertUser = dbManager.prepareStatement(DBStrings.DBUserManager_insertUserSQL);
         int userID = doesUserExist(userName);
         if (userID != -2) {
             // Set show username here
@@ -61,11 +53,12 @@ public class DBUserManager {
     }
 
     public synchronized int doesUserExist(String userName) {
+        if (isNull(getUserID)) getUserID = dbManager.prepareStatement(DBStrings.DBUserManager_getUserIDSQL);
         int result = -2;
         try {
             getUserID.setString(1, userName);
             try (ResultSet resultSet = getUserID.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getInt(StringDB.COLUMN_USER_ID);
+                if (resultSet.next()) result = resultSet.getInt(DBStrings.COLUMN_USER_ID);
             }
             getUserID.clearParameters();
         } catch (SQLException e) {
@@ -74,13 +67,13 @@ public class DBUserManager {
         return result;
     }
 
-    public synchronized void deleteUser(String userName) { // TODO Finish
+    /*public synchronized void deleteUser(String userName) { // TODO Finish
         try {
             int userID = getUserID(userName);
             if (userID != -2) {
                 try (Statement statement = ClassHandler.getDBManager().getStatement()) { // TODO Make sure it deletes all associated information.
-                    statement.execute("DELETE FROM " + StringDB.TABLE_USERS + " WHERE " + StringDB.COLUMN_USER_ID + "=" + userID);
-                    //statement.executeQuery("DELETE FROM " + StringDB.settings + " WHERE " + StringDB.userID + " = " + userID);
+                    statement.execute("DELETE FROM " + DBStrings.TABLE_USERS + " WHERE " + DBStrings.COLUMN_USER_ID + "=" + userID);
+                    //statement.executeQuery("DELETE FROM " + DBStrings.settings + " WHERE " + DBStrings.userID + " = " + userID);
 
                     log.info("User \"" + userName + "\" was successfully deleted.");
                 }
@@ -88,9 +81,11 @@ public class DBUserManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
-    }
+    }*/
 
     public synchronized void changeUsername(String oldUsername, String newUsername) {
+        if (isNull(changeUsername))
+            changeUsername = dbManager.prepareStatement(DBStrings.DBUserManager_changeUsernameSQL);
         try {
             changeUsername.setString(1, newUsername);
             changeUsername.setString(2, oldUsername);
@@ -102,10 +97,11 @@ public class DBUserManager {
     }
 
     public synchronized ArrayList<Integer> getAllUsers() {
+        if (isNull(getAllUsers)) getAllUsers = dbManager.prepareStatement(DBStrings.DBUserManager_getAllUsersSQL);
         ArrayList<Integer> users = new ArrayList<>();
         try (ResultSet resultSet = getAllUsers.executeQuery()) {
             while (resultSet.next()) {
-                users.add(resultSet.getInt(StringDB.COLUMN_USER_ID));
+                users.add(resultSet.getInt(DBStrings.COLUMN_USER_ID));
             }
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
@@ -114,6 +110,7 @@ public class DBUserManager {
     }
 
     private synchronized int generateUserID() throws SQLException {
+        if (isNull(checkUserID)) checkUserID = dbManager.prepareStatement(DBStrings.DBUserManager_checkUserIDSQL);
         Random random = new Random();
         int userID;
         ResultSet resultSet;
@@ -128,12 +125,13 @@ public class DBUserManager {
     }
 
     public synchronized int getUserID(String username) {
+        if (isNull(getUserID)) getUserID = dbManager.prepareStatement(DBStrings.DBUserManager_getUserIDSQL);
         int result = -2;
         try {
             getUserID.setString(1, username);
             try (ResultSet resultSet = getUserID.executeQuery()) {
                 if (resultSet.next()) {
-                    result = resultSet.getInt(StringDB.COLUMN_USER_ID);
+                    result = resultSet.getInt(DBStrings.COLUMN_USER_ID);
                 } else log.warning("Couldn't find UserID for \"" + username + "\".");
             }
             getUserID.clearParameters();
@@ -144,40 +142,38 @@ public class DBUserManager {
     }
 
     public synchronized boolean getShowUsername(String user) {
+        if (isNull(getShowUsername))
+            getShowUsername = dbManager.prepareStatement(DBStrings.DBUserManager_getShowUsernameSQL);
         boolean result = true;
         try {
             getShowUsername.setString(1, user);
             ResultSet resultSet = getShowUsername.executeQuery();
             if (resultSet.next()) {
-                result = resultSet.getBoolean(StringDB.COLUMN_SHOWUSERNAME);
+                result = resultSet.getBoolean(DBStrings.COLUMN_SHOWUSERNAME);
                 resultSet.close();
                 getShowUsername.clearParameters();
-            } else log.warning("Couldn't find '" + StringDB.COLUMN_SHOWUSERNAME + "' Field under \"" + user + "\".");
+            } else log.warning("Couldn't find '" + DBStrings.COLUMN_SHOWUSERNAME + "' Field under \"" + user + "\".");
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return result;
     }
 
-    private void createUserTables(Statement statement) {
-        try {
-            statement.execute("CREATE TABLE " + StringDB.TABLE_USERS + "(" + StringDB.COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, " + StringDB.COLUMN_USERNAME + " VARCHAR(20) NOT NULL," + StringDB.COLUMN_SHOWUSERNAME + " BOOLEAN NOT NULL )");
-            log.info("User database tables have been created.");
-        } catch (SQLException e) {
-            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-    }
-
     public synchronized String getUsername(int userID) {
+        if (isNull(getUsername)) getUsername = dbManager.prepareStatement(DBStrings.DBUserManager_getUsernameSQL);
         String result = Strings.EmptyString;
         try {
             getUsername.setInt(1, userID);
             try (ResultSet resultSet = getUsername.executeQuery()) {
-                if (resultSet.next()) result = resultSet.getString(StringDB.COLUMN_USERNAME);
+                if (resultSet.next()) result = resultSet.getString(DBStrings.COLUMN_USERNAME);
             }
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return result;
+    }
+
+    private boolean isNull(Object object) {
+        return object == null;
     }
 }

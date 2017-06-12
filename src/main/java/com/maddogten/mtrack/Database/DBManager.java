@@ -2,12 +2,8 @@ package com.maddogten.mtrack.Database;
 
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.util.GenericMethods;
-import com.maddogten.mtrack.util.StringDB;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -34,7 +30,7 @@ public class DBManager {
         System.setProperty("derby.system.home", databaseLocation);
 
         Connection connection = null;
-        String URL = "jdbc:derby:" + StringDB.DBFolderName;
+        String URL = "jdbc:derby:" + DBStrings.DBFolderName;
         Properties properties = new Properties();
         if (createDB) {
             properties.put("create", "true");
@@ -43,7 +39,7 @@ public class DBManager {
         properties.put("user", "MTrack");
         properties.put("password", "MTrackSimplePassword");
         try {
-            Class.forName(StringDB.DRIVER);
+            Class.forName(DBStrings.DRIVER);
             connection = DriverManager.getConnection(URL, properties);
         } catch (SQLException e) {
             if (e.getNextException().getSQLState().matches("XSDB6")) {
@@ -70,5 +66,37 @@ public class DBManager {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return hasConnection;
+    }
+
+    boolean createTable(String tableInfo) {
+        boolean createdTable = false;
+        try {
+            getStatement().execute("CREATE TABLE " + tableInfo);
+            createdTable = true;
+        } catch (SQLException e) {
+            if (!GenericMethods.doesTableExistsFromError(e)) {
+                log.info("ERROR :::: " + tableInfo);
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
+        }
+        return createdTable;
+    }
+
+    void dropTable(String table) {
+        try {
+            getStatement().execute("DROP TABLE " + table);
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    PreparedStatement prepareStatement(String sqlStatement) {
+        try {
+            return connection.prepareStatement(sqlStatement);
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        log.warning("Failed to create prepared statement! \"" + sqlStatement + "\".");
+        return null;
     }
 }

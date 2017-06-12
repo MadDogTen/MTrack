@@ -22,7 +22,7 @@ public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
     private DBShowManager dbShowManager;
 
-    public void initDBManager(DBManager dbManager) throws SQLException {
+    public void initDatabase(DBManager dbManager) throws SQLException {
         dbShowManager = new DBShowManager(dbManager);
     }
 
@@ -142,11 +142,6 @@ public class ShowInfoController {
             if (highestInteger[0] == -1 || integer > highestInteger[0]) highestInteger[0] = integer;
         });
         return highestInteger[0];
-    }
-
-    // Checks if the show is found in the given showsFileArray. If it is found, returns true, otherwise returns false.
-    public boolean doesShowExistInOtherDirectory(int showID, int... directoriesIgnored) {
-        return ClassHandler.directoryController().doesShowExistsInOtherDirectories(showID, directoriesIgnored);
     }
 
     // Uses the given string (The full filename of an episode of a show) and returns the episode or episodes if its a double episode.

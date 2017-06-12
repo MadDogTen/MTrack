@@ -285,12 +285,12 @@ public class Controller implements Initializable {
             case INACTIVE:
                 if (currentList.getStatus() != currentList.INACTIVE) currentList.setStatus(currentList.INACTIVE);
                 tableViewFields.clear();
-                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) ? ClassHandler.userInfoController().getUsersShows(Variables.getCurrentUser()) : ClassHandler.userInfoController().getShowsWithActiveStatus(Variables.getCurrentUser(), false)));
+                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) ? ClassHandler.userInfoController().getUsersShows(Variables.getCurrentUser()) : ClassHandler.userInfoController().getInactiveShows(Variables.getCurrentUser())));
                 break;
             case ACTIVE:
                 if (currentList.getStatus() != currentList.ACTIVE) currentList.setStatus(currentList.ACTIVE);
                 tableViewFields.clear();
-                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().getShowsWithActiveStatus(Variables.getCurrentUser(), true)));
+                tableViewFields.addAll(MakeTableViewFields(ClassHandler.userInfoController().getActiveShows(Variables.getCurrentUser())));
                 break;
         }
     }
@@ -893,7 +893,7 @@ public class Controller implements Initializable {
         /*useOnlineDatabaseCheckbox.textProperty().bind(Strings.UseOnlineDatabase); // TODO Enable once working
         useOnlineDatabaseCheckbox.setSelected(ClassHandler.userInfoController().useOnlineDatabase(Variables.getCurrentUser()));
         useOnlineDatabaseCheckbox.setOnAction(e -> {
-            ClassHandler.userInfoController().setUserBooleanSetting(Variables.getCurrentUser(), StringDB.COLUMN_USEREMOTEDATABASE, !ClassHandler.userInfoController().useOnlineDatabase(Variables.getCurrentUser()));
+            ClassHandler.userInfoController().setUserBooleanSetting(Variables.getCurrentUser(), DBStrings.COLUMN_USEREMOTEDATABASE, !ClassHandler.userInfoController().useOnlineDatabase(Variables.getCurrentUser()));
             log.info("Use online database has been set too: " + ClassHandler.userInfoController().useOnlineDatabase(Variables.getCurrentUser()));
         });
         onlineWarningText.textProperty().bind(Strings.WarningConnectsToRemoteWebsite);
@@ -1117,7 +1117,7 @@ public class Controller implements Initializable {
         printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO ReEnable button
         //printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion())));
         printAllUserInfo.textProperty().bind(Strings.PrintAllUserInfo);
-        printAllUserInfo.setOnAction(e -> ClassHandler.developerStuff().printAllInfoForCurrentUser());
+        printAllUserInfo.setOnAction(e -> ClassHandler.developerStuff().printAllInfoForAllUsers());
         nonForceRecheckShows.textProperty().bind(Strings.NonForceRecheckShows);
         nonForceRecheckShows.setOnAction(e -> {
             setButtonDisable(true, nonForceRecheckShows);

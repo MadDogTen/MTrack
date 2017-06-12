@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+// Developer Class which holds all sorts of tools to help with debugging the program. Mainly for use with console output.
+
 public class DeveloperStuff {
     public static final int InternalVersion = 55; // To help keep track of what I'm currently working on / testing.
     public static final boolean showOptionToToggleDevMode = true; // false
@@ -25,7 +27,7 @@ public class DeveloperStuff {
     }
 
     //---- DirectoryController ----\\
-    // Debugging tool - Prints all directories to console.
+    // Prints all directories to console.
     public void printAllDirectories() {
         log.info("Printing out all directories:");
         Set<Integer> directories = ClassHandler.directoryController().getAllDirectories(false, false);
@@ -42,6 +44,7 @@ public class DeveloperStuff {
         log.info("Finished printing out all directories.");
     }
 
+    // Removes all associated information for the given directory.
     public void clearDirectory(final Stage stage) {
        /* ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
         if (directories.isEmpty())
@@ -66,6 +69,7 @@ public class DeveloperStuff {
     }
 
     //---- ShowInfoController ----\\
+    // Prints out all information (Season & Episodes) for the selected show.
     public void printShowInformation(int showID) {
         String showName = ClassHandler.showInfoController().getShowNameFromShowID(showID);
         log.info("Printing out information for: " + showName);
@@ -88,7 +92,7 @@ public class DeveloperStuff {
         log.info("Finished printing out information for: " + showName);
     }
 
-    // Debug tool to find out all found shows, the seasons in the shows, and the episodes in the seasons.
+    // Prints out all found shows, the seasons in the shows, and the episodes in the seasons.
     public void printOutAllShowsAndEpisodes() {
         log.info("Printing out all Shows and Episodes:");
         final int[] numberOfShows = {0};
@@ -110,6 +114,7 @@ public class DeveloperStuff {
         log.info("Finished printing out all Shows and Episodes.");
     }
 
+    // Prints all ignored shows for the current active user.
     public void printIgnoredShows() {
         log.info("Printing ignored shows:");
         ArrayList<String> ignoredShows = new ArrayList<>();
@@ -119,6 +124,7 @@ public class DeveloperStuff {
         log.info("Finished printing ignored shows.");
     }
 
+    // Prints all hidden shows for the current active user.
     public void printHiddenShows() {
         log.info("Printing hidden shows:");
         ArrayList<String> hiddenShows = new ArrayList<>();
@@ -128,6 +134,7 @@ public class DeveloperStuff {
         log.info("Finished printing hidden shows.");
     }
 
+    // Unhides all hidden shows for the currently active user.
     public void unHideAllShows() {
         log.info("Un-hiding all shows...");
         Set<Integer> hiddenShows = ClassHandler.userInfoController().getHiddenShows(Variables.getCurrentUser());
@@ -139,8 +146,9 @@ public class DeveloperStuff {
         log.info("Finished un-hiding all shows.");
     }
 
+    // Switches all shows with the given active status to the opposite active status.
     public void toggleAllShowsWithActiveStatus(boolean activeStatus) {
-        Set<Integer> showIDsList = ClassHandler.userInfoController().getShowsWithActiveStatus(Variables.getCurrentUser(), activeStatus);
+        Set<Integer> showIDsList = activeStatus ? ClassHandler.userInfoController().getActiveShows(Variables.getCurrentUser()) : ClassHandler.userInfoController().getInactiveShows(Variables.getCurrentUser());
         if (showIDsList.isEmpty()) log.info("No shows to change.");
         else {
             showIDsList.forEach(showID -> {
@@ -152,45 +160,41 @@ public class DeveloperStuff {
     }
 
     //---- UserSettingsController ----\\
-    // Debug setting to print out all the current users settings.
-    public void printAllInfoForCurrentUser() {
-        int userID = Variables.getCurrentUser();
-        String userName = ClassHandler.userInfoController().getUserNameFromID(userID);
-        log.info("\n\n\n\nPrinting all user info for " + userName + "...");
-        Set<String> printInfo = new LinkedHashSet<>();
-        printInfo.add("Username: " + userName + "\n");
-        printInfo.add("UserID: " + userID + "\n");
-        printInfo.add("Show username: " + ClassHandler.userInfoController().showUsername(userID) + "\n");
-        printInfo.add("Update speed: " + ClassHandler.userInfoController().getUpdateSpeed(userID) + "\n");
-        printInfo.add("Automatic show updating: " + ClassHandler.userInfoController().doShowUpdating(userID) + "\n");
-        printInfo.add("Time to wait for directory: " + ClassHandler.userInfoController().getTimeToWaitForDirectory(userID) + "\n");
-        printInfo.add("Show 0 remaining: " + ClassHandler.userInfoController().show0Remaining(userID) + "\n");
-        printInfo.add("Show active shows: " + ClassHandler.userInfoController().showActiveShows(userID) + "\n");
-        printInfo.add("Language: " + ClassHandler.userInfoController().getLanguage(userID) + "\n");
-        printInfo.add("Record changes for non-active shows: " + ClassHandler.userInfoController().getRecordChangesForNonActiveShows(userID) + "\n");
-        printInfo.add("Record changed seasons lower than current: " + ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(userID) + "\n");
-        printInfo.add("Move stage with parent: " + ClassHandler.userInfoController().getMoveStageWithParent(userID) + "\n");
-        printInfo.add("Have stage block parent stage: " + ClassHandler.userInfoController().getHaveStageBlockParentStage(userID) + "\n");
-        printInfo.add("Enable special effects: " + ClassHandler.userInfoController().doSpecialEffects(userID) + "\n");
-        printInfo.add("Enable file logging: " + ClassHandler.userInfoController().doFileLogging(userID) + "\n");
-        printInfo.add("Show column width: " + ClassHandler.userInfoController().getShowColumnWidth(userID) + "\n");
-        printInfo.add("Remaining column Width: " + ClassHandler.userInfoController().getRemainingColumnWidth(userID) + "\n");
-        printInfo.add("Season column Width: " + ClassHandler.userInfoController().getSeasonColumnWidth(userID) + "\n");
-        printInfo.add("Episode column Width: " + ClassHandler.userInfoController().getEpisodeColumnWidth(userID) + "\n");
-        printInfo.add("Show column visibility: " + ClassHandler.userInfoController().getShowColumnVisibility(userID) + "\n");
-        printInfo.add("Remaining column visibility: " + ClassHandler.userInfoController().getRemainingColumnVisibility(userID) + "\n");
-        printInfo.add("Season column visibility: " + ClassHandler.userInfoController().getSeasonColumnVisibility(userID) + "\n");
-        printInfo.add("Episode column visibility: " + ClassHandler.userInfoController().getEpisodeColumnVisibility(userID) + "\n");
-        VideoPlayer videoPlayer = ClassHandler.userInfoController().getVideoPlayer(userID);
-        printInfo.add("Video player type: " + videoPlayer.getVideoPlayerEnum() + "\n");
-        printInfo.add("Video player location: " + videoPlayer.getVideoPlayerLocation());
-        log.info(String.valueOf(printInfo));
+    // Prints out all the current users settings.
+    public void printAllInfoForAllUsers() {
+        log.info("\n\n\n\nPrinting all user info...");
+        ClassHandler.userInfoController().getAllUsers().forEach(userID -> {
+            String userName = ClassHandler.userInfoController().getUserNameFromID(userID);
+            log.info("\n\nPrinting info for " + userName + "...");
+            Set<String> printInfo = new LinkedHashSet<>();
+            printInfo.add("Username: " + userName + "\n");
+            printInfo.add("UserID: " + userID + "\n");
+            printInfo.add("Show username: " + ClassHandler.userInfoController().showUsername(userID) + "\n");
+            printInfo.add("Update speed: " + ClassHandler.userInfoController().getUpdateSpeed(userID) + "\n");
+            printInfo.add("Automatic show updating: " + ClassHandler.userInfoController().doShowUpdating(userID) + "\n");
+            printInfo.add("Time to wait for directory: " + ClassHandler.userInfoController().getTimeToWaitForDirectory(userID) + "\n");
+            printInfo.add("Show 0 remaining: " + ClassHandler.userInfoController().show0Remaining(userID) + "\n");
+            printInfo.add("Show active shows: " + ClassHandler.userInfoController().showActiveShows(userID) + "\n");
+            printInfo.add("Language: " + ClassHandler.userInfoController().getLanguage(userID) + "\n");
+            printInfo.add("Record changes for non-active shows: " + ClassHandler.userInfoController().getRecordChangesForNonActiveShows(userID) + "\n");
+            printInfo.add("Record changed seasons lower than current: " + ClassHandler.userInfoController().getRecordChangedSeasonsLowerThanCurrent(userID) + "\n");
+            printInfo.add("Move stage with parent: " + ClassHandler.userInfoController().getMoveStageWithParent(userID) + "\n");
+            printInfo.add("Have stage block parent stage: " + ClassHandler.userInfoController().getHaveStageBlockParentStage(userID) + "\n");
+            printInfo.add("Enable special effects: " + ClassHandler.userInfoController().doSpecialEffects(userID) + "\n");
+            printInfo.add("Enable file logging: " + ClassHandler.userInfoController().doFileLogging(userID) + "\n");
+            printInfo.add("Show column width: " + ClassHandler.userInfoController().getShowColumnWidth(userID) + "\n");
+            printInfo.add("Remaining column Width: " + ClassHandler.userInfoController().getRemainingColumnWidth(userID) + "\n");
+            printInfo.add("Season column Width: " + ClassHandler.userInfoController().getSeasonColumnWidth(userID) + "\n");
+            printInfo.add("Episode column Width: " + ClassHandler.userInfoController().getEpisodeColumnWidth(userID) + "\n");
+            printInfo.add("Show column visibility: " + ClassHandler.userInfoController().getShowColumnVisibility(userID) + "\n");
+            printInfo.add("Remaining column visibility: " + ClassHandler.userInfoController().getRemainingColumnVisibility(userID) + "\n");
+            printInfo.add("Season column visibility: " + ClassHandler.userInfoController().getSeasonColumnVisibility(userID) + "\n");
+            printInfo.add("Episode column visibility: " + ClassHandler.userInfoController().getEpisodeColumnVisibility(userID) + "\n");
+            VideoPlayer videoPlayer = ClassHandler.userInfoController().getVideoPlayer(userID);
+            printInfo.add("Video player type: " + videoPlayer.getVideoPlayerEnum() + "\n");
+            printInfo.add("Video player location: " + videoPlayer.getVideoPlayerLocation());
+            log.info(String.valueOf(printInfo));
+        });
         log.info("Finished printing all user info.\n\n\n\n");
     }
-
-    //---- CheckShowFiles ----\\
-
-    //---- Test Stuff ----\\
-
-
 }

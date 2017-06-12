@@ -58,8 +58,8 @@ public class FirstRun {
             //ClassHandler.programSettingsController().loadProgramSettingsFile();
             /*if (Variables.makeLanguageDefault)
                 ClassHandler.programSettingsController().setDefaultLanguage(Variables.language);*/
-            ClassHandler.directoryController().initDBHandler(ClassHandler.getDBManager());
-            ClassHandler.showInfoController().initDBManager(ClassHandler.getDBManager());
+            ClassHandler.directoryController().initDatabase(ClassHandler.getDBManager());
+            ClassHandler.showInfoController().initDatabase(ClassHandler.getDBManager());
             ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager());
             boolean addDirectories = /*!hasImportedFiles ||*/ ClassHandler.directoryController().getAllDirectories(true, false).isEmpty();
             Thread generateShowFilesThread = null;
