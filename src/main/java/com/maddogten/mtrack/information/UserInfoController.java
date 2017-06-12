@@ -8,7 +8,6 @@ import com.maddogten.mtrack.util.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -21,7 +20,7 @@ public class UserInfoController {
     private DBUserManager dbUserManager;
     private DBUserSettingsManager dbUserSettingsManager;
 
-    public void initDatabase(DBManager dbManager) throws SQLException {
+    public void initDatabase(DBManager dbManager) {
         dbUserManager = new DBUserManager(dbManager);
         dbUserSettingsManager = new DBUserSettingsManager(dbManager);
     }
@@ -37,6 +36,12 @@ public class UserInfoController {
     // Returns all users found in the programs user folder (If any). Username's are not saved anywhere in the program (Other then the current default), So you can remove and add as wanted.
     public ArrayList<Integer> getAllUsers() {
         return dbUserManager.getAllUsers();
+    }
+
+    public Map<String, Integer> getAllUserNamesAndIDs() {
+        Map<String, Integer> users = new HashMap<>();
+        getAllUsers().forEach(userID -> users.put(getUserNameFromID(userID), userID));
+        return users;
     }
 
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.

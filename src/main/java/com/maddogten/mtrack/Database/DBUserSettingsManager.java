@@ -91,7 +91,7 @@ public class DBUserSettingsManager {
     private PreparedStatement setUserRemainingColumnWidth = null;
 
 
-    public DBUserSettingsManager(DBManager dbManager) throws SQLException {
+    public DBUserSettingsManager(DBManager dbManager) {
         this.dbManager = dbManager;
         boolean tableCreated = this.dbManager.createTable(DBStrings.CREATE_USERSETTINGSTABLE);
         this.dbManager.createTable(DBStrings.CREATE_USERSHOWSETTINGSTABLE);
@@ -100,7 +100,7 @@ public class DBUserSettingsManager {
         if (tableCreated) addUserSettings(0); // Insert default program settings
     }
 
-    public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode, boolean active, boolean ignored, boolean hidden) {
+    public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode, boolean active, boolean ignored, boolean hidden, boolean userModified) {
         if (isNull(addShowSettings))
             addShowSettings = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_addShowSettingsSQL);
         try {
@@ -111,6 +111,7 @@ public class DBUserSettingsManager {
             addShowSettings.setBoolean(5, active);
             addShowSettings.setBoolean(6, ignored);
             addShowSettings.setBoolean(7, hidden);
+            addShowSettings.setBoolean(8, userModified);
             addShowSettings.execute();
             addShowSettings.clearParameters();
         } catch (SQLException e) {
@@ -119,7 +120,7 @@ public class DBUserSettingsManager {
     }
 
     public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode) {
-        this.addShowSettings(userID, showID, currentSeason, currentEpisode, false, false, false);
+        this.addShowSettings(userID, showID, currentSeason, currentEpisode, false, false, false, false);
     }
 
     public synchronized void addEpisodeSettings(int userID, int episodeID, int showTimePosition) {

@@ -22,7 +22,7 @@ public class DBUserManager {
     private PreparedStatement getUsername = null;
     private PreparedStatement getAllUsers = null;
 
-    public DBUserManager(DBManager dbManager) throws SQLException {
+    public DBUserManager(DBManager dbManager) {
         this.dbManager = dbManager;
         this.dbManager.createTable(DBStrings.CREATE_USERSTABLE);
     }

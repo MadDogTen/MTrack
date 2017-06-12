@@ -34,7 +34,7 @@ public class DBDirectoryHandler {
     private PreparedStatement getDirectoriesFromActiveStatus;
     private PreparedStatement getDirectoryFromPriority;
 
-    public DBDirectoryHandler(DBManager dbManager) throws SQLException {
+    public DBDirectoryHandler(DBManager dbManager) {
         this.dbManager = dbManager;
         this.dbManager.createTable(DBStrings.CREATE_DIRECTORIESTABLE);
     }

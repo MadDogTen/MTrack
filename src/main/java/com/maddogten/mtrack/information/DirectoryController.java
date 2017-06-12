@@ -14,7 +14,6 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -26,7 +25,7 @@ public class DirectoryController {
     private int lastActiveCheck = -2;
     private boolean lastSearchSkip = true;
 
-    public void initDatabase(DBManager dbManager) throws SQLException {
+    public void initDatabase(DBManager dbManager) {
         dbDirectoryHandler = new DBDirectoryHandler(dbManager);
     }
 

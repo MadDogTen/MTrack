@@ -16,7 +16,4 @@ public class UpdateManager {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
     }
-
-
-    // TODO Whole Damn File
 }

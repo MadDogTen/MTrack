@@ -55,7 +55,7 @@ public class DBShowManager {
     private PreparedStatement removeSeasonEpisodes;
     private PreparedStatement removeEpisode;
 
-    public DBShowManager(DBManager dbManager) throws SQLException {
+    public DBShowManager(DBManager dbManager) {
         this.dbManager = dbManager;
         this.dbManager.createTable(DBStrings.CREATE_SHOWSTABLE); // TODO Add option to change the show name displayed
         this.dbManager.createTable(DBStrings.CREATE_SEASONSTABLE);

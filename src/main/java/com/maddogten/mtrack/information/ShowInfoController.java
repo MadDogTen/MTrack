@@ -6,7 +6,6 @@ import com.maddogten.mtrack.util.ClassHandler;
 import com.maddogten.mtrack.util.Variables;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -22,7 +21,7 @@ public class ShowInfoController {
     private final Logger log = Logger.getLogger(ShowInfoController.class.getName());
     private DBShowManager dbShowManager;
 
-    public void initDatabase(DBManager dbManager) throws SQLException {
+    public void initDatabase(DBManager dbManager) {
         dbShowManager = new DBShowManager(dbManager);
     }
 

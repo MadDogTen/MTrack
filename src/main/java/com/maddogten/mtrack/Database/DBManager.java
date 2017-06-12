@@ -74,10 +74,7 @@ public class DBManager {
             getStatement().execute("CREATE TABLE " + tableInfo);
             createdTable = true;
         } catch (SQLException e) {
-            if (!GenericMethods.doesTableExistsFromError(e)) {
-                log.info("ERROR :::: " + tableInfo);
-                GenericMethods.printStackTrace(log, e, this.getClass());
-            }
+            if (!GenericMethods.doesTableExistsFromError(e)) GenericMethods.printStackTrace(log, e, this.getClass());
         }
         return createdTable;
     }

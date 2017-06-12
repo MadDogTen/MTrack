@@ -31,7 +31,7 @@ public class DBChangeTracker {
     private PreparedStatement deleteAllChangesForUser;
     private PreparedStatement setAllSeenForUser;
 
-    public DBChangeTracker(DBManager dbManager) throws SQLException {
+    public DBChangeTracker(DBManager dbManager) {
         this.dbManager = dbManager;
         this.dbManager.createTable(DBStrings.CREATE_USERCHANGETRACKINGTABLE);
         this.dbManager.createTable(DBStrings.CREATE_SHOWCHANGESTABLE);

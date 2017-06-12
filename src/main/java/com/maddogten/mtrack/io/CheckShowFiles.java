@@ -6,11 +6,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /*
-      CheckShowFiles handles checking for new shows, if any are found,
-      saves the new file. It sends the newly generated shows file to
-      FindChangedShows.
+      CheckShowFiles handles checking for new shows.
  */
-
 
 public class CheckShowFiles {
     private final Logger log = Logger.getLogger(CheckShowFiles.class.getName());

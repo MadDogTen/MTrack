@@ -1,10 +1,7 @@
 package com.maddogten.mtrack.util;
 
 import com.maddogten.mtrack.information.UserInfoController;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.scene.text.Font;
 
 import java.io.File;
@@ -87,10 +84,10 @@ public class Variables {
     private final static BooleanProperty remainingColumnVisibility = new SimpleBooleanProperty(true);
     private final static BooleanProperty seasonColumnVisibility = new SimpleBooleanProperty(false);
     private final static BooleanProperty episodeColumnVisibility = new SimpleBooleanProperty(false);
+    private final static SimpleIntegerProperty currentUser = new SimpleIntegerProperty();
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static boolean makeLanguageDefault;
-    private static int currentUser;
 
     static {
         supportedVideoPlayers_Windows = new HashMap<>();
@@ -111,11 +108,15 @@ public class Variables {
     }
 
     public static int getCurrentUser() {
-        return currentUser;
+        return currentUser.getValue();
     }
 
     public static void setCurrentUser(int userID) {
-        Variables.currentUser = userID;
+        Variables.currentUser.setValue(userID);
+    }
+
+    public static SimpleIntegerProperty currentUserProperty() {
+        return currentUser;
     }
 
     public static void setDataFolder(File file) {

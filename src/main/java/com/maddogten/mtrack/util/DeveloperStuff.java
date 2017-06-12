@@ -37,7 +37,7 @@ public class DeveloperStuff {
             directories.forEach(directoryID -> {
                 String[] print = new String[2];
                 print[0] = ClassHandler.directoryController().getDirectoryFromID(directoryID).toString();
-                print[1] = String.valueOf(directoryID);
+                print[1] = "ID: " + String.valueOf(directoryID);
                 log.info(Arrays.toString(print));
             });
         }
@@ -45,7 +45,8 @@ public class DeveloperStuff {
     }
 
     // Removes all associated information for the given directory.
-    public void clearDirectory(final Stage stage) {
+    @SuppressWarnings("EmptyMethod")
+    public void clearDirectory(final Stage stage) { // TODO Fix
        /* ArrayList<Directory> directories = ClassHandler.directoryController().findDirectories(true, false, true);
         if (directories.isEmpty())
             new MessageBox(new StringProperty[]{Strings.ThereAreNoDirectoriesToClear}, stage);
@@ -134,7 +135,7 @@ public class DeveloperStuff {
         log.info("Finished printing hidden shows.");
     }
 
-    // Unhides all hidden shows for the currently active user.
+    // Un-hides all hidden shows for the currently active user.
     public void unHideAllShows() {
         log.info("Un-hiding all shows...");
         Set<Integer> hiddenShows = ClassHandler.userInfoController().getHiddenShows(Variables.getCurrentUser());

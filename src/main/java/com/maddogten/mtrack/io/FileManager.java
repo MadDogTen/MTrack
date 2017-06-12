@@ -253,6 +253,7 @@ public class FileManager {
         if (importFile.toString().isEmpty()) log.info("importFile was empty, Nothing imported.");
         else {
             // Start of custom code for personal use only.
+            //noinspection StatementWithEmptyBody
             if (!firstRun && importFile.getName().endsWith(".xml")) {
                 /*log.info("XML importing has started.");
                 try {

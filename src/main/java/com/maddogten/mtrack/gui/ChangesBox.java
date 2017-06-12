@@ -32,6 +32,7 @@ public class ChangesBox {
     // This is true when the openChanges stage is open. If it open, then you are unable to open another instance of it.
     private boolean currentlyOpen = false;
     private Stage changesStage;
+    private int currentUser;
 
     public void closeStage() {
         if (changesStage != null) changesStage.close();
@@ -58,15 +59,18 @@ public class ChangesBox {
         listView.setEditable(false);
 
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        observableList.addAll(ClassHandler.changeReporter().getUserChangesAsStrings(Variables.getCurrentUser()));
+        this.currentUser = Variables.getCurrentUser();
+        observableList.addAll(ClassHandler.changeReporter().getUserChangesAsStrings(currentUser));
         listView.setItems(observableList);
 
         Button clear = new Button(), close = new Button();
         clear.textProperty().bind(Strings.Clear);
         close.textProperty().bind(Strings.Close);
         clear.setOnAction(e -> {
-            ClassHandler.changeReporter().resetChangesForUser(Variables.getCurrentUser());
-            listView.getItems().clear();
+            if (Variables.getCurrentUser() == currentUser) {
+                ClassHandler.changeReporter().resetChangesForUser(currentUser);
+                listView.getItems().clear();
+            }
         });
         close.setOnAction(e -> {
             GenericMethods.fadeStageOut(changesStage, 2, log, this.getClass());
@@ -89,11 +93,13 @@ public class ChangesBox {
             public Void call() throws Exception {
                 while (currentlyOpen) {
                     Thread.sleep(1000);
-                    Set<Integer> newUserChanges = ClassHandler.changeReporter().getUserChanges(Variables.getCurrentUser());
-                    if (changesStage.isShowing() && observableList.size() != newUserChanges.size()) { // TODO Do this in a better way
+                    boolean diffrentUser = currentUser != Variables.getCurrentUser();
+                    Set<Integer> newUserChanges = ClassHandler.changeReporter().getUserChanges(currentUser);
+                    if (diffrentUser || (changesStage.isShowing() && observableList.size() != newUserChanges.size())) { // TODO Do this in a better way
+                        if (diffrentUser) currentUser = Variables.getCurrentUser();
                         Platform.runLater(() -> {
                             observableList.clear();
-                            observableList.addAll(ClassHandler.changeReporter().getUserChangesAsStrings(Variables.getCurrentUser()));
+                            observableList.addAll(ClassHandler.changeReporter().getUserChangesAsStrings(currentUser));
                         });
                     }
                 }

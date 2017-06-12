@@ -6,8 +6,6 @@ import com.maddogten.mtrack.util.Variables;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 public class DBUpdateManager {
@@ -242,7 +240,7 @@ public class DBUpdateManager {
         }
     }
 
-    private void updateTableVersion(Statement statement, String tableToUpdate, int oldVersion, int newVersion) throws SQLException {
+    private void updateTableVersion(Statement statement, String tableToUpdate, int oldVersion, int newVersion) throws SQLException { // Move both of these to ProgramSettingsManager
         statement.execute("UPDATE " + DBStrings.TABLE_PROGRAMSETTINGS + " SET " + tableToUpdate + "=" + newVersion);
         log.info(tableToUpdate + " was updated from " + oldVersion + " -> " + newVersion);
     }
@@ -253,13 +251,5 @@ public class DBUpdateManager {
         }
         log.warning("Unable to get version info for: \"" + tableToGet + "\".");
         return -2;
-    }
-
-    private Set<Integer> getUsers(Statement statement) throws SQLException {
-        Set<Integer> users = new HashSet<>();
-        try (ResultSet resultSet = statement.executeQuery("SELECT " + DBStrings.COLUMN_USER_ID + " FROM " + DBStrings.TABLE_USERS)) {
-            while (resultSet.next()) users.add(resultSet.getInt(DBStrings.COLUMN_USER_ID));
-        }
-        return users;
     }
 }

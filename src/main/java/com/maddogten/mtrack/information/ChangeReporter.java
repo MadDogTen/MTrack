@@ -4,7 +4,6 @@ import com.maddogten.mtrack.Database.DBChangeTracker;
 import com.maddogten.mtrack.Database.DBManager;
 import com.maddogten.mtrack.util.ClassHandler;
 
-import java.sql.SQLException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -21,10 +20,11 @@ public class ChangeReporter {
     private DBChangeTracker dbChangeTracker;
     // Stores all the changes that are added with addChange().
 
-    public void initDatabase(DBManager dbManager) throws SQLException {
+    public void initDatabase(DBManager dbManager) {
         this.dbChangeTracker = new DBChangeTracker(dbManager);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public int addChange(int showID, int season, int episode, boolean found) {
         return dbChangeTracker.addChange(showID, season, episode, found);
     }
