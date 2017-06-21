@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 public class MainRun {
     private final Logger log = Logger.getLogger(MainRun.class.getName());
     public boolean continueStarting = true;
-    private boolean firstRun = false;
     private boolean starting = true, forceRun = true, disableChecking = false;
     private int recheckTimer, currentTime, waitTime;
 
@@ -50,10 +49,8 @@ public class MainRun {
         boolean needsToRun = true;
         // If both of those failed or it deleted the files,  Then it starts firstRun.
         if (Variables.dataFolder.toString().isEmpty()) {
-            firstRun = true;
             needsToRun = new FirstRun().programFirstRun();
             if (Variables.dataFolder.toString().isEmpty()) continueStarting = false;
-            firstRun = false;
         }
         if (!continueStarting) return false;
         //UpdateManager updateManager = new UpdateManager();
@@ -187,7 +184,8 @@ public class MainRun {
         LanguageHandler languageHandler = new LanguageHandler();
         Map<String, String> languages = languageHandler.getLanguageNames();
         String language = Strings.EmptyString;
-        if (!firstRun) language = ClassHandler.userInfoController().getLanguage(Variables.getCurrentUser());
+        if (Variables.getCurrentUser() != -2)
+            language = ClassHandler.userInfoController().getLanguage(Variables.getCurrentUser());
         if (languages.size() == 1)
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
         else if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove

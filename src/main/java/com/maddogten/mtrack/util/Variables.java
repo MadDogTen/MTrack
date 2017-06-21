@@ -84,7 +84,7 @@ public class Variables {
     private final static BooleanProperty remainingColumnVisibility = new SimpleBooleanProperty(true);
     private final static BooleanProperty seasonColumnVisibility = new SimpleBooleanProperty(false);
     private final static BooleanProperty episodeColumnVisibility = new SimpleBooleanProperty(false);
-    private final static SimpleIntegerProperty currentUser = new SimpleIntegerProperty();
+    private final static SimpleIntegerProperty currentUser = new SimpleIntegerProperty(-2);
     //---------- Other Variables ----------\\
     public static File dataFolder = new File(Strings.EmptyString);
     public static boolean makeLanguageDefault;

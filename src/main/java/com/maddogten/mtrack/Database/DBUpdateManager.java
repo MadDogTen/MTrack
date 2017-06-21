@@ -240,12 +240,12 @@ public class DBUpdateManager {
         }
     }
 
-    private void updateTableVersion(Statement statement, String tableToUpdate, int oldVersion, int newVersion) throws SQLException { // Move both of these to ProgramSettingsManager
+    private synchronized void updateTableVersion(Statement statement, String tableToUpdate, int oldVersion, int newVersion) throws SQLException { // Move both of these to ProgramSettingsManager
         statement.execute("UPDATE " + DBStrings.TABLE_PROGRAMSETTINGS + " SET " + tableToUpdate + "=" + newVersion);
         log.info(tableToUpdate + " was updated from " + oldVersion + " -> " + newVersion);
     }
 
-    private int getTableVersion(Statement statement, String tableToGet) throws SQLException {
+    private synchronized int getTableVersion(Statement statement, String tableToGet) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery("SELECT " + tableToGet + " FROM " + DBStrings.TABLE_PROGRAMSETTINGS)) {
             if (resultSet.next()) return resultSet.getInt(tableToGet);
         }
