@@ -47,7 +47,7 @@ public class UserInfoController {
     // Sets a show to Ignored, Which means the show is long longer found in any of the folders. Keep the information just in case it is found again later.
     public void setIgnoredStatus(int userID, final int showID, final boolean ignored) {
         log.fine(ClassHandler.showInfoController().getShowNameFromShowID(showID) + " ignore status is: " + ignored + " for user: " + ClassHandler.userInfoController().getUserNameFromID(userID));
-        dbUserSettingsManager.getUserShowIgnoredStatus(userID, showID);
+        dbUserSettingsManager.setUserShowIgnoredStatus(userID, showID, ignored);
     }
 
     public void setIgnoredStatusAllUsers(int showID, boolean ignored) {
@@ -542,5 +542,12 @@ public class UserInfoController {
 
     public void setRemainingColumnWidth(int userID, float columnWidth) {
         dbUserSettingsManager.setUserRemainingColumnWidth(userID, columnWidth);
+    }
+
+    public void removeUsersShowSettingsIfUnmodified(int showID) {
+        ClassHandler.userInfoController().getAllUsers().forEach(userID -> {
+            if (!dbUserSettingsManager.isUserShowModified(userID, showID))
+                dbUserSettingsManager.removeShowSettings(userID, showID);
+        });
     }
 }

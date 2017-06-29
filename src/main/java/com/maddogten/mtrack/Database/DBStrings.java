@@ -162,6 +162,7 @@ class DBStrings {
     static final String DBUserManager_getUsernameSQL = "SELECT " + DBStrings.COLUMN_USERNAME + " FROM " + DBStrings.TABLE_USERS + " WHERE " + DBStrings.COLUMN_USER_ID + "=?";
     static final String DBUserManager_getAllUsersSQL = "SELECT " + DBStrings.COLUMN_USER_ID + " FROM " + DBStrings.TABLE_USERS;
     static final String DBUserSettingsManager_addShowSettingsSQL = "INSERT INTO " + DBStrings.TABLE_USERSHOWSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    static final String DBUserSettingsManager_removeShowSettingsSQL = "DELETE FROM " + DBStrings.TABLE_USERSETTINGS + " WHERE " + DBStrings.COLUMN_USER_ID + "=? AND " + DBStrings.COLUMN_SHOW_ID + "=?";
     static final String DBUserSettingsManager_addEpisodeSettingsSQL = "INSERT INTO " + DBStrings.TABLE_USEREPISODESETTINGS + " VALUES (?, ?, ?)";
     static final String DBUserSettingsManager_insertSettingsSQL = "INSERT INTO " + DBStrings.TABLE_USERSETTINGS + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     static final String DBUserSettingsManager_getEpisodePositionSQL = "SELECT " + DBStrings.COLUMN_EPISODETIMEPOSITION + " FROM " + DBStrings.TABLE_USEREPISODESETTINGS + " WHERE " + DBStrings.COLUMN_USER_ID + "=? AND " + DBStrings.COLUMN_EPISODE_ID + "=?";
@@ -232,6 +233,20 @@ class DBStrings {
     static final String DBUserSettingsManager_getUserActiveShows = "SELECT " + COLUMN_SHOW_ID + " FROM " + TABLE_USERSHOWSETTINGS + " WHERE " + COLUMN_USER_ID + "=? AND " + COLUMN_ACTIVE + "=TRUE";
     static final String DBUserSettingsManager_getUserNonIgnoredShows = "SELECT " + COLUMN_SHOW_ID + " FROM " + TABLE_USERSHOWSETTINGS + " WHERE " + COLUMN_USER_ID + "=? AND " + COLUMN_IGNORED + "=FALSE";
     static final String DBUserSettingsManager_getUserInactiveShows = "SELECT " + COLUMN_SHOW_ID + " FROM " + TABLE_USERSHOWSETTINGS + " WHERE " + COLUMN_USER_ID + "=? AND " + COLUMN_ACTIVE + "=FALSE";
+    static final String DBUserSettingsManager_getUserModified = "SELECT " + COLUMN_USERALTERED + " FROM " + TABLE_USERSHOWSETTINGS + " WHERE " + COLUMN_USER_ID + "=? AND " + COLUMN_SHOW_ID + "=?";
+    static final String DBUserSettingsManager_setUserModified = "UPDATE " + TABLE_USERSHOWSETTINGS + " SET " + COLUMN_USERALTERED + "=? " + " WHERE " + COLUMN_USER_ID + "=? AND " + COLUMN_SHOW_ID + "=?";
+    static final String CREATE_PROGRAMSETTINGSTABLE = DBStrings.TABLE_PROGRAMSETTINGS + "(" +
+            DBStrings.COLUMN_PROGRAMSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_USERSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_SHOWSTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_SEASONSTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_EPISODESTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_EPISODEFILESTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_DIRECTORIESTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_USERSTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_SHOWCHANGESTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_USERCHANGETRACKINGTABLEVERSION + " INTEGER NOT NULL, " +
+            DBStrings.COLUMN_DEFAULTUSER + " INTEGER NOT NULL " + ")";
     private static final int directoryLength = 2048;
     static final String CREATE_USERSETTINGSTABLE = DBStrings.TABLE_USERSETTINGS + "(" + DBStrings.COLUMN_USER_ID + " INTEGER UNIQUE NOT NULL, " + DBStrings.COLUMN_SHOWUSERNAME + " BOOLEAN NOT NULL, " + DBStrings.COLUMN_UPDATESPEED + " INTEGER NOT NULL," +
             DBStrings.COLUMN_AUTOMATICSHOWUPDATING + " BOOLEAN NOT NULL, " + DBStrings.COLUMN_TIMETOWAITFORDIRECTORY + " INTEGER NOT NULL, " +
@@ -257,16 +272,4 @@ class DBStrings {
     static final String COLUMN_USEREPISODESETTINGSTABLEVERSION = TABLE_USEREPISODESETTINGS + TABLEVERSION;
     static final String COLUMN_SHOWCHANGESTABLEVERSION = TABLE_SHOWCHANGES + TABLEVERSION;
     static final String COLUMN_USERCHANGETRACKINGTABLEVERSION = TABLE_USERCHANGETRACKING + TABLEVERSION;
-    static final String CREATE_PROGRAMSETTINGSTABLE = DBStrings.TABLE_PROGRAMSETTINGS + "(" +
-            DBStrings.COLUMN_PROGRAMSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_USERSETTINGSTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_SHOWSTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_SEASONSTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_EPISODESTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_EPISODEFILESTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_DIRECTORIESTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_USERSTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_SHOWCHANGESTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_USERCHANGETRACKINGTABLEVERSION + " INTEGER NOT NULL, " +
-            DBStrings.COLUMN_DEFAULTUSER + " INTEGER NOT NULL " + ")";
 }

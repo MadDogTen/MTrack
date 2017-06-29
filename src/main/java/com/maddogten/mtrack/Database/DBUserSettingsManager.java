@@ -20,6 +20,7 @@ public class DBUserSettingsManager {
     private PreparedStatement getEpisodePosition = null;
     private PreparedStatement setEpisodePosition = null;
     private PreparedStatement addShowSettings = null;
+    private PreparedStatement removeShowSettings = null;
     private PreparedStatement addEpisodeSettings = null;
     private PreparedStatement removeEpisode = null;
     private PreparedStatement getShowsForUser = null;
@@ -32,6 +33,8 @@ public class DBUserSettingsManager {
     private PreparedStatement getUserActiveShows = null;
     private PreparedStatement getUserNonIgnoredShows = null;
     private PreparedStatement getUserInactiveShows = null;
+    private PreparedStatement setUserModified = null;
+    private PreparedStatement getUserModified = null;
 
     // Settings
     private PreparedStatement getUserLanguage = null;
@@ -120,6 +123,19 @@ public class DBUserSettingsManager {
         }
     }
 
+    public synchronized void removeShowSettings(int userID, int showID) {
+        if (isNull(removeShowSettings))
+            dbManager.prepareStatement(DBStrings.DBUserSettingsManager_removeShowSettingsSQL);
+        try {
+            removeShowSettings.setInt(1, userID);
+            removeShowSettings.setInt(2, showID);
+            removeShowSettings.execute();
+            removeShowSettings.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
     public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode) {
         this.addShowSettings(userID, showID, currentSeason, currentEpisode, false, false, false, false);
     }
@@ -136,6 +152,8 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        int showID = ClassHandler.showInfoController().getShowIDFronEpisodeID(episodeID);
+        if (!isUserShowModified(userID, showID)) setUserShowModified(userID, showID);
     }
 
     public synchronized void addEpisodeSettings(int userID, int episodeID) {
@@ -319,6 +337,8 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        int showID = ClassHandler.showInfoController().getShowIDFronEpisodeID(episodeID);
+        if (!isUserShowModified(userID, showID)) setUserShowModified(userID, showID);
     }
 
     public synchronized void removeEpisode(int userID, int episodeID) {
@@ -820,6 +840,7 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        if (!isUserShowModified(userID, showID)) setUserShowModified(userID, showID);
     }
 
     public synchronized void setUserShowEpisode(int userID, int showID, int showEpisode) {
@@ -834,6 +855,7 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        if (!isUserShowModified(userID, showID)) setUserShowModified(userID, showID);
     }
 
     public synchronized boolean getUserShowIgnoredStatus(int userID, int showID) {
@@ -865,6 +887,7 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        if (!isUserShowModified(userID, showID)) setUserShowModified(userID, showID);
     }
 
     public synchronized boolean getUserShowActiveStatus(int userID, int showID) {
@@ -896,6 +919,7 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        if (!isUserShowModified(userID, showID)) setUserShowModified(userID, showID);
     }
 
     public synchronized boolean getUserShowHiddenStatus(int userID, int showID) {
@@ -928,6 +952,7 @@ public class DBUserSettingsManager {
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
         }
+        if (!isUserShowModified(userID, showID)) setUserShowModified(userID, showID);
     }
 
     public synchronized boolean doesShowSettingExistForUser(int userID, int showID) {
@@ -1205,6 +1230,39 @@ public class DBUserSettingsManager {
             setUserRemainingColumnWidth.clearParameters();
         } catch (SQLException e) {
             GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+    }
+
+    public synchronized boolean isUserShowModified(int userID, int showID) {
+        if (isNull(getUserModified))
+            getUserModified = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_getUserModified);
+        boolean modified = true;
+        try {
+            getUserModified.setInt(1, userID);
+            getUserModified.setInt(2, showID);
+            try (ResultSet resultSet = getUserModified.executeQuery()) {
+                if (resultSet.next()) modified = resultSet.getBoolean(DBStrings.COLUMN_USERALTERED);
+            }
+            getUserModified.clearParameters();
+        } catch (SQLException e) {
+            GenericMethods.printStackTrace(log, e, this.getClass());
+        }
+        return modified;
+    }
+
+    public synchronized void setUserShowModified(int userID, int showID) {
+        if (isNull(setUserModified))
+            setUserModified = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_setUserModified);
+        if (!isUserShowModified(userID, showID)) {
+            try {
+                setUserModified.setBoolean(1, Boolean.TRUE);
+                setUserModified.setInt(2, userID);
+                setUserModified.setInt(3, showID);
+                setUserModified.execute();
+                setUserModified.clearParameters();
+            } catch (SQLException e) {
+                GenericMethods.printStackTrace(log, e, this.getClass());
+            }
         }
     }
 

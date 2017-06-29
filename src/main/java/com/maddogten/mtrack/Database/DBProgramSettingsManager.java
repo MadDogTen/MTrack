@@ -26,14 +26,16 @@ public class DBProgramSettingsManager {
 
     private void addSettingsRow(Statement statement) throws SQLException { // TODO Set versions to -2 by default, and have each table update it as they are created.
         statement.execute("INSERT INTO " + DBStrings.TABLE_PROGRAMSETTINGS + " VALUES (" +
-                Variables.userSettingsTableVersion + ", " +
                 Variables.programSettingsTableVersion + ", " +
+                Variables.userSettingsTableVersion + ", " +
                 Variables.showsTableVersion + ", " +
                 Variables.seasonsTableVersion + ", " +
                 Variables.episodesTableVersion + ", " +
                 Variables.episodeFilesTableVersion + ", " +
                 Variables.directoriesTableVersion + ", " +
                 Variables.usersTableVersion + ", " +
+                Variables.showChangesTableVersion + ", " +
+                Variables.userChangeTrackingTableVersion + ", " +
                 -2 + ")");
     }
 

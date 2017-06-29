@@ -47,6 +47,8 @@ public class ShowInfoController {
     public void removeShow(int showID) {
         ClassHandler.changeReporter().addChange(showID, -2, -2, false);
         dbShowManager.removeShow(showID);
+        ClassHandler.userInfoController().removeUsersShowSettingsIfUnmodified(showID);
+        // TODO Have it check if any users have remaining settings, and if not, delete all further refrences to the show.
     }
 
     public void removeSeason(int showID, int season) {
@@ -74,6 +76,10 @@ public class ShowInfoController {
 
     public String getShowNameFromEpisodeID(int episodeID) {
         return dbShowManager.getShowNameFromEpisodeID(episodeID);
+    }
+
+    public int getShowIDFronEpisodeID(int episodeID) {
+        return dbShowManager.getShowIDFromEpisodeID(episodeID);
     }
 
     // Returns a Set of all episodes in a given shows season.
