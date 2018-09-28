@@ -310,8 +310,7 @@ public class ListSelectBox {
         label.textProperty().bind(Strings.PickTheSeasonAndEpisode);
 
         // TODO Make this support option to display all known episodes or only currently found episodes.
-        ArrayList<Integer> seasonsString = new ArrayList<>();
-        seasonsString.addAll(new ArrayList<>(showInfoController.getSeasonsList(showID)));
+        ArrayList<Integer> seasonsString = new ArrayList<>(showInfoController.getSeasonsList(showID));
         Collections.sort(seasonsString);
         ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsString);
         ComboBox<Integer> seasonsComboBox = new ComboBox<>(seasonsList);
@@ -366,7 +365,7 @@ public class ListSelectBox {
 
         Task<Void> task = new Task<Void>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 int oldValue = -1;
                 while (pickSeasonEpisodeStage.isShowing()) {
                     if (seasonsComboBox.getValue() != null && !seasonsComboBox.getValue().toString().isEmpty() && seasonsComboBox.getValue() != oldValue) {

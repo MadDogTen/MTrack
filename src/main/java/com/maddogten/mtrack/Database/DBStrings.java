@@ -2,7 +2,6 @@ package com.maddogten.mtrack.Database;
 
 class DBStrings {
     static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
-    static final String DBFolderName = "MTrackDB";
     // Tables
     static final String TABLE_SHOWS = "shows"; ////
     static final String TABLE_SEASONS = "seasons"; ////

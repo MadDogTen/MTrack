@@ -2,6 +2,7 @@ package com.maddogten.mtrack.Database;
 
 import com.maddogten.mtrack.Main;
 import com.maddogten.mtrack.util.GenericMethods;
+import com.maddogten.mtrack.util.Strings;
 
 import java.sql.*;
 import java.util.Properties;
@@ -28,9 +29,8 @@ public class DBManager {
     // This will get the connection to the database, created one if necessary.
     private Connection getConnection(String databaseLocation, boolean createDB) {
         System.setProperty("derby.system.home", databaseLocation);
-
         Connection connection = null;
-        String URL = "jdbc:derby:" + DBStrings.DBFolderName;
+        String URL = "jdbc:derby:" + Strings.DBFolderName;
         Properties properties = new Properties();
         if (createDB) {
             properties.put("create", "true");

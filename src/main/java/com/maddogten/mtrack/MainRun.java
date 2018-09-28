@@ -57,7 +57,7 @@ public class MainRun {
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         if (needsToRun) {
             try {
-                ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), false));
+                ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), !new File(Variables.dataFolder.toString() + Strings.EmptyString + Strings.DBFolderName).exists()));
                 if (!ClassHandler.getDBManager().hasConnection()) return false;
                 ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager());
                 ClassHandler.directoryController().initDatabase(ClassHandler.getDBManager());
@@ -139,7 +139,7 @@ public class MainRun {
         if (!(disableChecking || !ClassHandler.userInfoController().doShowUpdating(Variables.getCurrentUser()) || Variables.forceDisableAutomaticRechecking) && (forceRun && GenericMethods.timeTakenSeconds(recheckTimer) > 2 || !Controller.isShowCurrentlyPlaying() && (GenericMethods.timeTakenSeconds(recheckTimer) > ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser())) || Controller.isShowCurrentlyPlaying() && GenericMethods.timeTakenSeconds(recheckTimer) > (ClassHandler.userInfoController().getUpdateSpeed(Variables.getCurrentUser()) * 10))) {
             Task<Void> task = new Task<Void>() {
                 @Override
-                protected Void call() throws Exception {
+                protected Void call() {
                     ClassHandler.checkShowFiles().checkShowFiles();
                     return null;
                 }

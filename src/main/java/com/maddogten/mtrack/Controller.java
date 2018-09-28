@@ -492,7 +492,7 @@ public class Controller implements Initializable {
                         ArrayList<File> directories = new ArrayList<>();
                         ClassHandler.showInfoController().getShowDirectories(row.getItem().getShowID()).forEach(directoryID -> directories.add(ClassHandler.directoryController().getDirectoryFromID(directoryID)));
                         if (directories.isEmpty())
-                            new MessageBox(new StringProperty[]{new SimpleStringProperty("No directories found found show.")}, (Stage) pane.getScene().getWindow()); // TODO Add localization
+                            new MessageBox(new StringProperty[]{new SimpleStringProperty("No directories found for show.")}, (Stage) pane.getScene().getWindow()); // TODO Add localization
                         else if (directories.size() == 1) new FileManager().openFolder(directories.get(0));
                         else new ListSelectBox().openDirectory(directories, (Stage) pane.getScene().getWindow());
                         log.info("Finished opening show directory...");
@@ -631,14 +631,7 @@ public class Controller implements Initializable {
             this.toggleUsernameUsability(false);
             userNameComboBox.getItems().clear();
         });
-        userNameComboBox.setOnAction(e -> {
-            if (userNameComboBox.getValue() != null && !userNameComboBox.getValue().matches(Strings.UserName.getValue())) {
-                Variables.setCurrentUser(ClassHandler.userInfoController().getUserIDFromName(userNameComboBox.getValue()));
-                //Strings.UserName.setValue(userNameComboBox.getValue());
-                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
-                Controller.setTableViewFields();
-            }
-        });
+        changeUserViaComboBox(userNameComboBox);
         userName.setTextFill(Paint.valueOf(Color.DIMGRAY.toString()));
 
         clearTextField.setText(Strings.EmptyString);
@@ -764,13 +757,7 @@ public class Controller implements Initializable {
         currentUserText.textProperty().bind(Strings.CurrentUser);
         currentUserComboBox.getItems().addAll(ClassHandler.userInfoController().getAllUserNamesAndIDs().keySet());
         currentUserComboBox.getSelectionModel().select(Strings.UserName.getValue());
-        currentUserComboBox.setOnAction(e -> {
-            if (currentUserComboBox.getValue() != null && !currentUserComboBox.getValue().matches(Strings.UserName.getValue())) {
-                Variables.setCurrentUser(ClassHandler.userInfoController().getUserIDFromName(currentUserComboBox.getValue()));
-                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
-                Controller.setTableViewFields();
-            }
-        });
+        changeUserViaComboBox(currentUserComboBox);
         setDefaultUsername.textProperty().bind(Strings.SetDefaultUser);
         setDefaultUsername.setOnAction(e -> {
             setButtonDisable(true, setDefaultUsername, clearDefaultUsername, addUser, deleteUser);
@@ -826,7 +813,7 @@ public class Controller implements Initializable {
             setButtonDisable(true, forceRecheck);
             Task<Void> task = new Task<Void>() {
                 @Override
-                protected Void call() throws Exception {
+                protected Void call() {
                     ClassHandler.checkShowFiles().checkShowFiles();
                     setButtonDisable(false, forceRecheck);
                     return null;
@@ -1196,6 +1183,17 @@ public class Controller implements Initializable {
                     menuExpanded = !menuExpanded;
                     menuButtonImage.setRotate(menuExpanded ? 180 : 0);
                 }
+            }
+        });
+    }
+
+    private void changeUserViaComboBox(ComboBox<String> userNameComboBox) {
+        userNameComboBox.setOnAction(e -> {
+            if (userNameComboBox.getValue() != null && !userNameComboBox.getValue().matches(Strings.UserName.getValue())) {
+                Variables.setCurrentUser(ClassHandler.userInfoController().getUserIDFromName(userNameComboBox.getValue()));
+                //Strings.UserName.setValue(userNameComboBox.getValue());
+                ClassHandler.mainRun().loadUser(new UpdateManager(), false);
+                Controller.setTableViewFields();
             }
         });
     }

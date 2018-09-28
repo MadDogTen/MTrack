@@ -6,6 +6,7 @@ import javafx.concurrent.Task;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -24,11 +25,11 @@ public class FindShows {
 
     public final Set<Show> findShows(final File dir) {
         Set<Show> result = new HashSet<>();
-        Set<String> uncheckedShows = new HashSet<>(Arrays.asList(dir.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
+        Set<String> uncheckedShows = new HashSet<>(Arrays.asList(Objects.requireNonNull(dir.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory()))));
         Set<Thread> threads = new HashSet<>();
         uncheckedShows.forEach(showName -> threads.add(new Thread(new Task<Void>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 Show show = new Show(dir, showName);
                 if (show.hasSeasons()) result.add(show);
                 return null;
@@ -47,10 +48,9 @@ public class FindShows {
     }
 
     private Set<Integer> findSeasons(final File dir, final String show) {
-        Set<String> showFolder = new HashSet<>();
         File folder = new File(dir + Strings.FileSeparator + show);
         if (folder.isDirectory() && folder.list() != null) {
-            showFolder.addAll(Arrays.asList(new File(dir + Strings.FileSeparator + show).list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory())));
+            Set<String> showFolder = new HashSet<>(Arrays.asList(Objects.requireNonNull(folder.list((dir1, name) -> new File(dir1 + Strings.FileSeparator + name).isDirectory()))));
             Set<Integer> seasonNumber = new HashSet<>(showFolder.size());
             Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + Strings.seasonNumberRegex);
             Pattern pattern1 = Pattern.compile("s" + Strings.seasonNumberRegex);
@@ -73,8 +73,8 @@ public class FindShows {
         String seasonFolder = GenericMethods.getSeasonFolderName(dir, showName, season);
         if (!seasonFolder.isEmpty()) {
             File folder = new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator + seasonFolder);
-            if (folder.exists() && new FileManager().checkFolderExistsAndReadable(folder) && new File(String.valueOf(folder)).list().length > 0)
-                return new HashSet<>(Arrays.asList(folder.list((dir1, name) -> {
+            if (folder.exists() && new FileManager().checkFolderExistsAndReadable(folder) && Objects.requireNonNull(new File(String.valueOf(folder)).list()).length > 0)
+                return new HashSet<>(Arrays.asList(Objects.requireNonNull(folder.list((dir1, name) -> {
                     if (new File(dir1 + Strings.FileSeparator + name).isFile()) {
                         String lowercaseName = name.toLowerCase();
                         for (String extension : Variables.showExtensions)
@@ -82,7 +82,7 @@ public class FindShows {
                                 return true;
                     }
                     return false;
-                })));
+                }))));
         }
         return new HashSet<>(0);
     }

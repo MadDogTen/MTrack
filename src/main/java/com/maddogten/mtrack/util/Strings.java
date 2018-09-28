@@ -214,6 +214,7 @@ public class Strings {
     // Other Language Specific Stuff
     static final String seasonRegex = "[s][e][a][s][o][n]";
     static final String seasonNumberRegex = "\\d{1,4}";
+    public static final String DBFolderName = "MTrackDB";
     // All Other Text
     public static String DefaultUsername;
 }

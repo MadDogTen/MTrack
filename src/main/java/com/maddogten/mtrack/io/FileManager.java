@@ -16,10 +16,7 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -163,7 +160,7 @@ public class FileManager {
     public void deleteFolder(final File toDeleteFolder) {
         if (!checkFolderExistsAndReadable(toDeleteFolder)) log.warning(toDeleteFolder + " does not exist!");
         if (toDeleteFolder.canWrite()) {
-            if (toDeleteFolder.list().length == 0) {
+            if (toDeleteFolder.list() != null && Objects.requireNonNull(toDeleteFolder.list()).length == 0) {
                 if (!toDeleteFolder.delete()) log.warning("Cannot delete: " + toDeleteFolder);
             } else {
                 File[] files = toDeleteFolder.listFiles();
@@ -179,12 +176,14 @@ public class FileManager {
     }
 
     public boolean openFolder(final File file) {
-        try {
-            Desktop.getDesktop().open(file);
-            return true;
-        } catch (IOException e) {
-            GenericMethods.printStackTrace(log, e, getClass());
-        }
+        if (file.exists()) {
+            try {
+                Desktop.getDesktop().open(file);
+                return true;
+            } catch (IOException e) {
+                GenericMethods.printStackTrace(log, e, getClass());
+            }
+        } else log.warning("The folder \"" + file.toString() + "\" does not exist!");
         return false;
     }
 
@@ -198,17 +197,23 @@ public class FileManager {
             if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Program.getValue()))
                 fileList.add(Variables.dataFolder + Strings.FileSeparator + Strings.SettingsFileName + Variables.SettingFileExtension);
             if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Directories.getValue())) {
-                Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list()).forEach(aFile -> {
-                            if (aFile.endsWith(Variables.ShowFileExtension))
-                                fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder + Strings.FileSeparator + aFile);
-                        }
-                );
+                String[] directories = new File(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder).list();
+                if (directories != null) {
+                    Arrays.asList(directories).forEach(aFile -> {
+                                if (aFile.endsWith(Variables.ShowFileExtension))
+                                    fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.DirectoriesFolder + Strings.FileSeparator + aFile);
+                            }
+                    );
+                }
             }
             if (choices.contains(Strings.All.getValue()) || choices.contains(Strings.Users.getValue())) {
-                Arrays.asList(new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list()).forEach(aFile -> {
-                    if (aFile.endsWith(Variables.UserFileExtension))
-                        fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile);
-                });
+                String[] users = new File(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder).list();
+                if (users != null) {
+                    Arrays.asList(users).forEach(aFile -> {
+                        if (aFile.endsWith(Variables.UserFileExtension))
+                            fileList.add(Variables.dataFolder + Strings.FileSeparator + Variables.UsersFolder + Strings.FileSeparator + aFile);
+                    });
+                }
             }
 
             if (fileList.isEmpty()) log.info("Nothing found to export - Must be an error.");
@@ -223,7 +228,7 @@ public class FileManager {
                                 try {
                                     File srcFile = new File(file1);
                                     try (FileInputStream fileInputStream = new FileInputStream(srcFile)) {
-                                        String nameTrimmed = srcFile.getPath().substring(Variables.dataFolder.getPath().length() + 1, srcFile.getPath().length());
+                                        String nameTrimmed = srcFile.getPath().substring(Variables.dataFolder.getPath().length() + 1);
                                         log.info(nameTrimmed);
                                         zipOutputStream.putNextEntry(new ZipEntry(nameTrimmed));
                                         int length;

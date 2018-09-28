@@ -94,10 +94,10 @@ public class ChangesBox {
             public Void call() throws Exception {
                 while (Main.programRunning && currentlyOpen) {
                     Thread.sleep(1000);
-                    boolean diffrentUser = currentUser != Variables.getCurrentUser();
+                    boolean differentUser = currentUser != Variables.getCurrentUser();
                     Set<Integer> newUserChanges = ClassHandler.changeReporter().getUserChanges(currentUser);
-                    if (diffrentUser || (changesStage.isShowing() && observableList.size() != newUserChanges.size())) { // TODO Do this in a better way
-                        if (diffrentUser) currentUser = Variables.getCurrentUser();
+                    if (differentUser || (changesStage.isShowing() && observableList.size() != newUserChanges.size())) { // TODO Do this in a better way
+                        if (differentUser) currentUser = Variables.getCurrentUser();
                         Platform.runLater(() -> {
                             observableList.clear();
                             observableList.addAll(ClassHandler.changeReporter().getUserChangesAsStrings(currentUser));

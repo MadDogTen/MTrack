@@ -51,6 +51,7 @@ public class LanguageHandler {
     // This verifies that all the Strings have been set, and if any haven't been, sets it as TextMissing. If TextMissing happens to be missing, it uses a default english string.
     private void addMissingTextForAllMissingStrings() {
         log.finer("Checking for missing strings...");
+        //noinspection ConstantConditions
         if (Strings.TextMissing == null || Strings.TextMissing.getValue() == null || Strings.TextMissing.getValue().isEmpty())
             Strings.TextMissing.setValue("Proper text is missing, Please report.");
         // Single Words

@@ -47,13 +47,13 @@ public class Main extends Application implements Runnable {
             Controller.closeChangeBoxStage();
             Controller.closeShowPlayingBoxStage();
             try {
-                if ((ClassHandler.getDBManager() != null && ClassHandler.getDBManager().hasConnection() && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser())))
-                    GenericMethods.fadeStageOut(stage, 10, log, Main.class);
-                ClassHandler.getDBManager().closeConnection();
+                if ((ClassHandler.getDBManager() != null && ClassHandler.getDBManager().hasConnection())) {
+                    if (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
+                        GenericMethods.fadeStageOut(stage, 10, log, Main.class);
+                    ClassHandler.getDBManager().closeConnection();
+                }
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, Main.class);
-            } catch (IllegalStateException e) {
-                // Do nothing
             }
             if (stage != null) stage.close();
             Platform.exit();

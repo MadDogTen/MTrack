@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -97,11 +98,11 @@ public class GenericMethods {
             File logFolder = new File(Variables.dataFolder + Variables.LogsFolder);
             if (!logFolder.exists())
                 new FileManager().createFolder(Variables.LogsFolder);
-            for (File file : logFolder.listFiles((dir, name) -> name.endsWith(".lck")))
+            for (File file : Objects.requireNonNull(logFolder.listFiles((dir, name) -> name.endsWith(".lck"))))
                 if (file.delete())
                     log.info("\"" + file.getName() + "\" was deleted."); // Clear the lock files, They aren't needed.
             File[] files = logFolder.listFiles((dir, name) -> name.endsWith(".txt") || name.endsWith(Variables.LogExtension));
-            while (files.length > Variables.logMaxNumberOfFiles - 1) { // Delete any extra log files.
+            while (Objects.requireNonNull(files).length > Variables.logMaxNumberOfFiles - 1) { // Delete any extra log files.
                 Matcher lowest = null;
                 String toDelete = null;
                 Pattern pattern = Pattern.compile("M?Log(?:_\\d{1,2}){1,2}-(\\d\\d)[\\-.](\\d\\d)[\\-.](\\d\\d)_(\\d\\d)[\\-.](\\d\\d)[\\-.](\\d\\d)");
@@ -195,7 +196,7 @@ public class GenericMethods {
     public static String getSeasonFolderName(final File dir, final String showName, final int season) {
         Pattern pattern = Pattern.compile(Strings.seasonRegex + "\\s" + season);
         Pattern pattern1 = Pattern.compile("s" + ((season < 10) ? 0 : "") + season);
-        for (String fileName : new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator).list()) {
+        for (String fileName : Objects.requireNonNull(new File(dir + Strings.FileSeparator + showName + Strings.FileSeparator).list())) {
             Matcher matcher = pattern.matcher(fileName.toLowerCase());
             if (matcher.find()) return fileName;
             else {
@@ -208,7 +209,7 @@ public class GenericMethods {
 
     public static int concatenateDigits(int... values) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int value : values) stringBuilder.append(value).append("");
+        for (int value : values) stringBuilder.append(value);
         return Integer.valueOf(stringBuilder.toString());
     }
 

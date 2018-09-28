@@ -67,7 +67,7 @@ public class FirstRun {
                 addDirectories();
                 Task<Void> task = new Task<Void>() {
                     @Override
-                    protected Void call() throws Exception {
+                    protected Void call() {
                         new CheckShowFiles().checkShowFiles();
                         return null;
                     }
@@ -82,32 +82,27 @@ public class FirstRun {
                 Strings.UserName.setValue(ClassHandler.userInfoController().getUserNameFromID(ClassHandler.mainRun().getUser()));
             else {
                 String user = textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, null);
-                if (!user.isEmpty()) {
-                    Variables.setCurrentUser(ClassHandler.userInfoController().addUser(user));
-                    Strings.UserName.setValue(user);
+                if (user.isEmpty()) user = Strings.DefaultUsername; // TODO Make exit button exit
+                Variables.setCurrentUser(ClassHandler.userInfoController().addUser(user));
+                Strings.UserName.setValue(user);
+            }
+            if (addDirectories) {
+                LoadingBox loadingBox = new LoadingBox();
+                if (generateShowFilesThread.isAlive()) loadingBox.loadingBox(generateShowFilesThread);
+            }
+            log.info(Strings.UserName.getValue());
+            if (ClassHandler.userInfoController().getEnableFileLogging(Variables.getCurrentUser())) {
+                try {
+                    GenericMethods.initFileLogging(log);
+                } catch (IOException e) {
+                    GenericMethods.printStackTrace(log, e, this.getClass());
                 }
             }
-            if (Strings.UserName.getValue().isEmpty() || Variables.getCurrentUser() == -2)
-                ClassHandler.mainRun().continueStarting = false;
-            else {
-                if (addDirectories) {
-                    LoadingBox loadingBox = new LoadingBox();
-                    if (generateShowFilesThread.isAlive()) loadingBox.loadingBox(generateShowFilesThread);
-                }
-                log.info(Strings.UserName.getValue());
-                if (ClassHandler.userInfoController().getEnableFileLogging(Variables.getCurrentUser())) {
-                    try {
-                        GenericMethods.initFileLogging(log);
-                    } catch (IOException e) {
-                        GenericMethods.printStackTrace(log, e, this.getClass());
-                    }
-                }
-                if (Variables.makeLanguageDefault)
-                    ClassHandler.userInfoController().setLanguage(Variables.getCurrentUser(), language);
-                //ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
-                //if (!usersAlreadyAdd) generateUserSettingsFile(Strings.UserName.getValue());
-                //ClassHandler.userInfoController().loadUserInfo();
-            }
+            if (Variables.makeLanguageDefault)
+                ClassHandler.userInfoController().setLanguage(Variables.getCurrentUser(), language);
+            //ClassHandler.showInfoController().loadShowsFile(ClassHandler.directoryController().findDirectories(false, true, false));
+            //if (!usersAlreadyAdd) generateUserSettingsFile(Strings.UserName.getValue());
+            //ClassHandler.userInfoController().loadUserInfo();
 
         }
         return false;
@@ -152,7 +147,7 @@ public class FirstRun {
     }*/
 
     // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
-    private void addDirectories() {
+    private void addDirectories() { // TODO Make exit button exit, Give choice to submit without directories.
         TextBox textBox = new TextBox();
         HashMap<String, Integer> directoriesID = new HashMap<>();
         ClassHandler.directoryController().getAllDirectories(false, false).forEach(directoryID -> directoriesID.put(ClassHandler.directoryController().getDirectoryFromID(directoryID).toString(), directoryID));

@@ -17,7 +17,7 @@ public enum OperatingSystem {
 
     public static boolean openVideo(final File file, final int startTime, VideoPlayer videoPlayer) {
         try {
-            if (startTime != 0 || startTime != -2) log.info("Show is continuing at: \"" + startTime + "\"");
+            if (startTime != 0 && startTime != -2) log.info("Show is continuing at: \"" + startTime + "\"");
             ProcessBuilder processBuilder = null;
             switch (operatingSystem) {
                 case WINDOWS:
@@ -35,7 +35,7 @@ public enum OperatingSystem {
                             processBuilder = new ProcessBuilder(videoPlayer.getVideoPlayerLocation().getPath(), file.getPath(), Variables.playFullScreen ? " /fullscreen" : "", " /start ", String.valueOf(startTime * 1000));
                             break;
                     }
-                    return processBuilder != null && processBuilder.start().isAlive();
+                    return processBuilder.start().isAlive();
                 case MAC:
                 case NIX:
                 case NUX:
