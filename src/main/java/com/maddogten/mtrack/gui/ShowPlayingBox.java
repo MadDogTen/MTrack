@@ -46,7 +46,7 @@ public class ShowPlayingBox {
     public void showConfirm(final DisplayShow show, final Stage oldStage) throws IOException {
         log.fine("showConfirm has been opened.");
         if (ClassHandler.showInfoController().doesEpisodeExist(show.getShowID(), show.getSeason(), show.getEpisode()) || ClassHandler.userInfoController().isProperEpisodeInNextSeason(userID, show.getShowID())) {
-            if (!ClassHandler.userInfoController().playAnyEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
+            if (!ClassHandler.userInfoController().playGivenEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(show.getShowID(), show.getSeason(), show.getEpisode()))) {
                 log.info("1: Unable to play: " + show.getShow() + " | Season: " + show.getSeason() + " | Episode: " + show.getEpisode());
                 new MessageBox(new StringProperty[]{Strings.WasUnableToPlayTheEpisode}, Main.stage);
                 return;

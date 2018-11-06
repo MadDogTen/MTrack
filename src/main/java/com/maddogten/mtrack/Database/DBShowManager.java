@@ -503,6 +503,10 @@ public class DBShowManager {
         return getEpisode(getEpisodeID(showID, season, episode)) != null;
     }
 
+    public synchronized boolean doesEpisodeExist(int episodeID) {
+        return getEpisode(episodeID) != null;
+    }
+
     public synchronized boolean doesSeasonExist(int showID, int season) {
         if (isNull(checkForSeason))
             checkForSeason = dbManager.prepareStatement(DBStrings.DBShowManager_checkForSeasonSQL);
@@ -521,7 +525,8 @@ public class DBShowManager {
     }
 
     public synchronized int getEpisodeID(int showID, int season, int episode) {
-        return GenericMethods.concatenateDigits(showID, season, episode);
+        int episodeID = GenericMethods.concatenateDigits(showID, season, episode);
+        return doesEpisodeExist(episodeID) ? episodeID : -2;
     }
 
     public synchronized boolean isEpisodePartOfDoubleEpisode(int showID, int season, int episode) {

@@ -136,22 +136,6 @@ public class UserInfoController {
         return dbUserSettingsManager.getUserInactiveShows(userID);
     }
 
-    public int getRandomShow(int userID, boolean includeActiveShows, boolean includeInactiveShows) {
-        Set<Integer> shows = new HashSet<>();
-        if (includeActiveShows) shows.addAll(getActiveShows(userID));
-        if (includeInactiveShows) shows.addAll(getInactiveShows(userID));
-        Iterator<Integer> integerIterator = shows.iterator();
-        int rand = new Random().nextInt(shows.size()), i = 0, showID = -2;
-        while (integerIterator.hasNext()) {
-            if (rand == i) {
-                showID = integerIterator.next();
-                break;
-            } else integerIterator.next();
-            i++;
-        }
-        return showID;
-    }
-
     // Returns all the shows applicable to the type requested
     public Set<Integer> getUsersShows(int userID) {
         return dbUserSettingsManager.getShows(userID);
@@ -177,7 +161,7 @@ public class UserInfoController {
     }
 
     // Attempts to play the file using the default program for the extension.
-    public boolean playAnyEpisode(final int userID, final int episodeID) {
+    public boolean playGivenEpisode(final int userID, final int episodeID) {
         log.info("Attempting to play \"" + ClassHandler.showInfoController().getShowNameFromEpisodeID(episodeID) + "\" - EpisodeID: " + episodeID);
         File episode = ClassHandler.showInfoController().getEpisode(episodeID);
         if (episode == null) log.warning("Episode wasn't found in database!");
@@ -333,6 +317,24 @@ public class UserInfoController {
             Controller.updateShowField(showID, true);
             return true;
         } else return false;
+    }
+
+    // This will return a random show for the given user. (Can Include Active & Inactive shows, Can't include ignored shows)
+    public int getRandomShow(int userID, boolean includeActiveShows, boolean includeInactiveShows) {
+        Set<Integer> shows = new HashSet<>();
+        if (includeActiveShows) shows.addAll(getActiveShows(userID));
+        if (includeInactiveShows) shows.addAll(getInactiveShows(userID));
+        if (shows.isEmpty()) log.info("Cannot play random episode, None were found.");
+        Iterator<Integer> integerIterator = shows.iterator();
+        int rand = new Random().nextInt(shows.size()), i = 0, showID = -2;
+        while (integerIterator.hasNext()) {
+            if (rand == i) {
+                showID = integerIterator.next();
+                break;
+            } else integerIterator.next();
+            i++;
+        }
+        return showID;
     }
 
     public void setLanguage(int userID, String language) {

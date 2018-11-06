@@ -9,8 +9,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.*?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" id="pane" fx:id="pane" prefHeight="454.0" prefWidth="281.0"
-      stylesheets="@MainGui.css" xmlns="http://javafx.com/javafx/8.0.111"
-      fx:controller="com.maddogten.mtrack.Controller">
+      stylesheets="@MainGui.css" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="com.maddogten.mtrack.Controller">
     <children>
         <Pane fx:id="topBarRectangle">
             <children>
@@ -376,7 +375,7 @@
                 <TextField fx:id="textField" layoutX="5.0" layoutY="3.0" visible="false"/>
                 <Button id="clearTextField" fx:id="clearTextField" layoutX="136.0" layoutY="8.0" mnemonicParsing="false"
                         prefHeight="0.0" prefWidth="0.0" text="Clear TextField" visible="false"/>
-                <CheckBox fx:id="showActiveShowsCheckbox" layoutX="222.0" layoutY="6.0" mnemonicParsing="false"
+                <CheckBox fx:id="showActiveShowsCheckbox" layoutX="230.0" layoutY="6.0" mnemonicParsing="false"
                           visible="false">
                     <tooltip>
                         <Tooltip id="tooltip" fx:id="showActiveShowsCheckboxTooltip"/>
@@ -398,6 +397,12 @@
                 </Button>
                 <Button fx:id="changeTableViewButton" layoutX="160.0" layoutY="2.0" mnemonicParsing="false" text="List"
                         visible="false"/>
+                <Button fx:id="playRandomShowButton" layoutX="200.0" layoutY="2.0" mnemonicParsing="false" text="R"
+                        visible="false">
+                    <tooltip>
+                        <Tooltip fx:id="playRandomShowButtonTooltip" text="Empty Tooltip"/>
+                    </tooltip>
+                </Button>
                 <AnchorPane fx:id="tableViewAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="424.0"
                             prefWidth="282.0">
                     <children>

@@ -53,7 +53,7 @@ import java.util.logging.Logger;
       Controller is the controller for the main stage started in Main. Handles quite a bit, Most likely more then it should.
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "BooleanVariableAlwaysNegated"})
 public class Controller implements Initializable {
     private static final Logger log = Logger.getLogger(Controller.class.getName());
     private final static ObservableList<DisplayShow> tableViewFields = FXCollections.observableArrayList();
@@ -239,6 +239,10 @@ public class Controller implements Initializable {
     private RadioMenuItem show0RemainingRadioMenuItem;
     @FXML
     private Button changeVideoPlayerButton;
+    @FXML
+    private Button playRandomShowButton;
+    @FXML
+    private Tooltip playRandomShowButtonTooltip;
 
     // This will set the ObservableList using the showList provided. For the active list, if show0Remaining is false, then it skips adding those, otherwise all shows are added. For the inactive list, all shows are added.
     private static ObservableList<DisplayShow> MakeTableViewFields(final Set<Integer> showList) {
@@ -432,7 +436,7 @@ public class Controller implements Initializable {
                         int[] seasonEpisode = new ListSelectBox().pickSeasonEpisode(Variables.getCurrentUser(), showID, ClassHandler.showInfoController(), (Stage) pane.getScene().getWindow());
                         if (seasonEpisode[0] != -1 && seasonEpisode[1] != -1) {
                             log.info("Season & Episode were valid.");
-                            ClassHandler.userInfoController().playAnyEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(showID, seasonEpisode[0], seasonEpisode[1]));
+                            ClassHandler.userInfoController().playGivenEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(showID, seasonEpisode[0], seasonEpisode[1]));
                         } else log.info("Season & Episode weren't valid.");
                         log.info("\"Play Season + Episode\" is finished running.");
                     });
@@ -508,7 +512,7 @@ public class Controller implements Initializable {
                         if (seasonEpisode[0] == -2 || seasonEpisode[0] == -3)
                             new MessageBox(new StringProperty[]{Strings.NoDirectlyPrecedingEpisodesFound}, (Stage) pane.getScene().getWindow());
                         else
-                            ClassHandler.userInfoController().playAnyEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(row.getItem().getShowID(), seasonEpisode[0], seasonEpisode[1]));
+                            ClassHandler.userInfoController().playGivenEpisode(Variables.getCurrentUser(), ClassHandler.showInfoController().getEpisodeID(row.getItem().getShowID(), seasonEpisode[0], seasonEpisode[1]));
                         log.info("Finished attempting to play previous episode.");
                     });
                     MenuItem printCurrentSeasonEpisode = new MenuItem();
@@ -854,6 +858,11 @@ public class Controller implements Initializable {
                 GenericMethods.printStackTrace(log, e1, getClass());
             }
         });
+        playRandomShowButton.setOnAction(e -> {
+            int randomShowID = ClassHandler.userInfoController().getRandomShow(Variables.getCurrentUser(), currentList.isActive(), currentList.isInactive());
+            if (randomShowID != -2) this.playShow(getDisplayShowFromShowID(randomShowID));
+        });
+        playRandomShowButtonTooltip.textProperty().bind(new SimpleStringProperty("Play a random show from the current list.")); // TODO Add localization for this and above related
 
         // UI
         unlockParentScene.textProperty().bind(Strings.AllowFullWindowMovementUse);
@@ -1203,6 +1212,7 @@ public class Controller implements Initializable {
         textField.setVisible(buttonVisible);
         changeTableViewButton.setVisible(buttonVisible);
         settingsButton.setVisible(buttonVisible);
+        playRandomShowButton.setVisible(buttonVisible);
     }
 
     public void setTableSelection(final int row) {
