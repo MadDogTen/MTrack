@@ -28,6 +28,8 @@ public class DBProgramSettingsManager {
         statement.execute("INSERT INTO " + DBStrings.TABLE_PROGRAMSETTINGS + " VALUES (" +
                 Variables.programSettingsTableVersion + ", " +
                 Variables.userSettingsTableVersion + ", " +
+                Variables.userShowSettingsTableVersion + ", " +
+                Variables.userEpisodeSettingsTableVersion + ", " +
                 Variables.showsTableVersion + ", " +
                 Variables.seasonsTableVersion + ", " +
                 Variables.episodesTableVersion + ", " +
@@ -40,15 +42,7 @@ public class DBProgramSettingsManager {
     }
 
     public synchronized boolean useDefaultUser() {
-        if (isNull(getDefaultUser))
-            getDefaultUser = dbManager.prepareStatement(DBStrings.DBProgramSettingsManager_getDefaultUserSQL);
-        boolean result = false;
-        try (ResultSet resultSet = getDefaultUser.executeQuery()) {
-            result = resultSet.next() && resultSet.getInt(DBStrings.COLUMN_USER_ID) != -2;
-        } catch (SQLException e) {
-            GenericMethods.printStackTrace(log, e, this.getClass());
-        }
-        return result;
+        return getDefaultUser() != -2;
     }
 
     public synchronized int getDefaultUser() {

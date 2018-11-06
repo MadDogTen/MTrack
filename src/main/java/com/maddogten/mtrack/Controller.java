@@ -517,7 +517,7 @@ public class Controller implements Initializable {
                     MenuItem printShowInformation = new MenuItem();
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
                     printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShowID()));
-                    MenuItem getMissingEpisodes = new MenuItem();
+                    //MenuItem getMissingEpisodes = new MenuItem();
                     /*getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes); // TODO Fix and Enable
                     getMissingEpisodes.setOnAction(e -> {
                         Map<Integer, Set<Integer>> missingInfo = ClassHandler.showInfoController().getMissingEpisodes(row.getItem().getShowID());
@@ -547,7 +547,7 @@ public class Controller implements Initializable {
                                 } else
                                     rowMenu.getItems().addAll(setSeasonEpisode, playSeasonEpisode, playPreviousEpisode, toggleActive, openDirectory);
                                 if (DeveloperStuff.devMode)
-                                    rowMenu.getItems().addAll(getRemaining, printCurrentSeasonEpisode, printShowInformation, getMissingEpisodes);
+                                    rowMenu.getItems().addAll(getRemaining, printCurrentSeasonEpisode, printShowInformation/*, getMissingEpisodes*/);
                             } else if (currentList.isInactive()) {
                                 rowMenu.getItems().clear();
                                 if (ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) && ClassHandler.userInfoController().isShowActive(Variables.getCurrentUser(), row.getItem().getShowID())) {
@@ -904,14 +904,14 @@ public class Controller implements Initializable {
         directoryText.textProperty().bind(Strings.Directory);
         addDirectory.textProperty().bind(Strings.AddDirectory);
         addDirectory.setOnAction(e -> {
-            /*setButtonDisable(true, addDirectory, removeDirectory);
-            ArrayList<File> directories = new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().findDirectories(true, false, true), (Stage) tabPane.getScene().getWindow());
+            setButtonDisable(true, addDirectory, removeDirectory);
+            ArrayList<File> directories = new TextBox().addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().getAllDirectories(false, false), (Stage) tabPane.getScene().getWindow());
             directories.forEach(file -> {
-                Long[] wasAdded = ClassHandler.directoryController().addDirectory(file);
-                if (wasAdded[0] != null && wasAdded[1] == null) {
+                int wasAdded = ClassHandler.directoryController().addDirectory(file);
+                if (wasAdded != -2) {
                     log.info("Directory was added.");
                     //FindChangedShows findChangedShows = new FindChangedShows(ClassHandler.showInfoController().getShowsFile(), ClassHandler.userInfoController());
-                    Task<Void> task = new Task<Void>() {
+                    /*Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
                             new FirstRun().generateShowsFile(ClassHandler.directoryController().getDirectory(wasAdded[0]));
@@ -931,10 +931,11 @@ public class Controller implements Initializable {
                         ClassHandler.userInfoController().addNewShow(aShow);
                         Controller.updateShowField(aShow, true);
                     });
-                    ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);
+                    ClassHandler.programSettingsController().setMainDirectoryVersion(ClassHandler.programSettingsController().getSettingsFile().getMainDirectoryVersion() + 1);*/
                 } else log.info("Directory \"" + file + "\" wasn't added.");
             });
-            setButtonDisable(false, addDirectory, removeDirectory);*/
+            ClassHandler.directoryController().checkDirectories(true);
+            setButtonDisable(false, addDirectory, removeDirectory);
         });
         removeDirectory.textProperty().bind(Strings.RemoveDirectory);
         removeDirectory.setOnAction(e -> {

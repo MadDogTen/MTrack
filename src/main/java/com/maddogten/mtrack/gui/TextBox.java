@@ -24,6 +24,7 @@ import javafx.stage.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -110,7 +111,7 @@ public class TextBox {
         return false;
     }
 
-    public ArrayList<File> addDirectory(@SuppressWarnings("SameParameterValue") final StringProperty message, final Set<String> currentDirectories, final Stage oldStage) {
+    public ArrayList<File> addDirectory(@SuppressWarnings("SameParameterValue") final StringProperty message, final Set<Integer> currentDirectoriesIDs, final Stage oldStage) {
         log.fine("addDirectory has been opened.");
 
         Stage addDirectoryStage = new Stage();
@@ -139,6 +140,9 @@ public class TextBox {
         });
         ArrayList<File> directories = new ArrayList<>();
 
+        Set<String> directoriesStrings = new HashSet<>();
+        currentDirectoriesIDs.forEach(directoryID -> directoriesStrings.add(ClassHandler.directoryController().getDirectoryFromID(directoryID).toString()));
+
         submit.textProperty().bind(Strings.Submit);
         submit.setOnAction(e -> {
             if (!textArea.getText().isEmpty()) {
@@ -148,14 +152,14 @@ public class TextBox {
                     String[] files = string.split("\n");
                     for (String file : files) {
                         if (!file.isEmpty()) {
-                            if (isDirectoryValid(currentDirectories, file, addDirectoryStage))
+                            if (isDirectoryValid(directoriesStrings, file, addDirectoryStage))
                                 directories.add(new File(file));
                             else
                                 log.info("File: \"" + file + "\" was invalid, and not added."); // TODO Add user popup notification that groups all issues
                         }
                     }
                 } else {
-                    if (isDirectoryValid(currentDirectories, textArea.getText(), addDirectoryStage))
+                    if (isDirectoryValid(directoriesStrings, textArea.getText(), addDirectoryStage))
                         directories.add(new File(textArea.getText()));
                     else log.info("File: \"" + textArea.getText() + "\" was invalid, and not added.");
                 }

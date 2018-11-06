@@ -57,7 +57,7 @@ public class MainRun {
         // If the MTrack folder exists, then this checks if the Program settings file exists, and if for some reason it doesn't, creates it.
         if (needsToRun) {
             try {
-                ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), !new File(Variables.dataFolder.toString() + Strings.EmptyString + Strings.DBFolderName).exists()));
+                ClassHandler.setDBManager(new DBManager(Variables.dataFolder.toString(), !new File(Variables.dataFolder + Strings.FileSeparator + Strings.DBFolderName).exists()));
                 if (!ClassHandler.getDBManager().hasConnection()) return false;
                 ClassHandler.programSettingsController().initDatabase(ClassHandler.getDBManager());
                 ClassHandler.directoryController().initDatabase(ClassHandler.getDBManager());

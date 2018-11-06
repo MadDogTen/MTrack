@@ -7,7 +7,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="208.0" prefWidth="189.0" stylesheets="@About.css" xmlns="http://javafx.com/javafx/8" fx:controller="com.maddogten.mtrack.FXMLControllers.About">
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="208.0" prefWidth="189.0" stylesheets="@About.css"
+      xmlns="http://javafx.com/javafx/9.0.1" fx:controller="com.maddogten.mtrack.FXMLControllers.About">
     <children>
         <ImageView fitHeight="208.0" fitWidth="189.0" opacity="0.38">
             <image>
@@ -19,7 +20,8 @@
                 <Font size="28.0"/>
             </font>
         </Label>
-        <Label fx:id="versionNumber" layoutY="46.0" prefHeight="17.0" prefWidth="189.0" text="Version">
+        <Label fx:id="versionNumber" alignment="CENTER" layoutY="46.0" prefHeight="17.0" prefWidth="189.0"
+               text="Version">
             <tooltip>
                 <Tooltip id="tooltip" fx:id="versionNumberTooltip"/>
             </tooltip>

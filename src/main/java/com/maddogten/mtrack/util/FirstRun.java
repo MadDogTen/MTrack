@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class FirstRun {
@@ -149,9 +148,7 @@ public class FirstRun {
     // During the firstRun, This is ran which shows a popup to add directory to scan. You can exit this without entering anything. If you do enter one, it will then ask you if you want to add another, or move on.
     private void addDirectories() { // TODO Make exit button exit, Give choice to submit without directories.
         TextBox textBox = new TextBox();
-        HashMap<String, Integer> directoriesID = new HashMap<>();
-        ClassHandler.directoryController().getAllDirectories(false, false).forEach(directoryID -> directoriesID.put(ClassHandler.directoryController().getDirectoryFromID(directoryID).toString(), directoryID));
-        ArrayList<File> directories = textBox.addDirectory(Strings.PleaseEnterShowsDirectory, directoriesID.keySet(), null);
+        ArrayList<File> directories = textBox.addDirectory(Strings.PleaseEnterShowsDirectory, ClassHandler.directoryController().getAllDirectories(false, false), null);
         directories.forEach(file -> {
             int matched = ClassHandler.directoryController().addDirectory(file);
             if (matched == -2)
