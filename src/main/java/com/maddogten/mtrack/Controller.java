@@ -650,7 +650,7 @@ public class Controller implements Initializable {
         });
 
         // ~~~~ Buttons ~~~~ \\
-        exit.setOnAction(e -> Main.stop(Main.stage, false));
+        exit.setOnAction(e -> Main.stop(Main.stage, false, false));
         minimize.setOnAction(e -> Main.stage.setIconified(true));
         //changeTableViewButton.textProperty().bind(Strings.SwitchBetweenActiveInactiveList);
         changeTableViewButton.setOnAction(event -> {
@@ -1068,8 +1068,7 @@ public class Controller implements Initializable {
             if (confirmBox.confirm(Strings.AreYouSureThisWillDeleteEverything, (Stage) tabPane.getScene().getWindow())) {
                 Stage stage = (Stage) tabPane.getScene().getWindow();
                 stage.close();
-                new FileManager().clearProgramFiles();
-                Main.stop(Main.stage, true);
+                Main.stop(stage, true, true);
             } else setButtonDisable(false, deleteEverythingAndClose);
         });
         // TODO End

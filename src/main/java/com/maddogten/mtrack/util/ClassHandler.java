@@ -55,9 +55,8 @@ public class ClassHandler {
     }
 
     public static DBManager getDBManager() {
-        if (DBManager == null) {
+        if (DBManager == null)
             throw new IllegalStateException("DBManager was null, This shouldn't be called until after it was set.");
-        }
         return DBManager;
     }
 

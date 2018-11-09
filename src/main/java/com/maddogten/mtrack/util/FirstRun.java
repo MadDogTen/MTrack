@@ -33,7 +33,7 @@ public class FirstRun {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
             File appData = OperatingSystem.programFolder;
-            StringProperty answer = new MultiChoice().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
+            StringProperty answer = (DeveloperStuff.devMode && DeveloperStuff.devStart) ? Strings.InAppData : new MultiChoice().multipleButtons(new StringProperty[]{Strings.WhereWouldYouLikeTheProgramFilesToBeStored, Strings.HoverOverAButtonForThePath}, new StringProperty[]{Strings.InAppData, Strings.WithTheJar}, new StringProperty[]{new SimpleStringProperty(appData.toString()), new SimpleStringProperty(jarLocation.toString())}, null);
             if (answer.getValue().matches(Strings.InAppData.getValue())) {
                 Variables.setDataFolder(appData);
                 //this.createFolders(true, fileManager);
@@ -60,7 +60,8 @@ public class FirstRun {
             ClassHandler.directoryController().initDatabase(ClassHandler.getDBManager());
             ClassHandler.showInfoController().initDatabase(ClassHandler.getDBManager());
             ClassHandler.changeReporter().initDatabase(ClassHandler.getDBManager());
-            boolean addDirectories = /*!hasImportedFiles ||*/ ClassHandler.directoryController().getAllDirectories(true, false).isEmpty();
+            /*!hasImportedFiles ||*/
+            boolean addDirectories = (!DeveloperStuff.devMode || !DeveloperStuff.devStart) && ClassHandler.directoryController().getAllDirectories(true, false).isEmpty();
             Thread generateShowFilesThread = null;
             if (addDirectories) {
                 addDirectories();
@@ -80,7 +81,7 @@ public class FirstRun {
             if (usersAlreadyAdd)
                 Strings.UserName.setValue(ClassHandler.userInfoController().getUserNameFromID(ClassHandler.mainRun().getUser()));
             else {
-                String user = textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, null);
+                String user = (DeveloperStuff.devMode && DeveloperStuff.devStart) ? Strings.DefaultUsername : textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, null);
                 if (user.isEmpty()) user = Strings.DefaultUsername; // TODO Make exit button exit
                 Variables.setCurrentUser(ClassHandler.userInfoController().addUser(user));
                 Strings.UserName.setValue(user);

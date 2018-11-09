@@ -43,7 +43,7 @@ public class MainRun {
         // noinspection PointlessBooleanExpression
         if (DeveloperStuff.startFresh && DeveloperStuff.devMode && !Variables.dataFolder.toString().isEmpty()) {
             log.warning("Starting Fresh...");
-            fileManager.clearProgramFiles();
+            fileManager.clearProgramFiles(false);
             Variables.setDataFolder(new File(Strings.EmptyString));
         }
         boolean needsToRun = true;
@@ -189,13 +189,13 @@ public class MainRun {
         if (languages.size() == 1)
             languages.forEach((internalName, readableName) -> languageHandler.setLanguage(internalName));
         else if (!language.isEmpty() && languages.containsKey(language) && !language.contains("lipsum")) { // !language.contains("lipsum") will be removed when lipsum is removed as a choice // Note- Remove
-            Boolean wasSet = languageHandler.setLanguage(language);
+            boolean wasSet = languageHandler.setLanguage(language);
             Variables.makeLanguageDefault = true;
             if (wasSet) log.finer("Language is set: " + language);
             else log.severe("Language was not set for some reason, Please report.");
         } else {
             languageHandler.setLanguage(Variables.DefaultLanguage[0]);
-            Object[] pickLanguageResult = new ListSelectBox().pickLanguage(languages.values(), true, null);
+            Object[] pickLanguageResult = (DeveloperStuff.devMode && DeveloperStuff.devStart) ? new Object[]{Variables.DefaultLanguage[1], true} : new ListSelectBox().pickLanguage(languages.values(), true, null);
             String languageReadable = (String) pickLanguageResult[0];
             if (languageReadable.matches("-2")) continueStarting = false;
             else {

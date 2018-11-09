@@ -18,12 +18,13 @@ import java.util.logging.Logger;
 // Developer Class which holds all sorts of tools to help with debugging the program. Mainly for use with console output.
 
 public class DeveloperStuff {
-    public static final int InternalVersion = 58; // To help keep track of what I'm currently working on / testing.
+    public static final int InternalVersion = 59; // To help keep track of what I'm currently working on / testing.
     public static final boolean showOptionToToggleDevMode = true; // false
     public static final boolean startFresh = false; // false -- Won't work unless devMode is true.
     public static final boolean showInternalVersion = true; // Set to false or remove before full release
     private static final Logger log = Logger.getLogger(DeveloperStuff.class.getName());
     public static boolean devMode = false; // false
+    public static boolean devStart = false; // false -- Won't work unless devMode is true.
 
     //---- ProgramSettingsController ----\\
 

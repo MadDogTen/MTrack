@@ -1,6 +1,7 @@
 package com.maddogten.mtrack;
 
 import com.maddogten.mtrack.gui.ConfirmBox;
+import com.maddogten.mtrack.io.FileManager;
 import com.maddogten.mtrack.util.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -29,14 +30,10 @@ public class Main extends Application implements Runnable {
         launch(args);
     }
 
-    public synchronized static void stop(final Stage stage, final boolean forceStop) {
+    public synchronized static void stop(final Stage stage, final boolean forceStop, final boolean deleteEverything) {
         if (programRunning && (forceStop || new ConfirmBox().confirm(Strings.AreYouSure, stage))) {
             programFullyRunning = false;
             programRunning = false;
-            int timeRan = GenericMethods.timeTakenSeconds(timer);
-            if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
-            else log.info("The program has been running for " + timeRan + " Seconds.");
-            log.warning("Program is exiting");
             while (ClassHandler.checkShowFiles().isRecheckingShowFile()) {
                 try {
                     Thread.sleep(200);
@@ -47,14 +44,25 @@ public class Main extends Application implements Runnable {
             Controller.closeChangeBoxStage();
             Controller.closeShowPlayingBoxStage();
             try {
+                log.info("Now attempting to shutdown the database...");
                 if ((ClassHandler.getDBManager() != null && ClassHandler.getDBManager().hasConnection())) {
                     if (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
                         GenericMethods.fadeStageOut(stage, 10, log, Main.class);
-                    ClassHandler.getDBManager().closeConnection();
-                }
+                    if (ClassHandler.getDBManager().closeConnection()) {
+                        ClassHandler.setDBManager(null);
+                        log.info("Database was successfully shutdown.");
+                    } else
+                        log.info("Database couldn't be properly closed...It will be forced closed (Please report, This shouldn't happen).");
+                } else
+                    log.info(ClassHandler.getDBManager() == null ? "DBManager was already null (Please report, This shouldn't happen)." : "DBManager connection was already closed (Please report, This shouldn't happen).");
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, Main.class);
             }
+            int timeRan = GenericMethods.timeTakenSeconds(timer);
+            if (timeRan > 60) log.info("The program has been running for " + (timeRan / 60) + " Minute(s).");
+            else log.info("The program has been running for " + timeRan + " Seconds.");
+            log.warning("Program is exiting");
+            GenericMethods.stopFileLogging(log);
             if (stage != null) stage.close();
             Platform.exit();
             if (thread != null) {
@@ -64,7 +72,10 @@ public class Main extends Application implements Runnable {
                     GenericMethods.printStackTrace(log, e, Main.class);
                 }
             }
-            if (!DeveloperStuff.devMode) System.exit(0);
+            if (deleteEverything) {
+                new FileManager().clearProgramFiles(true);
+            }
+            //if (!DeveloperStuff.devMode) System.exit(0);
         }
     }
 
@@ -86,7 +97,7 @@ public class Main extends Application implements Runnable {
             scene.setFill(Color.WHITESMOKE);
             stage.setOnCloseRequest(e -> {
                 e.consume();
-                stop(stage, true);
+                stop(stage, true, false);
             });
             stage.setResizable(true);
             stage.setScene(scene);
@@ -94,7 +105,7 @@ public class Main extends Application implements Runnable {
             if (ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()))
                 GenericMethods.fadeStageIn(stage, 10, log, Main.class);
             start();
-        } else stop(null, true);
+        } else stop(null, true, false);
     }
 
     private synchronized void start() {

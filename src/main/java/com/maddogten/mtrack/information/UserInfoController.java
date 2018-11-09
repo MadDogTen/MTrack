@@ -64,6 +64,7 @@ public class UserInfoController {
 
     public int addUser(String userName) {
         int userID = dbUserManager.addUser(userName);
+        log.info("Added user \"" + userName + "\" with userID \"" + userID + "\".");
         dbUserSettingsManager.addUserSettings(userID);
         if (userID != -2) ClassHandler.showInfoController().getShows().forEach(showID -> addNewShow(userID, showID));
         log.fine("Generated all show data for " + userName + ".");
@@ -76,6 +77,7 @@ public class UserInfoController {
                        float remainingColumnWidth, float seasonColumnWidth, float episodeColumnWidth, boolean showColumnVisibility, boolean remainingColumnVisibility,
                        boolean seasonColumnVisibility, boolean episodeColumnVisibility, int videoPlayerType, String videoPlayerLocation) {
         int userID = dbUserManager.addUser(userName);
+        log.info("Added user \"" + userName + "\" with userID \"" + userID + "\".");
         dbUserSettingsManager.addUserSettings(userID, showUsername, updateSpeed, automaticShowUpdating, timeToWaitForDirectory, show0Remaining, showActiveShows, language, recordChangesForNonActiveShows,
                 recordChangedSeasonsLowerThanCurrent, moveStageWithParent, haveStageBlockParentStage, enableSpecialEffects, enableFileLogging, showColumnWidth, remainingColumnWidth, seasonColumnWidth,
                 episodeColumnWidth, showColumnVisibility, remainingColumnVisibility, seasonColumnVisibility, episodeColumnVisibility, videoPlayerType, videoPlayerLocation);
@@ -122,6 +124,7 @@ public class UserInfoController {
     // Saves whether or not a show is currently active. If a show is Active, it means the user is actively watching it, and it is being searched for in rechecks.
     public void setActiveStatus(int userID, final int showID, final boolean active) {
         dbUserSettingsManager.setUserShowActiveStatus(userID, showID, active);
+        log.info("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" active status was set to: \"" + active + "\" for \"" + getUserNameFromID(userID) + "\"");
     }
 
     public boolean isShowActive(int userID, final int showID) {
@@ -148,7 +151,7 @@ public class UserInfoController {
 
     // If a user doesn't want a show clogging up any lists, then it can be set hidden. It shouldn't be able to be found anywhere at that point.
     public void setHiddenStatus(int userID, final int showID, final boolean isHidden) {
-        log.fine(showID + " hidden status is: " + isHidden);
+        log.info("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" active status was set to: \"" + isHidden + "\" for \"" + getUserNameFromID(userID) + "\"");
         dbUserSettingsManager.setUserShowHiddenStatus(userID, showID, isHidden);
     }
 
@@ -186,17 +189,21 @@ public class UserInfoController {
             String showName = ClassHandler.showInfoController().getShowNameFromShowID(showID);
             if (isAnotherEpisodeResult[0]) {
                 this.setSeasonEpisode(userID, showID, getCurrentUserSeason(userID, showID), ++currentEpisode);
-                log.info(showName + " is now on episode " + currentEpisode);
+                log.info("\"" + showName + " is now on episode \"" + currentEpisode + "\" for user \"" + getUserNameFromID(userID) + "\".");
             } else if (isAnotherEpisodeResult[1] && isAnotherSeason(userID, showID, currentSeason)) {
                 this.setSeasonEpisode(userID, showID, ++currentSeason, 1);
-                log.info(showName + " is now on season " + currentSeason + " episode " + 1);
+                log.info("\"" + showName + "\" is now on season \"" + currentSeason + "\" episode \"" + 1 + "\" for user \"" + getUserNameFromID(userID) + "\".");
             } else {
                 dbUserSettingsManager.setUserShowEpisode(userID, showID, ++currentEpisode);
-                log.info(showName + " is now on episode " + currentEpisode);
+                log.info("\"" + showName + "\" is now on episode \"" + currentEpisode + "\" for user \"" + getUserNameFromID(userID) + "\".");
             }
         } else {
-            if (ClassHandler.showInfoController().doesEpisodeExist(showID, getCurrentUserSeason(userID, showID), getCurrentUserEpisode(userID, showID)))
-                this.setSeasonEpisode(userID, showID, getCurrentUserSeason(userID, showID), episode);
+            if (ClassHandler.showInfoController().doesEpisodeExist(showID, getCurrentUserSeason(userID, showID), getCurrentUserEpisode(userID, showID))) {
+                int season = getCurrentUserSeason(userID, showID);
+                this.setSeasonEpisode(userID, showID, season, episode);
+                log.info("\"" + ClassHandler.showInfoController().getShowNameFromShowID(showID) + "\" is now on season \"" + season + "\" episode \"" + 1 + "\" for user \"" + getUserNameFromID(userID) + "\".");
+            }
+
         }
     }
 
@@ -212,7 +219,7 @@ public class UserInfoController {
     public void setSeasonEpisode(int userID, int showID, final int season, final int episode) {
         dbUserSettingsManager.setUserShowSeason(userID, showID, season);
         dbUserSettingsManager.setUserShowEpisode(userID, showID, episode);
-        log.info(ClassHandler.showInfoController().getShowNameFromShowID(showID) + " is now set to Season: " + season + " - Episode: " + episode);
+        log.info(ClassHandler.showInfoController().getShowNameFromShowID(showID) + " is now set to Season: " + season + " - Episode: " + episode + " for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     // Checks if there is an episode directly following the current episode.
@@ -324,7 +331,10 @@ public class UserInfoController {
         Set<Integer> shows = new HashSet<>();
         if (includeActiveShows) shows.addAll(getActiveShows(userID));
         if (includeInactiveShows) shows.addAll(getInactiveShows(userID));
-        if (shows.isEmpty()) log.info("Cannot play random episode, None were found.");
+        if (shows.isEmpty()) {
+            log.info("Cannot play random episode, None were found.");
+            return -2;
+        }
         Iterator<Integer> integerIterator = shows.iterator();
         int rand = new Random().nextInt(shows.size()), i = 0, showID = -2;
         while (integerIterator.hasNext()) {
@@ -339,7 +349,7 @@ public class UserInfoController {
 
     public void setLanguage(int userID, String language) {
         dbUserSettingsManager.setUserLanguage(userID, language);
-        log.info("Default language was set to " + language + '.');
+        log.info("Default language was set to " + language + " for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public String getLanguage(int userID) {
@@ -356,7 +366,7 @@ public class UserInfoController {
 
     public void setUpdateSpeed(int userID, final int updateSpeed) {
         dbUserSettingsManager.setUserUpdateSpeed(userID, updateSpeed);
-        log.info("Update speed is now set to: " + updateSpeed);
+        log.info("Update speed is now set to: \"" + updateSpeed + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public int getUpdateSpeed(int userID) {
@@ -365,7 +375,7 @@ public class UserInfoController {
 
     public void setTimeToWaitForDirectory(int userID, final int timeToWaitForDirectory) {
         dbUserSettingsManager.setUserTimeToWaitForDirectory(userID, timeToWaitForDirectory);
-        log.info("Time to wait for directory is now set to: " + timeToWaitForDirectory);
+        log.info("Time to wait for directory is now set to: \"" + timeToWaitForDirectory + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public int getTimeToWaitForDirectory(int userID) {
@@ -378,13 +388,14 @@ public class UserInfoController {
 
     public void setFileLogging(int userID, final boolean enableFileLogging) {
         dbUserSettingsManager.setUserDoFileLogging(userID, enableFileLogging);
+        log.info("File logging has been set to \"" + enableFileLogging + "\" for user \"" + getUserNameFromID(userID) + "\".");
         if (enableFileLogging && !GenericMethods.isFileLoggingStarted()) {
             try {
                 GenericMethods.initFileLogging(log);
             } catch (IOException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
             }
-        } else if (GenericMethods.isFileLoggingStarted()) GenericMethods.stopFileLogging(log);
+        } else if (!enableFileLogging && GenericMethods.isFileLoggingStarted()) GenericMethods.stopFileLogging(log);
     }
 
     public boolean doSpecialEffects(int userID) {
@@ -429,6 +440,7 @@ public class UserInfoController {
 
     public void setEpisodePosition(int userID, int episodeID, int position) {
         dbUserSettingsManager.setEpisodePosition(userID, episodeID, position);
+        log.info("\"" + ClassHandler.showInfoController().getShowNameFromEpisodeID(episodeID) + "\'s\" episode position has been set to \"" + position + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void clearEpisodeSettings(int userID, int episodeID) {
@@ -456,38 +468,48 @@ public class UserInfoController {
 
     public void setDoSpecialEffects(int userID, boolean doSpecialEffects) {
         dbUserSettingsManager.setUserDoSpecialEffects(userID, doSpecialEffects);
+        log.info("Special Effects has been set to \"" + doSpecialEffects + "\" for user \"" + getUserNameFromID(userID) + "\".");
+
     }
 
     public void setShow0Remaining(int userID, boolean show0Remaining) {
         dbUserSettingsManager.setUserShow0Remaining(userID, show0Remaining);
+        log.info("Show 0 Remaining has been set to \"" + show0Remaining + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void setShowActiveShows(int userID, boolean showActiveShows) {
         dbUserSettingsManager.setUserShowActiveShows(userID, showActiveShows);
+        log.info("Show active shows has been set to \"" + showActiveShows + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void setRecordChangesForNonActiveShows(int userID, boolean recordChangesForNonActiveShows) {
         dbUserSettingsManager.setUserRecordChangesForNonActiveShows(userID, recordChangesForNonActiveShows);
+        log.info("Set record changes has been set to \"" + recordChangesForNonActiveShows + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void setRecordChangesSeasonsLowerThanCurrent(int userID, boolean recordChangesSeasonsLowerThanCurrent) {
         dbUserSettingsManager.setUserRecordChangesSeasonsLowerThanCurrent(userID, recordChangesSeasonsLowerThanCurrent);
+        log.info("Record changes for seasons lower than current has been set to \"" + recordChangesSeasonsLowerThanCurrent + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void setMoveStageWithParent(int userID, boolean moveStageWithParent) {
         dbUserSettingsManager.setUserMoveStageWithParent(userID, moveStageWithParent);
+        log.info("Move stage with parent has been set to \"" + moveStageWithParent + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void setHaveStageBlockParentStage(int userID, boolean haveStageBlockParentStage) {
         dbUserSettingsManager.setUserHaveStageBlockParentStage(userID, haveStageBlockParentStage);
+        log.info("Have stage block parent stage has been set to \"" + haveStageBlockParentStage + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void setVideoPlayerType(int userID, int videoPlayerType) {
         dbUserSettingsManager.setUserVideoPlayerType(userID, videoPlayerType);
+        log.info("Video player type has been set to \"" + videoPlayerType + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void setVideoPlayerLocation(int userID, String videoPlayerLocation) {
         dbUserSettingsManager.setUserVideoPlayerLocation(userID, videoPlayerLocation);
+        log.info("Video Player Location has been set to \"" + videoPlayerLocation + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public boolean showUsername(int userID) {
@@ -496,6 +518,7 @@ public class UserInfoController {
 
     public void setShowUsername(int userID, boolean showUsername) {
         dbUserSettingsManager.setUserShowUsername(userID, showUsername);
+        log.info("Show username has been set to \"" + showUsername + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public boolean getShowColumnVisibility(int userID) {
@@ -504,6 +527,7 @@ public class UserInfoController {
 
     public void setShowColumnVisibility(int userID, boolean showColumn) {
         dbUserSettingsManager.setUserShowColumnVisibility(userID, showColumn);
+        log.info("Show column visibility has been set to \"" + showColumn + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public float getShowColumnWidth(int userID) {
@@ -512,6 +536,7 @@ public class UserInfoController {
 
     public void setShowColumnWidth(int userID, float columnWidth) {
         dbUserSettingsManager.setUserShowColumnWidth(userID, columnWidth);
+        log.info("Show column width has been set to \"" + columnWidth + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public boolean getSeasonColumnVisibility(int userID) {
@@ -520,6 +545,7 @@ public class UserInfoController {
 
     public void setSeasonColumnVisibility(int userID, boolean showColumn) {
         dbUserSettingsManager.setUserSeasonColumnVisibility(userID, showColumn);
+        log.info("Season column visibility has been set to \"" + showColumn + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public float getSeasonColumnWidth(int userID) {
@@ -528,6 +554,7 @@ public class UserInfoController {
 
     public void setSeasonColumnWidth(int userID, float columnWidth) {
         dbUserSettingsManager.setUserSeasonColumnWidth(userID, columnWidth);
+        log.info("Season column width has been set to \"" + columnWidth + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public boolean getEpisodeColumnVisibility(int userID) {
@@ -536,6 +563,7 @@ public class UserInfoController {
 
     public void setEpisodeColumnVisibility(int userID, boolean showColumn) {
         dbUserSettingsManager.setUserEpisodeColumnVisibility(userID, showColumn);
+        log.info("Episode column visibility has been set to \"" + showColumn + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public float getEpisodeColumnWidth(int userID) {
@@ -544,6 +572,7 @@ public class UserInfoController {
 
     public void setEpisodeColumnWidth(int userID, float columnWidth) {
         dbUserSettingsManager.setUserEpisodeColumnWidth(userID, columnWidth);
+        log.info("Episode column width has been set to \"" + columnWidth + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public boolean getRemainingColumnVisibility(int userID) {
@@ -552,6 +581,7 @@ public class UserInfoController {
 
     public void setRemainingColumnVisibility(int userID, boolean showColumn) {
         dbUserSettingsManager.setUserRemainingColumnVisibility(userID, showColumn);
+        log.info("Remaining column visibility has been set to \"" + showColumn + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public float getRemainingColumnWidth(int userID) {
@@ -560,6 +590,7 @@ public class UserInfoController {
 
     public void setRemainingColumnWidth(int userID, float columnWidth) {
         dbUserSettingsManager.setUserRemainingColumnWidth(userID, columnWidth);
+        log.info("Remaining column width has been set to \"" + columnWidth + "\" for user \"" + getUserNameFromID(userID) + "\".");
     }
 
     public void removeUsersShowSettingsIfUnmodified(int showID) {

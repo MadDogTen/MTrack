@@ -15,7 +15,7 @@ public class DBManager {
 
     public DBManager(String databaseLocation, boolean shouldCreateDDB) {
         connection = this.getConnection(databaseLocation, shouldCreateDDB);
-        if (connection == null) Main.stop(null, true);
+        if (connection == null) Main.stop(null, true, false);
     }
 
     synchronized Connection getConnection() {
@@ -54,8 +54,22 @@ public class DBManager {
         return connection;
     }
 
-    public synchronized void closeConnection() throws SQLException {
-        if (connection != null) connection.close();
+    public synchronized boolean closeConnection() throws SQLException {
+        if (connection != null) {
+            connection.commit();
+            String URL = "jdbc:derby:";
+            Properties properties = new Properties();
+            properties.put("user", "MTrack");
+            properties.put("password", "MTrackSimplePassword");
+            properties.put("shutdown", true);
+            try {
+                DriverManager.getConnection(URL, properties);
+            } catch (SQLException e) {
+                if (e.getSQLState().matches("XJ015")) log.info("Database shutdown successful.");
+            }
+            connection.close();
+        }
+        return connection.isClosed();
     }
 
     public boolean hasConnection() {
