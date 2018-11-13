@@ -82,7 +82,7 @@ public class FirstRun {
                 Strings.UserName.setValue(ClassHandler.userInfoController().getUserNameFromID(ClassHandler.mainRun().getUser()));
             else {
                 String user = (DeveloperStuff.devMode && DeveloperStuff.devStart) ? Strings.DefaultUsername : textBox.addUser(Strings.PleaseEnterUsername, Strings.UseDefaultUsername, Strings.DefaultUsername, null);
-                if (user.isEmpty()) user = Strings.DefaultUsername; // TODO Make exit button exit
+                if (user.isEmpty()) user = Strings.DefaultUsername; // TODO Make exit button exit - TD105
                 Variables.setCurrentUser(ClassHandler.userInfoController().addUser(user));
                 Strings.UserName.setValue(user);
             }

@@ -53,7 +53,7 @@ public class VideoPlayerSelector implements Initializable {
     }
 
     @Override
-    public void initialize(final URL location, final ResourceBundle resources) { // TODO Add localization whole file
+    public void initialize(final URL location, final ResourceBundle resources) { // TODO Add localization whole file - TD100
         videoPlayerTypeComboBox.getItems().addAll(VideoPlayer.VideoPlayerEnum.values());
         result = ClassHandler.userInfoController().getVideoPlayer(userID);
 
@@ -117,7 +117,7 @@ public class VideoPlayerSelector implements Initializable {
             if (videoPlayerLocationTextField.getText().toLowerCase().endsWith(".exe") && new File(videoPlayerLocationTextField.getText()).exists()) {
                 result.setVideoPlayerEnum(videoPlayerTypeComboBox.getValue());
                 result.setVideoPlayerLocation(new File(videoPlayerLocationTextField.getText()));
-            /*if (userSettings.getVideoPlayer().getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) { // TODO Finish
+            /*if (userSettings.getVideoPlayer().getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) { // TODO Finish - TD105
                 // Open Window warning some features won't be supported.
             }*/
                 checkAndWarn();
@@ -130,7 +130,7 @@ public class VideoPlayerSelector implements Initializable {
         closeButton.setOnAction(event -> {
 
             result = ClassHandler.userInfoController().getVideoPlayer(userID);
-           /* if (userSettings.getVideoPlayer().getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) { // TODO Finish
+           /* if (userSettings.getVideoPlayer().getVideoPlayerEnum() == VideoPlayer.VideoPlayerEnum.OTHER) { // TODO Finish - TD105
                 // Open Window warning some features won't be supported.
             }*/
             checkAndWarn();

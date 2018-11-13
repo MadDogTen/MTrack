@@ -63,7 +63,7 @@ public class Controller implements Initializable {
     private static boolean menuExpanded, menuChanging, stopMenuChanging;
     private static DisplayShow showCurrentlyPlaying = null;
     private final ChangesBox changesBox = new ChangesBox();
-    private final ShowPlayingBox showPlayingBox = new ShowPlayingBox(Variables.getCurrentUser()); // TODO Not valid
+    private final ShowPlayingBox showPlayingBox = new ShowPlayingBox(Variables.getCurrentUser());
     @FXML
     private Pane pane;
     @FXML
@@ -322,7 +322,8 @@ public class Controller implements Initializable {
     }
 
     public static void closeShowPlayingBoxStage() {
-        if (ClassHandler.controller() != null) ClassHandler.controller().showPlayingBox.closeStage();
+        if (ClassHandler.controller() != null && ClassHandler.controller().showPlayingBox != null)
+            ClassHandler.controller().showPlayingBox.closeStage();
     }
 
     // This first Filters the observableList if you have anything in the searchList, Then enables or disables the show0RemainingCheckbox depending on which list it is currently on.
@@ -384,8 +385,8 @@ public class Controller implements Initializable {
                             if (item != null) {
                                 if (getTooltip() == null) setTooltip(rowToolTip);
                                 rowToolTip.textProperty().bind(Bindings.concat(getItem().showProperty(), " - ", Strings.Season, " ", getItem().seasonProperty(), " - ", Strings.Episode, " ", getItem().episodeProperty(), " - ", getItem().remainingProperty(), " ", Strings.Left));
-                                if (currentList.isInactive() && ((ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) && ClassHandler.userInfoController().isShowActive(Variables.getCurrentUser(), item.getShowID())))) // TODO Find a way to add back the different colors
-                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor()); // TODO Add coloring back for new shows added to the inactive list.
+                                if (currentList.isInactive() && ((ClassHandler.userInfoController().showActiveShows(Variables.getCurrentUser()) && ClassHandler.userInfoController().isShowActive(Variables.getCurrentUser(), item.getShowID())))) // TODO Find a way to add back the different colors - TD101
+                                    setStyle("-fx-background-color: " + Variables.ShowColorStatus.ACTIVE.getColor()); // TODO Add coloring back for new shows added to the inactive list. - TD101
                                 else if (currentList.isActive() && ClassHandler.userInfoController().doSpecialEffects(Variables.getCurrentUser()) && ClassHandler.changeReporter().isShowChangedForUser(Variables.getCurrentUser(), getItem().getShowID()) && !isSelected())
                                     setStyle("-fx-background-color: " + Variables.ShowColorStatus.DEFAULT.getColor());
                                 else if (!getStyle().isEmpty()) setStyle(Strings.EmptyString);
@@ -492,7 +493,7 @@ public class Controller implements Initializable {
                     MenuItem openDirectory = new MenuItem();
                     openDirectory.textProperty().bind(Strings.OpenFileLocation);
                     openDirectory.setOnAction(e -> {
-                        log.info("Started to open show directory..."); // TODO Finish
+                        log.info("Started to open show directory..."); // TODO Finish - TD106
                         ArrayList<File> directories = new ArrayList<>();
                         ClassHandler.showInfoController().getShowDirectories(row.getItem().getShowID()).forEach(directoryID -> directories.add(ClassHandler.directoryController().getDirectoryFromID(directoryID)));
                         if (directories.isEmpty())
@@ -522,7 +523,7 @@ public class Controller implements Initializable {
                     printShowInformation.textProperty().bind(Strings.PrintShowInformation);
                     printShowInformation.setOnAction(e -> ClassHandler.developerStuff().printShowInformation(row.getItem().getShowID()));
                     //MenuItem getMissingEpisodes = new MenuItem();
-                    /*getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes); // TODO Fix and Enable
+                    /*getMissingEpisodes.textProperty().bind(Strings.GetMissingEpisodes); // TODO Fix and Enable - TD101
                     getMissingEpisodes.setOnAction(e -> {
                         Map<Integer, Set<Integer>> missingInfo = ClassHandler.showInfoController().getMissingEpisodes(row.getItem().getShowID());
                         if (missingInfo.isEmpty())
@@ -698,7 +699,7 @@ public class Controller implements Initializable {
         pingingDirectoryTooltip.getStyleClass().add("tooltip");
         Tooltip.install(pingingDirectoryPane, pingingDirectoryTooltip);
 
-        //TODO Start
+        //TODO Start - TDnull
         mainTab.textProperty().bind(Strings.Main);
         usersTab.textProperty().bind(Strings.Users);
         showTab.textProperty().bind(Strings.Shows);
@@ -841,7 +842,7 @@ public class Controller implements Initializable {
             }
             setButtonDisable(false, unHideShow);
         });
-        /*useOnlineDatabaseCheckbox.textProperty().bind(Strings.UseOnlineDatabase); // TODO Enable once working
+        /*useOnlineDatabaseCheckbox.textProperty().bind(Strings.UseOnlineDatabase); // TODO Enable once working - TD105
         useOnlineDatabaseCheckbox.setSelected(ClassHandler.userInfoController().useOnlineDatabase(Variables.getCurrentUser()));
         useOnlineDatabaseCheckbox.setOnAction(e -> {
             ClassHandler.userInfoController().setUserBooleanSetting(Variables.getCurrentUser(), DBStrings.COLUMN_USEREMOTEDATABASE, !ClassHandler.userInfoController().useOnlineDatabase(Variables.getCurrentUser()));
@@ -859,10 +860,10 @@ public class Controller implements Initializable {
             }
         });
         playRandomShowButton.setOnAction(e -> {
-            int randomShowID = ClassHandler.userInfoController().getRandomShow(Variables.getCurrentUser(), currentList.isActive(), currentList.isInactive());
+            int randomShowID = ClassHandler.userInfoController().getRandomShow(Variables.getCurrentUser(), currentList.isActive() || showActiveShowsCheckbox.isSelected(), currentList.isInactive());
             if (randomShowID != -2) this.playShow(getDisplayShowFromShowID(randomShowID));
         });
-        playRandomShowButtonTooltip.textProperty().bind(new SimpleStringProperty("Play a random show from the current list.")); // TODO Add localization for this and above related
+        playRandomShowButtonTooltip.textProperty().bind(new SimpleStringProperty("Play a random show from whats currently in the list.")); // TODO Add localization for this and above related - TD100
 
         // UI
         unlockParentScene.textProperty().bind(Strings.AllowFullWindowMovementUse);
@@ -1049,7 +1050,7 @@ public class Controller implements Initializable {
         setAllInactive.textProperty().bind(Strings.SetAllInactive);
         setAllInactive.setOnAction(e -> ClassHandler.developerStuff().toggleAllShowsWithActiveStatus(true));
         // Dev 2
-        printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO ReEnable button
+        printProgramSettingsFileVersion.textProperty().bind(Strings.PrintPsfvAndUsfv); // TODO ReEnable button - TD101
         //printProgramSettingsFileVersion.setOnAction(e -> log.info("PSFV: " + String.valueOf(ClassHandler.programSettingsController().getSettingsFile().getProgramSettingsFileVersion() + " || USFV: " + ClassHandler.userInfoController().getUserSettings().getUserSettingsFileVersion())));
         printAllUserInfo.textProperty().bind(Strings.PrintAllUserInfo);
         printAllUserInfo.setOnAction(e -> ClassHandler.developerStuff().printAllInfoForAllUsers());
@@ -1071,7 +1072,7 @@ public class Controller implements Initializable {
                 Main.stop(stage, true, true);
             } else setButtonDisable(false, deleteEverythingAndClose);
         });
-        // TODO End
+        // TODO End - TDnull
 
 
         // || ~~~~ Settings Tab ~~~~ || \\
@@ -1203,6 +1204,7 @@ public class Controller implements Initializable {
                 //Strings.UserName.setValue(userNameComboBox.getValue());
                 ClassHandler.mainRun().loadUser(new UpdateManager(), false);
                 Controller.setTableViewFields();
+                showPlayingBox.changeUser(Variables.getCurrentUser());
             }
         });
     }

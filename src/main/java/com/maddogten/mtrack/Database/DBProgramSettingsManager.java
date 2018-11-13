@@ -24,7 +24,7 @@ public class DBProgramSettingsManager {
         }
     }
 
-    private void addSettingsRow(Statement statement) throws SQLException { // TODO Set versions to -2 by default, and have each table update it as they are created.
+    private void addSettingsRow(Statement statement) throws SQLException { // TODO Set versions to -2 by default, and have each table update it as they are created. - TD106
         statement.execute("INSERT INTO " + DBStrings.TABLE_PROGRAMSETTINGS + " VALUES (" +
                 Variables.programSettingsTableVersion + ", " +
                 Variables.userSettingsTableVersion + ", " +

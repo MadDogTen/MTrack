@@ -63,7 +63,7 @@ public class DirectoryController {
                     directoryMatchFound = true;
                     Task<Void> checkingTask = new Task<Void>() {
                         @Override
-                        protected Void call() throws Exception {
+                        protected Void call() {
                             if (ipDrive)
                                 isDirectoryActive[0] = directory.exists() && directory.canRead() && directory.getTotalSpace() > 0;
                             else
@@ -127,7 +127,7 @@ public class DirectoryController {
         return answer;
     }
 
-    // TODO Finish directory removal
+    // TODO Finish directory removal - TD101
     // Removes a directory. While doing that, it checks if the shows are still found else where, and if not, sets the show to ignored, then updates the Controller tableViewField to recheck the remaining field.
     /*public void removeDirectory(final Directory aDirectory) {
         log.info("Currently processing removal of: " + aDirectory.getFileName());

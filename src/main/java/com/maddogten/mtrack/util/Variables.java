@@ -71,7 +71,7 @@ public class Variables {
     final static String getShowWithID = "http://api.tvmaze.com/shows/";
     final static String episodesAddition = "/episodes";
     static final Map<VideoPlayer.VideoPlayerEnum, Set<File>> supportedVideoPlayers_Windows;
-    static final boolean playFullScreen = false; // TODO Add user setting
+    static final boolean playFullScreen = false; // TODO Add user setting - TD106
     @SuppressWarnings("PublicStaticArrayField")
     static final String[] showExtensions = new String[]{".mkv", ".avi", ".mp4", ".ts"};
     static final int logMaxFileSize = 10000000;

@@ -22,7 +22,7 @@ public class DBDirectoryHandler {
     private PreparedStatement getDirectory;
     private PreparedStatement addDirectory;
     private PreparedStatement changeDirectory;
-    //private PreparedStatement removeDirectory; // TODO Add
+    //private PreparedStatement removeDirectory; // TODO Add - TD101
     private PreparedStatement checkDirectory;
     private PreparedStatement getDirectoryPriority;
     private PreparedStatement updateDirectoryPriority;

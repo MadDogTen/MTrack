@@ -67,7 +67,7 @@ public class MainRun {
                 new UpdateManager().updateDatabase(ClassHandler.getDBManager());
             } catch (SQLException e) {
                 GenericMethods.printStackTrace(log, e, this.getClass());
-                // TODO User popup saying program failed to start
+                // TODO Add user popup saying program failed to start - TD102
                 System.exit(0);
             }
             new LanguageHandler().setLanguage(ClassHandler.userInfoController().getMostUsedLanguage());

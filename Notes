@@ -3,6 +3,20 @@
 ~~~~~~~~TODO~~~~~~~~
 
 
+TODO Codes: (Shortcuts to find specific types of TODO's
+TDnull - Placeholder only
+TD100 - Add Localization
+TD101 - Re-add previously existing feature (Pre-Database conversion)
+TD102 - Add new feature.
+TD103 - Fix issue
+TD104 - Improve existing code
+TD105 - Finish Project
+TD106 - Expand Project
+TD107 - Check code
+TD108 - Unsure
+TD109 - Fix invalid code / way of doing things
+
+
 Current:
 Make backup of working files on start / exit, and verify the backup, and delete older backups (Keep 2 of each). On start, If files don't work, automatically load backup and notify user.
 Code Cleanup.

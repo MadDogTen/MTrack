@@ -48,7 +48,7 @@ public class ShowInfoController {
         ClassHandler.changeReporter().addChange(showID, -2, -2, false);
         dbShowManager.removeShow(showID);
         ClassHandler.userInfoController().removeUsersShowSettingsIfUnmodified(showID);
-        // TODO Have it check if any users have remaining settings, and if not, delete all further refrences to the show.
+        // TODO Have it check if any users have remaining settings, and if not, delete all further references to the show. - TD105
     }
 
     public void removeSeason(int showID, int season) {

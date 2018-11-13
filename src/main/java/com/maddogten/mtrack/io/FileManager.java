@@ -370,7 +370,7 @@ public class FileManager {
                                 int userID = userInfoController.getUserIDFromName(user);
                                 if (userID == -2) userID = userInfoController.addUser(user);
                                 else log.info("User: \"" + user + "\" was already added with ID: \"" + userID + "\".");
-                                if (loadedProgramSettings) { // TODO Add popup that asks the users if they want to overwrite settings if user already exists.
+                                if (loadedProgramSettings) { // TODO Add popup that asks the users if they want to overwrite settings if user already exists. - TD105
                                     if (!language.isEmpty()) userInfoController.setLanguage(userID, language);
                                     userInfoController.setUpdateSpeed(userID, updateSpeed);
                                     userInfoController.setShowUpdating(userID, enableAutomaticShowUpdating);

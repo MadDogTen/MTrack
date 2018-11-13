@@ -24,10 +24,14 @@ import java.util.logging.Logger;
 
 public class ShowPlayingBox {
     private static final Logger log = Logger.getLogger(ShowPlayingBox.class.getName());
-    private final int userID;
+    private int userID;
     private Stage stage;
 
     public ShowPlayingBox(int userID) {
+        this.userID = userID;
+    }
+
+    public void changeUser(int userID) {
         this.userID = userID;
     }
 

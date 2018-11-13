@@ -57,7 +57,7 @@ public class DBShowManager {
 
     public DBShowManager(DBManager dbManager) {
         this.dbManager = dbManager;
-        this.dbManager.createTable(DBStrings.CREATE_SHOWSTABLE); // TODO Add option to change the show name displayed
+        this.dbManager.createTable(DBStrings.CREATE_SHOWSTABLE); // TODO Add option to change the show name displayed - TD102
         this.dbManager.createTable(DBStrings.CREATE_SEASONSTABLE);
         this.dbManager.createTable(DBStrings.CREATE_EPISODESTABLE);
         this.dbManager.createTable(DBStrings.CREATE_EPISODEFILESTABLE);
@@ -235,7 +235,7 @@ public class DBShowManager {
         }
     }
 
-    public void removeDirectory(int directoryID) { // TODO Verify this works correctly
+    public void removeDirectory(int directoryID) { // TODO Verify this works correctly - TD107
         getAllShowsForDirectory(directoryID).forEach(showID -> {
             getSeasons(showID).forEach(season -> {
                 getSeasonEpisodes(showID, season).forEach(episode -> {

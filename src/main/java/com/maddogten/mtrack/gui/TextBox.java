@@ -155,7 +155,7 @@ public class TextBox {
                             if (isDirectoryValid(directoriesStrings, file, addDirectoryStage))
                                 directories.add(new File(file));
                             else
-                                log.info("File: \"" + file + "\" was invalid, and not added."); // TODO Add user popup notification that groups all issues
+                                log.info("File: \"" + file + "\" was invalid, and not added."); // TODO Add user popup notification that groups all issues - TD108
                         }
                     }
                 } else {

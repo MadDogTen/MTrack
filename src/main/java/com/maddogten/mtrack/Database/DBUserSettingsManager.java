@@ -20,7 +20,7 @@ public class DBUserSettingsManager {
     private PreparedStatement getEpisodePosition = null;
     private PreparedStatement setEpisodePosition = null;
     private PreparedStatement addShowSettings = null;
-    private PreparedStatement removeShowSettings = null;
+    private final PreparedStatement removeShowSettings = null;
     private PreparedStatement addEpisodeSettings = null;
     private PreparedStatement removeEpisode = null;
     private PreparedStatement getShowsForUser = null;
@@ -103,7 +103,7 @@ public class DBUserSettingsManager {
         if (tableCreated) addUserSettings(0); // Insert default program settings
     }
 
-    // TODO Implement the userModified to actually track things that are modified. It is to be used for database cleaning purpose.
+    // TODO Implement the userModified to actually track things that are modified. It is to be used for database cleaning purpose. - TD105
     public synchronized void addShowSettings(int userID, int showID, int currentSeason, int currentEpisode, boolean active, boolean ignored, boolean hidden, boolean userModified) {
         if (isNull(addShowSettings))
             addShowSettings = dbManager.prepareStatement(DBStrings.DBUserSettingsManager_addShowSettingsSQL);

@@ -96,7 +96,7 @@ public class ChangesBox {
                     Thread.sleep(1000);
                     boolean differentUser = currentUser != Variables.getCurrentUser();
                     Set<Integer> newUserChanges = ClassHandler.changeReporter().getUserChanges(currentUser);
-                    if (differentUser || (changesStage.isShowing() && observableList.size() != newUserChanges.size())) { // TODO Do this in a better way
+                    if (differentUser || (changesStage.isShowing() && observableList.size() != newUserChanges.size())) { // TODO Do this in a better way - TD104
                         if (differentUser) currentUser = Variables.getCurrentUser();
                         Platform.runLater(() -> {
                             observableList.clear();

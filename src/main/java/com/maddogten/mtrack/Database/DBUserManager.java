@@ -67,7 +67,7 @@ public class DBUserManager {
         return result;
     }
 
-    /*public synchronized void deleteUser(String userName) { // TODO Finish
+    /*public synchronized void deleteUser(String userName) { // TODO Finish - TD101
         try {
             int userID = getUserID(userName);
             if (userID != -2) {

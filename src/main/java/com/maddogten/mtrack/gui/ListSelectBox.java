@@ -309,7 +309,7 @@ public class ListSelectBox {
         Label label = new Label();
         label.textProperty().bind(Strings.PickTheSeasonAndEpisode);
 
-        // TODO Make this support option to display all known episodes or only currently found episodes.
+        // TODO Make this support option to display all known episodes or only currently found episodes. - TD106
         ArrayList<Integer> seasonsString = new ArrayList<>(showInfoController.getSeasonsList(showID));
         Collections.sort(seasonsString);
         ObservableList<Integer> seasonsList = FXCollections.observableArrayList(seasonsString);

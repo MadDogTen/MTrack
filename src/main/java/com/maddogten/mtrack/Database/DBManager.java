@@ -43,7 +43,7 @@ public class DBManager {
             connection = DriverManager.getConnection(URL, properties);
         } catch (SQLException e) {
             if (e.getNextException().getSQLState().matches("XSDB6")) {
-                log.info("Database already has a connection, Check if another instance of the program is running..."); // TODO Add user popup
+                log.info("Database already has a connection, Check if another instance of the program is running..."); // TODO Add user popup - TD105
                 return null;
             }
             GenericMethods.printStackTrace(log, e, this.getClass());
